@@ -1,0 +1,205 @@
+{% extends "base.html" %}
+
+{% set latest_backup = status.scheduled_archives[0] if status.scheduled_archives else None %}
+{% set last_run = status.backup_settings.last_run or (latest_backup.created_at if latest_backup else '') %}
+{% set is_enabled = status.backup_settings.enabled %}
+
+{% block content %}
+<section class="time-capsule-page">
+  <section class="time-capsule-hero alive-panel">
+    <div class="capsule-hero-copy">
+      <p class="eyebrow">Archive Engine</p>
+      <h1>Time Capsule</h1>
+      <p class="muted hero-copy">Protect your Vaultarr database, covers, manuals, gallery media, settings, and provider cache with Arr-style scheduled backup folders.</p>
+      <div class="capsule-actions">
+        <form action="/archive/backup-now" method="post"><button type="submit">Run Time Capsule</button></form>
+        <a class="secondary-button capsule-link" href="#time-capsules">Restore</a>
+        <a class="secondary-button capsule-link" href="#backup-settings">Settings</a>
+      </div>
+    </div>
+
+    <div class="capsule-health-card">
+      <span class="capsule-orb {% if latest_backup and latest_backup.valid %}ok{% elif latest_backup %}warn{% else %}idle{% endif %}"></span>
+      <p class="eyebrow">Vault Protection</p>
+      <h2>{% if latest_backup and latest_backup.valid %}Protected{% elif latest_backup %}Needs Verify{% else %}No Capsule Yet{% endif %}</h2>
+      <div class="capsule-health-grid">
+        <div><span>Last Backup</span><strong>{{ last_run or 'Never' }}</strong></div>
+        <div><span>Next Backup</span><strong>{{ status.backup_settings.next_run or 'Manual' }}</strong></div>
+        <div><span>Schedule</span><strong>{{ status.backup_settings.schedule|title }}</strong></div>
+        <div><span>Saved</span><strong>{{ status.scheduled_archives|length }}</strong></div>
+      </div>
+    </div>
+  </section>
+
+  {% if archive_message %}
+    <div class="archive-alert {{ archive_status_message }}">{{ archive_message }}</div>
+  {% endif %}
+
+  <section class="capsule-grid" id="backup-settings">
+    <form action="/archive/backup-settings" method="post" class="capsule-settings-panel alive-panel">
+      <div class="panel-heading capsule-heading">
+        <div>
+          <p class="eyebrow">Backup Settings</p>
+          <h2>Where should Vaultarr write Time Capsules?</h2>
+        </div>
+        <span class="archive-valid {% if is_enabled %}ok{% else %}bad{% endif %}">{% if is_enabled %}Automatic{% else %}Manual{% endif %}</span>
+      </div>
+
+      <div class="destination-card">
+        <div class="destination-icon">▣</div>
+        <div>
+          <span>Backup Destination</span>
+          <strong>{{ status.backup_settings.backup_folder }}</strong>
+          <small>Use a local folder, NAS share, external drive, or a folder synced by Google Drive Desktop, OneDrive, Dropbox, Synology Drive, etc.</small>
+        </div>
+      </div>
+      <input class="capsule-path-input" name="backup_folder" value="{{ status.backup_settings.backup_folder }}" placeholder="D:\Vaultarr\Backups">
+
+      <div class="schedule-card">
+        <span>Schedule</span>
+        <div class="schedule-pills">
+          {% for value, label in [('hourly','Hourly'), ('daily','Daily'), ('weekly','Weekly'), ('monthly','Monthly')] %}
+            <label class="schedule-pill {% if status.backup_settings.schedule == value %}selected{% endif %}">
+              <input type="radio" name="schedule" value="{{ value }}" {% if status.backup_settings.schedule == value %}checked{% endif %}>
+              {{ label }}
+            </label>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="retention-card">
+        <div>
+          <span>Retention</span>
+          <strong>Keep last</strong>
+        </div>
+        <label><input name="retention_count" type="number" min="1" value="{{ status.backup_settings.retention_count }}"><small>backups</small></label>
+      </div>
+
+      <section class="capsule-options-grid">
+        <label class="capsule-option"><input type="checkbox" name="enabled" {% if status.backup_settings.enabled %}checked{% endif %}><span>Automatic Backups</span><small>Run while Vaultarr is open.</small></label>
+        <label class="capsule-option"><input type="checkbox" name="verify_after_backup" {% if status.backup_settings.verify_after_backup %}checked{% endif %}><span>Verify After Backup</span><small>Check archive integrity.</small></label>
+        <label class="capsule-option"><input type="checkbox" name="include_cache" {% if status.backup_settings.include_cache %}checked{% endif %}><span>Include Cache</span><small>Provider, media, manuals.</small></label>
+        <label class="capsule-option"><input type="checkbox" name="keep_monthly_snapshots" {% if status.backup_settings.keep_monthly_snapshots %}checked{% endif %}><span>Monthly Snapshots</span><small>Keep beyond retention.</small></label>
+      </section>
+      <input type="hidden" name="compress_backup" value="on">
+
+      <div class="archive-button-row capsule-button-row">
+        <button type="submit">Save Settings</button>
+        <button type="submit" formaction="/archive/backup-now" class="secondary-button">Run Backup Now</button>
+      </div>
+    </form>
+
+    <aside class="backup-analyzer alive-panel">
+      <div class="panel-heading capsule-heading">
+        <div>
+          <p class="eyebrow">Backup Size Analyzer</p>
+          <h2>Estimated Capsule</h2>
+        </div>
+        <strong>{{ status.estimated_backup_size_mb }} MB</strong>
+      </div>
+      <div class="analyzer-stack">
+        <div><span>Database</span><strong>{{ status.database_size_mb }} MB</strong></div>
+        <div><span>Covers</span><strong>{{ status.covers_size_mb }} MB</strong></div>
+        <div><span>Manuals</span><strong>{{ status.manuals_size_mb }} MB</strong></div>
+        <div><span>Gallery Media</span><strong>{{ status.media_size_mb }} MB</strong></div>
+        <div><span>Provider Cache</span><strong>{{ status.cache_size_mb }} MB</strong></div>
+      </div>
+      <p class="muted small-copy">Estimate is based on current vault assets before compression.</p>
+    </aside>
+
+    <section class="capsule-scope alive-panel">
+      <div class="panel-heading capsule-heading">
+        <div>
+          <p class="eyebrow">Vault Contents</p>
+          <h2>What gets protected</h2>
+        </div>
+      </div>
+      <div class="scope-chip-grid">
+        <div><span>Database</span><strong>{% if status.database_exists %}Ready{% else %}Empty{% endif %}</strong></div>
+        <div><span>Covers</span><strong>{{ status.covers }}</strong></div>
+        <div><span>Manuals</span><strong>{{ status.manuals }}</strong></div>
+        <div><span>Gallery</span><strong>{{ status.media }}</strong></div>
+        <div><span>Cache</span><strong>{{ status.cache_size_mb }} MB</strong></div>
+        <div><span>Archives</span><strong>{{ status.scheduled_archives|length }}</strong></div>
+      </div>
+    </section>
+
+    <section class="manual-archive-card alive-panel">
+      <div class="panel-heading capsule-heading">
+        <div><p class="eyebrow">Manual Export</p><h2>Create a one-off capsule</h2></div>
+      </div>
+      <form action="/archive/export" method="post" class="manual-export-form">
+        <input name="name" placeholder="vaultarr_backup">
+        <input type="hidden" name="destination" value="local">
+        <label class="mini-check"><input type="checkbox" name="include_cache" checked> Include provider/index cache</label>
+        <button type="submit">Export To Vaultarr Folder</button>
+      </form>
+    </section>
+
+    <section class="manual-archive-card alive-panel">
+      <div class="panel-heading capsule-heading">
+        <div><p class="eyebrow">Import</p><h2>Restore from file</h2></div>
+      </div>
+      <form action="/archive/import/upload" method="post" enctype="multipart/form-data" class="manual-export-form">
+        <input type="file" name="archive_file" accept=".vaultarr,.zip">
+        <select name="mode">
+          <option value="replace">Replace database + restore assets</option>
+          <option value="assets_only">Restore assets/settings only</option>
+        </select>
+        <button type="submit">Import Archive</button>
+      </form>
+    </section>
+  </section>
+
+  <section class="time-capsule-history alive-panel" id="time-capsules">
+    <div class="panel-heading capsule-heading">
+      <div><p class="eyebrow">Recent Time Capsules</p><h2>Backup folder history</h2></div>
+      <span>{{ status.scheduled_archives|length }} saved</span>
+    </div>
+    {% if status.scheduled_archives %}
+      <div class="capsule-history-list">
+        {% for item in status.scheduled_archives %}
+          <div class="capsule-history-row">
+            <div class="history-status-dot {% if item.valid %}ok{% else %}warn{% endif %}"></div>
+            <div>
+              <strong>{{ item.name }}</strong>
+              <small>{{ item.created_at or item.modified }} · {{ item.size_mb }} MB · {{ item.assets }} assets</small>
+            </div>
+            <div class="archive-row-actions">
+              <span class="archive-valid {% if item.valid %}ok{% else %}bad{% endif %}">{% if item.valid %}Verified{% else %}Unknown{% endif %}</span>
+              <form action="/archive/import/folder" method="post" class="inline-archive-form">
+                <input type="hidden" name="backup_folder" value="{{ status.backup_settings.backup_folder }}">
+                <input type="hidden" name="archive_path" value="{{ item.path }}">
+                <input type="hidden" name="mode" value="replace">
+                <button type="submit" class="secondary-button small">Restore</button>
+              </form>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="muted">No Time Capsules found in the scheduled backup folder yet.</p>
+    {% endif %}
+  </section>
+
+  <section class="time-capsule-history alive-panel">
+    <div class="panel-heading capsule-heading"><div><p class="eyebrow">Backup Activity</p><h2>Recent Runs</h2></div></div>
+    {% if status.backup_history %}
+      <div class="capsule-history-list compact-activity-list">
+        {% for item in status.backup_history[:12] %}
+          <div class="capsule-history-row compact">
+            <div class="history-status-dot {% if item.status == 'ok' %}ok{% else %}warn{% endif %}"></div>
+            <div>
+              <strong>{{ item.kind }} — {% if item.status == 'ok' %}Successful{% else %}Failed{% endif %}</strong>
+              <small>{{ item.time }} · {{ item.message }}</small>
+            </div>
+            <span class="archive-valid {% if item.status == 'ok' %}ok{% else %}bad{% endif %}">{{ item.status }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="muted">No backup activity yet.</p>
+    {% endif %}
+  </section>
+</section>
+{% endblock %}

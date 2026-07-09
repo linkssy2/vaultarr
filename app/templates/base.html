@@ -1,0 +1,497 @@
+<!doctype html>
+<html>
+<head>
+  <title>Vaultarr 1.0.6</title>
+  {% if theme.dark_reader_compat %}<meta name="darkreader-lock">{% endif %}
+
+  <link rel="stylesheet" href="/static/css/base.css">
+  <link rel="stylesheet" href="/static/css/sidebar.css">
+  <link rel="stylesheet" href="/static/css/layout.css">
+  <link rel="stylesheet" href="/static/css/forms.css">
+  <link rel="stylesheet" href="/static/css/dashboard.css">
+  <link rel="stylesheet" href="/static/css/library.css">
+  <link rel="stylesheet" href="/static/css/cards.css">
+  <link rel="stylesheet" href="/static/css/game-detail.css">
+  <link rel="stylesheet" href="/static/css/focus-mode.css">
+  <link rel="stylesheet" href="/static/css/preservation.css">
+  <link rel="stylesheet" href="/static/css/vaultos.css">
+  <link rel="stylesheet" href="/static/css/navigation.css">
+  <link rel="stylesheet" href="/static/css/global-search.css">
+  <link rel="stylesheet" href="/static/css/discovery.css">
+  <link rel="stylesheet" href="/static/css/scrollbars.css">
+  <link rel="stylesheet" href="/static/css/archive.css">
+    <link rel="stylesheet" href="/static/css/studio.css">
+  <link rel="stylesheet" href="/static/css/cohesion.css">
+  <link rel="stylesheet" href="/static/css/alpha30-flow.css">
+  <link rel="stylesheet" href="/static/css/experience.css">
+  <link rel="stylesheet" href="/static/css/readiness.css">
+  <link rel="stylesheet" href="/static/css/responsive.css">
+  <style id="vaultarr-theme">{{ theme_css|safe }}</style>
+</head>
+<body class="vaultos {% if theme.dark_reader_compat %}dark-reader-compat{% endif %}">
+  <div class="vault-ambient" aria-hidden="true"><span></span><i></i></div>
+
+  <aside class="sidebar vaultos-sidebar">
+    <a class="brand" href="/">
+      <span class="brand-mark">V</span>
+      <span>Vaultarr</span>
+    </a>
+
+    <nav class="nav vault-nav vault-nav-cohesive">
+      <span class="nav-section-label">Browse</span>
+      <a href="/"><span class="nav-glyph">⌂</span><span>Home</span></a>
+      <a href="/library"><span class="nav-glyph">▣</span><span>Library</span></a>
+      <a href="/collections"><span class="nav-glyph">▤</span><span>Collections</span></a>
+      <a href="/discovery"><span class="nav-glyph">✦</span><span>Discovery</span></a>
+
+      <span class="nav-section-label">Curate</span>
+      <a href="/experience"><span class="nav-glyph">★</span><span>Milestones</span></a>
+      <a href="/preservation"><span class="nav-glyph">🛡</span><span>Preservation</span></a>
+      <a href="/archive"><span class="nav-glyph">◈</span><span>Time Capsule</span></a>
+      <a href="/settings"><span class="nav-glyph">⚙</span><span>Studio</span></a>
+    </nav>
+
+    <button class="sidebar-search-shell" id="globalSearchOpen" type="button">
+      <span>Search vault</span>
+      <kbd>Ctrl K</kbd>
+    </button>
+
+    <div class="sidebar-footer">
+      <div class="mini-stat vault-build-card">
+        <span>Current build</span>
+        <strong>Vaultarr 1.0.6</strong>
+        <em></em>
+      </div>
+      <p class="sidebar-tagline">Preserve your library. Rediscover your games.</p>
+    </div>
+  </aside>
+
+  <main class="content vaultos-content">
+    {% block content %}{% endblock %}
+  </main>
+
+  <div class="focus-backdrop" id="focusBackdrop" aria-hidden="true"></div>
+
+  <section class="focus-panel" id="focusPanel" aria-hidden="true">
+    <button class="focus-close" id="focusClose" type="button">×</button>
+
+    <aside class="focus-art-column collector-layout">
+      <div class="focus-cover" id="focusCover">
+        <div class="focus-cover-placeholder">🎮</div>
+      </div>
+
+      <div class="focus-art-meta">
+        <div>
+          <span>Artwork Source</span>
+          <strong id="focusArtworkSource">Unknown</strong>
+        </div>
+        <div>
+          <span>Artwork Type</span>
+          <strong id="focusArtworkType">Box Cover</strong>
+        </div>
+        <div>
+          <span>Resolution</span>
+          <strong id="focusArtworkResolution">Unknown</strong>
+        </div>
+        <div>
+          <span>Metadata Lock</span>
+          <strong id="focusArtworkLock">Unlocked</strong>
+        </div>
+      </div>
+    </aside>
+
+    <div class="focus-content">
+      <div class="focus-kicker" id="focusKicker">Vaultarr Focus Mode</div>
+      <h1 id="focusTitle">Loading...</h1>
+      <p class="muted" id="focusPath"></p>
+
+      <div class="focus-tabs">
+        <button class="focus-tab active" data-tab="overview" type="button">Overview</button>
+        <button class="focus-tab" data-tab="metadata" type="button">Metadata</button>
+        <button class="focus-tab" data-tab="preservation" type="button">Preservation</button>
+        <button class="focus-tab" data-tab="manuals" type="button">Manuals</button>
+        <button class="focus-tab" data-tab="gallery" type="button">Gallery</button>
+        <button class="focus-tab" data-tab="trailer" type="button">Trailer</button>
+        <button class="focus-tab" data-tab="patches" type="button">Patches</button>
+        <button class="focus-tab" data-tab="files" type="button">Files</button>
+      </div>
+
+      <div class="focus-tab-panel active" id="focusTab-overview">
+        <p id="focusDescription" class="focus-description"></p>
+
+        <div class="focus-stat-grid">
+          <div class="card"><h2>Size</h2><p id="focusSize">—</p></div>
+          <div class="card"><h2>Files</h2><p id="focusFiles">—</p></div>
+          <div class="card"><h2>Executables</h2><p id="focusExecutables">—</p></div>
+          <div class="card"><h2>Category</h2><p id="focusCategory">—</p></div>
+          <div class="card"><h2>Source</h2><p id="focusSourceType">—</p></div>
+          <div class="card"><h2>Lock</h2><p id="focusLockStatus">—</p></div>
+        </div>
+      </div>
+
+      <div class="focus-tab-panel" id="focusTab-metadata">
+        <div class="focus-metadata-workspace">
+          <div class="focus-detail-list compact">
+            <p><strong>Developer:</strong> <span id="focusDeveloper">Unknown</span></p>
+            <p><strong>Publisher:</strong> <span id="focusPublisher">Unknown</span></p>
+            <p><strong>Year:</strong> <span id="focusYear">Unknown</span></p>
+            <p><strong>Genre:</strong> <span id="focusGenre">Unknown</span></p>
+            <p><strong>Platform:</strong> <span id="focusPlatform">Unknown</span></p>
+            <p><strong>Source:</strong> <span id="focusSource">None</span></p>
+          </div>
+
+          <div class="metadata-live-search">
+            <div class="metadata-live-header">
+              <div>
+                <h2>Live Metadata Match</h2>
+                <p class="muted">Search providers and apply metadata without leaving the opened game box.</p>
+              </div>
+              <a class="button-link secondary small" id="focusMetadataLink" href="#">Full Details</a>
+            </div>
+
+            <form id="focusMetadataForm" class="metadata-inline-form">
+              <input id="focusMetadataQuery" name="query" placeholder="Search metadata...">
+              <select id="focusMetadataProvider" name="provider">
+                <option value="all">All providers</option>
+                <option value="launchbox">LaunchBox</option>
+                <option value="igdb">IGDB</option>
+                <option value="rawg">RAWG</option>
+                <option value="steamgriddb">SteamGridDB Artwork</option>
+                <option value="steam">Steam</option>
+                <option value="wikipedia">Wikipedia</option>
+              </select>
+              <button type="submit">Search</button>
+            </form>
+
+            <div id="focusMetadataStatus" class="metadata-status-row"></div>
+            <div id="focusMetadataResults" class="metadata-live-results"></div>
+
+            <section class="provider-intelligence-panel">
+              <div class="provider-intelligence-head">
+                <div>
+                  <h2>Provider Intelligence</h2>
+                  <p class="muted">Compare providers, inspect metadata quality, and merge the best fields into one record.</p>
+                </div>
+                <div class="provider-intelligence-actions">
+                  <button id="focusProviderIntelligenceButton" class="secondary-button small" type="button">Analyze Providers</button>
+                  <button id="focusMergeBestButton" class="secondary-button small" type="button">Build Best Record</button>
+                </div>
+              </div>
+              <div id="focusProviderIntelligenceStatus" class="metadata-status-row"></div>
+              <div id="focusProviderIntelligenceResults" class="provider-intelligence-results"></div>
+            </section>
+          </div>
+        </div>
+      </div>
+
+      <div class="focus-tab-panel" id="focusTab-preservation">
+        <div class="focus-preservation-summary">
+          <div class="focus-preservation-score"><span id="focusPreservationScore">—</span><small>Preservation Score</small></div>
+          <div class="focus-preservation-badge" id="focusPreservationBadge">—</div>
+        </div>
+        <div class="preservation-list">
+          <p id="focusPreservationExecutable">—</p>
+          <p id="focusPreservationCover">—</p>
+          <p id="focusPreservationMetadata">—</p>
+          <p id="focusPreservationDocumentation">—</p>
+          <p id="focusPreservationArchive">—</p>
+        </div>
+        <div class="manual-source-panel">
+          <div>
+            <strong>Manual Source</strong>
+            <p class="muted" id="focusManualSource">No manual linked yet.</p>
+          </div>
+          <div class="manual-source-actions">
+            <a class="button-link secondary small" id="focusFindManualLink" href="#" target="_blank" rel="noopener">Find Manual Online</a>
+            <a class="button-link secondary small" id="focusManualUrlLink" href="#" target="_blank" rel="noopener">Open Linked Manual</a>
+          </div>
+        </div>
+        <div class="focus-preservation-assets" id="focusPreservationAssets"></div>
+      </div>
+
+      <div class="focus-tab-panel" id="focusTab-manuals">
+        <div class="manual-workspace">
+          <div class="manual-workspace-header">
+            <div>
+              <h2>Manual Provider Search</h2>
+              <p class="muted">Search supported manual sources. Direct PDF results can be downloaded into Vaultarr instead of saving search pages.</p>
+            </div>
+          </div>
+
+          <form id="focusManualSearchForm" class="metadata-inline-form manual-search-form">
+            <input id="focusManualQuery" name="query" placeholder="Search manuals...">
+            <select id="focusManualProvider" name="provider">
+              <option value="all">All manual providers</option>
+              <option value="videogamemanual">VideoGameManual.com</option>
+              <option value="replacementdocs">replacementdocs</option>
+              <option value="gamesdatabase">Broad web search</option>
+              <option value="local">Local library</option>
+            </select>
+            <button type="submit">Search Manuals</button>
+          </form>
+
+          <form id="focusManualLinkForm" class="metadata-inline-form manual-link-form">
+            <input id="focusManualUrlInput" name="manual_url" placeholder="Paste manual PDF/link URL...">
+            <select id="focusManualLinkProvider" name="manual_provider">
+              <option>User Link</option>
+              <option>VideoGameManual.com</option>
+              <option>replacementdocs</option>
+              <option>Local Manual</option>
+              <option>Other</option>
+            </select>
+            <button type="submit">Save Manual Link</button>
+          </form>
+
+          <div class="manual-download-actions">
+            <button id="focusManualDownloadButton" type="button">Download PDF</button>
+            <a class="button-link secondary small disabled" id="focusManualSavedLink" href="#" target="_blank" rel="noopener">Open PDF in Browser</a>
+            <a class="button-link secondary small disabled" id="focusManualSourcePageLink" href="#" target="_blank" rel="noopener">Open Source Page</a>
+            <button id="focusManualRemoveButton" class="secondary-button" type="button">Remove Manual</button>
+          </div>
+
+          <div class="manual-reader" id="focusManualViewer">
+            <div class="manual-reader-empty">No downloaded manual yet. Save or paste a direct PDF link, then download it into Vaultarr.</div>
+          </div>
+
+          <div id="focusManualStatus" class="metadata-status-row"></div>
+          <div id="focusManualResults" class="manual-provider-results"></div>
+        </div>
+      </div>
+
+
+      <div class="focus-tab-panel" id="focusTab-gallery">
+        <div class="gallery-workspace gallery-workspace-saved-first">
+          <div class="gallery-workspace-header">
+            <div>
+              <h2>Media Library</h2>
+              <p class="muted">Covers, screenshots, artwork, logos, and trailer media are kept as reusable assets instead of being overwritten.</p>
+            </div>
+            <div class="gallery-actions">
+              <button id="focusGallerySearchButton" type="button">Search More Media</button>
+            </div>
+          </div>
+
+          <div id="focusGalleryStatus" class="metadata-status-row"></div>
+
+          <section class="gallery-cover-manager-section">
+            <div class="gallery-section-heading">
+              <div>
+                <p class="eyebrow">Cover Manager</p>
+                <h3>Library Cover</h3>
+              </div>
+              <div class="cover-manager-heading-actions">
+                <span id="focusCoverManagerStatus">Current cover</span>
+                <button class="secondary-button small" id="focusCoverSearchButton" type="button">Find More Covers</button>
+                <label class="secondary-button small cover-upload-button" for="focusCoverUploadInput">Upload Cover</label>
+                <input id="focusCoverUploadInput" type="file" accept="image/png,image/jpeg,image/webp" hidden>
+              </div>
+            </div>
+            <div class="cover-manager-layout">
+              <div class="cover-manager-current" id="focusCoverManagerCurrent">
+                <div class="gallery-empty compact">No cover selected yet.</div>
+              </div>
+              <div>
+                <p class="muted cover-manager-copy">Build Best Record recommends a cover, but you can choose any cached or provider cover and set it as the Library cover.</p>
+                <div class="gallery-grid cover-candidate-grid" id="focusCoverCandidates"></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="gallery-saved-section">
+            <div class="gallery-section-heading">
+              <div>
+                <p class="eyebrow">Saved Media</p>
+                <h3>Cached Gallery</h3>
+              </div>
+              <div class="gallery-cache-actions">
+                <span id="focusGallerySavedCount">0 cached</span>
+                <button id="focusGalleryClearButton" class="secondary-button small" type="button">Clear Game Cache</button>
+              </div>
+            </div>
+            <div class="gallery-stage" id="focusGalleryStage">
+              <div class="gallery-empty">No cached gallery images yet. Use Search More Media to find screenshots and artwork.</div>
+            </div>
+            <div class="gallery-grid gallery-saved-grid" id="focusGallerySaved"></div>
+          </section>
+
+          <section id="focusGallerySearchPanel" class="gallery-search-panel" aria-hidden="true">
+            <div class="gallery-section-heading">
+              <div>
+                <p class="eyebrow">Provider Search</p>
+                <h3>Add more media</h3>
+              </div>
+            </div>
+            <form id="focusGallerySearchForm" class="metadata-inline-form gallery-search-form">
+              <select id="focusGalleryProvider" name="provider">
+                <option value="all">All media providers</option>
+                <option value="launchbox">LaunchBox Media</option>
+                <option value="rawg">RAWG Screenshots</option>
+                <option value="igdb">IGDB Screenshots</option>
+                <option value="steam">Steam Media</option>
+              </select>
+              <button type="submit">Search Providers</button>
+            </form>
+            <div class="gallery-grid gallery-provider-grid" id="focusGalleryResults"></div>
+          </section>
+        </div>
+      </div>
+
+      <div class="focus-tab-panel" id="focusTab-trailer">
+        <div class="trailer-workspace trailer-cinematic-workspace">
+          <div class="trailer-hero cinematic-trailer-hero">
+            <div>
+              <p class="eyebrow">Cinematic Engine</p>
+              <h2 id="focusTrailerHeading">Game Trailer</h2>
+              <p class="muted" id="focusTrailerCopy">Watch, preview, and curate the saved trailer without leaving Vaultarr.</p>
+            </div>
+            <div class="trailer-actions">
+              <button class="button-link small" id="focusTrailerFindButton" type="button">Change Trailer</button>
+              <a class="button-link secondary small disabled" id="focusTrailerOpenLink" href="#" target="_blank" rel="noopener">External</a>
+            </div>
+          </div>
+
+          <div class="trailer-stage cinematic-trailer-stage" id="focusTrailerStage">
+            <div class="trailer-empty">No trailer saved yet. Use Change Trailer to find one inside Vaultarr.</div>
+          </div>
+
+          <details class="trailer-finder-panel cinematic-trailer-finder" id="focusTrailerFinderPanel">
+            <summary>
+              <span>Recommended Trailers</span>
+              <small>Preview or set a new trailer</small>
+            </summary>
+            <div class="trailer-search-shortcuts">
+              <a id="focusTrailerYouTubeSearch" href="#" target="_blank" rel="noopener"><strong>YouTube</strong><span>External search</span></a>
+              <a id="focusTrailerSteamSearch" href="#" target="_blank" rel="noopener"><strong>Steam</strong><span>Store media</span></a>
+              <a id="focusTrailerGoogleSearch" href="#" target="_blank" rel="noopener"><strong>Web</strong><span>Broad video search</span></a>
+            </div>
+            <div id="focusTrailerResults" class="trailer-candidate-grid">
+              <div class="trailer-candidate-empty">Use Change Trailer to search likely matches inside Vaultarr.</div>
+            </div>
+          </details>
+
+          <details class="trailer-advanced-panel">
+            <summary>Advanced trailer URL</summary>
+            <form id="focusTrailerForm" class="metadata-inline-form trailer-inline-form">
+              <input id="focusTrailerUrlInput" name="trailer_url" placeholder="Paste YouTube trailer URL...">
+              <select id="focusTrailerProvider" name="trailer_provider">
+                <option>YouTube</option>
+                <option>Steam</option>
+                <option>IGDB</option>
+                <option>RAWG</option>
+                <option>Other</option>
+              </select>
+              <button type="submit">Save Trailer</button>
+              <button id="focusTrailerRemoveButton" class="secondary-button" type="button">Remove</button>
+            </form>
+          </details>
+
+          <div id="focusTrailerStatus" class="metadata-status-row"></div>
+        </div>
+      </div>
+
+
+      <div class="focus-tab-panel" id="focusTab-patches">
+        <div class="patch-workspace">
+          <div class="patch-hero">
+            <div>
+              <p class="eyebrow">Patch Engine</p>
+              <h2>Playability & Community Fixes</h2>
+              <p class="muted">Track official patches, widescreen fixes, controller support, unofficial updates, and trusted community recommendations.</p>
+            </div>
+            <div class="patch-health-card">
+              <span>Playability</span>
+              <strong id="focusPlayabilityScore">—</strong>
+              <small id="focusPatchStatus">Needs review</small>
+            </div>
+          </div>
+
+          <section class="patch-current-card" id="focusPatchCurrent">
+            <div class="metadata-empty">No patch or fix reference saved yet.</div>
+          </section>
+
+          <div class="patch-actions-row">
+            <button class="button-link small" id="focusPatchSearchButton" type="button">Find Fixes</button>
+            <a class="button-link secondary small disabled" id="focusPatchOpenLink" href="#" target="_blank" rel="noopener">Open Saved Fix</a>
+          </div>
+
+          <section class="patch-search-panel" id="focusPatchSearchPanel" aria-hidden="true">
+            <form id="focusPatchSearchForm" class="metadata-inline-form patch-search-form">
+              <select id="focusPatchProvider" name="provider">
+                <option value="all">All patch providers</option>
+                <option value="pcgamingwiki">PCGamingWiki</option>
+                <option value="github">GitHub Releases</option>
+                <option value="wsgf">WSGF Widescreen</option>
+                <option value="moddb">ModDB</option>
+                <option value="nexus">Nexus Mods</option>
+              </select>
+              <select id="focusPatchCategory" name="category">
+                <option value="all">All categories</option>
+                <option value="compatibility">Compatibility</option>
+                <option value="widescreen">Widescreen</option>
+                <option value="controller">Controller</option>
+                <option value="community">Community</option>
+                <option value="mods">Mods</option>
+              </select>
+              <button type="submit">Search Fixes</button>
+            </form>
+            <div id="focusPatchStatusRow" class="metadata-status-row"></div>
+            <div id="focusPatchResults" class="patch-results-grid"></div>
+          </section>
+
+          <details class="patch-advanced-panel">
+            <summary>Advanced patch/reference URL</summary>
+            <form id="focusPatchLinkForm" class="metadata-inline-form patch-link-form">
+              <input id="focusPatchUrlInput" name="patch_url" placeholder="Paste PCGamingWiki, GitHub, ModDB, or patch reference URL...">
+              <select id="focusPatchLinkProvider" name="patch_provider">
+                <option>PCGamingWiki</option>
+                <option>GitHub</option>
+                <option>ModDB</option>
+                <option>Nexus Mods</option>
+                <option>Local Patch</option>
+                <option>Other</option>
+              </select>
+              <button type="submit">Save Reference</button>
+              <button id="focusPatchRemoveButton" class="secondary-button" type="button">Remove</button>
+            </form>
+          </details>
+        </div>
+      </div>
+
+
+      <div class="focus-tab-panel" id="focusTab-files">
+        <p><strong>Executables:</strong></p>
+        <p class="muted" id="focusExecutablesList">None detected</p>
+        <p><strong>Last scanned:</strong> <span id="focusLastScanned">Unknown</span></p>
+      </div>
+    </div>
+  </section>
+
+  <script src="/static/js/library.js"></script>
+  <script src="/static/js/focus-mode.js"></script>
+  <script src="/static/js/theme-compat.js"></script>
+  <script src="/static/js/studio-navigation.js"></script>
+  <script src="/static/js/orbital-vault.js"></script>
+  <script src="/static/js/experience.js"></script>
+
+
+  <div class="global-search-backdrop" id="globalSearchBackdrop" aria-hidden="true"></div>
+  <section class="global-search-panel" id="globalSearchPanel" aria-hidden="true" role="dialog" aria-label="Search Vaultarr">
+    <div class="global-search-head">
+      <div>
+        <span class="micro-label">Vault Search</span>
+        <h2>Search your vault</h2>
+      </div>
+      <button class="global-search-close" id="globalSearchClose" type="button" aria-label="Close search">×</button>
+    </div>
+    <div class="global-search-box">
+      <input id="globalSearchInput" type="text" placeholder="Search games, collections, metadata..." autocomplete="off">
+      <kbd>Esc</kbd>
+    </div>
+    <div class="global-search-status" id="globalSearchStatus">Start typing to search across your library.</div>
+    <div class="global-search-results" id="globalSearchResults"></div>
+  </section>
+
+  <script src="/static/js/smooth-navigation.js"></script>
+  <script src="/static/js/global-search.js"></script>
+</body>
+</html>

@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="vault-page-shell vault-space metadata-space">
+  <section class="vault-space-hero metadata-hero alive-panel">
+    <div>
+      <p class="eyebrow">Metadata Workspace</p>
+      <h1>Identify games without leaving the vault.</h1>
+      <p class="muted hero-copy">Open any game box, search providers inside the expanded card, and apply metadata live.</p>
+    </div>
+    <div class="space-hero-metrics">
+      <div><span>Queue</span><strong>{{ games|length }}</strong></div>
+      <div><span>Workflow</span><strong>Live Match</strong></div>
+    </div>
+  </section>
+
+  {% if games %}
+    <section class="vaultos-shelf alive-panel">
+      <div class="shelf-header">
+        <div>
+          <p class="eyebrow">Needs Identification</p>
+          <h2>{{ games|length }} game{% if games|length != 1 %}s{% endif %} waiting</h2>
+          <p class="muted">Click a game box to inspect it and open the live metadata tab.</p>
+        </div>
+      </div>
+
+      <div class="game-grid poster-grid focus-grid">
+        {% for game in games %}
+          <button class="game-card-link focus-card-trigger" type="button" data-game-id="{{ game.id }}">
+            <article class="poster-card">
+              <div class="poster-art">
+                <div class="poster-gloss"></div>
+                {% if game.cover_path %}
+                  <img class="poster-cover" src="/covers/{{ game.cover_path }}?v={{ game.updated_at or game.last_scanned or game.id }}" alt="{{ game.title }}">
+                {% else %}
+                  <div class="poster-placeholder">🎮</div>
+                {% endif %}
+              </div>
+              <div class="poster-info title-only">
+                <h3>{{ game.title }}</h3>
+              </div>
+            </article>
+          </button>
+        {% endfor %}
+      </div>
+    </section>
+  {% else %}
+    <div class="empty-state alive-panel">
+      <h2>Queue is clear.</h2>
+      <p>No games currently need metadata attention.</p>
+      <a class="button-link" href="/library">Return to Library</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

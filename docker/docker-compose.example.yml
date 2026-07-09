@@ -1,0 +1,13 @@
+services:
+  vaultarr:
+    build: .
+    container_name: vaultarr
+    ports:
+      - "8787:8787"
+    environment:
+      - LOCALAPPDATA=/config
+    volumes:
+      - ./config:/config
+      - /path/to/games:/games
+      - ./backups:/backups
+    restart: unless-stopped

@@ -1,0 +1,361 @@
+.form-card {
+    background: transparent;
+    border: 0;
+    border-radius: var(--radius);
+    padding: 0;
+    max-width: 720px;
+    margin-bottom: 0;
+}
+
+.clean-form {
+    max-width: 720px;
+}
+
+label {
+    display: block;
+    margin-top: 16px;
+    margin-bottom: 6px;
+    color: var(--text-muted);
+}
+
+input,
+select,
+textarea {
+    width: 100%;
+    background: rgba(15, 23, 42, 0.86);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px;
+    font-size: 15px;
+}
+
+textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+}
+
+button,
+.button-link {
+    margin-top: 16px;
+    background: linear-gradient(135deg, #2563eb, #3b82f6);
+    color: white;
+    border: none;
+    border-radius: 11px;
+    padding: 10px 18px;
+    cursor: pointer;
+    display: inline-block;
+    transition: opacity var(--transition), transform var(--transition), box-shadow var(--transition);
+    box-shadow: 0 10px 24px rgba(37, 99, 235, 0.18);
+}
+
+button:hover,
+.button-link:hover {
+    opacity: 0.95;
+    transform: translateY(-1px);
+    box-shadow: 0 14px 30px rgba(37, 99, 235, 0.26);
+}
+
+button.danger {
+    background: linear-gradient(135deg, #dc2626, #ef4444);
+    box-shadow: 0 10px 24px rgba(239, 68, 68, 0.16);
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 0 16px;
+}
+
+.row-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.row-actions form {
+    margin: 0;
+}
+
+/* Theme Settings */
+.theme-form {
+    margin-top: 18px;
+}
+
+.theme-preset-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+    gap: 14px;
+    margin-bottom: 24px;
+}
+
+.theme-preset {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0;
+    padding: 14px;
+    border: 1px solid var(--border-soft);
+    border-radius: 16px;
+    background: color-mix(in srgb, var(--panel) 82%, transparent);
+    cursor: pointer;
+    transition: border-color var(--transition), background var(--transition), transform var(--transition), box-shadow var(--transition);
+}
+
+.theme-preset:hover,
+.theme-preset.active {
+    border-color: var(--primary);
+    background: color-mix(in srgb, var(--primary) 10%, var(--panel));
+    box-shadow: 0 12px 30px color-mix(in srgb, var(--primary) 16%, transparent);
+    transform: translateY(-1px);
+}
+
+.theme-preset input {
+    display: none;
+}
+
+.theme-preview {
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background:
+        radial-gradient(circle at 70% 22%, var(--preview-primary), transparent 34%),
+        linear-gradient(135deg, var(--preview-panel), var(--preview-bg));
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.18), 0 10px 22px rgba(0,0,0,0.22);
+}
+
+.theme-preset strong {
+    font-size: 14px;
+}
+
+.custom-theme-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px;
+}
+
+.custom-theme-grid input[type="color"] {
+    height: 48px;
+    padding: 4px;
+    cursor: pointer;
+}
+
+.theme-actions {
+    margin-top: 4px;
+}
+
+button.secondary {
+    background: color-mix(in srgb, var(--panel-hover) 84%, white 6%);
+    color: var(--text);
+    border: 1px solid var(--border-soft);
+}
+
+/* Alpha 7 Theme Pack System */
+.theme-pack-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 14px;
+    margin-top: 18px;
+    margin-bottom: 26px;
+}
+
+.theme-pack-card {
+    margin: 0;
+}
+
+.theme-pack-button {
+    width: 100%;
+    min-height: 104px;
+    margin: 0;
+    padding: 14px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    text-align: left;
+    color: var(--text);
+    background:
+        linear-gradient(135deg, color-mix(in srgb, var(--panel) 84%, transparent), color-mix(in srgb, var(--card-deep) 96%, transparent));
+    border: 1px solid var(--border-soft);
+    border-radius: 18px;
+    box-shadow: none;
+}
+
+.theme-pack-button:hover,
+.theme-pack-card.active .theme-pack-button {
+    border-color: var(--primary);
+    background:
+        radial-gradient(circle at 0% 0%, color-mix(in srgb, var(--primary) 18%, transparent), transparent 48%),
+        linear-gradient(135deg, color-mix(in srgb, var(--panel) 92%, transparent), color-mix(in srgb, var(--card-deep) 96%, transparent));
+    box-shadow: 0 16px 38px color-mix(in srgb, var(--primary) 20%, transparent);
+    transform: translateY(-2px);
+}
+
+.theme-pack-preview {
+    flex: 0 0 74px;
+    width: 74px;
+    height: 74px;
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    background:
+        linear-gradient(90deg, var(--preview-sidebar) 0 24%, transparent 24%),
+        radial-gradient(circle at 75% 22%, var(--preview-accent), transparent 24%),
+        radial-gradient(circle at 35% 72%, var(--preview-primary), transparent 28%),
+        linear-gradient(135deg, var(--preview-panel), var(--preview-bg));
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.18),
+        0 12px 26px rgba(0,0,0,0.28);
+}
+
+.theme-pack-copy {
+    display: grid;
+    gap: 5px;
+}
+
+.theme-pack-copy strong {
+    font-size: 16px;
+}
+
+.theme-pack-copy small {
+    color: var(--text-muted);
+    line-height: 1.35;
+}
+
+.custom-theme-box {
+    margin-top: 12px;
+    padding-top: 22px;
+    border-top: 1px solid var(--border-soft);
+}
+
+.compact-heading {
+    margin-bottom: 4px;
+}
+
+/* Keep legacy Alpha 6 theme controls usable if an old template is cached. */
+.theme-preset {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0;
+    padding: 14px;
+    border: 1px solid var(--border-soft);
+    border-radius: 16px;
+    background: color-mix(in srgb, var(--panel) 82%, transparent);
+    cursor: pointer;
+    transition: border-color var(--transition), background var(--transition), transform var(--transition), box-shadow var(--transition);
+}
+
+.theme-preset:hover,
+.theme-preset.active {
+    border-color: var(--primary);
+    background: color-mix(in srgb, var(--primary) 10%, var(--panel));
+    box-shadow: 0 12px 30px color-mix(in srgb, var(--primary) 16%, transparent);
+    transform: translateY(-1px);
+}
+
+/* Dark Reader / theme compatibility */
+.theme-protected,
+.theme-pack-preview,
+input[type="color"] {
+    forced-color-adjust: none;
+}
+
+.dark-reader-compat .theme-protected,
+.dark-reader-compat .theme-pack-preview,
+.dark-reader-compat input[type="color"] {
+    filter: none !important;
+    mix-blend-mode: normal !important;
+}
+
+.darkreader-panel {
+    border-color: color-mix(in srgb, var(--accent) 32%, var(--border));
+}
+
+.compat-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 10px;
+    border-radius: 999px;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    background: rgba(255,255,255,0.03);
+    font-size: 12px;
+}
+
+.compat-pill.detected {
+    color: var(--warning);
+    border-color: color-mix(in srgb, var(--warning) 50%, var(--border));
+    background: color-mix(in srgb, var(--warning) 12%, transparent);
+}
+
+.compat-warning {
+    margin: 14px 0;
+    padding: 14px;
+    border-radius: 14px;
+    color: var(--warning);
+    background: color-mix(in srgb, var(--warning) 12%, transparent);
+    border: 1px solid color-mix(in srgb, var(--warning) 35%, transparent);
+}
+
+.compat-form {
+    margin-top: 16px;
+}
+
+.toggle-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    background: rgba(255,255,255,0.03);
+    cursor: pointer;
+}
+
+.toggle-row input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--primary);
+}
+
+.toggle-row span {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.toggle-row small {
+    color: var(--text-muted);
+}
+
+/* Metadata provider settings */
+.provider-settings-form {
+    margin-top: 14px;
+}
+
+.provider-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 12px;
+    margin-bottom: 22px;
+}
+
+.provider-toggle {
+    background: rgba(15, 23, 42, 0.45);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px;
+}
+
+.provider-key-grid small {
+    font-size: 12px;
+    margin-left: 8px;
+}

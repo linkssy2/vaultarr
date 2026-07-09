@@ -1,0 +1,120 @@
+:root {
+    --background: #080b12;
+    --background-soft: #0d1220;
+    --sidebar: #111622;
+    --panel: #1b2230;
+    --panel-hover: #242c3d;
+    --card: #141a26;
+    --card-deep: #0d121c;
+    --border: #2c3548;
+    --border-soft: rgba(148, 163, 184, 0.16);
+    --primary: #3b82f6;
+    --primary-soft: rgba(59, 130, 246, 0.16);
+    --primary-glow: rgba(59, 130, 246, 0.45);
+    --success: #22c55e;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --text: #f3f4f6;
+    --text-muted: #9fb0ca;
+    --radius: 16px;
+    --transition: 0.18s ease;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    min-height: 100%;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    background:
+        radial-gradient(circle at 12% 0%, rgba(59, 130, 246, 0.12), transparent 28%),
+        radial-gradient(circle at 95% 10%, rgba(14, 165, 233, 0.08), transparent 34%),
+        linear-gradient(180deg, #080b12 0%, #0a0f1b 100%);
+    color: var(--text);
+    font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background-image: linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.014) 1px, transparent 1px);
+    background-size: 44px 44px;
+    mask-image: linear-gradient(180deg, rgba(0,0,0,0.62), transparent 72%);
+}
+
+a {
+    color: var(--primary);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: none;
+}
+
+h1 {
+    margin: 0 0 8px;
+    font-size: 38px;
+    letter-spacing: -0.045em;
+    line-height: 1.05;
+}
+
+h2 {
+    margin: 0;
+    font-size: 22px;
+    letter-spacing: -0.025em;
+}
+
+h3 {
+    letter-spacing: -0.02em;
+}
+
+p {
+    line-height: 1.55;
+}
+
+.muted {
+    color: var(--text-muted);
+    font-size: 14px;
+    word-break: break-word;
+}
+
+.eyebrow {
+    color: #93c5fd;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-size: 12px;
+    font-weight: 700;
+    margin: 0 0 10px;
+}
+
+.success-text {
+    color: var(--success);
+}
+
+.warning-text {
+    color: var(--warning);
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    margin-bottom: 22px;
+    color: var(--text-muted);
+}
+
+.back-link:hover {
+    color: white;
+}
+
+hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 24px 0;
+}

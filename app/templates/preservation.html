@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="preservation-control-shell alpha242-preservation">
+  <section class="preserve-hero alive-panel alpha242-hero">
+    <div>
+      <p class="eyebrow">Alpha 30 · Preservation Mission Control</p>
+      <h1>One mission first.</h1>
+      <p class="muted hero-copy">Preservation now focuses on the next useful repair instead of showing every signal at once.</p>
+      <div class="preserve-hero-actions">
+        <form action="/preservation/scan-assets" method="post"><button type="submit">Scan Archive Assets</button></form>
+        <form action="/preservation/refresh" method="post"><button class="secondary-action" type="submit">Refresh Scores</button></form>
+      </div>
+      {% if saved %}<p class="metadata-status-row"><span class="metadata-provider-pill ok"><strong>Saved</strong><span>{{ saved }}</span></span></p>{% endif %}
+    </div>
+
+    <div class="preserve-health-card alpha242-health">
+      <span>Preservation Health</span>
+      <strong>{{ stats.health_score }}%</strong>
+      <div class="preserve-meter" style="--score: {{ stats.health_score }}%;"><i></i></div>
+      <small>{{ stats.archive_ready_count }} archive ready · {{ stats.total_games }} total records</small>
+    </div>
+  </section>
+
+  <section class="alpha242-command-grid">
+    <article class="next-fix-card alive-panel alpha242-next-fix">
+      <div class="panel-heading compact-heading">
+        <div><p class="eyebrow">Next Best Fix</p><h2>Preservation Target</h2></div>
+        <a href="#attention-records">Queue →</a>
+      </div>
+
+      {% if stats.needs_attention %}
+        {% set target = stats.needs_attention[0] %}
+        <a class="next-fix-game alpha242-target" href="/games/{{ target.id }}">
+          {% if target.cover_path %}<img src="/covers/{{ target.cover_path }}?v={{ target.updated_at or target.last_scanned or target.id }}" alt="{{ target.title }}">{% else %}<div class="attention-placeholder">🎮</div>{% endif %}
+          <div>
+            <span class="preserve-badge-pill">{{ target.preservation_badge }}</span>
+            <h3>{{ target.title }}</h3>
+            <p class="muted">{{ target.category or 'Unsorted' }} · {{ target.preservation_score }}% preserved</p>
+            <div class="issue-tags preserve-issue-tags">
+              {% for issue in target.preservation_issues[:4] %}<span>{{ issue }}</span>{% endfor %}
+            </div>
+          </div>
+        </a>
+      {% else %}
+        <p class="success-text">Everything looks archive ready.</p>
+      {% endif %}
+    </article>
+
+    <article class="alive-panel alpha242-missions-card">
+      <div class="panel-heading compact-heading"><div><p class="eyebrow">Mission Types</p><h2>What needs work</h2></div></div>
+      <div class="alpha242-mission-list">
+        <a href="#manuals-panel"><span>▤</span><strong>{{ stats.missing_manual }}</strong><small>Manuals</small></a>
+        <a href="#media-panel"><span>▣</span><strong>{{ stats.missing_cover }}</strong><small>Media</small></a>
+        <a href="#metadata-panel"><span>◇</span><strong>{{ stats.missing_metadata }}</strong><small>Metadata</small></a>
+        <a href="#archive-panel"><span>⌁</span><strong>{{ stats.missing_archive }}</strong><small>Archive</small></a>
+      </div>
+    </article>
+  </section>
+
+  <section class="panel preservation-panel alive-panel attention-zone alpha242-queue" id="attention-records">
+    <div class="panel-heading alpha242-queue-head">
+      <div><p class="eyebrow">Focus Queue</p><h2>Prioritized Repairs</h2></div>
+      <span>{{ stats.needs_attention|length }} records</span>
+    </div>
+
+    <div class="preserve-filter-pills alpha242-filter-pills" aria-label="Preservation filters">
+      <a class="active" href="#attention-records">Everything</a>
+      <a href="#manuals-panel">Manuals</a>
+      <a href="#media-panel">Media</a>
+      <a href="#metadata-panel">Metadata</a>
+      <a href="#archive-panel">Archive</a>
+    </div>
+
+    {% if stats.needs_attention %}
+      <div class="alpha242-queue-list">
+        {% for game in stats.needs_attention[:12] %}
+          <a class="alpha242-queue-row" href="/games/{{ game.id }}">
+            {% if game.cover_path %}<img src="/covers/{{ game.cover_path }}?v={{ game.updated_at or game.last_scanned or game.id }}" alt="{{ game.title }}">{% else %}<div class="attention-placeholder">🎮</div>{% endif %}
+            <div class="alpha242-queue-main">
+              <div class="alpha242-row-top"><strong>{{ game.title }}</strong><span>{{ game.preservation_score }}%</span></div>
+              <small>{{ game.category or 'Unsorted' }} · {{ game.preservation_badge }}</small>
+              <div class="issue-tags preserve-issue-tags">
+                {% for issue in game.preservation_issues[:3] %}<span>{{ issue }}</span>{% endfor %}
+              </div>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="success-text">Everything looks archive ready.</p>
+    {% endif %}
+  </section>
+
+  <section class="alpha242-details-grid">
+    <details class="preserve-detail-card alive-panel alpha242-detail" id="manuals-panel">
+      <summary><span>Manuals</span><strong>{{ stats.missing_manual }} missing</strong></summary>
+      <p class="muted">Manuals can be local files, downloaded PDFs, or trusted manual URLs. ReadMes remain optional.</p>
+      <div class="manual-source-grid manual-provider-source-grid compact-manual-sources">
+        <a href="https://www.videogamemanual.com/" target="_blank" rel="noopener"><strong>VideoGameManual.com</strong><span>Indexed provider</span></a>
+        <a href="https://www.replacementdocs.com/" target="_blank" rel="noopener"><strong>replacementdocs</strong><span>Manual archive</span></a>
+        <a href="#attention-records"><strong>Manual Queue</strong><span>{{ stats.missing_manual }} games need a source</span></a>
+      </div>
+    </details>
+
+    <details class="preserve-detail-card alive-panel alpha242-detail" id="media-panel">
+      <summary><span>Media</span><strong>{{ stats.missing_cover }} missing covers</strong></summary>
+      <p class="muted">Use Build Best Record, Gallery, or Cover Manager to fill missing covers and cached media.</p>
+    </details>
+
+    <details class="preserve-detail-card alive-panel alpha242-detail" id="metadata-panel">
+      <summary><span>Metadata</span><strong>{{ stats.missing_metadata }} need identity</strong></summary>
+      <p class="muted">Use Provider Intelligence to merge metadata from LaunchBox, IGDB, RAWG, Steam, and Wikipedia.</p>
+    </details>
+
+    <details class="preserve-detail-card alive-panel alpha242-detail" id="archive-panel">
+      <summary><span>Archive Assets</span><strong>{{ stats.missing_archive }} need assets</strong></summary>
+      <div class="preserve-asset-strip detail-assets">
+        <div><span>Archives</span><strong>{{ stats.preservation_assets.archives }}</strong></div>
+        <div><span>Installers</span><strong>{{ stats.preservation_assets.installers }}</strong></div>
+        <div><span>Disc Images</span><strong>{{ stats.preservation_assets.disc_images }}</strong></div>
+        <div><span>Soundtracks</span><strong>{{ stats.preservation_assets.soundtracks }}</strong></div>
+        <div><span>Bonus</span><strong>{{ stats.preservation_assets.bonus }}</strong></div>
+      </div>
+    </details>
+  </section>
+
+  <section class="alpha242-intelligence-shell">
+    <div class="panel-heading compact-heading alpha242-intel-heading">
+      <div><p class="eyebrow">Preservation Intelligence</p><h2>Supporting Signals</h2></div>
+      <span>Collapsed by default</span>
+    </div>
+
+    <div class="preserve-detail-stack alpha242-intelligence-panels">
+      <details class="preserve-detail-card alive-panel alpha242-detail alpha242-intel-panel">
+        <summary><span>Smart Recommendations</span><strong>{{ intel.recommendations|length }} signals</strong></summary>
+        <div class="preserve-recommendation-stack alpha242-recs">
+          {% for item in intel.recommendations[:5] %}
+            <a class="preserve-recommendation-card rec-{{ item.tone }}" href="{{ item.url }}"><span></span><div><strong>{{ item.title }}</strong><small>{{ item.body }}</small></div></a>
+          {% else %}<p class="muted">Scan and enrich games to unlock smart recommendations.</p>{% endfor %}
+        </div>
+      </details>
+
+      <details class="preserve-detail-card alive-panel alpha242-detail alpha242-intel-panel">
+        <summary><span>Archive Gaps</span><strong>{{ intel.needs_attention|length }} low quality</strong></summary>
+        <div class="preserve-gap-list alpha242-gap-list">
+          {% for g in intel.needs_attention[:8] %}
+            <a href="/library?open={{ g.id }}"><strong>{{ g.title }}</strong><span>{{ g.intelligence_score }}%</span><i><b style="width: {{ g.intelligence_score }}%;"></b></i></a>
+          {% else %}<p class="muted">No major archive gaps found.</p>{% endfor %}
+        </div>
+      </details>
+
+      <details class="preserve-detail-card alive-panel alpha242-detail alpha242-intel-panel">
+        <summary><span>Relationship Signals</span><strong>{{ intel.clusters|length }} clusters</strong></summary>
+        <div class="relationship-grid preserve-relationship-grid">
+          {% for c in intel.clusters[:8] %}
+            <a class="relationship-chip" href="{{ c.url }}"><small>{{ c.type }}</small><strong>{{ c.name }}</strong><span>{{ c.count }} games</span></a>
+          {% else %}<p class="muted">Apply metadata to build relationship clusters.</p>{% endfor %}
+        </div>
+      </details>
+
+      <details class="preserve-detail-card alive-panel alpha242-detail alpha242-intel-panel">
+        <summary><span>Series Signals</span><strong>{{ intel.franchise_groups|length }} shelves</strong></summary>
+        <div class="preserve-franchise-list">
+          {% for f in intel.franchise_groups[:8] %}
+            <a class="franchise-line" href="{{ f.url }}"><strong>{{ f.name }}</strong><span>{{ f.count }} games</span><small>{{ f.years }}</small></a>
+          {% else %}<p class="muted">No multi-game series signals yet.</p>{% endfor %}
+        </div>
+      </details>
+
+      <details class="preserve-detail-card alive-panel alpha242-detail alpha242-intel-panel">
+        <summary><span>Duplicates</span><strong>{{ stats.duplicate_titles|length + stats.duplicate_executables|length }} signals</strong></summary>
+        <div class="preserve-dupe-grid">
+          <div><h3>Possible Duplicate Titles</h3>{% for row in stats.duplicate_titles[:8] %}<div class="list-row"><span>{{ row.title }}</span><small>{{ row.count }} copies</small></div>{% else %}<p class="muted">No duplicate titles detected.</p>{% endfor %}</div>
+          <div><h3>Duplicate EXE Sets</h3>{% for row in stats.duplicate_executables[:8] %}<div class="list-row"><span>{{ row.executables }}</span><small>{{ row.count }} games</small></div>{% else %}<p class="muted">No duplicate executable sets detected.</p>{% endfor %}</div>
+        </div>
+      </details>
+    </div>
+  </section>
+</section>
+{% endblock %}

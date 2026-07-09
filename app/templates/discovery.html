@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="discovery-space">
+  <section class="discovery-hero alive-panel">
+    <div>
+      <p class="eyebrow">Vaultarr Alpha 18</p>
+      <h1>Discovery Engine</h1>
+      <p class="muted hero-copy">Rediscover what you own through timelines, creators, publishers, genres, and smart shelves built from your metadata.</p>
+      <div class="hero-actions slim-actions">
+        <a class="button-link" href="/library">Browse Library →</a>
+        <a class="button-link secondary" href="/metadata-queue">Improve Discovery Data</a>
+      </div>
+    </div>
+    <div class="discovery-core" style="--score: {{ discovery_score }}%;">
+      <span>{{ discovery_score }}%</span>
+      <small>Discovery Depth</small>
+      <i></i>
+    </div>
+  </section>
+
+  <section class="discovery-panel alive-panel timeline-panel">
+    <div class="panel-heading flush-heading">
+      <div>
+        <p class="eyebrow">Time Capsule</p>
+        <h2>Release Timeline</h2>
+      </div>
+    </div>
+
+    {% if timeline %}
+      <div class="timeline-strip">
+        {% for row in timeline %}
+          <a href="/library?q={{ row.year }}" style="--height: {{ 18 + (row.count * 14) if row.count < 7 else 110 }}px;">
+            <i></i>
+            <strong>{{ row.year }}</strong>
+            <span>{{ row.count }}</span>
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="muted">Add release years through metadata to unlock the timeline.</p>
+    {% endif %}
+  </section>
+
+  <section class="discovery-panel alive-panel cluster-panel">
+    <div class="panel-heading flush-heading">
+      <div><p class="eyebrow">Collection Signals</p><h2>Creator Clusters</h2></div>
+    </div>
+    <div class="cluster-grid">
+      <div>
+        <h3>Developers</h3>
+        {% for row in developer_clusters[:5] %}<a href="/library?q={{ row.name }}"><span>{{ row.name }}</span><strong>{{ row.count }}</strong></a>{% else %}<p class="muted">No developer metadata yet.</p>{% endfor %}
+      </div>
+      <div>
+        <h3>Publishers</h3>
+        {% for row in publisher_clusters[:5] %}<a href="/library?q={{ row.name }}"><span>{{ row.name }}</span><strong>{{ row.count }}</strong></a>{% else %}<p class="muted">No publisher metadata yet.</p>{% endfor %}
+      </div>
+      <div>
+        <h3>Genres</h3>
+        {% for row in genre_clusters[:5] %}<a href="/library?q={{ row.name }}"><span>{{ row.name }}</span><strong>{{ row.count }}</strong></a>{% else %}<p class="muted">No genre metadata yet.</p>{% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <section class="discovery-panel alive-panel smart-shelf wide-shelf">
+    <div class="panel-heading flush-heading">
+      <div><p class="eyebrow">Rediscover</p><h2>Quiet Corners</h2></div>
+      <a href="/library">Library →</a>
+    </div>
+    <div class="discovery-game-row">
+      {% for game in rediscover %}
+        <a class="discovery-game-card" href="/games/{{ game.id }}">
+          <div>{% if game.cover_path %}<img src="/covers/{{ game.cover_path }}?v={{ game.updated_at or game.last_scanned or game.id }}" alt="{{ game.title }}">{% else %}<span>🎮</span>{% endif %}</div>
+          <strong>{{ game.title }}</strong>
+          <small>{{ game.release_year or game.genre or game.category or 'Rediscover' }}</small>
+        </a>
+      {% else %}
+        <p class="muted">Scan games to build rediscovery shelves.</p>
+      {% endfor %}
+    </div>
+  </section>
+
+  {% if top_genre and genre_games %}
+  <section class="discovery-panel alive-panel smart-shelf">
+    <div class="panel-heading flush-heading">
+      <div><p class="eyebrow">Because You Own</p><h2>{{ top_genre }}</h2></div>
+      <a href="/library?q={{ top_genre }}">View →</a>
+    </div>
+    <div class="mini-discovery-list">
+      {% for game in genre_games[:5] %}<a href="/games/{{ game.id }}"><span>{% if game.cover_path %}<img src="/covers/{{ game.cover_path }}?v={{ game.updated_at or game.last_scanned or game.id }}" alt="{{ game.title }}">{% else %}🎮{% endif %}</span><strong>{{ game.title }}</strong></a>{% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {% if top_publisher and publisher_games %}
+  <section class="discovery-panel alive-panel smart-shelf">
+    <div class="panel-heading flush-heading">
+      <div><p class="eyebrow">Publisher Shelf</p><h2>{{ top_publisher }}</h2></div>
+      <a href="/library?q={{ top_publisher }}">View →</a>
+    </div>
+    <div class="mini-discovery-list">
+      {% for game in publisher_games[:5] %}<a href="/games/{{ game.id }}"><span>{% if game.cover_path %}<img src="/covers/{{ game.cover_path }}?v={{ game.updated_at or game.last_scanned or game.id }}" alt="{{ game.title }}">{% else %}🎮{% endif %}</span><strong>{{ game.title }}</strong></a>{% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  <section class="discovery-panel alive-panel smart-shelf">
+    <div class="panel-heading flush-heading">
+      <div><p class="eyebrow">Discovery Quality</p><h2>Needs Better Data</h2></div>
+      <a href="/metadata-queue">Queue →</a>
+    </div>
+    <div class="mini-discovery-list">
+      {% for game in needs_identity[:5] %}<a href="/games/{{ game.id }}"><span>{% if game.cover_path %}<img src="/covers/{{ game.cover_path }}?v={{ game.updated_at or game.last_scanned or game.id }}" alt="{{ game.title }}">{% else %}🎮{% endif %}</span><strong>{{ game.title }}</strong></a>{% else %}<p class="muted">Metadata looks clean.</p>{% endfor %}
+    </div>
+  </section>
+
+  <section class="discovery-panel alive-panel smart-shelf">
+    <div class="panel-heading flush-heading">
+      <div><p class="eyebrow">Vault Weight</p><h2>Largest Installs</h2></div>
+      <a href="/library?sort=size">View →</a>
+    </div>
+    <div class="mini-discovery-list">
+      {% for game in biggest[:5] %}<a href="/games/{{ game.id }}"><span>{% if game.cover_path %}<img src="/covers/{{ game.cover_path }}?v={{ game.updated_at or game.last_scanned or game.id }}" alt="{{ game.title }}">{% else %}🎮{% endif %}</span><strong>{{ game.title }}</strong></a>{% else %}<p class="muted">No games scanned yet.</p>{% endfor %}
+    </div>
+  </section>
+</div>
+{% endblock %}

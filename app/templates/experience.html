@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="experience-space">
+  <section class="experience-hero alive-panel">
+    <div class="experience-hero-copy">
+      <p class="eyebrow">Vaultarr Alpha 26</p>
+      <h1>Collection Experience</h1>
+      <p class="muted hero-copy">Celebrate the archive you are building with badges, collection milestones, preservation achievements, and subtle VaultOS audio feedback.</p>
+      <div class="hero-actions slim-actions">
+        <a class="button-link" href="/preservation">Preserve More →</a>
+        <a class="button-link secondary" href="/discovery">Rediscover</a>
+      </div>
+    </div>
+
+    <div class="experience-score-core" style="--score: {{ vault_score }}%;">
+      <span>{{ vault_score }}%</span>
+      <small>Vault Legacy</small>
+      <i></i>
+    </div>
+  </section>
+
+  <section class="experience-panel alive-panel badge-summary-panel">
+    <div class="panel-heading flush-heading">
+      <div><p class="eyebrow">Badges</p><h2>{{ earned_badges|length }} / {{ badges|length }} Earned</h2></div>
+      <button class="secondary-button small" id="badgeSoundTest" type="button">Test Sound</button>
+    </div>
+    <div class="badge-summary-grid">
+      <div><span>Games</span><strong>{{ total_games }}</strong></div>
+      <div><span>Preserved</span><strong>{{ complete_games }}</strong></div>
+      <div><span>Manuals</span><strong>{{ manual_games }}</strong></div>
+      <div><span>Media</span><strong>{{ cached_media }}</strong></div>
+    </div>
+  </section>
+
+  <section class="experience-panel alive-panel wide-panel">
+    <div class="panel-heading flush-heading">
+      <div><p class="eyebrow">Next Milestones</p><h2>Closest Badges</h2></div>
+    </div>
+    <div class="badge-row">
+      {% for badge in next_badges %}
+        <a class="badge-card badge-{{ badge.tier }}" href="{{ badge.url }}" style="--progress: {{ badge.progress }}%;">
+          <span class="badge-icon">{{ badge.icon }}</span>
+          <strong>{{ badge.title }}</strong>
+          <small>{{ badge.description }}</small>
+          <div class="badge-progress"><i></i></div>
+          <em>{{ badge.value }} / {{ badge.target }}</em>
+        </a>
+      {% else %}
+        <p class="muted">All current badges earned. New badge sets will unlock in later builds.</p>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="experience-panel alive-panel wide-panel">
+    <div class="panel-heading flush-heading">
+      <div><p class="eyebrow">Vaultarr Badges</p><h2>Collection Achievements</h2></div>
+    </div>
+    <div class="achievement-grid">
+      {% for badge in badges %}
+        <a class="achievement-card {% if badge.earned %}earned{% endif %} badge-{{ badge.tier }}" href="{{ badge.url }}" style="--progress: {{ badge.progress }}%;">
+          <span class="badge-icon">{{ badge.icon }}</span>
+          <div>
+            <strong>{{ badge.title }}</strong>
+            <small>{{ badge.description }}</small>
+          </div>
+          <em>{% if badge.earned %}Unlocked{% else %}{{ badge.progress }}%{% endif %}</em>
+        </a>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="experience-panel alive-panel">
+    <div class="panel-heading flush-heading">
+      <div><p class="eyebrow">Collections</p><h2>Collection Badges</h2></div>
+      <a href="/collections">Collections →</a>
+    </div>
+    <div class="collection-badge-list">
+      {% for row in top_collections %}
+        <a href="/library?category={{ row.name }}" class="collection-badge-line {% if row.earned %}earned{% endif %}" style="--progress: {{ row.progress }}%;">
+          <span>{{ row.name[:1] }}</span>
+          <div><strong>{{ row.badge_title }}</strong><small>{{ row.complete_count or 0 }} / {{ row.count }} preserved</small></div>
+          <em>{{ row.progress }}%</em>
+        </a>
+      {% else %}
+        <p class="muted">Collections appear after scanning games.</p>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="experience-panel alive-panel">
+    <div class="panel-heading flush-heading">
+      <div><p class="eyebrow">Franchise Signals</p><h2>Publisher Sets</h2></div>
+    </div>
+    <div class="collection-badge-list compact-lines">
+      {% for row in franchise_signals %}
+        <a href="/library?q={{ row.name }}" class="collection-badge-line" style="--progress: {{ row.progress }}%;">
+          <span>◆</span>
+          <div><strong>{{ row.name }}</strong><small>{{ row.count }} games · {{ row.progress }}% preserved</small></div>
+          <em>{{ row.count }}</em>
+        </a>
+      {% else %}
+        <p class="muted">Provider metadata will unlock franchise-style signals.</p>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="experience-panel alive-panel timeline-badges-panel">
+    <div class="panel-heading flush-heading">
+      <div><p class="eyebrow">Timeline Badges</p><h2>Decade Progress</h2></div>
+    </div>
+    <div class="decade-badge-grid">
+      {% for row in timeline_badges %}
+        <a href="/library?q={{ row.decade[:3] }}" style="--progress: {{ row.progress }}%;">
+          <strong>{{ row.decade }}</strong>
+          <span><i></i></span>
+          <small>{{ row.complete_count or 0 }} / {{ row.count }}</small>
+        </a>
+      {% else %}
+        <p class="muted">Release years unlock decade badges.</p>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="experience-panel alive-panel audio-panel">
+    <div class="panel-heading flush-heading">
+      <div><p class="eyebrow">VaultOS Audio Queue</p><h2>Celebration Feedback</h2></div>
+    </div>
+    <div class="audio-queue-preview">
+      <button class="audio-chip" data-sound="badge" type="button"><span>★</span> Badge Unlock</button>
+      <button class="audio-chip" data-sound="manual" type="button"><span>📖</span> Manual Archived</button>
+      <button class="audio-chip" data-sound="preserve" type="button"><span>🛡</span> Preservation Complete</button>
+      <button class="audio-chip" data-sound="sync" type="button"><span>◇</span> Provider Synced</button>
+    </div>
+    <p class="muted small-note">Audio is generated locally with subtle WebAudio tones. No files are required, and sounds stay calm by default.</p>
+  </section>
+</div>
+{% endblock %}

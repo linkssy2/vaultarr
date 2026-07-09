@@ -1,0 +1,11 @@
+services:
+  vaultarr:
+    image: vaultarr:latest
+    container_name: vaultarr
+    ports:
+      - "5058:5058"
+    volumes:
+      - ./config:/config
+      - /mnt/games:/games
+      - /mnt/vaultarr/backups:/backups
+    restart: unless-stopped

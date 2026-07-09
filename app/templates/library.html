@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="library-shell" id="libraryShell">
+  <div class="page-header">
+    <div>
+      <h1>Library</h1>
+      <p class="muted">Your complete game collection.</p>
+    </div>
+
+    <div class="library-tools">
+      <div class="search-wrap">
+        <input id="librarySearch" class="search-input" type="text" placeholder="Search games..." value="{{ q or '' }}" autocomplete="off">
+        <button id="clearLibrarySearch" class="clear-search" type="button" aria-label="Clear search">×</button>
+      </div>
+      <select id="librarySort" class="select-input">
+        <option value="title" {% if sort == 'title' %}selected{% endif %}>Sort by: Title A-Z</option>
+        <option value="size" {% if sort == 'size' %}selected{% endif %}>Sort by: Size</option>
+        <option value="scanned" {% if sort == 'scanned' %}selected{% endif %}>Sort by: Last Scanned</option>
+        <option value="added" {% if sort == 'added' %}selected{% endif %}>Sort by: Recently Added</option>
+      </select>
+      <a class="button-link compact" href="/games/add">+ Add Game</a>
+    </div>
+  </div>
+
+  <div class="category-row">
+    <a class="category-chip {% if not category or category == 'All Games' %}active{% endif %}" href="/library">All Games <span>{{ total_count or games|length }}</span></a>
+    <a class="category-chip {% if category == 'Abandonware' %}active{% endif %}" href="/library?category=Abandonware">Abandonware <span>{{ category_counts.get('Abandonware', 0) if category_counts else 0 }}</span></a>
+    <a class="category-chip {% if category == 'Fanmade' %}active{% endif %}" href="/library?category=Fanmade">Fanmade <span>{{ category_counts.get('Fanmade', 0) if category_counts else 0 }}</span></a>
+    <a class="category-chip {% if category == 'PC Port' %}active{% endif %}" href="/library?category=PC Port">PC Port <span>{{ category_counts.get('PC Port', 0) if category_counts else 0 }}</span></a>
+    <a class="category-chip {% if category == 'Steam' %}active{% endif %}" href="/library?category=Steam">Steam <span>{{ category_counts.get('Steam', 0) if category_counts else 0 }}</span></a>
+    <a class="category-chip {% if category == 'Manual' %}active{% endif %}" href="/library?category=Manual">Manual <span>{{ category_counts.get('Manual', 0) if category_counts else 0 }}</span></a>
+  </div>
+
+  <div class="library-search-status" id="librarySearchStatus">
+    <span id="librarySearchCount">{{ games|length }} game{% if games|length != 1 %}s{% endif %}</span>
+    <span class="muted" id="librarySearchHint">Search title, developer, publisher, genre, tags, category, path, notes, and descriptions.</span>
+  </div>
+
+  {% if games %}
+    <section class="vault-shelf single-grid-shelf">
+      <div class="shelf-header">
+        <div>
+          <h2>{% if category and category != 'All Games' %}{{ category }}{% else %}All Games{% endif %}</h2>
+          <p class="muted">Click a game box to pull it from the shelf.</p>
+        </div>
+      </div>
+
+      <div class="game-grid poster-grid focus-grid" id="libraryGrid">
+        {% for game in games %}
+          {% set source = game.source_type or ('Manual' if game.manual_entry else 'Scanned') %}
+          {% set search_blob = (game.title ~ ' ' ~ game.path ~ ' ' ~ game.developer ~ ' ' ~ game.publisher ~ ' ' ~ game.genre ~ ' ' ~ game.description ~ ' ' ~ game.tags ~ ' ' ~ game.category ~ ' ' ~ game.notes ~ ' ' ~ game.executables ~ ' ' ~ game.platform ~ ' ' ~ game.release_year ~ ' ' ~ source)|lower %}
+          <button class="game-card-link focus-card-trigger" type="button" data-game-id="{{ game.id }}" data-search="{{ search_blob|e }}" data-title="{{ game.title|lower|e }}" data-size="{{ game.size_bytes or 0 }}" data-scanned="{{ game.last_scanned or '' }}" data-added="{{ game.added_at or '' }}">
+            <article class="poster-card source-{{ source|lower|replace(' ', '-') }}">
+              <div class="poster-art">
+                <div class="poster-gloss"></div>
+
+                {% if game.cover_path %}
+                  <img class="poster-cover" src="/covers/{{ game.cover_path }}?v={{ game.updated_at or game.last_scanned or game.id }}" alt="{{ game.title }}">
+                {% else %}
+                  <div class="poster-placeholder">🎮</div>
+                {% endif %}
+              </div>
+
+              <div class="poster-info title-only">
+                <h3>{{ game.title }}</h3>
+              </div>
+            </article>
+          </button>
+        {% endfor %}
+      </div>
+
+      <div class="empty-state hidden" id="libraryNoResults">
+        <h2>No games match that search.</h2>
+        <p>Try searching by title, developer, publisher, genre, category, tag, notes, path, or metadata description.</p>
+        <a class="button-link" href="/games/add">Add Game Manually</a>
+      </div>
+    </section>
+  {% else %}
+    <div class="empty-state">
+      <h2>No games found.</h2>
+      <p>Add a library in Settings, scan it, or add a game manually.</p>
+      <a class="button-link" href="/settings">Go to Settings</a>
+      <a class="button-link secondary" href="/games/add">Add Game Manually</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

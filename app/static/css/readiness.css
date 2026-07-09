@@ -1,0 +1,265 @@
+.readiness-page { display: grid; gap: 18px; max-width: 1480px; }
+.readiness-hero { display: grid; grid-template-columns: minmax(0, 1fr) 240px; gap: 26px; align-items: center; padding: 34px; border-radius: 30px; }
+.readiness-hero h1 { font-size: clamp(44px, 5vw, 72px); letter-spacing: -0.075em; margin: 0 0 12px; }
+.readiness-core, .health-score-orb { height: 210px; border-radius: 30px; display: grid; place-items: center; position: relative; overflow: hidden; background: radial-gradient(circle at 50% 40%, color-mix(in srgb, var(--accent) 26%, transparent), transparent 62%), rgba(7,12,22,.72); border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent); box-shadow: 0 0 54px color-mix(in srgb, var(--accent) 18%, transparent); }
+.readiness-core span, .health-score-orb span { font-size: 64px; font-weight: 900; color: var(--text); text-shadow: 0 0 34px var(--accent); }
+.readiness-core i { position:absolute; inset: 36px; border-radius: 50%; border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent); animation: readinessOrbit 14s linear infinite; }
+.readiness-core i::after { content:""; position:absolute; top: -4px; left:50%; width:8px; height:8px; border-radius:50%; background: var(--accent); box-shadow:0 0 18px var(--accent); }
+.health-score-orb { align-content: center; gap: 4px; }
+.health-score-orb small { color: var(--text-muted); text-transform: uppercase; letter-spacing:.14em; }
+.readiness-grid, .health-check-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+.health-check-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.readiness-card, .health-check-card { padding: 24px; border-radius: 24px; }
+.readiness-step { display:inline-grid; place-items:center; width:42px; height:42px; border-radius:50%; background: color-mix(in srgb, var(--accent) 14%, transparent); color: var(--accent); font-weight:900; margin-bottom:16px; }
+.readiness-row { display:flex; align-items:center; justify-content:space-between; gap:18px; }
+.readiness-two-column { display:grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap:18px; }
+.readiness-list { display:grid; gap:10px; }
+.readiness-list p { margin:0; padding:12px 14px; border-radius:16px; background:rgba(7,12,22,.55); border:1px solid rgba(148,163,184,.12); }
+.readiness-list.compact p { display:grid; grid-template-columns: 110px 1fr; gap:12px; }
+.readiness-list span { color:var(--text-muted); overflow:hidden; text-overflow:ellipsis; }
+.health-check-card.good { box-shadow: inset 0 0 0 1px rgba(52,211,153,.10); }
+.health-check-card.warn { box-shadow: inset 0 0 0 1px rgba(251,191,36,.18); }
+@keyframes readinessOrbit { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+@media (max-width: 1000px) { .readiness-hero, .readiness-grid, .health-check-grid, .readiness-two-column { grid-template-columns: 1fr; } }
+
+/* ============================================================
+   Vaultarr 1.0.1 — Sidebar Stability Fix
+   Keeps Search Vault, Current Build, and footer from overlapping.
+   ============================================================ */
+.sidebar.vaultos-sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.sidebar.vaultos-sidebar .brand {
+    flex: 0 0 auto;
+    margin-bottom: 24px;
+}
+
+.sidebar.vaultos-sidebar .vault-nav {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    padding-right: 4px;
+    margin-right: -4px;
+    padding-bottom: 14px;
+}
+
+.sidebar.vaultos-sidebar .sidebar-search-shell {
+    flex: 0 0 auto;
+    margin-top: 18px;
+    margin-bottom: 18px;
+    min-height: 48px;
+    box-sizing: border-box;
+}
+
+.sidebar.vaultos-sidebar .sidebar-footer {
+    position: static;
+    left: auto;
+    right: auto;
+    bottom: auto;
+    flex: 0 0 auto;
+    display: grid;
+    gap: 12px;
+}
+
+.sidebar.vaultos-sidebar .vault-build-card {
+    min-height: 78px;
+    box-sizing: border-box;
+    padding-right: 34px;
+}
+
+.sidebar.vaultos-sidebar .vault-build-card strong {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 4px;
+    line-height: 1.2;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+}
+
+.sidebar.vaultos-sidebar .vault-build-card strong::after {
+    margin-left: 0;
+    white-space: nowrap;
+}
+
+.sidebar.vaultos-sidebar .sidebar-tagline {
+    margin: 0 4px;
+}
+
+@media (max-height: 780px) {
+    .sidebar.vaultos-sidebar {
+        padding-top: 20px;
+        padding-bottom: 18px;
+    }
+
+    .sidebar.vaultos-sidebar .brand {
+        margin-bottom: 16px;
+    }
+
+    .nav-section-label {
+        margin-top: 10px;
+    }
+
+    .sidebar.vaultos-sidebar .vault-nav-cohesive a {
+        min-height: 38px;
+        padding-block: 9px;
+    }
+
+    .sidebar.vaultos-sidebar .sidebar-search-shell {
+        margin-top: 12px;
+        margin-bottom: 12px;
+    }
+}
+
+/* Vaultarr 1.0.3 — Sidebar Simplification */
+.sidebar.vaultos-sidebar .vault-nav {
+    flex: 0 0 auto;
+    overflow: visible;
+    padding-right: 0;
+    margin-right: 0;
+    padding-bottom: 0;
+}
+
+.sidebar.vaultos-sidebar .vault-nav-cohesive a {
+    min-height: 38px;
+    padding-block: 9px;
+    margin-bottom: 6px;
+}
+
+.sidebar.vaultos-sidebar .nav-section-label {
+    margin-top: 10px;
+    margin-bottom: 6px;
+}
+
+.sidebar.vaultos-sidebar .brand {
+    margin-bottom: 18px;
+}
+
+.sidebar.vaultos-sidebar .sidebar-search-shell {
+    margin-top: auto;
+    margin-bottom: 14px;
+}
+
+.sidebar.vaultos-sidebar .sidebar-tagline {
+    display: none;
+}
+
+.sidebar.vaultos-sidebar .vault-build-card {
+    min-height: 66px;
+}
+
+@media (max-height: 760px) {
+    .sidebar.vaultos-sidebar {
+        padding: 18px 18px;
+    }
+    .sidebar.vaultos-sidebar .brand {
+        font-size: 24px;
+        margin-bottom: 12px;
+    }
+    .sidebar.vaultos-sidebar .brand-mark {
+        width: 32px;
+        height: 32px;
+        border-radius: 10px;
+    }
+    .sidebar.vaultos-sidebar .vault-nav-cohesive a {
+        min-height: 34px;
+        padding-block: 7px;
+        margin-bottom: 4px;
+    }
+    .sidebar.vaultos-sidebar .nav-section-label {
+        margin-top: 7px;
+        margin-bottom: 4px;
+    }
+    .sidebar.vaultos-sidebar .sidebar-search-shell {
+        min-height: 42px;
+        margin-bottom: 10px;
+    }
+    .sidebar.vaultos-sidebar .vault-build-card {
+        min-height: 58px;
+        padding-block: 10px;
+    }
+}
+
+/* Vaultarr 1.0.4 — Sidebar spacing polish */
+.sidebar.vaultos-sidebar {
+    gap: 0;
+}
+
+.sidebar.vaultos-sidebar .brand {
+    margin-bottom: 14px;
+}
+
+.sidebar.vaultos-sidebar .vault-nav {
+    flex: 0 0 auto;
+    padding-top: 0;
+}
+
+.sidebar.vaultos-sidebar .vault-nav-cohesive .nav-section-label {
+    margin-top: 8px;
+    margin-bottom: 4px;
+}
+
+.sidebar.vaultos-sidebar .vault-nav-cohesive .nav-section-label:first-child {
+    margin-top: 0;
+}
+
+.sidebar.vaultos-sidebar .vault-nav-cohesive a {
+    min-height: 36px;
+    padding-block: 8px;
+    margin-bottom: 4px;
+}
+
+.sidebar.vaultos-sidebar .sidebar-search-shell {
+    margin-top: 22px;
+    margin-bottom: 12px;
+}
+
+.sidebar.vaultos-sidebar .sidebar-footer {
+    gap: 0;
+}
+
+.sidebar.vaultos-sidebar .vault-build-card {
+    min-height: 62px;
+}
+
+@media (min-height: 900px) {
+    .sidebar.vaultos-sidebar .sidebar-search-shell {
+        margin-top: 28px;
+    }
+}
+
+/* Vaultarr 1.0.5 — Sidebar future-space restore
+   Reverts the 1.0.4 tightened footer/search spacing so future sections can be added
+   without the sidebar feeling cramped. */
+.sidebar.vaultos-sidebar .brand {
+    margin-bottom: 18px;
+}
+
+.sidebar.vaultos-sidebar .vault-nav-cohesive a {
+    min-height: 38px;
+    padding-block: 9px;
+    margin-bottom: 6px;
+}
+
+.sidebar.vaultos-sidebar .vault-nav-cohesive .nav-section-label {
+    margin-top: 10px;
+    margin-bottom: 6px;
+}
+
+.sidebar.vaultos-sidebar .sidebar-search-shell {
+    margin-top: auto;
+    margin-bottom: 14px;
+}
+
+.sidebar.vaultos-sidebar .sidebar-footer {
+    gap: 12px;
+}
+
+.sidebar.vaultos-sidebar .vault-build-card {
+    min-height: 66px;
+}

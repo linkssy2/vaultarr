@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="readiness-page health-page">
+  <section class="readiness-hero alive-panel">
+    <div>
+      <p class="eyebrow">Vaultarr 1.0</p>
+      <h1>System Health</h1>
+      <p class="muted hero-copy">One calm place to check whether your database, caches, providers, and library roots are ready.</p>
+      <div class="hero-actions slim-actions">
+        <form action="/health/optimize" method="post"><button class="button-link" type="submit">Optimize Database</button></form>
+        <a class="button-link secondary" href="/settings">Open Studio</a>
+      </div>
+    </div>
+    <div class="health-score-orb"><span>{{ health.score }}%</span><small>Readiness</small></div>
+  </section>
+
+  <section class="health-check-grid">
+    {% for check in health.checks %}
+      <article class="health-check-card alive-panel {{ check.tone }}">
+        <div><p class="eyebrow">{{ check.name }}</p><h2>{{ check.status }}</h2><p class="muted">{{ check.detail }}</p></div>
+      </article>
+    {% endfor %}
+  </section>
+
+  <section class="readiness-two-column">
+    <article class="readiness-card alive-panel">
+      <p class="eyebrow">Recommended Actions</p>
+      <h2>Next Maintenance</h2>
+      {% if health.issues %}
+        <div class="readiness-list">
+          {% for issue in health.issues %}<p>{{ issue }}</p>{% endfor %}
+        </div>
+      {% else %}
+        <p class="muted">No major readiness issues detected.</p>
+      {% endif %}
+    </article>
+    <article class="readiness-card alive-panel">
+      <p class="eyebrow">Storage</p>
+      <h2>Vault Paths</h2>
+      <div class="readiness-list compact">
+        <p><strong>App Data</strong><span>{{ health.app_dir }}</span></p>
+        <p><strong>Database</strong><span>{{ health.db_path }}</span></p>
+        <p><strong>Media Cache</strong><span>{{ health.media_cache.size_mb }} MB</span></p>
+      </div>
+    </article>
+  </section>
+</section>
+{% endblock %}

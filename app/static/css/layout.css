@@ -1,0 +1,60 @@
+.content {
+    margin-left: 248px;
+    padding: 36px;
+    position: relative;
+    z-index: 1;
+}
+
+.cards {
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+    margin-top: 24px;
+}
+
+.card {
+    background:
+        linear-gradient(180deg, rgba(31, 40, 56, 0.96), rgba(17, 24, 39, 0.98));
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius);
+    padding: 20px;
+    min-width: 180px;
+    transition: background var(--transition), border-color var(--transition), transform var(--transition);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.20), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.card:hover {
+    background: var(--panel-hover);
+    border-color: rgba(96, 165, 250, 0.20);
+}
+
+.card.wide {
+    width: 100%;
+    margin-bottom: 14px;
+}
+
+.panel {
+    background:
+        linear-gradient(180deg, rgba(27, 34, 48, 0.94), rgba(16, 23, 36, 0.96));
+    border: 1px solid var(--border-soft);
+    border-radius: 20px;
+    padding: 22px;
+    margin-top: 24px;
+    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.20), inset 0 1px 0 rgba(255,255,255,0.04);
+}
+
+.panel-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 18px;
+}
+
+.simple-header {
+    margin-bottom: 20px;
+}
+
+.path-line {
+    max-width: 100%;
+}

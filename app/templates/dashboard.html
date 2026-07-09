@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="home-launchpad">
+  <section class="home-hero alive-panel vault-pulse-panel">
+    <div class="home-hero-copy">
+      <p class="eyebrow">{{ 'Vaultarr 1.0.3' if stats.game_count else 'Vaultarr 1.0.3 Setup' }}</p>
+      <p class="greeting">{{ stats.hero.accent }}</p>
+      <h1>{{ stats.hero.title }}</h1>
+      <p class="muted hero-copy">{{ stats.hero.message }}</p>
+
+      <div class="hero-actions slim-actions">
+        {% if stats.game_count %}<a class="button-link" href="/library">Open Library →</a>
+        <a class="button-link secondary" href="/preservation">Continue Improving</a>{% else %}<a class="button-link" href="/onboarding">Start Setup →</a>
+        <a class="button-link secondary" href="/settings">Open Studio</a>{% endif %}
+      </div>
+    </div>
+
+    <div class="hero-vault-window home-vault-window orbital-vault vault-cosmos" aria-hidden="true">
+      <div class="cosmos-nebula"></div>
+      <div class="cosmos-comet"></div>
+      <div class="orbital-stars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="orbital-field">
+        <div class="orbit orbit-one"><span class="node node-metadata">◇</span></div>
+        <div class="orbit orbit-two"><span class="node node-gallery">▣</span></div>
+        <div class="orbit orbit-three"><span class="node node-manuals">▤</span></div>
+        <div class="orbit orbit-four"><span class="node node-preservation">⌁</span></div>
+        <div class="orbit orbit-five"><span class="node node-discovery">✦</span></div>
+        <div class="vault-door orbital-core"><span>V</span></div>
+      </div>
+      <div class="orbital-status">
+        <span>Identity resolution in progress</span>
+        <strong>{{ stats.metadata_score }}%</strong>
+        <small>Analyzing metadata matches...</small>
+        <div class="orbital-progress"><i style="width: {{ stats.metadata_score }}%;"></i></div>
+        <div class="orbital-steps">
+          <em class="active"></em><em></em><em></em><em></em><em></em>
+        </div>
+        <small>{{ stats.missing_metadata }} waiting · {{ stats.game_count }} cataloged</small>
+      </div>
+    </div>
+  </section>
+
+  <section class="home-card integrity-command alive-panel">
+    <div class="home-card-head">
+      <div>
+        <p class="eyebrow">Integrity</p>
+        <h2>{{ stats.health_score }}%</h2>
+      </div>
+      <span class="integrity-status">{% if stats.health_score >= 85 %}Excellent{% elif stats.health_score >= 70 %}Good{% elif stats.health_score >= 50 %}Needs Work{% else %}Critical{% endif %}</span>
+    </div>
+
+    <div class="integrity-bars compact-integrity-bars">
+      <a href="/metadata-queue"><span>Metadata</span><i><b style="width: {{ stats.metadata_score }}%;"></b></i><strong>{{ stats.metadata_score }}%</strong></a>
+      <a href="/preservation"><span>Artwork</span><i><b style="width: {{ stats.artwork_score }}%;"></b></i><strong>{{ stats.artwork_score }}%</strong></a>
+      <a href="/preservation"><span>Docs</span><i><b style="width: {{ stats.documentation_score }}%;"></b></i><strong>{{ stats.documentation_score }}%</strong></a>
+      <a href="/preservation"><span>Files</span><i><b style="width: {{ stats.preservation_score }}%;"></b></i><strong>{{ stats.preservation_score }}%</strong></a>
+    </div>
+  </section>
+
+  <section class="home-card priority-command alive-panel">
+    <div class="home-card-head">
+      <div>
+        <p class="eyebrow">Today</p>
+        <h2>Priorities</h2>
+      </div>
+      <a href="/preservation">View →</a>
+    </div>
+
+    <div class="priority-list-compact">
+      <a href="/metadata-queue"><span>◇</span><strong>{{ stats.missing_metadata }}</strong><small>Metadata</small></a>
+      <a href="/preservation"><span>▣</span><strong>{{ stats.missing_covers }}</strong><small>Covers</small></a>
+      <a href="/preservation"><span>▤</span><strong>{{ stats.missing_documentation }}</strong><small>Manual Sources</small></a>
+      <a href="/collections"><span>⌁</span><strong>{{ stats.unsorted_games }}</strong><small>Unsorted</small></a>
+    </div>
+  </section>
+
+  <section class="home-card mission-command alive-panel">
+    <div class="home-card-head">
+      <div>
+        <p class="eyebrow">Today's Mission</p>
+        <h2>{% if stats.next_task %}{{ stats.next_task.title }}{% else %}Vault clear{% endif %}</h2>
+      </div>
+      {% if stats.next_task %}<a href="{{ stats.next_task.url }}">Open →</a>{% endif %}
+    </div>
+
+    {% if stats.next_task %}
+      <div class="mission-compact">
+        <a class="mission-cover-mini" href="{{ stats.next_task.url }}">
+          {% if stats.next_task.cover_path %}<img src="/covers/{{ stats.next_task.cover_path }}?v={{ stats.next_task.updated_at or stats.next_task.id }}" alt="{{ stats.next_task.title }}">{% else %}<span>🎮</span>{% endif %}
+        </a>
+        <div>
+          <p class="mission-label">Primary objective: {{ stats.next_task.primary_issue }}</p>
+          <div class="task-pills compact-pills">{% for issue in stats.next_task.issues[:3] %}<span>{{ issue }}</span>{% endfor %}</div>
+        </div>
+      </div>
+    {% else %}
+      <p class="muted">No urgent preservation tasks. Your vault is calm.</p>
+    {% endif %}
+  </section>
+
+  <section class="home-card browse-command alive-panel">
+    <div class="home-card-head">
+      <div>
+        <p class="eyebrow">Continue</p>
+        <h2>{% if stats.continue_browsing %}{{ stats.continue_browsing.title }}{% else %}Start browsing{% endif %}</h2>
+      </div>
+      {% if stats.continue_browsing %}<a href="{{ stats.continue_browsing.url }}">Continue →</a>{% endif %}
+    </div>
+    {% if stats.continue_browsing %}
+      <p class="muted">Jump back into the last updated record in your vault.</p>
+      <div class="task-pills compact-pills"><span>{{ stats.continue_browsing.label }}</span>{% if stats.continue_browsing.issue %}<span>{{ stats.continue_browsing.issue }}</span>{% endif %}</div>
+    {% else %}
+      <p class="muted">Open the Library to begin exploring your shelf.</p>
+    {% endif %}
+  </section>
+
+  <section class="home-card rediscover-command alive-panel">
+    <div class="home-card-head">
+      <div>
+        <p class="eyebrow">Rediscover</p>
+        <h2>{% if stats.rediscover %}{{ stats.rediscover.title }}{% else %}Waiting for scans{% endif %}</h2>
+      </div>
+      {% if stats.rediscover %}<a href="{{ stats.rediscover.url }}">Open →</a>{% endif %}
+    </div>
+    {% if stats.rediscover %}
+      <p class="muted">A quiet corner of your vault is ready to be looked at again.</p>
+      <div class="task-pills compact-pills"><span>{{ stats.rediscover.label }}</span>{% if stats.rediscover.year %}<span>{{ stats.rediscover.year }}</span>{% endif %}</div>
+    {% else %}
+      <p class="muted">Scan your collection to unlock rediscovery prompts.</p>
+    {% endif %}
+  </section>
+
+  <section class="home-card activity-command alive-panel">
+    <div class="home-card-head">
+      <div>
+        <p class="eyebrow">Vault Pulse</p>
+        <h2>Recent Signals</h2>
+      </div>
+    </div>
+
+    <div class="activity-compact-list">
+      {% for item in stats.recent_activity[:4] %}
+        <a class="activity-compact activity-{{ item.tone }}" href="{{ item.url }}">
+          <span></span><strong>{{ item.label }}</strong><small>{{ item.title }}</small>
+        </a>
+      {% else %}
+        <p class="muted">No recent signals yet.</p>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="home-card health-command alive-panel">
+    <div class="home-card-head">
+      <div>
+        <p class="eyebrow">System Health</p>
+        <h2>{{ stats.system_health.score }}%</h2>
+      </div>
+      <span class="integrity-status">{% if stats.system_health.score >= 85 %}Healthy{% elif stats.system_health.score >= 65 %}Needs Review{% else %}Attention{% endif %}</span>
+    </div>
+
+    <div class="home-health-grid">
+      {% for check in stats.system_health.checks[:4] %}
+        <div class="home-health-check {{ check.tone }}">
+          <span>{{ check.name }}</span>
+          <strong>{{ check.status }}</strong>
+          <small>{{ check.detail }}</small>
+        </div>
+      {% endfor %}
+    </div>
+    {% if stats.system_health.issues %}
+      <p class="muted home-health-issue">{{ stats.system_health.issues[0] }}</p>
+    {% else %}
+      <p class="muted home-health-issue">All core systems are reporting normally.</p>
+    {% endif %}
+  </section>
+
+  <section class="home-card overview-command alive-panel">
+    <div class="home-card-head">
+      <div>
+        <p class="eyebrow">Overview</p>
+        <h2>{{ stats.game_count }} Games</h2>
+      </div>
+      <a href="/library">Library →</a>
+    </div>
+    <div class="overview-strip">
+      <div><span>Storage</span><strong>{{ stats.storage_gb }} GB</strong></div>
+      <div><span>Libraries</span><strong>{{ stats.library_count }}</strong></div>
+      <div><span>Collections</span><strong>{{ stats.category_count }}</strong></div>
+    </div>
+  </section>
+</section>
+{% endblock %}

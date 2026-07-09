@@ -1,0 +1,1127 @@
+.preservation-hero {
+    display: flex;
+    justify-content: space-between;
+    gap: 24px;
+    align-items: center;
+}
+
+.health-ring {
+    width: 132px;
+    height: 132px;
+    border-radius: 50%;
+    background:
+        radial-gradient(circle at center, #111827 58%, transparent 59%),
+        conic-gradient(var(--primary) 0deg, var(--primary) 320deg, rgba(148, 163, 184, 0.18) 320deg);
+    border: 1px solid rgba(59, 130, 246, 0.45);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 30px rgba(59, 130, 246, 0.18);
+    flex: 0 0 auto;
+}
+
+.health-ring span {
+    font-size: 30px;
+    font-weight: 800;
+}
+
+.health-ring small {
+    color: var(--text-muted);
+}
+
+.preservation-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 18px;
+    margin-top: 24px;
+}
+
+.preservation-panel {
+    overflow: hidden;
+}
+
+.checklist {
+    display: grid;
+    gap: 10px;
+}
+
+.check-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: #111827;
+    color: var(--text);
+}
+
+.check-row:hover {
+    background: var(--panel-hover);
+}
+
+.attention-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 14px;
+}
+
+.attention-card {
+    display: grid;
+    grid-template-columns: 72px 1fr;
+    gap: 14px;
+    background: #111827;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 12px;
+    color: var(--text);
+}
+
+.attention-card:hover {
+    background: var(--panel-hover);
+}
+
+.attention-card img,
+.attention-placeholder {
+    width: 72px;
+    height: 96px;
+    border-radius: 10px;
+    object-fit: cover;
+    background: #0d121c;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+}
+
+.attention-card h3 {
+    margin: 0 0 4px;
+    font-size: 16px;
+}
+
+.issue-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
+}
+
+.issue-tags span {
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 999px;
+    color: #fde68a;
+    background: rgba(245, 158, 11, 0.12);
+    border: 1px solid rgba(245, 158, 11, 0.25);
+}
+
+@media (max-width: 700px) {
+    .preservation-hero {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+.asset-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 12px;
+    margin: 16px 0;
+}
+
+.asset-grid div {
+    padding: 14px;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.035);
+    border: 1px solid var(--border);
+}
+
+.asset-grid span {
+    display: block;
+    color: var(--text-muted);
+    font-size: 12px;
+    margin-bottom: 5px;
+}
+
+.asset-grid strong {
+    display: block;
+    font-size: 24px;
+}
+
+/* Alpha 19 — Preservation Engine */
+.preservation-engine-hero .preservation-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 22px;
+}
+
+.preservation-actions form { margin: 0; }
+.preservation-actions button { margin: 0; }
+.secondary-action {
+    background: rgba(96, 165, 250, 0.12);
+    border: 1px solid rgba(96, 165, 250, 0.22);
+}
+
+.preservation-command-score small {
+    color: var(--text-muted);
+    display: block;
+    margin-top: 12px;
+}
+
+.preservation-mission-grid .mission-tile {
+    min-height: 132px;
+}
+
+.preservation-engine-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+    margin-top: 18px;
+}
+
+.preservation-asset-grid {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+}
+
+.badge-matrix {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+}
+
+.badge-matrix div {
+    border-radius: 16px;
+    padding: 14px;
+    background: rgba(8, 13, 23, .58);
+    border: 1px solid rgba(148, 163, 184, .14);
+}
+
+.badge-matrix span {
+    display: block;
+    color: var(--text-muted);
+    font-size: 12px;
+    margin-bottom: 8px;
+}
+
+.badge-matrix strong {
+    font-size: 28px;
+}
+
+.preservation-report-card {
+    grid-template-columns: 88px 1fr;
+}
+
+.preservation-report-card img,
+.preservation-report-card .attention-placeholder {
+    width: 88px;
+    height: 118px;
+}
+
+.report-card-topline {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.report-card-topline span {
+    display: inline-block;
+    color: #bfdbfe;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    padding: 4px 8px;
+    border-radius: 999px;
+    background: rgba(59, 130, 246, .15);
+    border: 1px solid rgba(96, 165, 250, .22);
+}
+
+.report-card-topline strong {
+    color: var(--accent);
+    font-size: 18px;
+}
+
+.asset-pill-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
+}
+
+.asset-pill-row small {
+    border-radius: 999px;
+    padding: 4px 7px;
+    background: rgba(34, 197, 94, .10);
+    border: 1px solid rgba(34, 197, 94, .18);
+    color: #bbf7d0;
+}
+
+.focus-preservation-summary {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    gap: 14px;
+    margin-bottom: 16px;
+}
+
+.focus-preservation-score,
+.focus-preservation-badge {
+    border-radius: 18px;
+    background: rgba(8, 13, 23, .62);
+    border: 1px solid rgba(148, 163, 184, .16);
+    padding: 16px;
+}
+
+.focus-preservation-score span {
+    display: block;
+    font-size: 34px;
+    font-weight: 900;
+    color: var(--accent);
+}
+
+.focus-preservation-score small,
+.focus-preservation-badge {
+    color: var(--text-muted);
+}
+
+.focus-preservation-badge {
+    display: grid;
+    align-content: center;
+    color: #bfdbfe;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+}
+
+.focus-preservation-assets {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+}
+
+.focus-preservation-assets span {
+    padding: 7px 10px;
+    border-radius: 999px;
+    background: rgba(59, 130, 246, .12);
+    border: 1px solid rgba(96, 165, 250, .20);
+    color: #dbeafe;
+    font-size: 12px;
+}
+
+.focus-preservation-assets strong { color: white; }
+
+@media (max-width: 1100px) {
+    .preservation-engine-grid { grid-template-columns: 1fr; }
+}
+
+/* Alpha 19.1 manual-source workflow */
+.manual-source-card .muted {
+    line-height: 1.55;
+}
+
+.manual-source-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.manual-source-grid a,
+.manual-find-pill {
+    border: 1px solid rgba(96, 165, 250, 0.22);
+    background: rgba(59, 130, 246, 0.10);
+    border-radius: 14px;
+    padding: 12px;
+    color: var(--text);
+    transition: transform var(--transition), border-color var(--transition), background var(--transition);
+}
+
+.manual-source-grid a:hover,
+.manual-find-pill:hover {
+    transform: translateY(-2px);
+    border-color: rgba(96, 165, 250, 0.44);
+    background: rgba(59, 130, 246, 0.16);
+}
+
+.manual-source-grid strong,
+.manual-source-grid span {
+    display: block;
+}
+
+.manual-source-grid span {
+    margin-top: 6px;
+    color: var(--text-muted);
+    font-size: 13px;
+}
+
+.manual-find-pill {
+    display: inline-flex;
+    align-items: center;
+    min-height: 28px;
+    padding: 5px 9px;
+    font-size: 12px;
+    border-radius: 999px;
+    color: #bfdbfe;
+}
+
+.manual-source-panel {
+    margin-top: 16px;
+    display: grid;
+    gap: 12px;
+    border: 1px solid rgba(148, 163, 184, 0.14);
+    background: rgba(8, 13, 23, 0.45);
+    border-radius: 16px;
+    padding: 14px;
+}
+
+.manual-source-panel strong {
+    display: block;
+    margin-bottom: 4px;
+}
+
+.manual-source-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.button-link.disabled,
+.button-link.disabled:hover {
+    opacity: 0.45;
+    pointer-events: none;
+}
+
+/* Alpha 19.2 — Manual provider system cards */
+.manual-provider-source-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 12px;
+    margin-top: 14px;
+}
+
+.manual-provider-source-grid a {
+    color: var(--text);
+    border-radius: 16px;
+    border: 1px solid rgba(148, 163, 184, 0.16);
+    background: rgba(8, 13, 23, 0.48);
+    padding: 14px;
+    transition: transform var(--transition), border-color var(--transition), background var(--transition);
+}
+
+.manual-provider-source-grid a:hover {
+    transform: translateY(-2px);
+    border-color: rgba(96, 165, 250, 0.32);
+    background: rgba(15, 23, 42, 0.72);
+}
+
+.manual-provider-source-grid strong,
+.manual-provider-source-grid span {
+    display: block;
+}
+
+.manual-provider-source-grid span {
+    color: var(--text-muted);
+    margin-top: 6px;
+    font-size: 13px;
+}
+
+/* ============================================================
+   Alpha 23.5 — Preservation Mission Control Redesign
+   ============================================================ */
+.preservation-control-shell {
+    display: grid;
+    gap: 18px;
+}
+
+.preserve-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: 28px;
+    align-items: center;
+    padding: 30px;
+    border-radius: 28px;
+    background:
+        radial-gradient(circle at 86% 14%, color-mix(in srgb, var(--accent) 16%, transparent), transparent 34%),
+        linear-gradient(180deg, rgba(27, 34, 48, .74), rgba(8, 13, 23, .94));
+}
+
+.preserve-hero h1 {
+    font-size: clamp(42px, 5vw, 68px);
+    line-height: .93;
+    letter-spacing: -.075em;
+    margin-bottom: 14px;
+}
+
+.preserve-hero-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 22px;
+}
+
+.preserve-hero-actions form { margin: 0; }
+.preserve-hero-actions button { margin: 0; }
+
+.preserve-health-card {
+    padding: 22px;
+    border-radius: 24px;
+    background: rgba(6, 10, 18, .72);
+    border: 1px solid rgba(148, 163, 184, .14);
+    box-shadow: 0 20px 50px rgba(0,0,0,.28), inset 0 1px 0 rgba(255,255,255,.04);
+}
+
+.preserve-health-card span,
+.preserve-health-card small {
+    color: var(--text-muted);
+}
+
+.preserve-health-card strong {
+    display: block;
+    font-size: 58px;
+    letter-spacing: -.08em;
+    margin: 8px 0 12px;
+}
+
+.preserve-meter {
+    height: 10px;
+    border-radius: 999px;
+    overflow: hidden;
+    background: rgba(148, 163, 184, .14);
+    margin-bottom: 12px;
+}
+
+.preserve-meter i {
+    display: block;
+    width: var(--score);
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    box-shadow: 0 0 18px color-mix(in srgb, var(--accent) 42%, transparent);
+}
+
+.preserve-missions {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.preserve-mission-card {
+    color: var(--text);
+    min-height: 132px;
+    padding: 18px;
+    border-radius: 22px;
+    display: grid;
+    align-content: end;
+    transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition);
+}
+
+.preserve-mission-card:hover {
+    transform: translateY(-3px);
+    border-color: color-mix(in srgb, var(--accent) 36%, transparent);
+    box-shadow: 0 18px 42px rgba(0,0,0,.25), 0 0 22px color-mix(in srgb, var(--accent) 12%, transparent);
+}
+
+.preserve-mission-card .mission-icon {
+    color: var(--accent);
+    font-size: 20px;
+    margin-bottom: 12px;
+}
+
+.preserve-mission-card strong {
+    font-size: 34px;
+    line-height: 1;
+    letter-spacing: -.065em;
+}
+
+.preserve-mission-card small {
+    margin-top: 8px;
+    color: var(--text-muted);
+}
+
+.preserve-primary-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(360px, .8fr);
+    gap: 18px;
+}
+
+.next-fix-card,
+.preserve-status-card,
+.preserve-detail-card {
+    padding: 22px;
+    border-radius: 24px;
+}
+
+.next-fix-game {
+    display: grid;
+    grid-template-columns: 116px 1fr;
+    gap: 18px;
+    align-items: center;
+    color: var(--text);
+    padding: 14px;
+    border-radius: 20px;
+    background: rgba(6, 10, 18, .48);
+    border: 1px solid rgba(148, 163, 184, .12);
+}
+
+.next-fix-game img,
+.next-fix-game .attention-placeholder {
+    width: 116px;
+    height: 154px;
+    border-radius: 16px;
+    object-fit: cover;
+    background: rgba(3, 7, 18, .72);
+}
+
+.next-fix-game h3 {
+    margin: 10px 0 6px;
+    font-size: 28px;
+    letter-spacing: -.055em;
+}
+
+.preserve-badge-pill {
+    display: inline-flex;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: rgba(59, 130, 246, .13);
+    border: 1px solid rgba(96, 165, 250, .20);
+    color: #bfdbfe;
+    font-weight: 900;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+}
+
+.preserve-asset-strip {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.preserve-asset-strip div {
+    padding: 14px;
+    border-radius: 16px;
+    background: rgba(6, 10, 18, .52);
+    border: 1px solid rgba(148, 163, 184, .10);
+}
+
+.preserve-asset-strip span {
+    display: block;
+    color: var(--text-muted);
+    font-size: 12px;
+    margin-bottom: 6px;
+}
+
+.preserve-asset-strip strong {
+    display: block;
+    font-size: 26px;
+    letter-spacing: -.05em;
+}
+
+.preserve-detail-stack {
+    display: grid;
+    gap: 12px;
+}
+
+.preserve-detail-card {
+    padding: 0;
+    overflow: hidden;
+}
+
+.preserve-detail-card summary {
+    list-style: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 18px 22px;
+}
+
+.preserve-detail-card summary::-webkit-details-marker { display: none; }
+
+.preserve-detail-card summary span {
+    font-size: 18px;
+    font-weight: 900;
+}
+
+.preserve-detail-card summary strong {
+    color: var(--accent);
+    font-size: 13px;
+}
+
+.preserve-detail-card > p,
+.preserve-detail-card > .manual-source-grid,
+.preserve-detail-card > .preserve-asset-strip,
+.preserve-detail-card > .preserve-dupe-grid {
+    margin: 0 22px 22px;
+}
+
+.compact-manual-sources {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.detail-assets {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.preserve-dupe-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.preserve-dupe-grid h3 {
+    margin-top: 0;
+}
+
+.compact-attention-zone {
+    padding: 22px;
+    border-radius: 24px;
+}
+
+.preserve-filter-pills {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+}
+
+.preserve-filter-pills a {
+    color: #bfdbfe;
+    padding: 8px 11px;
+    border-radius: 999px;
+    background: rgba(59, 130, 246, .11);
+    border: 1px solid rgba(96, 165, 250, .18);
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.compact-report-list {
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+}
+
+.compact-preserve-card {
+    background: rgba(6, 10, 18, .50);
+}
+
+.preserve-issue-tags span {
+    font-size: 11px;
+    color: #dbeafe;
+    background: rgba(59, 130, 246, .10);
+    border-color: rgba(96, 165, 250, .18);
+}
+
+@media (max-width: 1180px) {
+    .preserve-hero,
+    .preserve-primary-grid { grid-template-columns: 1fr; }
+    .preserve-missions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .detail-assets { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 720px) {
+    .preserve-missions,
+    .preserve-asset-strip,
+    .compact-manual-sources,
+    .preserve-dupe-grid,
+    .compact-report-list { grid-template-columns: 1fr; }
+    .next-fix-game { grid-template-columns: 1fr; }
+}
+
+/* Alpha 24.1 — Unified Preservation Intelligence */
+.preservation-intelligence-grid {
+    display: grid;
+    grid-template-columns: minmax(280px, .85fr) minmax(320px, 1fr) minmax(320px, 1fr);
+    gap: 16px;
+    margin: 18px 0;
+}
+
+.preserve-intel-card {
+    padding: 20px;
+    min-height: 210px;
+}
+
+.preserve-intel-score h2 {
+    font-size: 42px;
+    line-height: 1;
+    letter-spacing: -0.08em;
+}
+
+.intel-meter {
+    margin: 12px 0 14px;
+}
+
+.intel-score-mini-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.intel-score-mini-grid a {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    border-radius: 14px;
+    border: 1px solid rgba(148, 163, 184, 0.13);
+    background: rgba(8, 13, 23, 0.58);
+    padding: 10px;
+    color: var(--text);
+}
+
+.intel-score-mini-grid span,
+.preserve-recommendation-card small,
+.preserve-gap-list span {
+    color: var(--text-muted);
+}
+
+.intel-score-mini-grid strong {
+    color: var(--accent);
+}
+
+.preserve-recommendation-stack,
+.preserve-gap-list {
+    display: grid;
+    gap: 10px;
+}
+
+.preserve-recommendation-card {
+    display: grid;
+    grid-template-columns: 12px minmax(0, 1fr);
+    gap: 10px;
+    align-items: center;
+    color: var(--text);
+    border-radius: 15px;
+    border: 1px solid rgba(148, 163, 184, 0.13);
+    background: rgba(8, 13, 23, 0.56);
+    padding: 11px;
+}
+
+.preserve-recommendation-card > span {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 14px color-mix(in srgb, var(--accent) 75%, transparent);
+}
+
+.preserve-recommendation-card strong,
+.preserve-recommendation-card small {
+    display: block;
+}
+
+.preserve-gap-list a {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 42px;
+    grid-template-rows: auto 7px;
+    gap: 6px 10px;
+    color: var(--text);
+    padding: 9px 0;
+    border-bottom: 1px solid rgba(148, 163, 184, 0.08);
+}
+
+.preserve-gap-list a:last-child {
+    border-bottom: 0;
+}
+
+.preserve-gap-list strong {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.preserve-gap-list i {
+    grid-column: 1 / -1;
+    height: 7px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: rgba(148, 163, 184, 0.12);
+}
+
+.preserve-gap-list b {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+}
+
+.preserve-intelligence-accordion {
+    margin: 18px 0;
+}
+
+.preserve-relationship-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.preserve-relationship-grid .relationship-chip,
+.preserve-franchise-list .franchise-line {
+    background: rgba(8, 13, 23, 0.58);
+    border: 1px solid rgba(148, 163, 184, 0.12);
+}
+
+.preserve-franchise-list {
+    display: grid;
+    gap: 9px;
+    margin-top: 12px;
+}
+
+.preserve-timeline-bars {
+    min-height: 190px;
+    margin-top: 16px;
+}
+
+.preserve-similar-row {
+    margin-top: 14px;
+}
+
+@media (max-width: 1200px) {
+    .preservation-intelligence-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ============================================================
+   Alpha 24.2 — Preservation Queue Repair
+   One mission first. Intelligence becomes supporting detail.
+   ============================================================ */
+.alpha242-preservation {
+    gap: 18px;
+}
+
+.alpha242-hero {
+    grid-template-columns: minmax(0, 1fr) 300px;
+    padding: 28px;
+}
+
+.alpha242-hero h1 {
+    font-size: clamp(42px, 4.6vw, 62px);
+}
+
+.alpha242-command-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(330px, .75fr);
+    gap: 18px;
+}
+
+.alpha242-next-fix,
+.alpha242-missions-card,
+.alpha242-queue,
+.alpha242-intelligence-shell {
+    padding: 22px;
+    border-radius: 24px;
+}
+
+.alpha242-target {
+    min-height: 188px;
+}
+
+.alpha242-target h3 {
+    font-size: 30px;
+}
+
+.alpha242-mission-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.alpha242-mission-list a {
+    min-height: 118px;
+    display: grid;
+    align-content: end;
+    gap: 5px;
+    padding: 14px;
+    border-radius: 18px;
+    border: 1px solid rgba(148, 163, 184, .12);
+    background: rgba(6, 10, 18, .52);
+    color: var(--text);
+    transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition);
+}
+
+.alpha242-mission-list a:hover {
+    transform: translateY(-3px);
+    border-color: color-mix(in srgb, var(--accent) 42%, transparent);
+    box-shadow: 0 16px 34px rgba(0,0,0,.24), 0 0 18px color-mix(in srgb, var(--accent) 14%, transparent);
+}
+
+.alpha242-mission-list span {
+    color: var(--accent);
+    font-size: 18px;
+}
+
+.alpha242-mission-list strong {
+    font-size: 32px;
+    letter-spacing: -.07em;
+    line-height: 1;
+}
+
+.alpha242-mission-list small {
+    color: var(--text-muted);
+}
+
+.alpha242-queue-head {
+    margin-bottom: 14px;
+}
+
+.alpha242-queue-head > span,
+.alpha242-intel-heading > span {
+    color: var(--text-muted);
+    font-size: 13px;
+}
+
+.alpha242-filter-pills {
+    margin-bottom: 16px;
+}
+
+.alpha242-filter-pills a.active {
+    color: white;
+    background: color-mix(in srgb, var(--accent) 22%, transparent);
+    border-color: color-mix(in srgb, var(--accent) 38%, transparent);
+    box-shadow: 0 0 18px color-mix(in srgb, var(--accent) 14%, transparent);
+}
+
+.alpha242-queue-list {
+    display: grid;
+    gap: 10px;
+}
+
+.alpha242-queue-row {
+    display: grid;
+    grid-template-columns: 58px minmax(0, 1fr);
+    align-items: center;
+    gap: 14px;
+    min-height: 86px;
+    padding: 12px;
+    border-radius: 18px;
+    border: 1px solid rgba(148, 163, 184, .11);
+    background: rgba(6, 10, 18, .46);
+    color: var(--text);
+    transition: transform var(--transition), border-color var(--transition), background var(--transition);
+}
+
+.alpha242-queue-row:hover {
+    transform: translateX(3px);
+    border-color: color-mix(in srgb, var(--accent) 34%, transparent);
+    background: rgba(15, 23, 42, .62);
+}
+
+.alpha242-queue-row img,
+.alpha242-queue-row .attention-placeholder {
+    width: 58px;
+    height: 74px;
+    border-radius: 11px;
+    object-fit: cover;
+    background: rgba(3, 7, 18, .78);
+    display: grid;
+    place-items: center;
+}
+
+.alpha242-row-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.alpha242-row-top strong {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 16px;
+}
+
+.alpha242-row-top span {
+    color: var(--accent);
+    font-weight: 900;
+}
+
+.alpha242-queue-main > small {
+    display: block;
+    color: var(--text-muted);
+    margin: 4px 0 8px;
+}
+
+.alpha242-details-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.alpha242-details-grid .alpha242-detail {
+    min-height: 78px;
+}
+
+.alpha242-detail summary {
+    min-height: 78px;
+}
+
+.alpha242-intelligence-shell {
+    background:
+        radial-gradient(circle at 92% 18%, color-mix(in srgb, var(--primary) 10%, transparent), transparent 34%),
+        rgba(8, 13, 23, .52);
+    border: 1px solid rgba(148, 163, 184, .12);
+}
+
+.alpha242-intel-heading {
+    margin-bottom: 12px;
+}
+
+.alpha242-intelligence-panels {
+    gap: 10px;
+}
+
+.alpha242-intel-panel summary {
+    padding: 15px 18px;
+    min-height: 60px;
+}
+
+.alpha242-intel-panel summary span {
+    font-size: 16px;
+}
+
+.alpha242-recs,
+.alpha242-gap-list,
+.alpha242-intel-panel .relationship-grid,
+.alpha242-intel-panel .preserve-franchise-list,
+.alpha242-intel-panel .preserve-dupe-grid {
+    margin: 0 18px 18px;
+}
+
+/* Keep older Alpha 24.1 intelligence grid from competing if old fragments remain cached. */
+.alpha242-preservation .preservation-intelligence-grid {
+    display: none !important;
+}
+
+@media (max-width: 1180px) {
+    .alpha242-hero,
+    .alpha242-command-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .alpha242-details-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 720px) {
+    .alpha242-mission-list,
+    .alpha242-details-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .alpha242-queue-row {
+        grid-template-columns: 48px minmax(0, 1fr);
+    }
+
+    .alpha242-queue-row img,
+    .alpha242-queue-row .attention-placeholder {
+        width: 48px;
+        height: 62px;
+    }
+}

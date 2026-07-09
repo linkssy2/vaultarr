@@ -1,0 +1,1960 @@
+.vault-home {
+    display: grid;
+    grid-template-columns: minmax(0, 1.55fr) minmax(340px, .78fr);
+    gap: 18px;
+    max-width: 1520px;
+    align-items: stretch;
+}
+
+.alive-panel {
+    position: relative;
+    overflow: hidden;
+    border-radius: 24px;
+    border: 1px solid rgba(96, 165, 250, 0.18);
+    background:
+        radial-gradient(circle at 92% 12%, rgba(56, 189, 248, 0.10), transparent 28%),
+        linear-gradient(180deg, rgba(27, 34, 48, 0.78), rgba(10, 15, 26, 0.94));
+    box-shadow:
+        0 18px 55px rgba(0, 0, 0, 0.28),
+        inset 0 1px 0 rgba(255, 255, 255, 0.045);
+}
+
+.alive-panel::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+        linear-gradient(120deg, transparent 0%, rgba(255,255,255,.035) 42%, transparent 58%),
+        radial-gradient(circle at 20% 0%, rgba(59,130,246,.12), transparent 28%);
+    opacity: .75;
+}
+
+.alive-panel > * {
+    position: relative;
+    z-index: 1;
+}
+
+.vault-hero {
+    grid-column: 1;
+    min-height: 300px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 360px;
+    gap: 22px;
+    padding: 34px;
+}
+
+.hero-copy-block {
+    align-self: center;
+    max-width: 780px;
+}
+
+.greeting {
+    color: var(--text);
+    margin: 0 0 8px;
+    font-size: 16px;
+    opacity: .92;
+}
+
+.hero-copy-block h1 {
+    max-width: 720px;
+    font-size: clamp(42px, 5vw, 66px);
+    letter-spacing: -0.075em;
+    line-height: .94;
+    margin-bottom: 14px;
+}
+
+.hero-copy {
+    max-width: 720px;
+    font-size: 15px;
+}
+
+.slim-actions,
+.tiny-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-top: 22px;
+}
+
+.tiny-actions {
+    margin-top: 14px;
+}
+
+.button-link.secondary {
+    background: rgba(96, 165, 250, 0.10);
+    border: 1px solid rgba(96, 165, 250, 0.24);
+}
+
+.button-link.small {
+    padding: 9px 13px;
+    font-size: 13px;
+}
+
+.hero-vault-window {
+    position: relative;
+    min-height: 220px;
+    border-radius: 22px;
+    background:
+        linear-gradient(180deg, rgba(7, 12, 22, 0.18), rgba(7, 12, 22, 0.82)),
+        radial-gradient(circle at 68% 28%, rgba(96, 165, 250, 0.28), transparent 24%),
+        radial-gradient(circle at 28% 74%, rgba(168, 85, 247, 0.16), transparent 34%),
+        linear-gradient(135deg, rgba(12, 21, 38, .92), rgba(5, 9, 18, .96));
+    border: 1px solid rgba(96, 165, 250, .16);
+    overflow: hidden;
+    box-shadow: inset 0 0 70px rgba(59, 130, 246, .08);
+}
+
+.hero-vault-window::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(90deg, transparent, rgba(125,211,252,.08), transparent),
+        radial-gradient(circle at 50% 110%, rgba(45,212,191,.16), transparent 32%);
+    animation: vaultLight 8s ease-in-out infinite alternate;
+}
+
+.vault-door {
+    position: absolute;
+    right: 38px;
+    top: 36px;
+    width: 118px;
+    height: 118px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background:
+        radial-gradient(circle, rgba(59, 130, 246, .22), rgba(8, 13, 23, .88) 62%),
+        conic-gradient(from 120deg, rgba(96,165,250,.18), rgba(251,191,36,.18), rgba(96,165,250,.18));
+    border: 1px solid rgba(148, 163, 184, .24);
+    box-shadow: 0 0 42px rgba(59, 130, 246, .25);
+}
+
+.vault-door span {
+    width: 54px;
+    height: 54px;
+    border-radius: 16px;
+    display: grid;
+    place-items: center;
+    font-weight: 900;
+    color: white;
+    font-size: 30px;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    box-shadow: 0 0 24px color-mix(in srgb, var(--primary) 55%, transparent);
+}
+
+.vault-horizon {
+    position: absolute;
+    left: 8%;
+    right: 10%;
+    bottom: 44px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(125, 211, 252, .45), transparent);
+}
+
+.vault-grid-lines {
+    position: absolute;
+    inset: auto 0 0;
+    height: 120px;
+    background-image:
+        linear-gradient(rgba(96,165,250,.09) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(96,165,250,.08) 1px, transparent 1px);
+    background-size: 40px 28px;
+    transform: perspective(360px) rotateX(62deg) translateY(52px);
+    transform-origin: bottom;
+    opacity: .9;
+}
+
+.integrity-panel {
+    grid-column: 2;
+    grid-row: 1;
+    padding: 24px;
+    display: grid;
+    align-content: center;
+    gap: 14px;
+}
+
+.integrity-panel h2 {
+    font-size: 56px;
+    letter-spacing: -0.07em;
+}
+
+.integrity-status {
+    color: var(--success);
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.integrity-meter {
+    position: relative;
+    height: 12px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: rgba(148, 163, 184, 0.13);
+}
+
+.integrity-meter.tall {
+    height: 14px;
+}
+
+.integrity-meter i,
+.storage-bar i {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--primary), var(--accent), var(--success));
+    box-shadow: 0 0 20px color-mix(in srgb, var(--accent) 44%, transparent);
+}
+
+.integrity-meter i {
+    width: var(--score);
+}
+
+.integrity-breakdown {
+    display: grid;
+    gap: 10px;
+    margin-top: 4px;
+}
+
+.integrity-breakdown div {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(148, 163, 184, .08);
+}
+
+.integrity-breakdown span,
+.micro-copy,
+.collection-line small {
+    color: var(--text-muted);
+}
+
+.integrity-breakdown strong {
+    color: var(--accent);
+}
+
+.small-link {
+    color: #93c5fd;
+    font-size: 13px;
+}
+
+.priority-strip {
+    grid-column: 1;
+    padding: 22px;
+}
+
+.section-heading,
+.panel-heading {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    align-items: center;
+}
+
+.flush-heading,
+.compact-heading {
+    margin-bottom: 16px;
+}
+
+.priority-tiles {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.priority-tile {
+    min-height: 110px;
+    padding: 15px;
+    border-radius: 18px;
+    color: var(--text);
+    background: rgba(8, 13, 23, .46);
+    border: 1px solid rgba(148, 163, 184, .12);
+    display: grid;
+    align-content: end;
+    transition: transform var(--transition), border-color var(--transition), background var(--transition), box-shadow var(--transition);
+}
+
+.priority-tile:hover,
+.alive-panel:hover,
+.activity-line:hover,
+.collection-line:hover {
+    border-color: rgba(96, 165, 250, .30);
+}
+
+.priority-tile:hover {
+    transform: translateY(-4px);
+    background: rgba(15, 23, 42, .70);
+    box-shadow: 0 18px 34px rgba(0,0,0,.24), 0 0 22px rgba(59,130,246,.13);
+}
+
+.tile-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 11px;
+    display: grid;
+    place-items: center;
+    margin-bottom: 12px;
+    font-weight: 900;
+}
+
+.metadata-dot { background: rgba(139, 92, 246, .22); color: #c4b5fd; }
+.artwork-dot { background: rgba(59, 130, 246, .22); color: #bfdbfe; }
+.docs-dot { background: rgba(245, 158, 11, .22); color: #fde68a; }
+.organize-dot { background: rgba(34, 197, 94, .20); color: #bbf7d0; }
+
+.priority-tile strong {
+    font-size: 32px;
+    letter-spacing: -.05em;
+}
+
+.priority-tile small {
+    color: var(--text-muted);
+}
+
+.continue-improving,
+.activity-stream,
+.library-summary-sleek,
+.top-collections,
+.recent-shelf {
+    padding: 22px;
+}
+
+.continue-improving {
+    grid-column: 2;
+}
+
+.improve-feature {
+    display: grid;
+    grid-template-columns: 94px 1fr;
+    gap: 16px;
+    align-items: start;
+}
+
+.improve-cover {
+    height: 124px;
+    border-radius: 14px;
+    background: #0d121c;
+    border: 1px solid rgba(148, 163, 184, .14);
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+    color: white;
+}
+
+.improve-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.task-pills {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+
+.task-pills span {
+    padding: 5px 9px;
+    border-radius: 999px;
+    background: rgba(59, 130, 246, .15);
+    border: 1px solid rgba(96, 165, 250, .18);
+    color: #bfdbfe;
+    font-size: 12px;
+}
+
+.library-summary-sleek {
+    grid-column: 1;
+}
+
+.sleek-stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+    margin: 20px 0 18px;
+}
+
+.sleek-stats div {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 6px;
+}
+
+.sleek-stats span {
+    color: var(--text-muted);
+    font-size: 13px;
+}
+
+.sleek-stats strong {
+    font-size: 26px;
+    letter-spacing: -.05em;
+}
+
+.storage-bar {
+    height: 9px;
+    border-radius: 999px;
+    background: rgba(148, 163, 184, .10);
+    overflow: hidden;
+}
+
+.storage-bar i {
+    width: var(--storage-width);
+}
+
+.activity-stream {
+    grid-column: 2;
+}
+
+.activity-line {
+    display: grid;
+    grid-template-columns: 12px 1fr;
+    gap: 12px;
+    color: var(--text);
+    padding: 12px 0;
+    border-top: 1px solid rgba(148, 163, 184, .08);
+}
+
+.activity-line:first-of-type {
+    border-top: 0;
+}
+
+.activity-pulse {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-top: 8px;
+    background: var(--accent);
+    box-shadow: 0 0 14px color-mix(in srgb, var(--accent) 58%, transparent);
+    animation: softPulse 2.6s ease-in-out infinite;
+}
+
+.activity-line strong,
+.activity-line small {
+    display: block;
+}
+
+.activity-line small {
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+.recent-shelf {
+    grid-column: 1;
+}
+
+.micro-shelf {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(92px, 1fr));
+    gap: 12px;
+}
+
+.micro-game {
+    color: var(--text);
+    min-width: 0;
+}
+
+.micro-cover {
+    height: 134px;
+    border-radius: 14px;
+    background: rgba(8, 13, 23, .72);
+    border: 1px solid rgba(148, 163, 184, .10);
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    margin-bottom: 9px;
+    transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition);
+}
+
+.micro-game:hover .micro-cover {
+    transform: translateY(-4px) scale(1.015);
+    border-color: rgba(96, 165, 250, .30);
+    box-shadow: 0 18px 28px rgba(0,0,0,.28);
+}
+
+.micro-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.micro-cover span {
+    font-size: 30px;
+}
+
+.micro-game strong,
+.micro-game small {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.micro-game strong {
+    font-size: 13px;
+}
+
+.micro-game small {
+    color: var(--text-muted);
+    font-size: 12px;
+    margin-top: 3px;
+}
+
+.top-collections {
+    grid-column: 2;
+}
+
+.collection-line {
+    display: grid;
+    grid-template-columns: 36px 1fr auto;
+    gap: 12px;
+    align-items: center;
+    color: var(--text);
+    padding: 10px 0;
+    border-top: 1px solid rgba(148, 163, 184, .08);
+}
+
+.collection-line:first-of-type {
+    border-top: 0;
+}
+
+.collection-line > span {
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    display: grid;
+    place-items: center;
+    background: linear-gradient(135deg, rgba(59,130,246,.35), rgba(168,85,247,.22));
+    color: white;
+    font-weight: 900;
+}
+
+@keyframes vaultLight {
+    from { opacity: .72; transform: translateX(-10px); }
+    to { opacity: 1; transform: translateX(10px); }
+}
+
+@keyframes softPulse {
+    0%, 100% { opacity: .55; transform: scale(.9); }
+    50% { opacity: 1; transform: scale(1.14); }
+}
+
+@media (max-width: 1280px) {
+    .vault-home,
+    .vault-hero,
+    .priority-strip,
+    .continue-improving,
+    .library-summary-sleek,
+    .activity-stream,
+    .recent-shelf,
+    .top-collections,
+    .integrity-panel {
+        grid-column: 1;
+    }
+
+    .vault-home {
+        grid-template-columns: 1fr;
+    }
+
+    .vault-hero {
+        grid-template-columns: 1fr;
+    }
+
+    .hero-vault-window {
+        min-height: 180px;
+    }
+}
+
+@media (max-width: 900px) {
+    .priority-tiles,
+    .sleek-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .micro-shelf {
+        grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
+    }
+}
+
+@media (max-width: 640px) {
+    .vault-hero,
+    .priority-strip,
+    .continue-improving,
+    .activity-stream,
+    .library-summary-sleek,
+    .recent-shelf,
+    .top-collections,
+    .integrity-panel {
+        padding: 18px;
+    }
+
+    .priority-tiles,
+    .sleek-stats,
+    .improve-feature {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ============================================================
+   Alpha 17 — Discovery / Living Home
+   ============================================================ */
+
+.discovery-home {
+    grid-template-columns: minmax(0, 1.35fr) minmax(340px, .82fr);
+}
+
+.discovery-hero {
+    min-height: 320px;
+}
+
+.discovery-hero .hero-copy-block h1 {
+    max-width: 760px;
+}
+
+.vault-pulse::after {
+    content: "";
+    position: absolute;
+    inset: 18px;
+    border-radius: 26px;
+    border: 1px solid color-mix(in srgb, var(--accent) 18%, transparent);
+    box-shadow: 0 0 42px color-mix(in srgb, var(--primary) 13%, transparent);
+    opacity: .65;
+    animation: vaultBreath 7.5s ease-in-out infinite;
+}
+
+.vault-particles i {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--accent) 70%, white 30%);
+    box-shadow: 0 0 18px color-mix(in srgb, var(--accent) 70%, transparent);
+    opacity: .55;
+    animation: particleDrift 10s ease-in-out infinite alternate;
+}
+
+.vault-particles i:nth-child(1) { left: 18%; top: 28%; animation-delay: .5s; }
+.vault-particles i:nth-child(2) { left: 54%; top: 62%; animation-delay: 1.7s; }
+.vault-particles i:nth-child(3) { right: 18%; top: 34%; animation-delay: 3s; }
+
+.integrity-links a {
+    color: var(--text);
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(148, 163, 184, .08);
+}
+
+.integrity-links a:hover span,
+.integrity-links a:hover strong {
+    color: var(--accent);
+}
+
+.mission-panel,
+.discovery-card,
+.continue-card,
+.notification-center,
+.insights-panel,
+.vault-overview-card {
+    padding: 22px;
+}
+
+.discovery-card {
+    grid-column: 1;
+}
+
+.continue-card {
+    grid-column: 2;
+}
+
+.notification-center {
+    grid-column: 2;
+}
+
+.insights-panel {
+    grid-column: 2;
+}
+
+.discovery-feature {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    gap: 16px;
+    align-items: center;
+}
+
+.discovery-cover {
+    height: 150px;
+    border-radius: 16px;
+    background: #0d121c;
+    border: 1px solid rgba(148, 163, 184, .14);
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    box-shadow: 0 16px 38px rgba(0,0,0,.32);
+}
+
+.discovery-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.discovery-cover span {
+    font-size: 38px;
+}
+
+.discovery-chip,
+.mission-label {
+    display: inline-block;
+    margin-top: 10px;
+    margin-right: 8px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: rgba(96, 165, 250, .13);
+    border: 1px solid rgba(96, 165, 250, .18);
+    color: #bfdbfe;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.mission-label {
+    margin-top: 0;
+    color: color-mix(in srgb, var(--accent) 82%, white 18%);
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
+    border-color: color-mix(in srgb, var(--accent) 20%, transparent);
+}
+
+.activity-metadata .activity-pulse { background: #a78bfa; box-shadow: 0 0 14px rgba(167,139,250,.55); }
+.activity-artwork .activity-pulse { background: #60a5fa; box-shadow: 0 0 14px rgba(96,165,250,.55); }
+.activity-docs .activity-pulse { background: #fbbf24; box-shadow: 0 0 14px rgba(251,191,36,.55); }
+.activity-scan .activity-pulse { background: #34d399; box-shadow: 0 0 14px rgba(52,211,153,.55); }
+
+.insight-line {
+    display: grid;
+    grid-template-columns: minmax(120px, .8fr) 1fr auto;
+    gap: 14px;
+    align-items: center;
+    color: var(--text);
+    padding: 12px 0;
+    border-top: 1px solid rgba(148, 163, 184, .08);
+}
+
+.insight-line:first-of-type {
+    border-top: 0;
+}
+
+.insight-line span,
+.insight-line small {
+    color: var(--text-muted);
+    font-size: 12px;
+}
+
+.insight-line:hover strong,
+.insight-line:hover small {
+    color: var(--accent);
+}
+
+.priority-tiles-discovery .priority-tile {
+    min-height: 104px;
+}
+
+@keyframes vaultBreath {
+    0%, 100% { opacity: .38; transform: scale(.985); }
+    50% { opacity: .85; transform: scale(1); }
+}
+
+@keyframes particleDrift {
+    from { transform: translate3d(-8px, 8px, 0); opacity: .35; }
+    to { transform: translate3d(10px, -8px, 0); opacity: .75; }
+}
+
+@media (max-width: 1280px) {
+    .discovery-card,
+    .continue-card,
+    .notification-center,
+    .insights-panel,
+    .vault-overview-card {
+        grid-column: 1;
+    }
+}
+
+@media (max-width: 720px) {
+    .discovery-feature,
+    .insight-line {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ============================================================
+   Alpha 17.1 — Home Launchpad
+   Home is a one-screen command center, not a scrolling dashboard.
+   ============================================================ */
+.home-launchpad {
+    display: grid;
+    grid-template-columns: minmax(0, 1.12fr) minmax(300px, .72fr) minmax(280px, .64fr);
+    grid-template-rows: 260px 178px 178px 178px;
+    gap: 16px;
+    max-width: 1540px;
+    min-height: calc(100vh - 68px);
+    max-height: calc(100vh - 68px);
+    overflow: hidden;
+}
+
+.home-launchpad .alive-panel {
+    border-radius: 24px;
+    background:
+        radial-gradient(circle at 88% 12%, color-mix(in srgb, var(--accent) 12%, transparent), transparent 30%),
+        linear-gradient(180deg, rgba(27, 34, 48, 0.72), rgba(8, 13, 23, 0.93));
+}
+
+.home-hero {
+    grid-column: 1 / 3;
+    grid-row: 1;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 190px;
+    gap: 20px;
+    padding: 30px;
+}
+
+.home-hero-copy {
+    align-self: center;
+}
+
+.home-hero h1 {
+    max-width: 760px;
+    font-size: clamp(36px, 4.4vw, 58px);
+    letter-spacing: -0.075em;
+    line-height: .94;
+    margin-bottom: 12px;
+}
+
+.home-hero .hero-copy {
+    max-width: 720px;
+    font-size: 14px;
+}
+
+.home-vault-core {
+    align-self: center;
+    justify-self: center;
+    display: grid;
+    place-items: center;
+    gap: 12px;
+}
+
+.vault-core-ring {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background:
+        radial-gradient(circle at 50% 50%, rgba(8, 13, 23, .96) 0 53%, transparent 54%),
+        conic-gradient(var(--accent) 0 var(--score), rgba(148,163,184,.14) var(--score) 100%);
+    box-shadow:
+        0 0 44px color-mix(in srgb, var(--accent) 28%, transparent),
+        inset 0 0 42px rgba(0,0,0,.42);
+    animation: vaultCorePulse 8s ease-in-out infinite;
+}
+
+.vault-core-ring span {
+    font-size: 34px;
+    font-weight: 900;
+    letter-spacing: -.06em;
+}
+
+.home-vault-core p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: .14em;
+}
+
+.home-card {
+    padding: 18px;
+    min-height: 0;
+}
+
+.home-card-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    align-items: flex-start;
+    margin-bottom: 14px;
+}
+
+.home-card-head h2 {
+    margin: 0;
+    font-size: 22px;
+    letter-spacing: -.045em;
+    line-height: 1.05;
+}
+
+.home-card-head a {
+    font-size: 13px;
+    color: color-mix(in srgb, var(--accent) 88%, white);
+    white-space: nowrap;
+}
+
+.integrity-command {
+    grid-column: 3;
+    grid-row: 1;
+}
+
+.integrity-command h2 {
+    font-size: 44px;
+    letter-spacing: -.07em;
+}
+
+.compact-integrity-bars {
+    display: grid;
+    gap: 9px;
+}
+
+.compact-integrity-bars a {
+    display: grid;
+    grid-template-columns: 90px minmax(70px, 1fr) 42px;
+    align-items: center;
+    gap: 10px;
+    color: var(--text);
+    font-size: 12px;
+}
+
+.compact-integrity-bars span {
+    color: var(--text-muted);
+}
+
+.compact-integrity-bars i {
+    height: 8px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: rgba(148, 163, 184, .13);
+}
+
+.compact-integrity-bars b {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    box-shadow: 0 0 16px color-mix(in srgb, var(--accent) 45%, transparent);
+}
+
+.compact-integrity-bars strong {
+    color: var(--accent);
+    text-align: right;
+}
+
+.priority-command {
+    grid-column: 1;
+    grid-row: 2;
+}
+
+.priority-list-compact {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.priority-list-compact a {
+    min-height: 94px;
+    border-radius: 18px;
+    padding: 13px;
+    display: grid;
+    align-content: end;
+    background: rgba(7, 12, 22, .55);
+    border: 1px solid rgba(148, 163, 184, .12);
+    color: var(--text);
+    transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition);
+}
+
+.priority-list-compact a:hover {
+    transform: translateY(-3px);
+    border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+    box-shadow: 0 14px 30px rgba(0,0,0,.25), 0 0 18px color-mix(in srgb, var(--accent) 16%, transparent);
+}
+
+.priority-list-compact span {
+    color: var(--accent);
+    font-size: 18px;
+    margin-bottom: 6px;
+}
+
+.priority-list-compact strong {
+    font-size: 30px;
+    letter-spacing: -.06em;
+}
+
+.priority-list-compact small {
+    color: var(--text-muted);
+    font-size: 12px;
+}
+
+.mission-command {
+    grid-column: 2;
+    grid-row: 2;
+}
+
+.browse-command {
+    grid-column: 3;
+    grid-row: 2;
+}
+
+.rediscover-command {
+    grid-column: 1;
+    grid-row: 3;
+}
+
+.activity-command {
+    grid-column: 2;
+    grid-row: 3 / 5;
+}
+
+.insight-command {
+    grid-column: 3;
+    grid-row: 3;
+}
+
+.overview-command {
+    grid-column: 1;
+    grid-row: 4;
+}
+
+.mission-compact {
+    display: grid;
+    grid-template-columns: 72px minmax(0, 1fr);
+    gap: 13px;
+    align-items: center;
+}
+
+.mission-cover-mini {
+    width: 72px;
+    height: 96px;
+    border-radius: 15px;
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+    background: rgba(7, 12, 22, .72);
+    border: 1px solid rgba(148, 163, 184, .14);
+}
+
+.mission-cover-mini img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.mission-cover-mini span {
+    font-size: 28px;
+}
+
+.mission-label {
+    margin: 0 0 10px;
+    font-weight: 800;
+    color: var(--text);
+}
+
+.compact-pills {
+    margin-top: 10px;
+}
+
+.compact-pills span {
+    font-size: 11px;
+    padding: 6px 8px;
+}
+
+.activity-compact-list {
+    display: grid;
+    gap: 9px;
+}
+
+.activity-compact {
+    display: grid;
+    grid-template-columns: 12px minmax(0, 120px) minmax(0, 1fr);
+    align-items: center;
+    gap: 9px;
+    padding: 10px;
+    border-radius: 14px;
+    background: rgba(7, 12, 22, .48);
+    border: 1px solid rgba(148, 163, 184, .08);
+    color: var(--text);
+}
+
+.activity-compact span {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 14px var(--accent);
+}
+
+.activity-compact strong {
+    font-size: 12px;
+}
+
+.activity-compact small {
+    color: var(--text-muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.overview-strip {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.overview-strip div {
+    border-radius: 15px;
+    background: rgba(7, 12, 22, .48);
+    border: 1px solid rgba(148, 163, 184, .10);
+    padding: 12px;
+}
+
+.overview-strip span {
+    display: block;
+    color: var(--text-muted);
+    font-size: 12px;
+    margin-bottom: 5px;
+}
+
+.overview-strip strong {
+    display: block;
+    font-size: 18px;
+}
+
+.vault-pulse-panel::after {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    background: linear-gradient(110deg, transparent, color-mix(in srgb, var(--accent) 14%, transparent), transparent);
+    opacity: .0;
+    pointer-events: none;
+    animation: homePulseSweep 9s ease-in-out infinite;
+}
+
+@keyframes vaultCorePulse {
+    0%, 100% { transform: scale(1); filter: brightness(1); }
+    50% { transform: scale(1.018); filter: brightness(1.12); }
+}
+
+@keyframes homePulseSweep {
+    0%, 72%, 100% { opacity: 0; transform: translateX(-18%); }
+    82% { opacity: .8; transform: translateX(18%); }
+}
+
+@media (max-width: 1300px) {
+    .home-launchpad {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+        max-height: none;
+        overflow: visible;
+    }
+    .home-hero,
+    .integrity-command,
+    .priority-command,
+    .mission-command,
+    .browse-command,
+    .rediscover-command,
+    .activity-command,
+    .insight-command,
+    .overview-command {
+        grid-column: auto;
+        grid-row: auto;
+    }
+}
+
+
+/* ============================================================
+   Alpha 17.2 — Home Layout Repair
+   Keep the animated vault-logo panel, restore breathing space,
+   and allow graceful scrolling instead of cropping widgets.
+   ============================================================ */
+.home-launchpad {
+    grid-template-columns: minmax(0, 1.42fr) minmax(340px, .78fr);
+    grid-template-rows: auto auto auto auto;
+    gap: 18px;
+    max-width: 1540px;
+    min-height: auto;
+    max-height: none;
+    overflow: visible;
+    padding-bottom: 28px;
+}
+
+.home-hero {
+    grid-column: 1;
+    grid-row: 1;
+    min-height: 300px;
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 390px);
+    gap: 24px;
+    padding: 34px;
+}
+
+.home-hero h1 {
+    font-size: clamp(42px, 4.8vw, 64px);
+    max-width: 760px;
+}
+
+.home-vault-window {
+    min-height: 230px;
+    align-self: stretch;
+}
+
+.integrity-command {
+    grid-column: 2;
+    grid-row: 1;
+    min-height: 300px;
+    padding: 26px;
+}
+
+.priority-command {
+    grid-column: 1;
+    grid-row: 2;
+}
+
+.mission-command {
+    grid-column: 2;
+    grid-row: 2;
+}
+
+.rediscover-command {
+    grid-column: 1;
+    grid-row: 3;
+}
+
+.activity-command {
+    grid-column: 2;
+    grid-row: 3 / span 2;
+}
+
+.overview-command {
+    grid-column: 1;
+    grid-row: 4;
+}
+
+.insight-command {
+    grid-column: 2;
+    grid-row: 5;
+}
+
+.browse-command {
+    grid-column: 1;
+    grid-row: 5;
+}
+
+.home-card {
+    min-height: 168px;
+    padding: 22px;
+}
+
+.priority-list-compact a {
+    min-height: 116px;
+}
+
+.home-card-head {
+    margin-bottom: 18px;
+}
+
+.activity-compact-list {
+    gap: 10px;
+}
+
+.activity-compact {
+    min-height: 42px;
+}
+
+.mission-compact {
+    grid-template-columns: 86px minmax(0, 1fr);
+}
+
+.mission-cover-mini {
+    width: 86px;
+    height: 114px;
+}
+
+/* The animated hero box should feel powered-on, not like a static placeholder. */
+.home-vault-window::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+        radial-gradient(circle at 68% 34%, color-mix(in srgb, var(--primary) 16%, transparent), transparent 30%),
+        linear-gradient(105deg, transparent 0%, rgba(255,255,255,.055) 48%, transparent 64%);
+    opacity: .55;
+    animation: homeVaultSheen 10s ease-in-out infinite;
+}
+
+.home-vault-window .vault-door {
+    animation: homeDoorPulse 7s ease-in-out infinite;
+}
+
+@keyframes homeVaultSheen {
+    0%, 100% { opacity: .28; transform: translateX(-16px); }
+    50% { opacity: .75; transform: translateX(16px); }
+}
+
+@keyframes homeDoorPulse {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 42px rgba(59, 130, 246, .22); }
+    50% { transform: scale(1.025); box-shadow: 0 0 56px color-mix(in srgb, var(--accent) 30%, transparent); }
+}
+
+@media (max-width: 1300px) {
+    .home-launchpad {
+        grid-template-columns: 1fr;
+    }
+    .home-hero,
+    .integrity-command,
+    .priority-command,
+    .mission-command,
+    .browse-command,
+    .rediscover-command,
+    .activity-command,
+    .insight-command,
+    .overview-command {
+        grid-column: 1;
+        grid-row: auto;
+    }
+}
+
+@media (max-width: 900px) {
+    .home-hero {
+        grid-template-columns: 1fr;
+    }
+    .home-vault-window {
+        min-height: 190px;
+    }
+    .priority-list-compact {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+/* Alpha 23.6 — Orbital Vault Home Panel */
+.orbital-vault {
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    isolation: isolate;
+    background:
+        radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 34%),
+        radial-gradient(circle at 24% 78%, rgba(59, 130, 246, .18), transparent 35%),
+        linear-gradient(180deg, rgba(7, 12, 22, 0.48), rgba(5, 9, 18, 0.92)),
+        linear-gradient(135deg, rgba(12, 21, 38, .94), rgba(5, 9, 18, .98));
+}
+
+.orbital-vault::after {
+    content: "";
+    position: absolute;
+    inset: 14px;
+    border-radius: 20px;
+    border: 1px solid color-mix(in srgb, var(--accent) 12%, transparent);
+    background: radial-gradient(circle at 50% 45%, transparent 28%, rgba(96,165,250,.035) 31%, transparent 34%);
+    opacity: .86;
+    pointer-events: none;
+}
+
+.orbital-field {
+    position: relative;
+    width: min(74%, 280px);
+    aspect-ratio: 1;
+    display: grid;
+    place-items: center;
+    filter: drop-shadow(0 0 34px color-mix(in srgb, var(--primary) 28%, transparent));
+}
+
+.orbit {
+    position: absolute;
+    inset: 8%;
+    border-radius: 50%;
+    border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent);
+    transform: rotate(var(--tilt));
+    animation: orbitSpin var(--speed) linear infinite;
+    box-shadow: inset 0 0 18px rgba(96,165,250,.045), 0 0 18px rgba(96,165,250,.08);
+}
+
+.orbit::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 1px solid transparent;
+    border-top-color: color-mix(in srgb, var(--primary) 75%, white 15%);
+    border-right-color: color-mix(in srgb, var(--accent) 50%, transparent);
+    opacity: .75;
+}
+
+.orbit span {
+    position: absolute;
+    right: 10%;
+    top: 15%;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--accent) 70%, white 30%);
+    box-shadow: 0 0 16px color-mix(in srgb, var(--accent) 72%, transparent);
+}
+
+.orbit-one { --tilt: 18deg; --speed: 18s; inset: 4%; }
+.orbit-two { --tilt: -28deg; --speed: 24s; inset: 14%; animation-direction: reverse; opacity: .78; }
+.orbit-three { --tilt: 72deg; --speed: 31s; inset: 24%; opacity: .58; }
+
+.orbital-core {
+    position: relative;
+    inset: auto;
+    right: auto;
+    top: auto;
+    z-index: 3;
+    width: 112px;
+    height: 112px;
+    animation: orbitalCoreBreath 6.8s ease-in-out infinite;
+}
+
+.orbital-core::after {
+    content: "";
+    position: absolute;
+    inset: -18px;
+    border-radius: 50%;
+    background: radial-gradient(circle, color-mix(in srgb, var(--primary) 20%, transparent), transparent 64%);
+    z-index: -1;
+    animation: coreHalo 4.8s ease-in-out infinite;
+}
+
+.orbital-status {
+    width: min(86%, 310px);
+    display: grid;
+    gap: 7px;
+    text-align: center;
+    margin-top: -4px;
+}
+
+.orbital-status span {
+    color: color-mix(in srgb, var(--text-muted) 78%, white 22%);
+    text-transform: uppercase;
+    letter-spacing: .13em;
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.orbital-status strong {
+    font-size: 34px;
+    letter-spacing: -.06em;
+    color: color-mix(in srgb, var(--accent) 70%, white 30%);
+    text-shadow: 0 0 20px color-mix(in srgb, var(--accent) 25%, transparent);
+}
+
+.orbital-status small {
+    color: var(--text-muted);
+    font-size: 11px;
+}
+
+.orbital-progress {
+    height: 7px;
+    border-radius: 999px;
+    overflow: hidden;
+    background: rgba(148, 163, 184, .12);
+    box-shadow: inset 0 0 12px rgba(0,0,0,.28);
+}
+
+.orbital-progress i {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    box-shadow: 0 0 18px color-mix(in srgb, var(--accent) 42%, transparent);
+    transition: width 900ms cubic-bezier(.16, 1, .3, 1);
+}
+
+.orbital-stars i {
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--accent) 55%, white 20%);
+    opacity: .45;
+    box-shadow: 0 0 16px color-mix(in srgb, var(--accent) 45%, transparent);
+    animation: starDrift 9s ease-in-out infinite alternate;
+}
+
+.orbital-stars i:nth-child(1) { left: 20%; top: 33%; animation-delay: .2s; }
+.orbital-stars i:nth-child(2) { right: 22%; top: 28%; animation-delay: 1.4s; }
+.orbital-stars i:nth-child(3) { left: 34%; bottom: 26%; animation-delay: 2.8s; }
+.orbital-stars i:nth-child(4) { right: 34%; bottom: 39%; animation-delay: 4s; }
+
+@keyframes orbitSpin {
+    from { transform: rotate(var(--tilt)) rotate(0deg); }
+    to { transform: rotate(var(--tilt)) rotate(360deg); }
+}
+
+@keyframes orbitalCoreBreath {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.035); }
+}
+
+@keyframes coreHalo {
+    0%, 100% { opacity: .25; transform: scale(.92); }
+    50% { opacity: .62; transform: scale(1.05); }
+}
+
+@keyframes starDrift {
+    from { transform: translate3d(-7px, 5px, 0); opacity: .25; }
+    to { transform: translate3d(8px, -7px, 0); opacity: .74; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .orbit,
+    .orbital-core,
+    .orbital-core::after,
+    .orbital-stars i {
+        animation: none !important;
+    }
+}
+
+/* ============================================================
+   Alpha 23.7 — Orbital Vault Cosmos
+   Animated, space-like Home hero panel with calm VaultOS motion.
+   ============================================================ */
+.vault-cosmos {
+    min-height: 300px;
+    display: grid;
+    grid-template-rows: minmax(0, 1fr) auto;
+    padding: 18px 20px 22px;
+    isolation: isolate;
+    background:
+        radial-gradient(ellipse at 78% 10%, rgba(99, 102, 241, .28), transparent 28%),
+        radial-gradient(ellipse at 34% 34%, rgba(56, 189, 248, .20), transparent 32%),
+        radial-gradient(ellipse at 54% 70%, rgba(168, 85, 247, .17), transparent 36%),
+        linear-gradient(180deg, rgba(4, 8, 18, .72), rgba(3, 7, 16, .96)),
+        linear-gradient(135deg, #06111f, #030712);
+}
+
+.vault-cosmos::before {
+    background:
+        radial-gradient(circle at 19% 28%, rgba(125,211,252,.24) 0 1px, transparent 2px),
+        radial-gradient(circle at 74% 18%, rgba(196,181,253,.25) 0 1px, transparent 2px),
+        radial-gradient(circle at 66% 68%, rgba(56,189,248,.20) 0 1px, transparent 2px),
+        radial-gradient(circle at 38% 72%, rgba(255,255,255,.18) 0 1px, transparent 2px),
+        linear-gradient(120deg, transparent 0%, rgba(255,255,255,.035) 48%, transparent 58%);
+    background-size: 140px 110px, 180px 140px, 120px 150px, 210px 160px, 100% 100%;
+    opacity: .86;
+    animation: starFieldFloat 52s linear infinite;
+}
+
+.vault-cosmos::after {
+    inset: 12px;
+    border-radius: 22px;
+    border-color: color-mix(in srgb, var(--accent) 16%, transparent);
+    background:
+        radial-gradient(ellipse at 50% 48%, transparent 23%, rgba(59,130,246,.055) 25%, transparent 29%),
+        radial-gradient(ellipse at 50% 48%, transparent 39%, rgba(168,85,247,.035) 41%, transparent 45%);
+    animation: orbitalPanelBreath 10s ease-in-out infinite;
+}
+
+.cosmos-nebula {
+    position: absolute;
+    inset: -28% -20% auto 8%;
+    height: 82%;
+    border-radius: 50%;
+    background:
+        radial-gradient(ellipse at 38% 42%, rgba(99,102,241,.30), transparent 24%),
+        radial-gradient(ellipse at 58% 50%, rgba(59,130,246,.22), transparent 30%),
+        radial-gradient(ellipse at 46% 60%, rgba(168,85,247,.18), transparent 36%);
+    filter: blur(22px) saturate(1.2);
+    opacity: .42;
+    transform: rotate(-12deg);
+    animation: nebulaDrift 88s ease-in-out infinite alternate;
+    pointer-events: none;
+}
+
+.cosmos-comet {
+    position: absolute;
+    top: 18%;
+    right: -24%;
+    width: 190px;
+    height: 2px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, transparent, rgba(125,211,252,.15), rgba(255,255,255,.90));
+    filter: drop-shadow(0 0 18px rgba(56,189,248,.55));
+    opacity: 0;
+    transform: rotate(-16deg) translateX(0);
+    animation: cometSweep 18s ease-in-out infinite;
+    pointer-events: none;
+}
+
+.vault-cosmos .orbital-field {
+    width: min(90%, 390px);
+    align-self: center;
+    justify-self: center;
+    margin-top: 2px;
+    filter: drop-shadow(0 0 42px color-mix(in srgb, var(--primary) 34%, transparent));
+}
+
+.vault-cosmos .orbit {
+    border-style: solid;
+    border-color: color-mix(in srgb, var(--accent) 22%, transparent);
+    box-shadow:
+        inset 0 0 18px rgba(96,165,250,.045),
+        0 0 20px rgba(96,165,250,.08),
+        0 0 52px rgba(79,70,229,.035);
+}
+
+.vault-cosmos .orbit::before {
+    border-top-color: color-mix(in srgb, var(--primary) 80%, white 16%);
+    border-right-color: color-mix(in srgb, var(--accent) 58%, transparent);
+    opacity: .84;
+    filter: drop-shadow(0 0 12px rgba(56,189,248,.32));
+}
+
+.orbit-four { --tilt: -9deg; --speed: 44s; inset: -8%; opacity: .48; }
+.orbit-five { --tilt: 42deg; --speed: 58s; inset: -18%; opacity: .34; animation-direction: reverse; }
+
+.vault-cosmos .node {
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    right: 6%;
+    top: 13%;
+    font-style: normal;
+    font-size: 13px;
+    color: #dbeafe;
+    border: 1px solid rgba(125,211,252,.34);
+    background:
+        radial-gradient(circle at 35% 28%, rgba(255,255,255,.26), transparent 20%),
+        linear-gradient(135deg, rgba(37,99,235,.76), rgba(6,182,212,.36));
+    box-shadow:
+        0 0 18px rgba(56,189,248,.36),
+        inset 0 1px 0 rgba(255,255,255,.14);
+    animation: nodeGlow 4.8s ease-in-out infinite;
+}
+
+.node-gallery { animation-delay: .8s !important; }
+.node-manuals { animation-delay: 1.6s !important; }
+.node-preservation { animation-delay: 2.3s !important; }
+.node-discovery { animation-delay: 3.1s !important; }
+
+.vault-cosmos .orbital-core {
+    width: 126px;
+    height: 126px;
+    background:
+        radial-gradient(circle at 50% 50%, rgba(59,130,246,.34), rgba(8,13,23,.90) 60%),
+        conic-gradient(from 180deg, rgba(59,130,246,.06), rgba(168,85,247,.24), rgba(34,211,238,.18), rgba(59,130,246,.06));
+}
+
+.vault-cosmos .orbital-core::before {
+    content: "";
+    position: absolute;
+    inset: -34px;
+    border-radius: 50%;
+    background: conic-gradient(from 0deg, transparent, rgba(56,189,248,.26), transparent, rgba(168,85,247,.22), transparent);
+    mask: radial-gradient(circle, transparent 55%, black 57%, black 60%, transparent 62%);
+    -webkit-mask: radial-gradient(circle, transparent 55%, black 57%, black 60%, transparent 62%);
+    animation: coreRingSpin 16s linear infinite;
+    opacity: .72;
+}
+
+.vault-cosmos .orbital-core span {
+    transform: translateZ(0);
+    animation: coreGlyphBreath 7s ease-in-out infinite;
+}
+
+.vault-cosmos .orbital-status {
+    width: min(90%, 360px);
+    margin-top: 8px;
+}
+
+.vault-cosmos .orbital-status strong {
+    font-size: 38px;
+}
+
+.vault-cosmos .orbital-progress {
+    position: relative;
+    height: 7px;
+    background: rgba(15,23,42,.72);
+    overflow: hidden;
+}
+
+.vault-cosmos .orbital-progress::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-90%);
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.35), transparent);
+    animation: orbitalProgressShimmer 3.2s ease-in-out infinite;
+}
+
+.orbital-steps {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    margin: 6px auto 1px;
+    width: min(84%, 280px);
+}
+
+.orbital-steps em {
+    display: block;
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: rgba(148,163,184,.16);
+    border: 1px solid rgba(96,165,250,.24);
+    box-shadow: 0 0 0 rgba(56,189,248,0);
+}
+
+.orbital-steps em.active {
+    background: var(--accent);
+    border-color: color-mix(in srgb, var(--accent) 85%, white 15%);
+    box-shadow: 0 0 18px color-mix(in srgb, var(--accent) 58%, transparent);
+    animation: stepPulse 2.8s ease-in-out infinite;
+}
+
+.vault-cosmos .orbital-stars i:nth-child(5) { left: 11%; top: 58%; animation-delay: 1.1s; }
+.vault-cosmos .orbital-stars i:nth-child(6) { right: 12%; top: 56%; animation-delay: 2.2s; }
+.vault-cosmos .orbital-stars i:nth-child(7) { left: 47%; top: 14%; animation-delay: 3.8s; }
+.vault-cosmos .orbital-stars i:nth-child(8) { right: 45%; bottom: 18%; animation-delay: 5.2s; }
+
+.home-hero:hover .vault-cosmos .orbit {
+    animation-duration: calc(var(--speed) * .88);
+}
+
+.home-hero:hover .vault-cosmos .orbital-stars i {
+    opacity: .78;
+}
+
+@keyframes starFieldFloat {
+    from { background-position: 0 0, 0 0, 0 0, 0 0, 0 0; }
+    to { background-position: 140px -110px, -180px 140px, 120px 150px, -210px -160px, 0 0; }
+}
+
+@keyframes orbitalPanelBreath {
+    0%, 100% { opacity: .66; transform: scale(.992); }
+    50% { opacity: .95; transform: scale(1); }
+}
+
+@keyframes nebulaDrift {
+    from { transform: rotate(-12deg) translate3d(-18px, 8px, 0) scale(.98); }
+    to { transform: rotate(-7deg) translate3d(20px, -10px, 0) scale(1.04); }
+}
+
+@keyframes cometSweep {
+    0%, 64%, 100% { opacity: 0; transform: rotate(-16deg) translateX(0); }
+    70% { opacity: .95; }
+    83% { opacity: 0; transform: rotate(-16deg) translateX(-620px); }
+}
+
+@keyframes nodeGlow {
+    0%, 100% { transform: scale(1); filter: brightness(1); }
+    50% { transform: scale(1.12); filter: brightness(1.25); }
+}
+
+@keyframes coreRingSpin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+@keyframes coreGlyphBreath {
+    0%, 100% { filter: brightness(1); box-shadow: 0 0 24px color-mix(in srgb, var(--primary) 55%, transparent); }
+    50% { filter: brightness(1.2); box-shadow: 0 0 38px color-mix(in srgb, var(--accent) 58%, transparent); }
+}
+
+@keyframes orbitalProgressShimmer {
+    0%, 100% { transform: translateX(-92%); opacity: 0; }
+    45% { opacity: .8; }
+    75% { transform: translateX(92%); opacity: 0; }
+}
+
+@keyframes stepPulse {
+    0%, 100% { transform: scale(1); opacity: .88; }
+    50% { transform: scale(1.28); opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .vault-cosmos::before,
+    .vault-cosmos::after,
+    .cosmos-nebula,
+    .cosmos-comet,
+    .vault-cosmos .node,
+    .vault-cosmos .orbital-core::before,
+    .vault-cosmos .orbital-core span,
+    .vault-cosmos .orbital-progress::after,
+    .orbital-steps em.active {
+        animation: none !important;
+    }
+}
+
+/* Alpha 23.7.1 — Orbital Vault Motion Fix
+   JS-assisted transforms make orbiting visibly active across Chromium/WebView builds. */
+.vault-cosmos.orbital-js-active .orbit {
+    animation: none !important;
+    will-change: transform;
+}
+
+.vault-cosmos.orbital-js-active .node {
+    transform: scale(var(--node-scale, 1));
+    transform-origin: center;
+    will-change: transform, filter;
+}
+
+.vault-cosmos.orbital-js-active .orbital-field {
+    transform: translate3d(calc(var(--cosmos-parallax-x, 0px) * .18), calc(var(--cosmos-parallax-y, 0px) * .14), 0);
+    transition: filter 650ms ease;
+}
+
+.vault-cosmos.orbital-js-active .orbital-core {
+    transform: translate3d(var(--core-parallax-x, 0px), var(--core-parallax-y, 0px), 0);
+}
+
+.vault-cosmos.orbital-js-active .orbit::before {
+    background: conic-gradient(from 0deg,
+        transparent 0deg,
+        rgba(56, 189, 248, .05) 110deg,
+        rgba(56, 189, 248, .34) 158deg,
+        rgba(168, 85, 247, .24) 205deg,
+        transparent 268deg);
+    mask: radial-gradient(circle, transparent 62%, #000 64%, #000 66%, transparent 69%);
+    -webkit-mask: radial-gradient(circle, transparent 62%, #000 64%, #000 66%, transparent 69%);
+    border: 0;
+    opacity: .95;
+}
+
+.vault-cosmos.orbital-js-active .orbit-one { --speed: 16s; }
+.vault-cosmos.orbital-js-active .orbit-two { --speed: 22s; }
+.vault-cosmos.orbital-js-active .orbit-three { --speed: 29s; }
+.vault-cosmos.orbital-js-active .orbit-four { --speed: 37s; }
+.vault-cosmos.orbital-js-active .orbit-five { --speed: 48s; }
+
+.vault-cosmos.orbital-js-active .cosmos-comet {
+    animation-duration: 13s;
+}
+
+.vault-cosmos.orbital-js-active .orbital-progress i {
+    position: relative;
+    overflow: hidden;
+}
+
+.vault-cosmos.orbital-js-active .orbital-progress i::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.48), transparent);
+    transform: translateX(-120%);
+    animation: orbitalInnerShimmer 2.9s ease-in-out infinite;
+}
+
+@keyframes orbitalInnerShimmer {
+    0%, 100% { transform: translateX(-120%); opacity: 0; }
+    45% { opacity: .75; }
+    75% { transform: translateX(120%); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .vault-cosmos.orbital-js-active .orbit,
+    .vault-cosmos.orbital-js-active .orbital-field,
+    .vault-cosmos.orbital-js-active .orbital-core,
+    .vault-cosmos.orbital-js-active .node,
+    .vault-cosmos.orbital-js-active .orbital-progress i::after {
+        animation: none !important;
+        transition: none !important;
+        transform: none !important;
+    }
+}
+
+/* Alpha 23.7.2 — Orbital Mount Fix
+   Ensures the orbital component loads after smooth navigation and remains visibly animated. */
+.vault-cosmos .orbit,
+.orbital-vault .orbit {
+    transform-origin: center center;
+    will-change: transform;
+}
+
+.vault-cosmos .node,
+.orbital-vault .node {
+    transform-origin: center center;
+    will-change: transform, filter, opacity;
+}
+
+.vault-cosmos.orbital-js-active .orbit,
+.orbital-vault.orbital-js-active .orbit {
+    animation: none !important;
+}
+
+.vault-cosmos:not(.orbital-js-active) .orbit,
+.orbital-vault:not(.orbital-js-active) .orbit {
+    animation-name: vaultarrOrbitFallback !important;
+    animation-duration: var(--speed, 22s) !important;
+    animation-timing-function: linear !important;
+    animation-iteration-count: infinite !important;
+}
+
+.vault-cosmos:not(.orbital-js-active) .orbit-two,
+.vault-cosmos:not(.orbital-js-active) .orbit-five,
+.orbital-vault:not(.orbital-js-active) .orbit-two,
+.orbital-vault:not(.orbital-js-active) .orbit-five {
+    animation-direction: reverse !important;
+}
+
+.vault-cosmos.orbital-mounted::before,
+.orbital-vault.orbital-mounted::before {
+    animation-duration: 42s;
+}
+
+@keyframes vaultarrOrbitFallback {
+    from { transform: rotate(var(--tilt, 0deg)) rotate(0deg); }
+    to { transform: rotate(var(--tilt, 0deg)) rotate(360deg); }
+}
+
+/* Vaultarr 1.0.3 — Home System Health card */
+.health-command {
+    grid-column: 2;
+    grid-row: 5;
+}
+
+.home-health-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.home-health-check {
+    min-width: 0;
+    padding: 12px;
+    border-radius: 15px;
+    background: rgba(7, 12, 22, .48);
+    border: 1px solid rgba(148, 163, 184, .10);
+}
+
+.home-health-check span,
+.home-health-check small {
+    display: block;
+    color: var(--text-muted);
+    font-size: 11px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.home-health-check strong {
+    display: block;
+    margin: 5px 0 2px;
+    font-size: 14px;
+    color: var(--text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.home-health-check.good { border-color: rgba(52, 211, 153, .18); }
+.home-health-check.warn { border-color: rgba(251, 191, 36, .22); }
+.home-health-check.neutral { border-color: rgba(96, 165, 250, .16); }
+.home-health-issue { margin-top: 12px; }
+
+@media (max-width: 1300px) {
+    .health-command {
+        grid-column: 1;
+        grid-row: auto;
+    }
+}

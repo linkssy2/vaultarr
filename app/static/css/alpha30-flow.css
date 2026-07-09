@@ -1,0 +1,257 @@
+/* ============================================================
+   Alpha 30 — Flow + Cohesion
+   Product-wide cleanup pass: fewer competing surfaces, calmer
+   hierarchy, shared VaultOS rhythm across major pages.
+   ============================================================ */
+
+:root {
+  --flow-page-max: 1560px;
+  --flow-gap: 22px;
+  --flow-panel-pad: 24px;
+  --flow-muted-surface: rgba(8, 13, 23, .58);
+}
+
+/* Page rhythm */
+.vaultos-content > section {
+  width: min(var(--flow-page-max), 100%);
+  margin-inline: auto;
+}
+
+.vaultos-content h1,
+.vaultos-content h2,
+.vaultos-content h3 {
+  text-wrap: balance;
+}
+
+.vaultos-content .hero-copy,
+.vaultos-content .muted {
+  line-height: 1.55;
+}
+
+/* Sidebar cleanup */
+.vault-nav-cohesive {
+  padding-top: 6px;
+}
+
+.vault-nav-cohesive .nav-section-label {
+  margin-top: 20px;
+  opacity: .74;
+}
+
+.vault-nav-cohesive a {
+  border: 1px solid transparent;
+}
+
+.vault-nav-cohesive a:hover {
+  background: rgba(15, 23, 42, .76);
+  border-color: color-mix(in srgb, var(--accent) 20%, transparent);
+}
+
+.vault-nav-cohesive a.active,
+.vault-nav-cohesive a[aria-current="page"] {
+  background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 15%, transparent), rgba(15,23,42,.7));
+  border-color: color-mix(in srgb, var(--accent) 34%, transparent);
+}
+
+/* Shared information cards */
+.alpha30-card,
+.alpha30-stack > *,
+.preservation-panel,
+.preserve-detail-card,
+.studio-section,
+.discovery-panel,
+.experience-panel,
+.time-capsule-history,
+.capsule-settings-panel,
+.backup-analyzer,
+.capsule-scope {
+  position: relative;
+  overflow: hidden;
+}
+
+.alpha30-card::before,
+.preservation-panel::before,
+.studio-section::before,
+.discovery-panel::before,
+.experience-panel::before,
+.capsule-settings-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--accent) 42%, transparent), transparent);
+  opacity: .68;
+  pointer-events: none;
+}
+
+/* Focus Mode: many tabs, one calmer strip */
+.focus-tabs {
+  gap: 8px;
+  padding: 7px;
+  border-radius: 18px;
+  background: rgba(5, 10, 20, .54);
+  border: 1px solid rgba(148, 163, 184, .12);
+}
+
+.focus-tab {
+  min-height: 38px;
+  border-radius: 12px;
+  padding-inline: 13px;
+  color: color-mix(in srgb, var(--text-muted) 86%, white 8%);
+}
+
+.focus-tab.active {
+  background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 24%, rgba(15,23,42,.86)), rgba(15,23,42,.82));
+  color: var(--text);
+  box-shadow: 0 8px 22px color-mix(in srgb, var(--accent) 11%, transparent), inset 0 1px 0 rgba(255,255,255,.06);
+}
+
+.focus-stat-grid .card,
+.focus-detail-list,
+.manual-workspace,
+.provider-intelligence-panel,
+.patch-workspace,
+.trailer-workspace,
+.media-library-panel {
+  border-radius: 20px;
+}
+
+/* Preservation: one mission first, details second */
+.alpha242-command-grid,
+.alpha242-details-grid {
+  gap: var(--flow-gap);
+}
+
+.alpha242-queue {
+  margin-top: var(--flow-gap);
+}
+
+.alpha242-queue-list {
+  display: grid;
+  gap: 10px;
+}
+
+.alpha242-queue-row {
+  min-height: 92px;
+  background: rgba(8, 13, 23, .52);
+  border: 1px solid rgba(148, 163, 184, .11);
+  transition: transform .18s ease, border-color .18s ease, background .18s ease;
+}
+
+.alpha242-queue-row:hover {
+  transform: translateY(-2px);
+  background: rgba(15, 23, 42, .78);
+  border-color: color-mix(in srgb, var(--accent) 32%, transparent);
+}
+
+.preserve-detail-card summary {
+  min-height: 58px;
+  align-items: center;
+}
+
+.preserve-detail-card:not([open]) {
+  min-height: auto;
+}
+
+.preserve-detail-card[open] {
+  background: linear-gradient(180deg, rgba(15,23,42,.74), rgba(8,13,23,.92));
+}
+
+/* Studio: separate daily actions from advanced configuration */
+.studio-workshop .studio-section {
+  padding: 28px;
+}
+
+.studio-section-head {
+  margin-bottom: 22px;
+}
+
+.studio-provider-grid {
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.studio-advanced-panel {
+  margin-top: 20px;
+}
+
+.studio-advanced-panel:not([open]) summary::after {
+  content: "Advanced";
+  float: right;
+  color: var(--text-muted);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .14em;
+}
+
+/* Discovery / Milestones: cleaner shelves */
+.discovery-shelf,
+.experience-grid,
+.collection-grid,
+.micro-shelf {
+  gap: 16px;
+}
+
+.discovery-card,
+.experience-card,
+.collection-line,
+.micro-game {
+  transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+
+.discovery-card:hover,
+.experience-card:hover,
+.collection-line:hover,
+.micro-game:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--accent) 32%, transparent);
+}
+
+/* Time Capsule: settings should feel like choices, not a form wall */
+.capsule-settings-panel,
+.backup-analyzer,
+.capsule-scope,
+.time-capsule-history {
+  padding: var(--flow-panel-pad);
+}
+
+.capsule-option-card,
+.schedule-pill,
+.retention-card {
+  border-radius: 16px;
+}
+
+/* Global forms */
+input,
+select,
+textarea {
+  border-radius: 14px;
+}
+
+/* Empty states */
+.empty-state,
+.success-text,
+.warning-text {
+  border-radius: 18px;
+}
+
+/* Mobile and mid-width flow */
+@media (max-width: 1200px) {
+  .focus-tabs {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+  }
+
+  .focus-tab {
+    flex: 0 0 auto;
+  }
+}
+
+@media (max-width: 760px) {
+  .studio-workshop .studio-section,
+  .capsule-settings-panel,
+  .backup-analyzer,
+  .capsule-scope,
+  .time-capsule-history {
+    padding: 18px;
+  }
+}

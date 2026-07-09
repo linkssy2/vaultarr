@@ -1,0 +1,341 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="studio-workshop">
+  <section class="studio-hero alive-panel">
+    <div class="studio-hero-copy">
+      <p class="eyebrow">Vault Studio</p>
+      <h1>Refine the vault.</h1>
+      <p class="muted hero-copy">A calmer workshop for providers, artwork sources, themes, library roots, and scans.</p>
+    </div>
+    <div class="studio-status-grid">
+      <div><span>Mode</span><strong>Studio</strong></div>
+      <div><span>Theme</span><strong>{{ current_theme.name or 'Custom' }}</strong></div>
+      <div><span>Libraries</span><strong>{{ libraries|length }}</strong></div>
+      <div><span>LaunchBox</span><strong>{% if launchbox_status.synced %}Synced{% else %}Offline{% endif %}</strong></div>
+    </div>
+  </section>
+
+  {% if saved == 'theme' %}
+  <section class="studio-toast success"><strong>Theme Saved</strong><span>Your Vaultarr theme was updated.</span></section>
+  {% endif %}
+
+  {% if scan_result.added is not none %}
+  <section class="studio-toast success">
+    <strong>Scan Complete</strong>
+    <span>Added {{ scan_result.added }} · Updated {{ scan_result.updated }} · Skipped {{ scan_result.skipped }} · Errors {{ scan_result.errors }}</span>
+  </section>
+  {% endif %}
+
+  {% if saved == 'darkreader' %}
+  <section class="studio-toast success"><strong>Compatibility Saved</strong><span>Dark Reader compatibility was updated.</span></section>
+  {% endif %}
+
+  {% if saved == 'launchbox' %}
+  <section class="studio-toast success"><strong>LaunchBox Synced</strong><span>{{ request.args.get('lb_games', '0') }} games and {{ request.args.get('lb_images', '0') }} image records indexed.</span></section>
+  {% endif %}
+
+  {% if saved == 'launchbox_error' %}
+  <section class="studio-toast warning"><strong>LaunchBox Sync Failed</strong><span>{{ request.args.get('lb_error', 'Unknown error') }}</span></section>
+  {% endif %}
+
+  {% if saved == 'providers' %}
+  <section class="studio-toast success"><strong>Providers Saved</strong><span>Metadata provider settings were updated.</span></section>
+  {% endif %}
+
+  {% if saved == 'reset_error' %}
+  <section class="studio-toast warning"><strong>Reset Not Confirmed</strong><span>Type RESET VAULT exactly before resetting your vault.</span></section>
+  {% endif %}
+
+  {% if saved == 'reset_failed' %}
+  <section class="studio-toast warning"><strong>Reset Failed</strong><span>Vaultarr could not remove one or more active data files. Close other windows and try again.</span></section>
+  {% endif %}
+
+  <section class="studio-intro-strip alive-panel">
+    <span>Studio is organized as a flowing workshop: providers first, visual tuning second, archive maintenance last.</span>
+    <a href="/metadata-queue">Open Metadata Queue →</a>
+  </section>
+
+  <section id="studioMetadata" class="studio-section alive-panel">
+    <div class="studio-section-head">
+      <div>
+        <p class="eyebrow">Metadata Tools</p>
+        <h2>Provider Workshop</h2>
+        <p class="muted">Choose which data engines Vaultarr can use when building records.</p>
+      </div>
+      <span class="studio-section-badge">{{ 'LaunchBox Ready' if launchbox_status.synced else 'LaunchBox Not Synced' }}</span>
+    </div>
+
+    <form action="/settings/metadata-providers" method="post" class="studio-provider-form">
+      <div class="studio-provider-grid">
+        <label class="studio-toggle-card studio-provider-card provider-igdb">
+          <input type="checkbox" name="enable_igdb" {% if provider_settings.enable_igdb %}checked{% endif %}>
+          <span class="provider-icon">🎮</span>
+          <span class="provider-copy"><strong>IGDB</strong><small>Primary game database. Requires Twitch credentials.</small><em>Games · Details · Genres · Screenshots</em></span>
+        </label>
+        <label class="studio-toggle-card studio-provider-card provider-rawg">
+          <input type="checkbox" name="enable_rawg" {% if provider_settings.enable_rawg %}checked{% endif %}>
+          <span class="provider-icon">▧</span>
+          <span class="provider-copy"><strong>RAWG</strong><small>Game data, dates, genres, and screenshots.</small><em>Games · Releases · Media · Tags</em></span>
+        </label>
+        <label class="studio-toggle-card studio-provider-card provider-steamgrid">
+          <input type="checkbox" name="enable_steamgriddb" {% if provider_settings.enable_steamgriddb %}checked{% endif %}>
+          <span class="provider-icon">▨</span>
+          <span class="provider-copy"><strong>SteamGridDB</strong><small>Poster-style covers and premium artwork.</small><em>Covers · Logos · Heroes · Artwork</em></span>
+        </label>
+        <label class="studio-toggle-card studio-provider-card provider-launchbox">
+          <input type="checkbox" name="enable_launchbox" {% if provider_settings.enable_launchbox %}checked{% endif %}>
+          <span class="provider-icon">◈</span>
+          <span class="provider-copy"><strong>LaunchBox</strong><small>Offline cached metadata. No license XML required.</small><em>Offline Cache · Fast · Reliable</em></span>
+        </label>
+        <label class="studio-toggle-card studio-provider-card provider-steam">
+          <input type="checkbox" name="enable_steam" {% if provider_settings.enable_steam %}checked{% endif %}>
+          <span class="provider-icon">◌</span>
+          <span class="provider-copy"><strong>Steam</strong><small>Store metadata fallback. No key needed.</small><em>Store Data · Descriptions · Dates</em></span>
+        </label>
+        <label class="studio-toggle-card studio-provider-card provider-wikipedia">
+          <input type="checkbox" name="enable_wikipedia" {% if provider_settings.enable_wikipedia %}checked{% endif %}>
+          <span class="provider-icon">W</span>
+          <span class="provider-copy"><strong>Wikipedia</strong><small>Fallback for obscure or delisted games.</small><em>Descriptions · History · Background</em></span>
+        </label>
+      </div>
+
+      <details class="studio-advanced-panel">
+        <summary>Provider Credentials</summary>
+        <div class="studio-field-grid">
+          <div><label>RAWG API Key <small>{{ masked(provider_settings.rawg_api_key) }}</small></label><input type="password" name="rawg_api_key" value="{{ provider_settings.rawg_api_key }}" placeholder="RAWG API key"></div>
+          <div><label>IGDB Client ID <small>{{ masked(provider_settings.igdb_client_id) }}</small></label><input type="password" name="igdb_client_id" value="{{ provider_settings.igdb_client_id }}" placeholder="Twitch Client ID"></div>
+          <div><label>IGDB Client Secret <small>{{ masked(provider_settings.igdb_client_secret) }}</small></label><input type="password" name="igdb_client_secret" value="{{ provider_settings.igdb_client_secret }}" placeholder="Twitch Client Secret"></div>
+          <div><label>SteamGridDB API Key <small>{{ masked(provider_settings.steamgriddb_api_key) }}</small></label><input type="password" name="steamgriddb_api_key" value="{{ provider_settings.steamgriddb_api_key }}" placeholder="SteamGridDB API key"></div>
+          <div class="wide"><label>LaunchBox Metadata URL</label><input type="text" name="launchbox_metadata_url" value="{{ provider_settings.launchbox_metadata_url }}" placeholder="https://gamesdb.launchbox-app.com/Metadata.zip"></div>
+        </div>
+      </details>
+
+      <div class="studio-actions"><button>Save Metadata Providers</button></div>
+    </form>
+  </section>
+
+  <section class="studio-two-column">
+    <section class="studio-card-panel alive-panel launchbox-sync-panel">
+      <div class="studio-section-head compact">
+        <div><p class="eyebrow">LaunchBox Cache</p><h2>Local Index</h2></div>
+      </div>
+      <div class="studio-metric-strip">
+        <div><span>Status</span><strong>{% if launchbox_status.synced %}Synced{% else %}Not Synced{% endif %}</strong></div>
+        <div><span>Games</span><strong>{{ launchbox_status.games }}</strong></div>
+        <div><span>Images</span><strong>{{ launchbox_status.images }}</strong></div>
+        <div><span>Last Sync</span><strong>{{ launchbox_status.last_sync or 'Never' }}</strong></div>
+      </div>
+      <form action="/settings/launchbox/sync" method="post" class="studio-actions">
+        <input type="hidden" name="launchbox_metadata_url" value="{{ provider_settings.launchbox_metadata_url }}">
+        <button>Sync LaunchBox Database</button>
+      </form>
+    </section>
+
+    <section id="studioArtwork" class="studio-card-panel alive-panel">
+      <div class="studio-section-head compact">
+        <div><p class="eyebrow">Artwork Tools</p><h2>Theme Packs</h2></div>
+      </div>
+      <div class="studio-theme-grid">
+        {% for key, pack in theme_packs.items() %}
+          <form action="/settings/theme/preset" method="post" class="theme-protected studio-theme-card {% if current_theme.preset == key and not current_theme.is_custom %}active{% endif %}">
+            <input type="hidden" name="preset" value="{{ key }}">
+            <button type="submit" aria-label="Apply {{ pack.name }} theme">
+              <span class="studio-theme-preview theme-protected" style="--preview-primary: {{ pack.primary }}; --preview-accent: {{ pack.accent }}; --preview-panel: {{ pack.panel }}; --preview-bg: {{ pack.background }}; --preview-sidebar: {{ pack.sidebar }};"></span>
+              <span><strong>{{ pack.name }}</strong><small>{{ pack.description }}</small></span>
+            </button>
+          </form>
+        {% endfor %}
+      </div>
+    </section>
+  </section>
+
+  <section class="studio-two-column">
+    <section class="studio-card-panel alive-panel" id="darkReaderPanel">
+      <div class="studio-section-head compact">
+        <div><p class="eyebrow">Compatibility</p><h2>Dark Reader Guard</h2></div>
+        <span class="compat-pill" id="darkReaderStatus">Checking...</span>
+      </div>
+      <div class="compat-warning" id="darkReaderWarning" hidden>Browser dark-mode extension behavior was detected.</div>
+      <form action="/settings/theme/dark-reader" method="post" class="studio-option-form">
+        <label class="studio-toggle-card full">
+          <input type="checkbox" name="enabled" {% if current_theme.dark_reader_compat %}checked{% endif %}>
+          <span><strong>Protect Vaultarr Styling</strong><small>Keep theme swatches and previews from being flattened by extensions.</small></span>
+        </label>
+        <div class="studio-actions"><button>Save Compatibility</button></div>
+      </form>
+    </section>
+
+    <section class="studio-card-panel alive-panel">
+      <div class="studio-section-head compact">
+        <div><p class="eyebrow">Custom Theme</p><h2>Color Tuning</h2></div>
+      </div>
+      <form class="studio-option-form" action="/settings/theme/custom" method="post">
+        <input type="hidden" name="mode" value="custom">
+        <input type="hidden" name="base_preset" value="{{ current_theme.preset if current_theme.preset != 'custom' else 'vault_blue' }}">
+        <div class="studio-color-grid">
+          <div><label>Primary</label><input type="color" name="primary" value="{{ current_theme.primary }}"></div>
+          <div><label>Accent</label><input type="color" name="accent" value="{{ current_theme.accent }}"></div>
+          <div><label>Background</label><input type="color" name="background" value="{{ current_theme.background }}"></div>
+          <div><label>Panel</label><input type="color" name="panel" value="{{ current_theme.panel }}"></div>
+          <div><label>Sidebar</label><input type="color" name="sidebar" value="{{ current_theme.sidebar }}"></div>
+          <div><label>Border</label><input type="color" name="border" value="{{ current_theme.border }}"></div>
+        </div>
+        <div class="studio-actions split"><button>Save Custom Theme</button></div>
+      </form>
+      <form action="/settings/theme/reset" method="post" class="studio-actions"><button class="secondary">Reset to Vault Blue</button></form>
+    </section>
+  </section>
+
+
+  <section class="studio-section alive-panel media-cache-manager" id="studioMediaCache">
+    <div class="studio-section-head">
+      <div>
+        <p class="eyebrow">Media Cache</p>
+        <h2>Cache Manager</h2>
+        <p class="muted">Review cached gallery, cover, logo, hero, and trailer thumbnail assets. Clean safe orphaned files without digging through Vaultarr folders.</p>
+      </div>
+      <span class="studio-section-badge" id="mediaCacheSize">{{ media_cache.size_mb }} MB</span>
+    </div>
+
+    <div class="studio-metric-strip media-cache-strip">
+      <div><span>Cached Assets</span><strong id="mediaCacheAssets">{{ media_cache.cached_assets }}</strong></div>
+      <div><span>Files on Disk</span><strong id="mediaCacheFiles">{{ media_cache.files }}</strong></div>
+      <div><span>Total Size</span><strong id="mediaCacheTotal">{{ media_cache.size_mb }} MB</strong></div>
+      <div><span>Tracked Items</span><strong>{{ media_cache.total_assets }}</strong></div>
+    </div>
+
+    <div class="media-cache-type-grid">
+      {% for item in media_cache.by_type %}
+        <div><span>{{ item.media_type|replace('_', ' ')|title }}</span><strong>{{ item.count }}</strong></div>
+      {% else %}
+        <div><span>No cached media yet</span><strong>0</strong></div>
+      {% endfor %}
+    </div>
+
+    <div class="studio-actions split">
+      <button type="button" id="mediaCacheRefreshButton" class="secondary">Refresh Cache Stats</button>
+      <button type="button" id="mediaCacheCleanupButton">Clean Orphaned Files</button>
+    </div>
+    <div class="studio-toast cache-toast" id="mediaCacheStatus" hidden></div>
+  </section>
+
+  <section id="studioArchiveTools" class="studio-section alive-panel">
+    <div class="studio-section-head">
+      <div>
+        <p class="eyebrow">Archive Tools</p>
+        <h2>Library Roots</h2>
+        <p class="muted">Add folders, scan libraries, and maintain the vault without digging through settings.</p>
+      </div>
+    </div>
+
+    <form class="studio-add-library" action="/libraries/add" method="post">
+      <div><label>Name</label><input name="name" placeholder="Abandonware"></div>
+      <div><label>Path</label><input name="path" placeholder="E:\Abandonware" required></div>
+      <button>Add Library</button>
+    </form>
+
+    <div class="studio-library-list">
+      {% for library in libraries %}
+        <article class="studio-library-card">
+          <div>
+            <h3>{{ library.name }}</h3>
+            <p class="muted">{{ library.path }}</p>
+          </div>
+          <div class="studio-library-actions">
+            <form action="/libraries/scan/{{ library.id }}" method="post"><button>Scan</button></form>
+            <form action="/libraries/delete/{{ library.id }}" method="post"><button class="danger">Remove</button></form>
+          </div>
+        </article>
+      {% else %}
+        <div class="studio-empty-state"><strong>No libraries added yet.</strong><span>Add a game folder above, then scan it into Vaultarr.</span></div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section id="studioDangerZone" class="studio-section alive-panel danger-zone-panel">
+    <div class="studio-section-head">
+      <div>
+        <p class="eyebrow danger-eyebrow">Danger Zone</p>
+        <h2>Reset Vault</h2>
+        <p class="muted">Clear the active database, library roots, provider settings, themes, and return Vaultarr to the first-run setup screen.</p>
+      </div>
+      <span class="studio-section-badge danger-badge">Irreversible</span>
+    </div>
+
+    <div class="reset-vault-grid">
+      <div class="reset-vault-warning">
+        <strong>Make a Time Capsule first.</strong>
+        <span>This reset is meant for starting fresh before a new scan, a new Docker volume, or a clean GitHub-ready test. Time Capsule backups are kept unless you explicitly delete them below.</span>
+      </div>
+      <form action="/settings/reset-vault" method="post" class="reset-vault-form" onsubmit="return confirm('Reset Vaultarr and return to first-run setup?');">
+        <label class="studio-toggle-card full">
+          <input type="checkbox" name="delete_cached_assets" checked>
+          <span><strong>Delete cached media/manuals/provider indexes</strong><small>Removes covers, gallery images, manuals, LaunchBox indexes, and provider caches.</small></span>
+        </label>
+        <label class="studio-toggle-card full">
+          <input type="checkbox" name="delete_time_capsules">
+          <span><strong>Also delete Time Capsules</strong><small>Usually leave this off so you can restore from previous exports.</small></span>
+        </label>
+        <div class="reset-confirm-row">
+          <label>Type <strong>RESET VAULT</strong> to confirm</label>
+          <input name="confirmation" placeholder="RESET VAULT" autocomplete="off" required>
+        </div>
+        <div class="studio-actions split">
+          <a class="button-link secondary" href="/archive">Make Time Capsule First</a>
+          <button class="danger">Reset Vault</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+</section>
+
+<script>
+(() => {
+  const status = document.getElementById('mediaCacheStatus');
+  const refresh = document.getElementById('mediaCacheRefreshButton');
+  const cleanup = document.getElementById('mediaCacheCleanupButton');
+  const setStatus = (message, tone='success') => {
+    if (!status) return;
+    status.hidden = false;
+    status.className = `studio-toast cache-toast ${tone}`;
+    status.innerHTML = `<strong>Media Cache</strong><span>${message}</span>`;
+  };
+  const update = (data) => {
+    if (document.getElementById('mediaCacheSize')) document.getElementById('mediaCacheSize').textContent = `${data.size_mb || 0} MB`;
+    if (document.getElementById('mediaCacheAssets')) document.getElementById('mediaCacheAssets').textContent = data.cached_assets || 0;
+    if (document.getElementById('mediaCacheFiles')) document.getElementById('mediaCacheFiles').textContent = data.files || 0;
+    if (document.getElementById('mediaCacheTotal')) document.getElementById('mediaCacheTotal').textContent = `${data.size_mb || 0} MB`;
+  };
+  const refreshStats = async () => {
+    const response = await fetch('/api/media/cache/summary');
+    const data = await response.json();
+    if (!response.ok || !data.success) throw new Error(data.message || 'Could not refresh cache stats.');
+    update(data);
+    return data;
+  };
+  refresh?.addEventListener('click', async () => {
+    try { await refreshStats(); setStatus('Cache stats refreshed.'); }
+    catch (error) { setStatus(error.message, 'warning'); }
+  });
+  cleanup?.addEventListener('click', async () => {
+    cleanup.disabled = true;
+    cleanup.textContent = 'Cleaning...';
+    try {
+      const response = await fetch('/api/media/cache/cleanup', { method: 'POST' });
+      const data = await response.json();
+      if (!response.ok || !data.success) throw new Error(data.message || 'Cleanup failed.');
+      update(data);
+      setStatus(`Removed ${data.removed_files || 0} orphaned file${Number(data.removed_files || 0) === 1 ? '' : 's'} (${data.removed_mb || 0} MB).`);
+    } catch (error) {
+      setStatus(error.message, 'warning');
+    } finally {
+      cleanup.disabled = false;
+      cleanup.textContent = 'Clean Orphaned Files';
+    }
+  });
+})();
+</script>
+
+{% endblock %}
