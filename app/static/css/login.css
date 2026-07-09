@@ -171,3 +171,34 @@
   .login-orbit,
   .login-core { animation: none !important; }
 }
+
+/* Vaultarr 1.1.1 — official icon integration */
+.login-core {
+  overflow: hidden;
+  padding: 0;
+  background: transparent;
+}
+
+.login-core img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  border-radius: inherit;
+}
+
+.login-brand .brand-mark {
+  width: 54px;
+  height: 54px;
+  padding: 0;
+  overflow: hidden;
+  background: transparent;
+}
+
+.login-brand .brand-mark img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  border-radius: 16px;
+}
