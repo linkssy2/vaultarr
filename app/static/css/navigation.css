@@ -72,3 +72,22 @@ body.vault-nav-loading .vaultos-content::before {
         left: 0;
     }
 }
+
+.sidebar-logout-form {
+  margin-top: 10px;
+}
+.sidebar-logout-form button {
+  width: 100%;
+  border: 1px solid rgba(148, 163, 184, .16);
+  border-radius: 13px;
+  padding: 9px 10px;
+  color: var(--text-muted);
+  background: rgba(15, 23, 42, .48);
+  cursor: pointer;
+  transition: border-color .2s ease, color .2s ease, background .2s ease;
+}
+.sidebar-logout-form button:hover {
+  color: var(--text);
+  border-color: color-mix(in srgb, var(--accent) 34%, transparent);
+  background: color-mix(in srgb, var(--accent) 10%, rgba(15, 23, 42, .56));
+}

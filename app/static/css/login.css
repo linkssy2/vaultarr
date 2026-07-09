@@ -1,0 +1,173 @@
+.login-body {
+  min-height: 100vh;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at 72% 20%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 34%),
+    radial-gradient(circle at 20% 78%, color-mix(in srgb, var(--primary) 14%, transparent), transparent 36%),
+    var(--background);
+}
+
+.login-shell {
+  width: min(1080px, calc(100vw - 40px));
+  display: grid;
+  grid-template-columns: minmax(330px, .9fr) minmax(340px, 440px);
+  gap: 28px;
+  align-items: center;
+}
+
+.login-orbital {
+  position: relative;
+  min-height: 520px;
+  border-radius: 36px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--accent) 15%, transparent), transparent 34%),
+    linear-gradient(180deg, rgba(15,23,42,.52), rgba(2,6,23,.76));
+  border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
+  box-shadow: inset 0 0 80px rgba(0,0,0,.35), 0 30px 90px rgba(0,0,0,.35);
+}
+
+.login-stars::before,
+.login-stars::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle, rgba(255,255,255,.55) 0 1px, transparent 1.5px),
+    radial-gradient(circle, color-mix(in srgb, var(--accent) 60%, white 20%) 0 1px, transparent 1.4px);
+  background-size: 82px 82px, 123px 123px;
+  opacity: .25;
+  animation: loginStarDrift 90s linear infinite;
+}
+
+.login-orbit {
+  position: absolute;
+  inset: 50%;
+  width: var(--size);
+  height: var(--size);
+  margin: calc(var(--size) / -2);
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--accent) 26%, transparent);
+  animation: loginOrbit var(--speed) linear infinite;
+  box-shadow: 0 0 32px color-mix(in srgb, var(--accent) 10%, transparent);
+}
+
+.login-orbit span {
+  position: absolute;
+  top: 9%;
+  left: 50%;
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--accent) 82%, white 18%);
+  box-shadow: 0 0 22px var(--accent);
+}
+
+.orbit-one { --size: 190px; --speed: 32s; }
+.orbit-two { --size: 286px; --speed: 52s; animation-direction: reverse; }
+.orbit-three { --size: 390px; --speed: 78s; }
+
+.login-core {
+  position: absolute;
+  inset: 50%;
+  width: 112px;
+  height: 112px;
+  margin: -56px;
+  display: grid;
+  place-items: center;
+  border-radius: 32px;
+  font-size: 46px;
+  font-weight: 900;
+  color: white;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  box-shadow: 0 0 58px color-mix(in srgb, var(--accent) 42%, transparent);
+  animation: loginCoreBreathe 7s ease-in-out infinite;
+}
+
+.login-card {
+  padding: 34px;
+  border-radius: 30px;
+  background:
+    linear-gradient(180deg, rgba(15,23,42,.76), rgba(2,6,23,.92));
+  backdrop-filter: blur(18px);
+  border: 1px solid rgba(148,163,184,.18);
+}
+
+.login-brand {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 28px;
+}
+
+.login-brand h1 {
+  margin: 4px 0 4px;
+  font-size: 42px;
+  letter-spacing: -.07em;
+}
+
+.login-form {
+  display: grid;
+  gap: 16px;
+}
+
+.login-form label {
+  display: grid;
+  gap: 8px;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.login-form input {
+  width: 100%;
+  border: 1px solid rgba(148,163,184,.18);
+  border-radius: 15px;
+  padding: 13px 14px;
+  background: rgba(2,6,23,.62);
+  color: var(--text);
+  outline: none;
+}
+
+.login-form input:focus {
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 14%, transparent);
+}
+
+.login-form button {
+  margin-top: 4px;
+  border: 0;
+  border-radius: 16px;
+  padding: 13px 16px;
+  color: white;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  box-shadow: 0 16px 34px color-mix(in srgb, var(--accent) 22%, transparent);
+  cursor: pointer;
+}
+
+.login-alert {
+  margin-bottom: 16px;
+  border-radius: 14px;
+  padding: 12px 14px;
+  border: 1px solid rgba(248,113,113,.28);
+  background: rgba(127,29,29,.22);
+  color: #fecaca;
+}
+
+@keyframes loginOrbit { to { transform: rotate(360deg); } }
+@keyframes loginStarDrift { to { transform: translate3d(-120px, -80px, 0); } }
+@keyframes loginCoreBreathe { 0%,100% { transform: scale(1); } 50% { transform: scale(1.035); } }
+
+@media (max-width: 860px) {
+  .login-shell { grid-template-columns: 1fr; }
+  .login-orbital { min-height: 260px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login-stars::before,
+  .login-stars::after,
+  .login-orbit,
+  .login-core { animation: none !important; }
+}

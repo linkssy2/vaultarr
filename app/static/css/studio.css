@@ -261,3 +261,53 @@ button.danger:hover {
         flex-direction: column;
     }
 }
+
+/* Vaultarr 1.1 — Authentication / Security Workshop */
+.security-workshop {
+  position: relative;
+  overflow: hidden;
+}
+.security-workshop::after {
+  content: "";
+  position: absolute;
+  right: -90px;
+  top: -110px;
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--accent) 22%, transparent), transparent 68%);
+  pointer-events: none;
+  opacity: .8;
+}
+.security-toggle-card {
+  margin-bottom: 18px;
+}
+.security-form input[readonly] {
+  opacity: .74;
+  cursor: default;
+}
+
+/* Vaultarr 1.1 — Authentication / Security Workshop */
+.security-workshop {
+  position: relative;
+  overflow: hidden;
+}
+.security-workshop::after {
+  content: "";
+  position: absolute;
+  right: -90px;
+  top: -110px;
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--accent) 22%, transparent), transparent 68%);
+  pointer-events: none;
+  opacity: .8;
+}
+.security-toggle-card {
+  margin-bottom: 18px;
+}
+.security-form input[readonly] {
+  opacity: .74;
+  cursor: default;
+}

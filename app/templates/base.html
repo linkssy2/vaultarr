@@ -59,9 +59,14 @@
     <div class="sidebar-footer">
       <div class="mini-stat vault-build-card">
         <span>Current build</span>
-        <strong>Vaultarr 1.0.6</strong>
+        <strong>Vaultarr 1.1</strong>
         <em></em>
       </div>
+      {% if auth_enabled %}
+      <form action="/logout" method="post" class="sidebar-logout-form">
+        <button type="submit">Logout</button>
+      </form>
+      {% endif %}
       <p class="sidebar-tagline">Preserve your library. Rediscover your games.</p>
     </div>
   </aside>

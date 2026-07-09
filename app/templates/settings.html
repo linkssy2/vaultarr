@@ -43,6 +43,22 @@
   <section class="studio-toast success"><strong>Providers Saved</strong><span>Metadata provider settings were updated.</span></section>
   {% endif %}
 
+  {% if saved == 'security' %}
+  <section class="studio-toast success"><strong>Security Saved</strong><span>Vaultarr authentication settings were updated.</span></section>
+  {% endif %}
+
+  {% if saved == 'password_mismatch' %}
+  <section class="studio-toast warning"><strong>Password Mismatch</strong><span>The two password fields did not match.</span></section>
+  {% endif %}
+
+  {% if saved == 'password_short' %}
+  <section class="studio-toast warning"><strong>Password Too Short</strong><span>Use at least 6 characters for the Vaultarr password.</span></section>
+  {% endif %}
+
+  {% if saved == 'password_required' %}
+  <section class="studio-toast warning"><strong>Password Required</strong><span>Set a password before enabling authentication.</span></section>
+  {% endif %}
+
   {% if saved == 'reset_error' %}
   <section class="studio-toast warning"><strong>Reset Not Confirmed</strong><span>Type RESET VAULT exactly before resetting your vault.</span></section>
   {% endif %}
@@ -54,6 +70,36 @@
   <section class="studio-intro-strip alive-panel">
     <span>Studio is organized as a flowing workshop: providers first, visual tuning second, archive maintenance last.</span>
     <a href="/metadata-queue">Open Metadata Queue →</a>
+  </section>
+
+  <section class="studio-section alive-panel security-workshop" id="studioSecurity">
+    <div class="studio-section-head">
+      <div>
+        <p class="eyebrow">Security</p>
+        <h2>Vault Access</h2>
+        <p class="muted">Enable a Sonarr-style login page before anyone can access Vaultarr.</p>
+      </div>
+      <span class="studio-section-badge">{% if auth_settings.enabled and auth_settings.configured %}Protected{% else %}Open Access{% endif %}</span>
+    </div>
+
+    <form action="/settings/security" method="post" class="studio-option-form security-form">
+      <label class="studio-toggle-card full security-toggle-card">
+        <input type="checkbox" name="auth_enabled" {% if auth_settings.enabled and auth_settings.configured %}checked{% endif %}>
+        <span><strong>Require Login</strong><small>When enabled, Vaultarr will show the VaultOS login screen after refresh or restart.</small></span>
+      </label>
+
+      <div class="studio-field-grid">
+        <div><label>Username</label><input type="text" name="auth_username" value="{{ auth_settings.username or 'admin' }}" autocomplete="username"></div>
+        <div><label>New Password <small>leave blank to keep current</small></label><input type="password" name="auth_password" autocomplete="new-password"></div>
+        <div><label>Confirm New Password</label><input type="password" name="auth_password_confirm" autocomplete="new-password"></div>
+        <div><label>Status</label><input type="text" value="{% if auth_settings.enabled and auth_settings.configured %}Authentication enabled{% elif auth_settings.configured %}Authentication configured but disabled{% else %}No login configured{% endif %}" readonly></div>
+      </div>
+
+      <div class="studio-actions split">
+        <button>Save Security Settings</button>
+        {% if auth_enabled %}<a class="button-link secondary" href="/logout">Logout</a>{% endif %}
+      </div>
+    </form>
   </section>
 
   <section id="studioMetadata" class="studio-section alive-panel">

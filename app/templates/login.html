@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Vaultarr Login</title>
+  <link rel="stylesheet" href="/static/css/vaultos.css">
+  <link rel="stylesheet" href="/static/css/forms.css">
+  <link rel="stylesheet" href="/static/css/login.css">
+  <style id="vaultarr-theme">{{ theme_css|safe }}</style>
+</head>
+<body class="vaultos login-body">
+  <div class="vault-ambient login-ambient" aria-hidden="true"><span></span><i></i></div>
+
+  <main class="login-shell">
+    <section class="login-orbital" aria-hidden="true">
+      <div class="login-stars"></div>
+      <div class="login-orbit orbit-one"><span></span></div>
+      <div class="login-orbit orbit-two"><span></span></div>
+      <div class="login-orbit orbit-three"><span></span></div>
+      <div class="login-core">V</div>
+    </section>
+
+    <section class="login-card alive-panel">
+      <div class="login-brand">
+        <span class="brand-mark">V</span>
+        <div>
+          <p class="eyebrow">Vaultarr Security</p>
+          <h1>Enter the Vault.</h1>
+          <p class="muted">Your games deserve a museum.</p>
+        </div>
+      </div>
+
+      {% if error %}<div class="login-alert">{{ error }}</div>{% endif %}
+
+      <form method="post" class="login-form">
+        <input type="hidden" name="next" value="{{ next_url }}">
+        <label>Username<input name="username" autocomplete="username" value="{{ auth_settings.username or 'admin' }}" autofocus></label>
+        <label>Password<input type="password" name="password" autocomplete="current-password"></label>
+        <button type="submit">Enter the Vault</button>
+      </form>
+    </section>
+  </main>
+</body>
+</html>

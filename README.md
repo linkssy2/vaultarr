@@ -1,33 +1,29 @@
-# Vaultarr
+# Vaultarr 1.1
 
-**Your games deserve a museum.**
+Vaultarr is a self-hosted game preservation dashboard for cataloging, enriching, and maintaining a personal game archive.
 
-Vaultarr is a self-hosted game preservation platform for building, enriching, and protecting a digital game archive. It treats every game as a digital artifact: metadata, covers, screenshots, manuals, trailers, patches, preservation status, and collection context all live together in one focused interface.
+## What Vaultarr does
 
-## Features
+- Library scanning and floating game cards
+- Metadata providers including LaunchBox, IGDB, RAWG, Steam, Wikipedia, and SteamGridDB artwork
+- Provider Intelligence and Build Best Record
+- Manual Engine with indexed manual providers
+- Media Library for covers, screenshots, hero art, logos, and trailer assets
+- Trailer Finder and cinematic Trailer tab
+- Patch Engine for community fixes and compatibility references
+- Preservation Mission Control
+- Smart Collections and collection milestones
+- Time Capsule backups
+- Studio/Provider Workshop
 
-- **Library Engine** — scan and browse game libraries.
-- **Collector Focus** — expanded game records with metadata, media, manuals, trailers, patches, and files.
-- **Metadata Engine** — provider-based metadata matching with Provider Intelligence.
-- **Manual Engine** — indexed manual search and local manual archive.
-- **Media Library** — covers, screenshots, hero art, logos, trailer thumbnails, and cache management.
-- **Trailer Engine** — in-card trailer finder and cinematic trailer view.
-- **Patch Engine** — community fixes, widescreen patches, unofficial updates, and reference links.
-- **Preservation Mission Control** — see what needs attention first.
-- **Smart Collections** — user collections, auto categories, and preservation-oriented signals.
-- **Time Capsule** — local export/import backups with scheduled backup-folder workflow.
-- **VaultOS UI** — dark, animated, preservation-focused interface.
+## Quick start: Windows
 
-## Quick start
+1. Extract the release zip.
+2. Run `run_vaultarr.bat`.
+3. Open `http://localhost:8787`.
+4. Use the onboarding screen or Studio to add your game library path.
 
-### Local Python
-
-```bash
-pip install -r requirements.txt
-python -m app.main
-```
-
-### Docker Compose
+## Quick start: Docker Compose
 
 ```yaml
 services:
@@ -35,42 +31,44 @@ services:
     build: .
     container_name: vaultarr
     ports:
-      - "5058:5058"
+      - "8787:8787"
+    environment:
+      - LOCALAPPDATA=/config
     volumes:
       - ./config:/config
-      - /mnt/games:/games
-      - /mnt/vaultarr/backups:/backups
+      - /path/to/games:/games
+      - ./backups:/backups
     restart: unless-stopped
 ```
 
-Then open Vaultarr in your browser and complete the first-run setup.
+Then open `http://localhost:8787`.
 
-## Repository layout
+## Important paths
 
-```text
-vaultarr/
-├── app/                 # Application source
-├── config/              # Persistent config placeholder
-├── database/            # Database docs/placeholders
-├── docker/              # Docker compose examples
-├── docs/                # Documentation and release notes
-├── screenshots/         # README / release screenshots
-├── tests/               # Future tests
-├── tools/               # Maintenance scripts
-├── README.md
-├── CHANGELOG.md
-├── ROADMAP.md
-├── CONTRIBUTING.md
-├── SECURITY.md
-├── LICENSE
-├── Dockerfile
-└── docker-compose.yml
+Vaultarr stores its database and generated app data under `LOCALAPPDATA/Vaultarr` by default.
+
+For Docker, set `LOCALAPPDATA=/config` and mount `/config` as a persistent volume.
+
+## First run
+
+Open `/onboarding` after first launch. Add a library, scan it from Studio, then use Provider Intelligence to build records.
+
+## Health check
+
+Open `/health` to inspect database, library, provider, and cache readiness.
+
+
+## Authentication
+
+Vaultarr 1.1 includes built-in Sonarr-style Forms authentication. Enable it from **Studio → Security → Vault Access**. Passwords are stored hashed, and the login page uses the VaultOS design language.
+
+For Docker users, first-run authentication can also be bootstrapped with optional environment variables:
+
+```yaml
+environment:
+  - VAULTARR_AUTH_ENABLED=true
+  - VAULTARR_ADMIN_USER=admin
+  - VAULTARR_ADMIN_PASSWORD=change-me
 ```
 
-## Project status
-
-Vaultarr 1.0 is the first public-ready release candidate. Expect rapid fixes and polish as real-world users test larger libraries, provider setups, and Docker deployments.
-
-## Philosophy
-
-Vaultarr is not just a launcher. It is a digital museum for game preservation.
+You can still manage the username/password inside Vaultarr after startup.

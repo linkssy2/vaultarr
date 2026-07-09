@@ -14,6 +14,7 @@ from app.services.theme_service import (
 from app.services.launchbox_service import sync_launchbox_metadata, sync_status
 from app.services.media_service import media_cache_summary
 from app.services.reset_service import reset_vault
+from app.services.auth_service import load_auth_settings, update_auth_from_form
 from app.services.provider_settings import (
     load_provider_settings,
     save_provider_settings,
@@ -42,6 +43,7 @@ def settings():
         provider_settings=load_provider_settings(),
         launchbox_status=sync_status(),
         media_cache=media_cache_summary(),
+        auth_settings=load_auth_settings(),
         masked=masked,
         saved=saved,
     )
@@ -99,6 +101,15 @@ def sync_launchbox_route():
         return redirect(f"/settings?saved=launchbox_error&lb_error={str(exc)[:160]}")
 
 
+
+
+
+@settings_bp.route('/settings/security', methods=['POST'])
+def save_security_route():
+    ok, code = update_auth_from_form(request.form)
+    if ok:
+        return redirect('/settings?saved=security')
+    return redirect(f'/settings?saved={code}')
 
 @settings_bp.route('/settings/reset-vault', methods=['POST'])
 def reset_vault_route():
