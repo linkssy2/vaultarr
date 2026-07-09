@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask
 
 from app.database.migrations import migrate
@@ -44,4 +46,4 @@ app.register_blueprint(onboarding_bp)
 app.register_blueprint(health_bp)
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8787)
+    app.run(host="0.0.0.0", port=int(os.environ.get("VAULTARR_PORT", os.environ.get("PORT", "8787"))))

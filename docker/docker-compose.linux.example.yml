@@ -1,9 +1,15 @@
 services:
   vaultarr:
-    image: vaultarr:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: vaultarr
     ports:
-      - "5058:5058"
+      - "8787:8787"
+    environment:
+      - TZ=America/Los_Angeles
+      - LOCALAPPDATA=/config
+      - VAULTARR_PORT=8787
     volumes:
       - ./config:/config
       - /mnt/games:/games

@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.venv/
+venv/
+
+# Git/editor
+.git/
+.github/
+.vscode/
+.idea/
+
+# Runtime/user data
+config/
+backups/
+logs/
+*.db
+*.sqlite
+*.sqlite3
+*.log
+.env
+.env.*
+
+# OS
+.DS_Store
+Thumbs.db
