@@ -1,4 +1,11 @@
-## Vaultarr 1.1.8
+## 1.1.9 — Mobile Refinement
+
+### Improved
+- Expanded mobile layout coverage across all major Vaultarr pages.
+- Refined game grids, action rows, forms, filters, modals, tables, and Focus Mode for phones.
+- Preserved all desktop and backend behavior.
+
+## Vaultarr 1.1.9
 
 - Added a responsive compatibility layer for phones and tablets.
 - Added a slide-out mobile navigation drawer and compact top bar.

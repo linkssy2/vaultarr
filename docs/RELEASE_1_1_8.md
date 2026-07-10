@@ -1,4 +1,4 @@
-# Vaultarr 1.1.8 — Mobile Compatibility
+# Vaultarr 1.1.9 — Mobile Compatibility
 
 This release adds a responsive compatibility layer without changing Vaultarr's backend, routes, authentication, database, or desktop component structure.
 

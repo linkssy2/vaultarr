@@ -1,6 +1,13 @@
+## 1.1.9 — Mobile Refinement
+
+### Improved
+- Expanded mobile layout coverage across all major Vaultarr pages.
+- Refined game grids, action rows, forms, filters, modals, tables, and Focus Mode for phones.
+- Preserved all desktop and backend behavior.
+
 # Changelog
 
-## 1.1.8 — Mobile Compatibility
+## 1.1.9 — Mobile Compatibility
 - Added a mobile navigation drawer and compact top bar.
 - Made the login screen responsive while preserving the animated Orbital Vault Core.
 - Added adaptive layouts for cards, forms, focus mode, game details, modals, tables, and search.

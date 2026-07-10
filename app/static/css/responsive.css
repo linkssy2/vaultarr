@@ -1,4 +1,4 @@
-/* Vaultarr 1.1.8 responsive compatibility layer.
+/* Vaultarr 1.1.9 responsive compatibility layer.
    Desktop rules remain authoritative; these overrides only activate on smaller screens. */
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -275,4 +275,259 @@ table { max-width: 100%; }
 @media (prefers-reduced-motion: reduce) {
   .sidebar,
   .mobile-nav-backdrop { transition-duration: 1ms !important; }
+}
+
+/* Vaultarr 1.1.9 mobile refinement layer */
+@media (max-width: 980px) {
+  .content > * { max-width: 100%; }
+
+  .home-launchpad,
+  .collections-space,
+  .discovery-space,
+  .experience-space,
+  .health-page,
+  .library-shell,
+  .preservation-space,
+  .studio-space,
+  .archive-space { width: 100%; min-width: 0; }
+
+  .home-launchpad,
+  .home-health-grid,
+  .alpha242-command-grid,
+  .alpha242-details-grid,
+  .alpha242-intelligence-panels,
+  .badge-summary-grid,
+  .capsule-grid,
+  .capsule-health-grid,
+  .capsule-options-grid,
+  .cluster-grid,
+  .collection-principles,
+  .cover-manager-layout,
+  .destination-grid,
+  .form-grid,
+  .gallery-provider-grid,
+  .gallery-saved-grid,
+  .health-check-grid,
+  .manual-workspace-grid,
+  .overview-grid,
+  .preservation-summary-grid,
+  .readiness-grid,
+  .settings-grid,
+  .studio-grid { grid-template-columns: 1fr !important; }
+
+  .home-card,
+  .alpha242-intel-panel,
+  .alpha242-missions-card,
+  .capsule-health-card,
+  .cluster-panel,
+  .destination-card,
+  .health-check-card,
+  .provider-intelligence-panel { min-height: 0; }
+
+  .category-row,
+  .alpha242-filter-pills,
+  .task-pills,
+  .badge-row,
+  .collection-badge-list,
+  .compact-pills {
+    display: flex;
+    max-width: 100%;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    gap: 8px;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+  }
+
+  .category-chip,
+  .alpha242-filter-pills > *,
+  .task-pills > *,
+  .badge-row > *,
+  .collection-badge-list > *,
+  .compact-pills > * { flex: 0 0 auto; white-space: nowrap; }
+
+  .library-search-status,
+  .shelf-header,
+  .home-card-head,
+  .gallery-workspace-header,
+  .cover-manager-heading-actions,
+  .alpha242-queue-head,
+  .alpha242-row-top,
+  .capsule-heading,
+  .collection-group-head {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .search-wrap { width: 100%; min-width: 0; }
+  .search-wrap input { width: 100%; }
+
+  .game-grid,
+  .poster-grid,
+  .focus-grid {
+    grid-template-columns: repeat(auto-fill, minmax(min(42vw, 190px), 1fr)) !important;
+    gap: 14px !important;
+  }
+
+  .game-card-link,
+  .poster-card { min-width: 0; width: 100%; }
+
+  .poster-info h3 { font-size: clamp(.82rem, 2.6vw, 1rem); overflow-wrap: anywhere; }
+
+  .archive-row,
+  .alpha242-queue-row,
+  .capsule-history-row,
+  .discovery-game-row,
+  .library-row {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 12px;
+  }
+
+  .archive-row-actions,
+  .capsule-actions,
+  .capsule-button-row,
+  .gallery-actions,
+  .gallery-cache-actions,
+  .hero-actions,
+  .inline-actions,
+  .settings-actions {
+    display: flex;
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .archive-row-actions > *,
+  .capsule-actions > *,
+  .capsule-button-row > *,
+  .gallery-actions > *,
+  .gallery-cache-actions > *,
+  .hero-actions > *,
+  .settings-actions > * { flex: 1 1 180px; }
+
+  .form-grid > label,
+  .clean-form > label,
+  .checkbox-row,
+  .capsule-option { min-width: 0; }
+
+  pre,
+  code,
+  .path-line,
+  .alpha242-detail,
+  .metadata-value { max-width: 100%; overflow-x: auto; }
+
+  .orbital-vault,
+  .hero-vault-window,
+  .home-vault-window { min-height: 330px; }
+}
+
+@media (max-width: 640px) {
+  h1 { font-size: clamp(1.7rem, 8vw, 2.35rem); line-height: 1.08; }
+  h2 { font-size: clamp(1.2rem, 5.4vw, 1.65rem); }
+  h3 { line-height: 1.25; }
+
+  .mobile-topbar { height: 58px; }
+  .mobile-brand { font-size: 17px; }
+  .mobile-brand img { width: 32px; height: 32px; }
+  .mobile-menu-button { width: 40px; height: 40px; }
+
+  .sidebar { width: min(90vw, 310px); padding: 18px 16px; }
+  .nav a { min-height: 46px; }
+
+  .page-header { gap: 14px; margin-bottom: 18px; }
+  .page-header h1 { margin-bottom: 4px; }
+
+  .home-hero,
+  .collections-hero,
+  .discovery-hero,
+  .experience-hero,
+  .alpha242-hero { padding: 18px !important; }
+
+  .home-hero-copy,
+  .experience-hero-copy,
+  .capsule-hero-copy { min-width: 0; }
+
+  .hero-copy,
+  .muted { line-height: 1.5; }
+
+  .hero-actions > *,
+  .archive-row-actions > *,
+  .capsule-actions > *,
+  .capsule-button-row > *,
+  .gallery-actions > *,
+  .gallery-cache-actions > *,
+  .settings-actions > * { flex: 1 1 100%; width: 100%; justify-content: center; }
+
+  .game-grid,
+  .poster-grid,
+  .focus-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+  }
+
+  .poster-art { border-radius: 13px; }
+  .poster-info { padding-inline: 2px; }
+
+  .home-vault-window,
+  .hero-vault-window,
+  .orbital-vault { min-height: 270px; transform: none !important; }
+
+  .orbital-field { transform: scale(.78); transform-origin: center; }
+  .orbital-status { padding-inline: 12px; }
+
+  .integrity-bars a {
+    display: grid;
+    grid-template-columns: minmax(74px, auto) minmax(0, 1fr) auto;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .mission-compact { align-items: flex-start; }
+  .mission-cover-mini { flex: 0 0 76px; width: 76px; }
+
+  .home-health-grid { gap: 10px; }
+  .home-health-check { min-width: 0; }
+
+  .detail-stat-strip,
+  .focus-stat-grid,
+  .badge-summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+
+  .focus-art-meta { grid-template-columns: 1fr 1fr !important; }
+
+  .focus-content h1 { padding-right: 44px; }
+  .focus-description { font-size: .96rem; }
+
+  .gallery-grid,
+  .cover-candidate-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+
+  .gallery-stage,
+  .cinematic-trailer-stage { min-height: 220px; }
+
+  .audio-panel,
+  .backup-analyzer,
+  .launchbox-sync-panel,
+  .capsule-settings-panel,
+  .create-collection-panel { padding: 15px !important; }
+
+  .table-wrapper table,
+  .table-scroll table,
+  .responsive-table table { min-width: 680px; }
+
+  .global-search-head { align-items: flex-start; }
+  .global-search-box input { font-size: 16px; }
+  .global-search-results { max-height: calc(100dvh - 150px); overflow-y: auto; }
+
+  .empty-state { padding: 26px 16px; }
+}
+
+@media (max-width: 390px) {
+  .content { padding: 14px 9px 24px; }
+  .panel, .card, .home-card { padding: 14px; border-radius: 14px; }
+  .game-grid, .poster-grid, .focus-grid { gap: 8px !important; }
+  .detail-stat-strip, .focus-stat-grid, .badge-summary-grid, .focus-art-meta { grid-template-columns: 1fr !important; }
+  .orbital-field { transform: scale(.68); }
+  .home-vault-window, .hero-vault-window, .orbital-vault { min-height: 245px; }
 }
