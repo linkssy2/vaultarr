@@ -1,6 +1,6 @@
 (() => {
-  const TRANSITION_OUT_MS = 260;
-  const TRANSITION_IN_MS = 360;
+  const FALLBACK_OUT_MS = 220;
+  const FALLBACK_IN_MS = 380;
   const PREFETCH_DELAY_MS = 90;
   const pageCache = new Map();
   let activeController = null;
@@ -113,7 +113,6 @@
 
   function runPageScripts(scripts) {
     scripts.forEach((definition) => {
-      // Shared scripts already live in base.html. Only execute page-local scripts.
       if (definition.src) return;
       if (definition.type && definition.type !== "text/javascript" && definition.type !== "module") return;
       const script = document.createElement("script");
@@ -122,6 +121,32 @@
       document.body.appendChild(script);
       script.remove();
     });
+  }
+
+  function positionDestination(url) {
+    const destination = new URL(url, window.location.href);
+    if (destination.hash) {
+      const anchor = document.getElementById(decodeURIComponent(destination.hash.slice(1)));
+      if (anchor) anchor.scrollIntoView({ block: "start", behavior: "auto" });
+      else window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    } else {
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    }
+  }
+
+  function commitPage(main, next, url, push) {
+    main.setAttribute("aria-busy", "true");
+    main.innerHTML = next.html;
+    document.title = next.title;
+    if (push) history.pushState({ vaultarrSmooth: true }, next.title, url);
+    updateActiveNav(url);
+    positionDestination(url);
+    runPageScripts(next.scripts);
+    main.removeAttribute("aria-busy");
+
+    document.dispatchEvent(new CustomEvent("vaultarr:page-loaded", {
+      detail: { url, title: next.title },
+    }));
   }
 
   function waitForTransition(element, timeout) {
@@ -137,44 +162,45 @@
         if (event.target === element && event.propertyName === "opacity") finish();
       };
       element.addEventListener("transitionend", onEnd);
-      window.setTimeout(finish, timeout + 60);
+      window.setTimeout(finish, timeout + 80);
     });
   }
 
-  async function swapPage(main, next, url, push, id) {
+  async function swapWithViewTransition(main, next, url, push, id) {
+    document.body.classList.add("vault-view-transitioning");
+    try {
+      const transition = document.startViewTransition(() => {
+        if (id !== navigationId) return;
+        commitPage(main, next, url, push);
+      });
+      await transition.finished;
+    } finally {
+      document.body.classList.remove("vault-view-transitioning");
+    }
+  }
+
+  async function swapWithFallback(main, next, url, push, id) {
     document.body.classList.add("vault-nav-leaving");
-    await waitForTransition(main, TRANSITION_OUT_MS);
+    await waitForTransition(main, FALLBACK_OUT_MS);
     if (id !== navigationId) return;
 
-    main.setAttribute("aria-busy", "true");
-    main.innerHTML = next.html;
-    document.title = next.title;
-    if (push) history.pushState({ vaultarrSmooth: true }, next.title, url);
-
-    updateActiveNav(url);
-    const destination = new URL(url, window.location.href);
-    if (destination.hash) {
-      const anchor = document.getElementById(decodeURIComponent(destination.hash.slice(1)));
-      if (anchor) anchor.scrollIntoView({ block: "start", behavior: "auto" });
-      else window.scrollTo({ top: 0, left: 0, behavior: "auto" });
-    } else {
-      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
-    }
-    runPageScripts(next.scripts);
-
+    commitPage(main, next, url, push);
     document.body.classList.remove("vault-nav-leaving");
-    // Force one completed layout frame before the entrance animation begins.
     void main.offsetWidth;
     document.body.classList.add("vault-nav-entering");
-    main.removeAttribute("aria-busy");
-
-    document.dispatchEvent(new CustomEvent("vaultarr:page-loaded", {
-      detail: { url, title: next.title },
-    }));
 
     window.setTimeout(() => {
       if (id === navigationId) document.body.classList.remove("vault-nav-entering");
-    }, TRANSITION_IN_MS + 40);
+    }, FALLBACK_IN_MS + 50);
+  }
+
+  async function swapPage(main, next, url, push, id) {
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!reduceMotion && typeof document.startViewTransition === "function") {
+      await swapWithViewTransition(main, next, url, push, id);
+      return;
+    }
+    await swapWithFallback(main, next, url, push, id);
   }
 
   async function loadPage(url, push = true) {
@@ -194,7 +220,7 @@
     document.body.classList.remove("vault-nav-entering", "vault-nav-leaving");
 
     try {
-      // Keep the current page fully visible while the next page is prepared.
+      // Keep the current page fully visible until its replacement is complete.
       const next = await fetchPage(target, activeController.signal);
       if (id !== navigationId) return;
       await swapPage(main, next, target, push, id);
@@ -204,7 +230,7 @@
       window.location.href = target;
     } finally {
       if (id === navigationId) {
-        document.body.classList.remove("vault-nav-loading");
+        document.body.classList.remove("vault-nav-loading", "vault-view-transitioning");
         activeController = null;
       }
     }
