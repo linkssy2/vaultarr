@@ -1,3 +1,12 @@
+# Vaultarr 1.1.20 — Sidebar Motion Restoration
+
+## Fixed
+- Restored the original smooth 1.1.7-style motion specifically for sidebar navigation.
+- Sidebar destinations still load and prepare before the visual swap, preventing the old exposed-HTML flash.
+- Removed the native snapshot transition from sidebar clicks, which was making section changes feel abrupt.
+- Preserved the 1.1.17 rendering improvements and the 1.1.18 Focus Mode close-flicker fix.
+- Left card styling, hover behavior, expansion geometry, Focus Mode, and backend logic unchanged.
+
 ## Vaultarr 1.1.19
 
 ### Restored Sidebar Navigation Motion

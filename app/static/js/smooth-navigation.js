@@ -1,6 +1,8 @@
 (() => {
   const FALLBACK_OUT_MS = 220;
   const FALLBACK_IN_MS = 380;
+  const SIDEBAR_OUT_MS = 170;
+  const SIDEBAR_IN_MS = 280;
   const PREFETCH_DELAY_MS = 90;
   const pageCache = new Map();
   let activeController = null;
@@ -179,6 +181,21 @@
     }
   }
 
+  async function swapWithSidebarLegacyMotion(main, next, url, push, id) {
+    document.body.classList.add("vault-sidebar-nav-leaving");
+    await waitForTransition(main, SIDEBAR_OUT_MS);
+    if (id !== navigationId) return;
+
+    commitPage(main, next, url, push);
+    document.body.classList.remove("vault-sidebar-nav-leaving");
+    void main.offsetWidth;
+    document.body.classList.add("vault-sidebar-nav-entering");
+
+    window.setTimeout(() => {
+      if (id === navigationId) document.body.classList.remove("vault-sidebar-nav-entering");
+    }, SIDEBAR_IN_MS + 30);
+  }
+
   async function swapWithFallback(main, next, url, push, id) {
     document.body.classList.add("vault-nav-leaving");
     await waitForTransition(main, FALLBACK_OUT_MS);
@@ -194,8 +211,12 @@
     }, FALLBACK_IN_MS + 50);
   }
 
-  async function swapPage(main, next, url, push, id) {
+  async function swapPage(main, next, url, push, id, options = {}) {
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (options.sidebar && !reduceMotion) {
+      await swapWithSidebarLegacyMotion(main, next, url, push, id);
+      return;
+    }
     if (!reduceMotion && typeof document.startViewTransition === "function") {
       await swapWithViewTransition(main, next, url, push, id);
       return;
@@ -203,7 +224,7 @@
     await swapWithFallback(main, next, url, push, id);
   }
 
-  async function loadPage(url, push = true) {
+  async function loadPage(url, push = true, options = {}) {
     const main = document.querySelector(".vaultos-content, .content");
     if (!main) {
       window.location.href = url;
@@ -217,13 +238,13 @@
 
     closeFocusIfOpen();
     document.body.classList.add("vault-nav-loading");
-    document.body.classList.remove("vault-nav-entering", "vault-nav-leaving");
+    document.body.classList.remove("vault-nav-entering", "vault-nav-leaving", "vault-sidebar-nav-entering", "vault-sidebar-nav-leaving");
 
     try {
       // Keep the current page fully visible until its replacement is complete.
       const next = await fetchPage(target, activeController.signal);
       if (id !== navigationId) return;
-      await swapPage(main, next, target, push, id);
+      await swapPage(main, next, target, push, id, options);
     } catch (error) {
       if (error && error.name === "AbortError") return;
       console.warn("Vaultarr smooth navigation fell back to normal navigation:", error);
@@ -254,7 +275,7 @@
     const link = event.target.closest("a[href]");
     if (!shouldHandleClick(event, link)) return;
     event.preventDefault();
-    loadPage(link.href, true);
+    loadPage(link.href, true, { sidebar: Boolean(link.closest(".vault-nav")) });
   });
 
   document.addEventListener("pointerenter", (event) => {

@@ -1,5 +1,5 @@
 /* ============================================================
-   Vaultarr 1.1.19 — Restored Sidebar Navigation Motion
+   Vaultarr 1.1.20 — Sidebar Motion Restoration
    Content is fetched before motion begins. Chromium's View
    Transition API keeps the outgoing page as a stable snapshot
    while the prepared destination eases into place.
@@ -121,4 +121,48 @@ body.vault-nav-loading .vaultos-content::before {
   color: var(--text);
   border-color: color-mix(in srgb, var(--accent) 34%, transparent);
   background: color-mix(in srgb, var(--accent) 10%, rgba(15, 23, 42, .56));
+}
+
+/* ============================================================
+   Vaultarr 1.1.20 — Original sidebar motion restoration
+   Sidebar navigation intentionally uses the stable pre-rendering
+   animation from 1.1.7 while retaining prepared-content swaps.
+   ============================================================ */
+body.vault-sidebar-nav-leaving .vaultos-content {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0) scale(0.995);
+    filter: blur(2px);
+    pointer-events: none;
+    transition:
+        opacity 170ms ease,
+        transform 190ms ease,
+        filter 190ms ease;
+}
+
+body.vault-sidebar-nav-entering .vaultos-content {
+    animation: vaultSidebarContentEnter 260ms cubic-bezier(0.2, 0.85, 0.25, 1) both;
+}
+
+@keyframes vaultSidebarContentEnter {
+    from {
+        opacity: 0;
+        transform: translate3d(0, 12px, 0) scale(0.995);
+        filter: blur(2px);
+    }
+    to {
+        opacity: 1;
+        transform: translate3d(0, 0, 0) scale(1);
+        filter: blur(0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body.vault-sidebar-nav-leaving .vaultos-content {
+        transform: none;
+        filter: none;
+        transition: opacity 100ms linear;
+    }
+    body.vault-sidebar-nav-entering .vaultos-content {
+        animation: vaultContentEnterReduced 130ms linear both;
+    }
 }
