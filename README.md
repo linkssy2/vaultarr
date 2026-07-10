@@ -1,255 +1,74 @@
-# Vaultarr
+# Vaultarr 1.1
 
-> **Your games deserve a museum.**
+Vaultarr is a self-hosted game preservation dashboard for cataloging, enriching, and maintaining a personal game archive.
 
-Vaultarr is a self-hosted digital game preservation platform built for collectors, archivists, and enthusiasts who want more than just a launcher.
+## What Vaultarr does
 
-Instead of simply organizing games, Vaultarr helps preserve them by combining metadata, manuals, artwork, trailers, community fixes, intelligent collections, and archival tools into a single experience.
+- Library scanning and floating game cards
+- Metadata providers including LaunchBox, IGDB, RAWG, Steam, Wikipedia, and SteamGridDB artwork
+- Provider Intelligence and Build Best Record
+- Manual Engine with indexed manual providers
+- Media Library for covers, screenshots, hero art, logos, and trailer assets
+- Trailer Finder and cinematic Trailer tab
+- Patch Engine for community fixes and compatibility references
+- Preservation Mission Control
+- Smart Collections and collection milestones
+- Time Capsule backups
+- Studio/Provider Workshop
 
----
+## Quick start: Windows
 
-# Features
+1. Extract the release zip.
+2. Run `run_vaultarr.bat`.
+3. Open `http://localhost:8787`.
+4. Use the onboarding screen or Studio to add your game library path.
 
-## Library Management
-
-- Automatic library scanning
-- Multiple library roots
-- Intelligent duplicate detection
-- Fast indexed search
-- Smart Collections
-- Manual game entries
-
----
-
-## Metadata Engine
-
-Combine information from multiple providers:
-
-- LaunchBox
-- IGDB
-- RAWG
-- Steam
-- Wikipedia
-
-Provider Intelligence automatically builds the best possible game record by selecting the highest-quality metadata from every provider.
-
----
-
-## Media Library
-
-Automatically collect and manage:
-
-- Covers
-- Alternate Covers
-- Logos
-- Hero Artwork
-- Screenshots
-- Cached Media
-
-Choose your preferred cover at any time without losing previous artwork.
-
----
-
-## Manual Engine
-
-Download and archive game manuals.
-
-Supports:
-
-- VideoGameManual.com
-- ReplacementDocs
-- Local PDF Manuals
-
-Built-in manual viewer included.
-
----
-
-## Trailer Engine
-
-Automatically discover trailers.
-
-- Find likely trailers
-- Preview candidates
-- Save preferred trailer
-- Built-in cinematic player
-
----
-
-## Patch Engine
-
-Find community improvements including:
-
-- Official Updates
-- Widescreen Fixes
-- Controller Fixes
-- Community Patches
-- Compatibility Fixes
-
-Powered by PCGamingWiki and community sources.
-
----
-
-## Preservation
-
-Track preservation quality for every game.
-
-Vaultarr monitors:
-
-- Metadata
-- Manuals
-- Artwork
-- Gallery
-- Trailers
-- Patches
-- Archive Assets
-
----
-
-## Time Capsule
-
-Protect your collection.
-
-- Scheduled Backups
-- Manual Backups
-- Automatic Retention
-- Backup Verification
-- Restore Library
-- Backup History
-
----
-
-## Collection Experience
-
-Build a digital museum.
-
-- Smart Collections
-- User Collections
-- Collection Badges
-- Franchise Progress
-- Collection Milestones
-- Legacy Score
-
----
-
-## Docker Support
-
-Vaultarr is designed to run as a self-hosted Docker application.
-
-Example compose:
+## Quick start: Docker Compose
 
 ```yaml
 services:
   vaultarr:
-    image: ghcr.io/linkssy2/vaultarr:latest
+    build: .
     container_name: vaultarr
-
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=America/Los_Angeles
-
     ports:
-      - 8787:8787
-
+      - "8787:8787"
+    environment:
+      - LOCALAPPDATA=/config
     volumes:
       - ./config:/config
       - /path/to/games:/games
       - ./backups:/backups
-
     restart: unless-stopped
 ```
 
-Windows Example
+Then open `http://localhost:8787`.
+
+## Important paths
+
+Vaultarr stores its database and generated app data under `LOCALAPPDATA/Vaultarr` by default.
+
+For Docker, set `LOCALAPPDATA=/config` and mount `/config` as a persistent volume.
+
+## First run
+
+Open `/onboarding` after first launch. Add a library, scan it from Studio, then use Provider Intelligence to build records.
+
+## Health check
+
+Open `/health` to inspect database, library, provider, and cache readiness.
+
+
+## Authentication
+
+Vaultarr 1.1 includes built-in Sonarr-style Forms authentication. Enable it from **Studio → Security → Vault Access**. Passwords are stored hashed, and the login page uses the VaultOS design language.
+
+For Docker users, first-run authentication can also be bootstrapped with optional environment variables:
 
 ```yaml
-services:
-  vaultarr:
-    image: ghcr.io/linkssy2/vaultarr:latest
-
-    volumes:
-      - C:/Docker/Vaultarr/Config:/config
-      - D:/Games:/games
-      - C:/Docker/Vaultarr/Backups:/backups
+environment:
+  - VAULTARR_AUTH_ENABLED=true
+  - VAULTARR_ADMIN_USER=admin
+  - VAULTARR_ADMIN_PASSWORD=change-me
 ```
 
----
-
-# Screenshots
-
-- Home
-- Library
-- Collector Focus
-- Media Library
-- Manual Engine
-- Trailer Engine
-- Patch Engine
-- Collections
-- Preservation
-- Time Capsule
-
-*(Screenshots coming soon.)*
-
----
-
-# Roadmap
-
-## Current
-
-- Metadata Engine
-- Manual Engine
-- Media Library
-- Trailer Engine
-- Patch Engine
-- Time Capsule
-- Smart Collections
-- Provider Intelligence
-- Docker Support
-
-## Upcoming
-
-- Plugin Framework
-- RetroAchievements
-- Additional Metadata Providers
-- Additional Manual Providers
-- Additional Patch Providers
-- Performance Improvements
-
----
-
-# Contributing
-
-Contributions, feature ideas, provider integrations, and bug reports are always welcome.
-
-See:
-
-- CONTRIBUTING.md
-
----
-
-# License
-
-MIT License
-
----
-
-# Philosophy
-
-Vaultarr isn't designed to replace LaunchBox or Playnite.
-
-It's designed to preserve games.
-
-Every title is treated as a digital artifact—not simply another executable.
-
-Metadata, manuals, artwork, trailers, community patches, and archival assets all work together to build a digital museum around every game.
-
----
-
-# Links
-
-GitHub
-
-https://github.com/linkssy2/vaultarr
-
-Container
-
-ghcr.io/linkssy2/vaultarr
+You can still manage the username/password inside Vaultarr after startup.

@@ -1,3 +1,13 @@
+# Changelog
+
+## Vaultarr 1.1.4
+
+- Uses the exact original sidebar blue-square V as the single app icon source.
+- Applies it to the login page, browser tab, bookmarks, pinned shortcuts, PWA and mobile icons.
+- Removes dark wrapper, outline, inset-ring and padding artifacts around the brand icon.
+- Keeps the animated Orbital Vault core unchanged.
+- Adds cache-busted icon references for the 1.1.4 release.
+
 # Vaultarr Changelog
 
 ## 1.0.2

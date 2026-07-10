@@ -263,3 +263,19 @@
 .sidebar.vaultos-sidebar .vault-build-card {
     min-height: 66px;
 }
+
+/* Vaultarr 1.1.4: exact sidebar icon asset; never add a dark wrapper. */
+.sidebar.vaultos-sidebar .brand .brand-mark {
+  width: 38px !important;
+  height: 38px !important;
+  flex: 0 0 38px !important;
+  display: block !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+  outline: 0 !important;
+  border-radius: 12px !important;
+  background: transparent !important;
+  box-shadow: 0 0 22px rgba(59,130,246,.42) !important;
+  object-fit: contain !important;
+}
