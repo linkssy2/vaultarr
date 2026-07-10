@@ -1,6 +1,14 @@
 # Changelog
 
-## [1.1.11] - 2026-07-10
+## 1.1.12 — Focus Mode Animation Hotfix
+
+### Fixed
+- Restored the smooth mobile card-expansion and closing behavior from 1.1.10.
+- Isolated Focus Mode animation geometry from the broader 1.1.11 mobile UX overrides.
+- Preserved all non-conflicting 1.1.11 mobile improvements.
+
+
+## [1.1.12] - 2026-07-10
 
 ### Added
 - Unified mobile app bar, overlay navigation, keyboard-aware viewport sizing, safe areas, touch patterns, and mobile performance rules.

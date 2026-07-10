@@ -1,6 +1,6 @@
-# Vaultarr 1.1.11 — Mobile UX Overhaul
+# Vaultarr 1.1.12 — Mobile UX Overhaul
 
-Vaultarr 1.1.11 consolidates the mobile compatibility work into a deliberate mobile interaction system while preserving the existing desktop experience and backend behavior.
+Vaultarr 1.1.12 consolidates the mobile compatibility work into a deliberate mobile interaction system while preserving the existing desktop experience and backend behavior.
 
 ## Highlights
 

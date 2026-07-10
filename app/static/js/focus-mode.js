@@ -399,7 +399,6 @@
 
       body.classList.toggle("mobile-focus-active", mobileFocus);
       body.classList.add("focus-preparing", "focus-active");
-      window.VaultarrMobile?.setBodyLock("focus", mobileFocus);
       panel.setAttribute("aria-hidden", "false");
       if (backdrop) backdrop.setAttribute("aria-hidden", "false");
 
@@ -455,7 +454,6 @@
 
       window.setTimeout(() => {
         body.classList.remove("focus-active", "focus-preparing", "mobile-focus-active");
-        window.VaultarrMobile?.setBodyLock("focus", false);
         panel.classList.remove("is-closing", "is-mobile-focus");
         panel.setAttribute("aria-hidden", "true");
         panel.removeAttribute("style");

@@ -1,6 +1,24 @@
 # Changelog
 
-## [1.1.11] - 2026-07-10
+## [1.1.13] - 2026-07-10
+
+### Fixed
+- Restored smooth sidebar page transitions by running network loading and exit motion concurrently.
+- Prevented replacement pages from skipping their first entrance-animation frame.
+- Restored section, tab, card, panel, and orbital animation behavior affected by the 1.1.11 mobile performance rules.
+- Removed touch transforms from full cards that caused snapping and transition conflicts.
+- Preserved the 1.1.12 Focus Mode expansion and closing hotfix.
+- Kept reduced-motion behavior limited to users who explicitly request it.
+
+## 1.1.12 — Focus Mode Animation Hotfix
+
+### Fixed
+- Restored the smooth mobile card-expansion and closing behavior from 1.1.10.
+- Isolated Focus Mode animation geometry from the broader 1.1.11 mobile UX overrides.
+- Preserved all non-conflicting 1.1.11 mobile improvements.
+
+
+## [1.1.12] - 2026-07-10
 
 ### Added
 - Unified mobile app bar, overlay navigation state, viewport/keyboard sizing, and safe-area support.

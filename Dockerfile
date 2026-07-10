@@ -1,7 +1,7 @@
 FROM python:3.12-slim
 LABEL org.opencontainers.image.title="Vaultarr" \
       org.opencontainers.image.description="A self-hosted digital museum for game preservation" \
-      org.opencontainers.image.version="1.1.11" \
+      org.opencontainers.image.version="1.1.12" \
       org.opencontainers.image.source="https://github.com/linkssy2/vaultarr" \
       org.opencontainers.image.url="https://github.com/linkssy2/vaultarr" \
       org.opencontainers.image.vendor="Vaultarr"
