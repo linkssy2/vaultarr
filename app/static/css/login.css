@@ -293,19 +293,14 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  /* Keep the requested Vault Core motion active, but quiet the ambient scene. */
   .login-stars::before,
   .login-stars::after,
-  .login-orbit,
-  .login-node,
   .login-nebula,
-  .login-comet,
-  .login-core,
-  .login-core::before,
-  .login-core::after,
-  .login-core span { animation: none !important; }
+  .login-comet { animation: none !important; }
 }
 
-/* 1.1.6 branding: use the exact sidebar mark with no outer tile or outline. */
+/* 1.1.7 branding: use the exact sidebar mark with no outer tile or outline. */
 .login-brand .brand-mark,
 .login-brand .login-app-icon {
   width: 54px !important;
@@ -323,7 +318,7 @@
 }
 
 
-/* Vaultarr 1.1.6: alpha-aware login mark — no rectangular shadow or dark corners. */
+/* Vaultarr 1.1.7: alpha-aware login mark — no rectangular shadow or dark corners. */
 .login-brand .brand-mark.login-app-icon {
   overflow: visible !important;
   background: transparent !important;
@@ -333,3 +328,24 @@
     drop-shadow(0 0 16px rgba(96,165,250,.20)) !important;
   animation: none !important;
 }
+
+
+/* Vaultarr 1.1.7: force the login Vault Core animation to run and remain visible. */
+.login-orbit {
+  animation-play-state: running !important;
+  will-change: transform;
+}
+.login-core,
+.login-core::before,
+.login-core::after,
+.login-core span,
+.login-node {
+  animation-play-state: running !important;
+  will-change: transform, filter, opacity;
+}
+/* Slightly quicker motion so the animation is immediately noticeable. */
+.orbit-one { --speed: 12s; }
+.orbit-two { --speed: 16s; }
+.orbit-three { --speed: 21s; }
+.orbit-four { --speed: 28s; }
+.orbit-five { --speed: 36s; }

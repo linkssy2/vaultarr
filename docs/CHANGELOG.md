@@ -1,3 +1,9 @@
+## Vaultarr 1.1.7
+
+- Fixed the Orbital Vault Core on the login page so its rings, nodes, halo, and core visibly animate.
+- Added cache-busting to the login stylesheets so browsers do not reuse the pre-animation CSS.
+- Kept ambient motion reduced for accessibility while preserving the requested Vault Core animation.
+
 ## Vaultarr 1.1.6
 
 - Replaces the login page's flat square lettermark with the animated Orbital Vault Core.
