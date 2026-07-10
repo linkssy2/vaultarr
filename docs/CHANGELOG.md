@@ -1,3 +1,22 @@
+# Vaultarr 1.1.23 — Manual Provider Reliability Update
+
+## Added
+- Vimm's Lair Manual Project as a manuals-only fallback provider.
+- Conservative same-domain crawling limited to manual-related pages.
+- Weekly local caching for Vimm manual catalog results when direct PDFs are exposed.
+- Platform-aware, confidence-ranked results across dedicated manual sources.
+
+## Improved
+- VideoGameManual.com remains the primary indexed provider and now checks an additional legacy index page variant.
+- Removed broad Google/replacementdocs searches from the default manual workflow.
+- Updated provider descriptions, source links, and manual search controls.
+- Updated README with manual-provider behavior and the production GHCR Docker setup.
+
+## Safety
+- Vimm integration blocks Vault, ROM, ISO, and download-area routes.
+- Downloads still require a direct PDF URL, a valid `%PDF-` signature, and remain capped at 250 MB.
+- No card UI, Focus Mode expansion, sidebar motion, metadata, database, or preservation behavior was changed.
+
 # Vaultarr 1.1.22 — Active Route Reload Fix
 
 ## Fixed

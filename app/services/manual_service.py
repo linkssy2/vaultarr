@@ -19,22 +19,13 @@ MANUAL_PROVIDERS = [
         "priority": 1,
     },
     {
-        "id": "replacementdocs",
-        "name": "replacementdocs",
-        "kind": "external_search",
-        "description": "Search replacementdocs for scanned manuals and reference documents.",
-        "search_template": "https://www.google.com/search?q=site%3Areplacementdocs.com+{query}+manual+pdf",
-        "homepage": "https://www.replacementdocs.com/",
+        "id": "vimm",
+        "name": "Vimm's Lair Manual Project",
+        "kind": "manual_archive",
+        "description": "Opens Vimm's dedicated Manual Project as a fallback when the indexed primary archive has no confident match.",
+        "search_template": "https://vimm.net/?p=manual",
+        "homepage": "https://vimm.net/?p=manual",
         "priority": 2,
-    },
-    {
-        "id": "gamesdatabase",
-        "name": "Broad manual web search",
-        "kind": "external_search",
-        "description": "Broader search for manual archives, PDFs, and source pages.",
-        "search_template": "https://www.google.com/search?q={query}+game+manual+pdf",
-        "homepage": "https://www.google.com/",
-        "priority": 3,
     },
     {
         "id": "local",
@@ -43,7 +34,7 @@ MANUAL_PROVIDERS = [
         "description": "Vaultarr local scan results and user-linked manuals.",
         "search_template": "",
         "homepage": "",
-        "priority": 4,
+        "priority": 3,
     },
 ]
 
@@ -51,6 +42,7 @@ APP_DIR = Path(os.getenv('LOCALAPPDATA', '.')) / 'Vaultarr'
 MANUALS_DIR = APP_DIR / 'manuals'
 MANUAL_CACHE_DIR = APP_DIR / 'manual_provider_cache'
 VGM_CACHE_FILE = MANUAL_CACHE_DIR / 'videogamemanual_index.json'
+VIMM_CACHE_FILE = MANUAL_CACHE_DIR / 'vimm_manual_index.json'
 PDF_MAGIC = b'%PDF-'
 
 _PLATFORM_FOLDER_ALIASES = {
@@ -91,7 +83,7 @@ _PLATFORM_FOLDER_ALIASES = {
 }
 
 _COMMON_PLATFORM_FOLDERS = ['PC', 'PS2', 'Xbox', 'PS1', 'GameCube', 'Dreamcast']
-_LETTER_PAGES = ['index.html', '0.htm'] + [f'{chr(code)}.htm' for code in range(ord('A'), ord('Z') + 1)]
+_LETTER_PAGES = ['index.html', '0.htm', '1.htm'] + [f'{chr(code)}.htm' for code in range(ord('A'), ord('Z') + 1)]
 _MANUAL_URL_CACHE = {}
 
 
@@ -204,7 +196,7 @@ def _cache_is_fresh(platform_data, max_age_hours=168):
 
 def _fetch_text(url):
     headers = {
-        'User-Agent': 'Vaultarr/Alpha20 Manual Indexer (+local archive manager)',
+        'User-Agent': 'Vaultarr/1.1.23 Manual Indexer (+self-hosted archive manager)',
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
     }
     response = requests.get(url, headers=headers, timeout=15, allow_redirects=True)
@@ -298,6 +290,144 @@ def _sync_videogamemanual_platform(platform_folder, force=False):
     return entries
 
 
+
+def _load_json_cache(path, default):
+    try:
+        if path.exists():
+            return json.loads(path.read_text(encoding='utf-8'))
+    except Exception:
+        pass
+    return default
+
+
+def _save_json_cache(path, payload):
+    MANUAL_CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    payload['saved_at'] = datetime.utcnow().isoformat(timespec='seconds') + 'Z'
+    path.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding='utf-8')
+
+
+def _same_host(url, host):
+    try:
+        return urlparse(url).netloc.lower().split(':')[0] == host.lower()
+    except Exception:
+        return False
+
+
+def _extract_vimm_links(html, base_url):
+    """Extract only links that appear to belong to Vimm's Manual Project.
+
+    Vimm does not publish a documented API. This parser deliberately stays
+    conservative: it only follows same-host links whose URL or nearby label
+    contains 'manual', and it never follows Vault/download-ROM routes.
+    """
+    if not html:
+        return [], []
+    pages, entries = [], []
+    anchor_re = re.compile(r'<a\s+[^>]*href=["\']([^"\']+)["\'][^>]*>(.*?)</a>', re.I | re.S)
+    blocked = ('?p=vault', '/vault/', '?p=download', 'rom', 'iso')
+    for href, label_html in anchor_re.findall(html):
+        url = urljoin(base_url, href)
+        if not _same_host(url, 'vimm.net'):
+            continue
+        lowered_url = url.lower()
+        if any(token in lowered_url for token in blocked):
+            continue
+        label = re.sub(r'<[^>]+>', ' ', label_html)
+        label = re.sub(r'\s+', ' ', label).strip()
+        context = f'{lowered_url} {label.lower()}'
+        parsed = urlparse(url)
+        is_pdf = parsed.path.lower().endswith('.pdf')
+        if not is_pdf and 'manual' not in context:
+            continue
+        if is_pdf:
+            title = _display_title_from_pdf(url, label)
+            entries.append({
+                'title': title,
+                'match_title': _normalize_match_text(title),
+                'url': url,
+                'source_page_url': base_url,
+                'platform_folder': '',
+                'region': _region_from_text(title),
+            })
+        else:
+            pages.append(url)
+    return list(dict.fromkeys(pages)), entries
+
+
+def _sync_vimm_catalog(force=False):
+    cache = _load_json_cache(VIMM_CACHE_FILE, {'version': 1, 'entries': []})
+    if not force and _cache_is_fresh(cache):
+        return cache.get('entries', [])
+
+    start_url = 'https://vimm.net/?p=manual'
+    queue = [start_url]
+    visited = set()
+    entries_by_url = {}
+    errors = []
+
+    # Keep the crawl intentionally small and respectful. The provider remains
+    # useful as a source-page fallback even when no direct PDF links are exposed.
+    while queue and len(visited) < 24:
+        page_url = queue.pop(0)
+        if page_url in visited:
+            continue
+        visited.add(page_url)
+        try:
+            html = _fetch_text(page_url)
+        except Exception as exc:
+            errors.append(f'{page_url}: {exc}')
+            continue
+        pages, entries = _extract_vimm_links(html, page_url)
+        for entry in entries:
+            entries_by_url[entry['url'].lower()] = entry
+        for candidate in pages:
+            if candidate not in visited and candidate not in queue:
+                queue.append(candidate)
+
+    entries = sorted(entries_by_url.values(), key=lambda item: (item.get('match_title') or '', item.get('url') or ''))
+    payload = {
+        'version': 1,
+        'synced_at': datetime.utcnow().isoformat(timespec='seconds') + 'Z',
+        'homepage': start_url,
+        'pages_checked': len(visited),
+        'entry_count': len(entries),
+        'errors': errors[-5:],
+        'entries': entries,
+    }
+    _save_json_cache(VIMM_CACHE_FILE, payload)
+    return entries
+
+
+def _vimm_candidates(title, platform=''):
+    try:
+        entries = _sync_vimm_catalog()
+    except Exception:
+        entries = []
+    folders = _platform_folders(platform)
+    candidates = []
+    for entry in entries:
+        confidence = _score_manual_entry(entry, title, folders)
+        if confidence < 62:
+            continue
+        candidates.append({
+            'provider': "Vimm's Lair Manual Project",
+            'provider_id': 'vimm',
+            'kind': 'direct_pdf',
+            'title': entry.get('title') or 'Manual',
+            'description': "Manual discovered inside Vimm's dedicated Manual Project. Vaultarr will validate the PDF before saving it.",
+            'url': entry.get('url'),
+            'source_page_url': entry.get('source_page_url') or 'https://vimm.net/?p=manual',
+            'action': 'Open PDF',
+            'confidence': confidence,
+            'is_pdf_candidate': True,
+            'can_download': True,
+            'region': entry.get('region') or 'Unknown',
+            'platform_folder': entry.get('platform_folder') or '',
+            'verified_pdf': True,
+            'indexed_provider': True,
+        })
+    return _dedupe_manual_results(candidates)[:8]
+
 def _manual_key(result):
     url = (result.get('url') or '').lower()
     url = re.sub(r'(%20|\+)+', ' ', url)
@@ -390,6 +520,24 @@ def manual_search_results(title, platform="", provider_id="all"):
                 })
             continue
 
+        if provider["id"] == "vimm":
+            direct = _vimm_candidates(search_title, platform)
+            results.extend(direct)
+            if not direct:
+                results.append({
+                    "provider": provider["name"],
+                    "provider_id": provider["id"],
+                    "kind": "source_search",
+                    "title": "Open Vimm's Manual Project",
+                    "description": "No direct cached PDF was exposed by the archive. Open the dedicated Manual Project and search there without entering Vimm's game-download areas.",
+                    "url": "https://vimm.net/?p=manual",
+                    "action": "Open Manual Project",
+                    "confidence": 34,
+                    "is_pdf_candidate": False,
+                    "can_download": False,
+                })
+            continue
+
         if provider["kind"] == "local":
             results.append({
                 "provider": provider["name"],
@@ -468,7 +616,7 @@ def download_manual_pdf(game_id, manual_url, title='Manual'):
         raise ValueError('This looks like a source page, not a direct PDF. Open the source page and copy the direct PDF URL first.')
 
     MANUALS_DIR.mkdir(parents=True, exist_ok=True)
-    headers = {'User-Agent': 'Vaultarr/Alpha20 Manual Downloader', 'Accept': 'application/pdf,*/*;q=0.8'}
+    headers = {'User-Agent': 'Vaultarr/1.1.23 Manual Downloader', 'Accept': 'application/pdf,*/*;q=0.8'}
     with requests.get(manual_url, headers=headers, timeout=35, stream=True, allow_redirects=True) as response:
         response.raise_for_status()
         content_type = response.headers.get('content-type', '').lower()

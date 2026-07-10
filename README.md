@@ -1,4 +1,4 @@
-# Vaultarr 1.1.22
+# Vaultarr 1.1.23
 
 Vaultarr is a self-hosted game preservation dashboard for cataloging, enriching, and maintaining a personal game archive.
 
@@ -7,7 +7,7 @@ Vaultarr is a self-hosted game preservation dashboard for cataloging, enriching,
 - Library scanning and floating game cards
 - Metadata providers including LaunchBox, IGDB, RAWG, Steam, Wikipedia, and SteamGridDB artwork
 - Provider Intelligence and Build Best Record
-- Manual Engine with indexed manual providers
+- Manual Engine with indexed VideoGameManual.com search, Vimm's Manual Project fallback, PDF validation, and local manual storage
 - Media Library for covers, screenshots, hero art, logos, and trailer assets
 - Trailer Finder and cinematic Trailer tab
 - Patch Engine for community fixes and compatibility references
@@ -68,6 +68,22 @@ volumes:
 ### Dockge
 
 Paste the production Compose example into a new Dockge stack, replace the host game path, deploy it, and use `/games` when adding the library inside Vaultarr.
+
+## Manual search and downloads
+
+Vaultarr searches **VideoGameManual.com** as its primary indexed manual archive. Platform index pages are cached for seven days, so repeated searches are fast and respectful of the source. Results are matched using the game title and platform, ranked by confidence, and validated as real PDF files before Vaultarr saves them.
+
+**Vimm's Lair Manual Project** is included as a manuals-only fallback. Vaultarr restricts this integration to manual-related pages and does not crawl or expose Vimm's game-download areas. Because Vimm does not publish a documented public API, results that cannot be verified as direct PDFs open the Manual Project source page for manual selection.
+
+Downloaded manuals are stored under the configured `/config/manuals` location. The existing Docker volume mapping `./config:/config` preserves them across container updates.
+
+Manual search behavior:
+
+1. Search the cached VideoGameManual.com platform catalog.
+2. Rank direct PDF matches using title, platform, and region hints.
+3. Check the conservative Vimm manuals-only catalog/fallback.
+4. Validate the PDF header and enforce a 250 MB safety limit before saving.
+5. Leave uncertain results for manual review rather than downloading a likely-wrong file.
 
 ## Local development
 
