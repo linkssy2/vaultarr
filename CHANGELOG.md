@@ -1,6 +1,12 @@
 # Changelog
 
-## 1.1.2 — Branding Consistency
+## 1.1.3
+- Rebuilt the official app icon without the dark outer outline.
+- Restored the login Orbital Vault core to its original CSS animation.
+- Fixed the oversized cropped login icon.
+- Removed wrapper borders, backgrounds, and shadows from sidebar and login brand marks.
+
+## 1.1.3 — Branding Consistency
 
 - Restored the original blue rounded-square Vaultarr icon in the sidebar.
 - Applied the same official icon to browser favicons, pinned shortcuts, PWA assets, and the login page.

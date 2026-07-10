@@ -172,39 +172,28 @@
   .login-core { animation: none !important; }
 }
 
-/* Vaultarr 1.1.1 — official icon integration */
+/* Vaultarr 1.1.3 — clean application mark; orbital core remains CSS-based. */
 .login-core {
-  overflow: hidden;
+  overflow: visible;
   padding: 0;
-  background: transparent;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
 }
-
-.login-core img {
-  width: 100%;
-  height: 100%;
-  display: block;
-  object-fit: cover;
-  border-radius: inherit;
-}
-
 .login-brand .brand-mark {
   width: 54px;
   height: 54px;
+  flex: 0 0 54px;
   padding: 0;
-  overflow: hidden;
+  overflow: visible;
   background: transparent;
+  border: 0;
+  box-shadow: none;
 }
-
 .login-brand .brand-mark img {
-  width: 100%;
-  height: 100%;
+  width: 54px;
+  height: 54px;
   display: block;
-  object-fit: cover;
-  border-radius: 16px;
+  object-fit: contain;
+  border: 0;
+  outline: 0;
+  box-shadow: none;
 }
-
-
-/* Vaultarr 1.1.2 — use the same official blue-square mark on login. */
-.login-brand .brand-mark { background: transparent; box-shadow: none; overflow: visible; }
-.login-brand .brand-mark img { object-fit: contain; border-radius: 16px; }
-.login-core img { object-fit: contain; }
