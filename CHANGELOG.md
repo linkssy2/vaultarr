@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.1.8 — Mobile Compatibility
+- Added a mobile navigation drawer and compact top bar.
+- Made the login screen responsive while preserving the animated Orbital Vault Core.
+- Added adaptive layouts for cards, forms, focus mode, game details, modals, tables, and search.
+- Added safe-area, dynamic viewport, touch-target, and mobile keyboard improvements.
+- Kept backend behavior and desktop layouts unchanged.
+
 ## 1.1.3
 - Rebuilt the official app icon without the dark outer outline.
 - Restored the login Orbital Vault core to its original CSS animation.

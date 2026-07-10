@@ -1,3 +1,10 @@
+## Vaultarr 1.1.8
+
+- Added a responsive compatibility layer for phones and tablets.
+- Added a slide-out mobile navigation drawer and compact top bar.
+- Improved login, cards, forms, focus mode, game details, tables, and search on small screens.
+- Preserved desktop layout and all backend behavior.
+
 ## Vaultarr 1.1.7
 
 - Fixed the Orbital Vault Core on the login page so its rings, nodes, halo, and core visibly animate.
