@@ -1,26 +1,15 @@
-## [1.1.14] - 2026-07-10
+## 1.1.15 — Stable Frontend Rollback to 1.1.9
 
 ### Restored
-- Restored the known-good 1.1.10 frontend as the stable application baseline.
-- Restored smooth sidebar, section, panel, tab, overlay, and card animations.
-- Restored the proven 1.1.10 mobile card-expansion and Focus Mode behavior.
-
-### Changed
-- Removed the broad 1.1.11–1.1.13 frontend overhaul from the stable release line.
-- Reserved future mobile UX work for smaller, page-scoped changes that do not alter shared animation systems.
-- Updated application, asset-cache, Docker, and release metadata to 1.1.14.
+- Restored the complete known-good Vaultarr 1.1.9 frontend baseline.
+- Removed the card-expansion and broader mobile UX changes introduced after 1.1.9.
+- Restored the 1.1.9 animation, navigation, layout, and responsive behavior unchanged.
 
 ### Stability
-- No backend, database, authentication, scanning, metadata, preservation, archive, or file-operation logic changed.
+- No backend, database, authentication, scanning, metadata-provider, preservation, archive, or file-operation logic was changed.
+- Only release metadata, cache-busting values, changelog entries, and release documentation were updated.
 
-## [1.1.10] - 2026-07-10
-
-### Fixed
-- Reworked expanded game cards into a full-screen mobile focus view.
-- Added compact mobile artwork sizing, sticky tabs, fixed close control, and safe-area support.
-- Disabled desktop card-scatter and reverse-collapse animations on phones.
-
-## 1.1.10 — Mobile Refinement
+## 1.1.15 — Mobile Refinement
 
 ### Improved
 - Expanded mobile layout coverage across all major Vaultarr pages.
@@ -29,7 +18,7 @@
 
 # Changelog
 
-## 1.1.10 — Mobile Compatibility
+## 1.1.15 — Mobile Compatibility
 - Added a mobile navigation drawer and compact top bar.
 - Made the login screen responsive while preserving the animated Orbital Vault Core.
 - Added adaptive layouts for cards, forms, focus mode, game details, modals, tables, and search.

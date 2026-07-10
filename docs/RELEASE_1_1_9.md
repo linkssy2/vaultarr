@@ -1,4 +1,4 @@
-# Vaultarr 1.1.9 — Mobile Refinement
+# Vaultarr 1.1.15 — Mobile Refinement
 
 This release expands the responsive compatibility work introduced in 1.1.8 and targets the remaining pages and controls that were difficult to use on phones.
 

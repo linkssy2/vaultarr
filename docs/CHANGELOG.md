@@ -1,71 +1,101 @@
-## [1.1.14] - 2026-07-10
+## 1.1.15 — Stable Frontend Rollback to 1.1.9
 
 ### Restored
-- Restored the known-good 1.1.10 frontend as the stable application baseline.
-- Restored smooth sidebar, section, panel, tab, overlay, and card animations.
-- Restored the proven 1.1.10 mobile card-expansion and Focus Mode behavior.
-
-### Changed
-- Removed the broad 1.1.11–1.1.13 frontend overhaul from the stable release line.
-- Reserved future mobile UX work for smaller, page-scoped changes that do not alter shared animation systems.
-- Updated application, asset-cache, Docker, and release metadata to 1.1.14.
+- Restored the complete known-good Vaultarr 1.1.9 frontend baseline.
+- Removed the card-expansion and broader mobile UX changes introduced after 1.1.9.
+- Restored the 1.1.9 animation, navigation, layout, and responsive behavior unchanged.
 
 ### Stability
-- No backend, database, authentication, scanning, metadata, preservation, archive, or file-operation logic changed.
+- No backend, database, authentication, scanning, metadata-provider, preservation, archive, or file-operation logic was changed.
+- Only release metadata, cache-busting values, changelog entries, and release documentation were updated.
 
-## [1.1.10] - 2026-07-10
-
-### Fixed
-- Reworked expanded game cards into a full-screen mobile focus view.
-- Added compact mobile artwork sizing, sticky tabs, fixed close control, and safe-area support.
-- Disabled desktop card-scatter and reverse-collapse animations on phones.
-
-## 1.1.10 — Mobile Refinement
+## 1.1.15 — Mobile Refinement
 
 ### Improved
 - Expanded mobile layout coverage across all major Vaultarr pages.
 - Refined game grids, action rows, forms, filters, modals, tables, and Focus Mode for phones.
 - Preserved all desktop and backend behavior.
 
+## Vaultarr 1.1.15
+
+- Added a responsive compatibility layer for phones and tablets.
+- Added a slide-out mobile navigation drawer and compact top bar.
+- Improved login, cards, forms, focus mode, game details, tables, and search on small screens.
+- Preserved desktop layout and all backend behavior.
+
+## Vaultarr 1.1.7
+
+- Fixed the Orbital Vault Core on the login page so its rings, nodes, halo, and core visibly animate.
+- Added cache-busting to the login stylesheets so browsers do not reuse the pre-animation CSS.
+- Kept ambient motion reduced for accessibility while preserving the requested Vault Core animation.
+
+## Vaultarr 1.1.6
+
+- Replaces the login page's flat square lettermark with the animated Orbital Vault Core.
+- Adds the full five-ring orbital field, preservation glyph nodes, halo, rotating energy ring, nebula, and comet motion.
+- Uses the same clean sans-serif Vaultarr glyph treatment as the application icons.
+- Preserves the corrected alpha-aware login and sidebar icon glow.
+
 # Changelog
 
-## 1.1.10 — Mobile Compatibility
-- Added a mobile navigation drawer and compact top bar.
-- Made the login screen responsive while preserving the animated Orbital Vault Core.
-- Added adaptive layouts for cards, forms, focus mode, game details, modals, tables, and search.
-- Added safe-area, dynamic viewport, touch-target, and mobile keyboard improvements.
-- Kept backend behavior and desktop layouts unchanged.
+## Vaultarr 1.1.5
 
-## 1.1.3
-- Rebuilt the official app icon without the dark outer outline.
-- Restored the login Orbital Vault core to its original CSS animation.
-- Fixed the oversized cropped login icon.
-- Removed wrapper borders, backgrounds, and shadows from sidebar and login brand marks.
+- Removed the rectangular image shadow that caused black corners around the login icon.
+- Replaced box-shadow with alpha-aware drop-shadow so the glow follows the rounded icon itself.
+- Added a stronger, slow breathing glow to the sidebar Vaultarr icon.
+- Preserved the existing Orbital Vault core and icon artwork.
 
-## 1.1.3 — Branding Consistency
+## Vaultarr 1.1.5
 
-- Restored the original blue rounded-square Vaultarr icon in the sidebar.
-- Applied the same official icon to browser favicons, pinned shortcuts, PWA assets, and the login page.
-- Added reusable SVG and 512px branding assets.
-- Kept the animated Orbital Vault core unchanged.
+- Uses the exact original sidebar blue-square V as the single app icon source.
+- Applies it to the login page, browser tab, bookmarks, pinned shortcuts, PWA and mobile icons.
+- Removes dark wrapper, outline, inset-ring and padding artifacts around the brand icon.
+- Keeps the animated Orbital Vault core unchanged.
+- Adds cache-busted icon references for the 1.1.5 release.
 
-## Vaultarr 1.0
+# Vaultarr Changelog
 
-First public-ready release of Vaultarr.
+## 1.0.2
+- Added Reset Vault danger-zone workflow.
+- Reset clears active database/settings/library roots and optionally cached assets.
+- Reset returns to first-run onboarding.
 
-### Highlights
-- Library scanner and Collector Focus game view.
-- Metadata Engine with provider intelligence.
-- Manual Engine with indexed manual provider support.
-- Media Library with covers, gallery images, trailer assets, and cache management.
-- Trailer Finder and cinematic Trailer tab.
-- Patch Engine for community fixes and compatibility references.
-- Preservation Mission Control.
-- Smart Collections and Collection Experience.
-- Time Capsule backup/export/import workflow.
-- First-run onboarding and reset vault workflow.
-- Docker-ready structure.
+# Vaultarr Alpha 22.1
 
-## Previous development builds
+## Provider Intelligence Cleanup
+- Provider Intelligence results now reset when a new game card opens.
+- Provider Intelligence requests are bound to the active game id, preventing stale results from appearing after switching cards.
+- Merge Best Fields is now Merge + Enrich: it applies best metadata, caches the selected cover, attempts to cache top gallery images, and can download a high-confidence manual match.
+- Gallery cache refreshes after successful enrichment.
 
-Vaultarr moved through the Alpha 1–30 series before the 1.0 release. Detailed historical notes are retained in `docs/` where available.
+# Vaultarr Alpha 22.2
+
+## Added
+- Media Intelligence classification for provider images.
+- Cover selection now scores images by role, source, aspect ratio, and title hints.
+- Build Best Record prefers real front box art over screenshots, hero images, headers, logos, and backgrounds.
+- Gallery auto-cache now prioritizes screenshots/artwork instead of using cover candidates.
+
+## Fixed
+- Provider Intelligence should no longer promote random gallery/screenshot images into the box cover slot.
+
+
+## Alpha 22.3
+- Added Build Best Record progress workspace.
+- Shows current Provider Intelligence phase while merge/enrich runs.
+- Displays metadata, cover, gallery, manual, preservation, and final validation steps.
+- Keeps Provider Intelligence stale-result protection and Media Intelligence intact.
+
+
+## Alpha 22.8
+- Added VaultOS-themed scrollbars across the app.
+- Scrollbar colors now follow the active theme accent.
+- Applied styling to panels, Gallery, Manual Viewer, Provider Intelligence, global search, and scrollable workspaces.
+- No backend or database changes.
+
+
+## Alpha 23.3
+- Added Arr-style scheduled backup folder workflow.
+- Added backup folder path, schedule, retention, manual Run Backup Now, and backup activity history.
+- Added restore directly from scheduled backup folder.
+- Soft-deemphasized OAuth cloud accounts in favor of synced folders/NAS/external drives.

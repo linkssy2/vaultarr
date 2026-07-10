@@ -350,7 +350,7 @@
 .orbit-four { --speed: 28s; }
 .orbit-five { --speed: 36s; }
 
-/* 1.1.10 mobile login compatibility */
+/* 1.1.9 mobile login compatibility */
 .login-body { min-height: 100dvh; }
 
 @media (max-width: 860px) {
