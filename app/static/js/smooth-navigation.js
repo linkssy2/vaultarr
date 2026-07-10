@@ -257,6 +257,56 @@
     }
   }
 
+
+  async function loadSidebarPageExact(url, push = true) {
+    const main = document.querySelector(".vaultos-content, .content");
+    if (!main) {
+      window.location.href = url;
+      return;
+    }
+
+    const target = new URL(url, window.location.href).href;
+    const id = ++navigationId;
+    if (activeController) activeController.abort();
+    activeController = new AbortController();
+
+    closeFocusIfOpen();
+    document.body.classList.add("vault-nav-loading", "vault-nav-leaving");
+    document.body.classList.remove(
+      "vault-nav-entering",
+      "vault-sidebar-nav-entering",
+      "vault-sidebar-nav-leaving",
+      "vault-view-transitioning"
+    );
+
+    try {
+      const next = await fetchPage(target, activeController.signal);
+      if (id !== navigationId) return;
+
+      // This intentionally matches the original 1.1.7 sidebar timing: the
+      // outgoing view starts fading immediately, then the prepared page is
+      // committed after the original 170 ms handoff pause.
+      window.setTimeout(() => {
+        if (id !== navigationId) return;
+        commitPage(main, next, target, push);
+
+        document.body.classList.remove("vault-nav-leaving", "vault-nav-loading");
+        document.body.classList.add("vault-nav-entering");
+
+        window.setTimeout(() => {
+          if (id === navigationId) {
+            document.body.classList.remove("vault-nav-entering");
+            activeController = null;
+          }
+        }, SIDEBAR_IN_MS);
+      }, SIDEBAR_OUT_MS);
+    } catch (error) {
+      if (error && error.name === "AbortError") return;
+      console.warn("Vaultarr sidebar navigation fell back to normal navigation:", error);
+      window.location.href = target;
+    }
+  }
+
   function schedulePrefetch(link) {
     if (!shouldPrefetch(link)) return;
     window.clearTimeout(prefetchTimer);
@@ -275,7 +325,13 @@
     const link = event.target.closest("a[href]");
     if (!shouldHandleClick(event, link)) return;
     event.preventDefault();
-    loadPage(link.href, true, { sidebar: Boolean(link.closest(".vault-nav")) });
+
+    if (link.closest(".vault-nav")) {
+      loadSidebarPageExact(link.href, true);
+      return;
+    }
+
+    loadPage(link.href, true);
   });
 
   document.addEventListener("pointerenter", (event) => {
