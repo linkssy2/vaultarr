@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.1.2 — Branding Consistency
+
+- Restored the original blue rounded-square Vaultarr icon in the sidebar.
+- Applied the same official icon to browser favicons, pinned shortcuts, PWA assets, and the login page.
+- Added reusable SVG and 512px branding assets.
+- Kept the animated Orbital Vault core unchanged.
+
 ## Vaultarr 1.0
 
 First public-ready release of Vaultarr.

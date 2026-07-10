@@ -202,3 +202,9 @@
   object-fit: cover;
   border-radius: 16px;
 }
+
+
+/* Vaultarr 1.1.2 — use the same official blue-square mark on login. */
+.login-brand .brand-mark { background: transparent; box-shadow: none; overflow: visible; }
+.login-brand .brand-mark img { object-fit: contain; border-radius: 16px; }
+.login-core img { object-fit: contain; }

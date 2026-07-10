@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Vaultarr">
+<defs><linearGradient id="b" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2270ee"/><stop offset="1" stop-color="#0a459b"/></linearGradient></defs>
+<rect x="24" y="24" width="464" height="464" rx="122" fill="url(#b)"/>
+<path d="M145 128h70l41 160 41-160h70L295 384h-78z" fill="#fff"/>
+</svg>
