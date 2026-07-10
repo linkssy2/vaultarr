@@ -300,7 +300,7 @@
   .login-comet { animation: none !important; }
 }
 
-/* 1.1.16 branding: use the exact sidebar mark with no outer tile or outline. */
+/* 1.1.7 branding: use the exact sidebar mark with no outer tile or outline. */
 .login-brand .brand-mark,
 .login-brand .login-app-icon {
   width: 54px !important;
@@ -318,7 +318,7 @@
 }
 
 
-/* Vaultarr 1.1.16: alpha-aware login mark — no rectangular shadow or dark corners. */
+/* Vaultarr 1.1.7: alpha-aware login mark — no rectangular shadow or dark corners. */
 .login-brand .brand-mark.login-app-icon {
   overflow: visible !important;
   background: transparent !important;
@@ -330,7 +330,7 @@
 }
 
 
-/* Vaultarr 1.1.16: force the login Vault Core animation to run and remain visible. */
+/* Vaultarr 1.1.7: force the login Vault Core animation to run and remain visible. */
 .login-orbit {
   animation-play-state: running !important;
   will-change: transform;

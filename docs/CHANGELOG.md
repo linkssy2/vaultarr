@@ -1,12 +1,14 @@
-## Vaultarr 1.1.16
+## Vaultarr 1.1.17
 
-- Restored the complete known-good Vaultarr 1.1.7 source as the stable baseline.
-- Removed all mobile UX and animation changes introduced from 1.1.8 through 1.1.15.
-- Restored the original sidebar, page, section, tab, overlay, card, and Focus Mode animations.
-- Preserved the animated login Orbital Vault Core, login icon correction, and sidebar glow from 1.1.7.
-- Updated only release metadata, cache-busting references, and documentation for 1.1.16.
+### Smooth Rendering & Transition Engine
+- Kept the current screen visible until the destination view is fully fetched and parsed.
+- Removed full-page flashes when switching Library categories and other internal sections.
+- Extended smooth navigation to ordinary same-origin page links rather than sidebar links only.
+- Added safe destination prefetching, stale-request cancellation, Back/Forward support, and page-local script restoration.
+- Preserved the 1.1.7 card UI and Focus Mode expansion engine without modifying their animation geometry or timing.
+- Left all backend, database, metadata, scanning, preservation, and archive behavior unchanged.
 
-## Vaultarr 1.1.16
+## Vaultarr 1.1.7
 
 - Fixed the Orbital Vault Core on the login page so its rings, nodes, halo, and core visibly animate.
 - Added cache-busting to the login stylesheets so browsers do not reuse the pre-animation CSS.
