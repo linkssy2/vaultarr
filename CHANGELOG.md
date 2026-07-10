@@ -1,4 +1,13 @@
-## [1.1.10] - 2026-07-10
+# Changelog
+
+## [1.1.11] - 2026-07-10
+
+### Added
+- Unified mobile app bar, overlay navigation state, viewport/keyboard sizing, and safe-area support.
+- Mobile touch, form, search, Focus Mode, table, list-record, landscape, and performance systems.
+
+### Changed
+- Consolidated mobile presentation into the final responsive layer while preserving desktop and backend behavior.
 
 ### Fixed
 - Reworked expanded game cards into a full-screen mobile focus view.
@@ -11,8 +20,6 @@
 - Expanded mobile layout coverage across all major Vaultarr pages.
 - Refined game grids, action rows, forms, filters, modals, tables, and Focus Mode for phones.
 - Preserved all desktop and backend behavior.
-
-# Changelog
 
 ## 1.1.10 — Mobile Compatibility
 - Added a mobile navigation drawer and compact top bar.

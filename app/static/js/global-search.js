@@ -36,6 +36,7 @@
 
     state.isOpen = true;
     document.body.classList.add("global-search-open");
+    window.VaultarrMobile?.setBodyLock("search", true);
     el.panel.setAttribute("aria-hidden", "false");
     el.backdrop?.setAttribute("aria-hidden", "false");
 
@@ -52,6 +53,7 @@
     state.isOpen = false;
     state.activeIndex = -1;
     document.body.classList.remove("global-search-open");
+    window.VaultarrMobile?.setBodyLock("search", false);
     el.panel?.setAttribute("aria-hidden", "true");
     el.backdrop?.setAttribute("aria-hidden", "true");
   }

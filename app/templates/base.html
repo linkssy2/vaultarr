@@ -3,15 +3,15 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Vaultarr 1.1.10</title>
+  <title>Vaultarr 1.1.11</title>
   {% if theme.dark_reader_compat %}<meta name="darkreader-lock">{% endif %}
   <meta name="theme-color" content="#3b82f6">
-  <link rel="icon" href="/static/icons/favicon.ico?v=1.1.10" sizes="any">
-  <link rel="icon" type="image/svg+xml" href="/static/icons/vaultarr.svg?v=1.1.10">
-  <link rel="icon" type="image/png" sizes="32x32" href="/static/icons/favicon-32x32.png?v=1.1.10">
-  <link rel="icon" type="image/png" sizes="16x16" href="/static/icons/favicon-16x16.png?v=1.1.10">
-  <link rel="apple-touch-icon" href="/static/icons/apple-touch-icon.png?v=1.1.10">
-  <link rel="manifest" href="/static/site.webmanifest?v=1.1.10">
+  <link rel="icon" href="/static/icons/favicon.ico?v=1.1.11" sizes="any">
+  <link rel="icon" type="image/svg+xml" href="/static/icons/vaultarr.svg?v=1.1.11">
+  <link rel="icon" type="image/png" sizes="32x32" href="/static/icons/favicon-32x32.png?v=1.1.11">
+  <link rel="icon" type="image/png" sizes="16x16" href="/static/icons/favicon-16x16.png?v=1.1.11">
+  <link rel="apple-touch-icon" href="/static/icons/apple-touch-icon.png?v=1.1.11">
+  <link rel="manifest" href="/static/site.webmanifest?v=1.1.11">
 
   <link rel="stylesheet" href="/static/css/base.css">
   <link rel="stylesheet" href="/static/css/sidebar.css">
@@ -40,18 +40,22 @@
 <body class="vaultos {% if theme.dark_reader_compat %}dark-reader-compat{% endif %}">
   <div class="vault-ambient" aria-hidden="true"><span></span><i></i></div>
 
-  <header class="mobile-topbar">
-    <a class="mobile-brand" href="/">
-      <img src="/static/icons/vaultarr.svg?v=1.1.10" alt="" width="36" height="36">
-      <span>Vaultarr</span>
+  <header class="mobile-topbar" id="mobileTopbar">
+    <button class="mobile-back-button" id="mobileBackButton" type="button" aria-label="Go back" hidden>←</button>
+    <a class="mobile-brand" href="/" aria-label="Vaultarr home">
+      <img src="/static/icons/vaultarr.svg?v=1.1.11" alt="" width="34" height="34">
     </a>
-    <button class="mobile-menu-button" id="mobileMenuButton" type="button" aria-label="Open navigation" aria-controls="vaultarrSidebar" aria-expanded="false">☰</button>
+    <div class="mobile-page-context">
+      <span class="mobile-page-eyebrow">Vaultarr</span>
+      <strong class="mobile-page-title" id="mobilePageTitle">Vaultarr</strong>
+    </div>
+    <button class="mobile-menu-button" id="mobileMenuButton" type="button" aria-label="Open navigation" aria-controls="vaultarrSidebar" aria-expanded="false"><span></span><span></span><span></span></button>
   </header>
   <div class="mobile-nav-backdrop" id="mobileNavBackdrop" aria-hidden="true"></div>
 
   <aside class="sidebar vaultos-sidebar" id="vaultarrSidebar">
     <a class="brand" href="/">
-      <img class="brand-mark" src="/static/icons/vaultarr.svg?v=1.1.10" alt="" width="38" height="38">
+      <img class="brand-mark" src="/static/icons/vaultarr.svg?v=1.1.11" alt="" width="38" height="38">
       <span>Vaultarr</span>
     </a>
 
@@ -77,7 +81,7 @@
     <div class="sidebar-footer">
       <div class="mini-stat vault-build-card">
         <span>Current build</span>
-        <strong>Vaultarr 1.1.10</strong>
+        <strong>Vaultarr 1.1.11</strong>
         <em></em>
       </div>
       {% if auth_enabled %}
@@ -516,6 +520,6 @@
 
   <script src="/static/js/smooth-navigation.js"></script>
   <script src="/static/js/global-search.js"></script>
-  <script src="/static/js/mobile-navigation.js?v=1.1.10"></script>
+  <script src="/static/js/mobile-navigation.js?v=1.1.11"></script>
 </body>
 </html>

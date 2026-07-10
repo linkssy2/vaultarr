@@ -1,3 +1,13 @@
+# Changelog
+
+## [1.1.11] - 2026-07-10
+
+### Added
+- Unified mobile app bar, overlay navigation, keyboard-aware viewport sizing, safe areas, touch patterns, and mobile performance rules.
+
+### Changed
+- Reworked mobile Focus Mode, search, forms, list records, tables, poster grids, and landscape behavior.
+
 ## [1.1.10] - 2026-07-10
 
 ### Fixed
