@@ -264,7 +264,7 @@
     min-height: 66px;
 }
 
-/* Vaultarr 1.1.4: exact sidebar icon asset; never add a dark wrapper. */
+/* Vaultarr 1.1.5: exact sidebar icon asset; never add a dark wrapper. */
 .sidebar.vaultos-sidebar .brand .brand-mark {
   width: 38px !important;
   height: 38px !important;
@@ -278,4 +278,40 @@
   background: transparent !important;
   box-shadow: 0 0 22px rgba(59,130,246,.42) !important;
   object-fit: contain !important;
+}
+
+
+/* Vaultarr 1.1.5: glow follows the rounded icon alpha instead of its square image box. */
+.sidebar.vaultos-sidebar .brand .brand-mark {
+  box-shadow: none !important;
+  filter:
+    drop-shadow(0 0 7px rgba(59,130,246,.52))
+    drop-shadow(0 0 18px rgba(96,165,250,.24));
+  animation: vaultarrBrandGlow 7s ease-in-out infinite !important;
+  will-change: filter;
+}
+
+.sidebar.vaultos-sidebar .brand:hover .brand-mark {
+  filter:
+    drop-shadow(0 0 9px rgba(96,165,250,.68))
+    drop-shadow(0 0 24px rgba(59,130,246,.34));
+}
+
+@keyframes vaultarrBrandGlow {
+  0%, 100% {
+    filter:
+      drop-shadow(0 0 6px rgba(59,130,246,.42))
+      drop-shadow(0 0 14px rgba(96,165,250,.18));
+  }
+  50% {
+    filter:
+      drop-shadow(0 0 9px rgba(96,165,250,.66))
+      drop-shadow(0 0 24px rgba(59,130,246,.30));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sidebar.vaultos-sidebar .brand .brand-mark {
+    animation: none !important;
+  }
 }

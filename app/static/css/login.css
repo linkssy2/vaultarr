@@ -172,7 +172,7 @@
   .login-core { animation: none !important; }
 }
 
-/* 1.1.4 branding: use the exact sidebar mark with no outer tile or outline. */
+/* 1.1.5 branding: use the exact sidebar mark with no outer tile or outline. */
 .login-brand .brand-mark,
 .login-brand .login-app-icon {
   width: 54px !important;
@@ -187,4 +187,16 @@
   background: transparent !important;
   box-shadow: 0 0 24px rgba(59,130,246,.32) !important;
   object-fit: contain !important;
+}
+
+
+/* Vaultarr 1.1.5: alpha-aware login mark — no rectangular shadow or dark corners. */
+.login-brand .brand-mark.login-app-icon {
+  overflow: visible !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  filter:
+    drop-shadow(0 0 7px rgba(59,130,246,.44))
+    drop-shadow(0 0 16px rgba(96,165,250,.20)) !important;
+  animation: none !important;
 }
