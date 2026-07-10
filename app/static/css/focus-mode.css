@@ -84,14 +84,14 @@ body.focus-active .focus-backdrop {
     opacity: 0;
     pointer-events: none;
     transition:
-        left 440ms cubic-bezier(0.18, 0.88, 0.22, 1),
-        top 440ms cubic-bezier(0.18, 0.88, 0.22, 1),
-        width 440ms cubic-bezier(0.18, 0.88, 0.22, 1),
-        height 440ms cubic-bezier(0.18, 0.88, 0.22, 1),
+        left 480ms cubic-bezier(0.16, 0.82, 0.24, 1),
+        top 480ms cubic-bezier(0.16, 0.82, 0.24, 1),
+        width 480ms cubic-bezier(0.16, 0.82, 0.24, 1),
+        height 480ms cubic-bezier(0.16, 0.82, 0.24, 1),
         opacity 260ms ease,
-        border-radius 440ms cubic-bezier(0.18, 0.88, 0.22, 1),
-        padding 440ms cubic-bezier(0.18, 0.88, 0.22, 1),
-        box-shadow 440ms ease;
+        border-radius 480ms cubic-bezier(0.16, 0.82, 0.24, 1),
+        padding 480ms cubic-bezier(0.16, 0.82, 0.24, 1),
+        box-shadow 480ms ease;
     z-index: 60;
     overflow: hidden;
     will-change: left, top, width, height, opacity;

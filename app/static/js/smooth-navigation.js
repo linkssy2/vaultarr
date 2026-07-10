@@ -1,6 +1,6 @@
 (() => {
-  const TRANSITION_OUT_MS = 150;
-  const TRANSITION_IN_MS = 240;
+  const TRANSITION_OUT_MS = 260;
+  const TRANSITION_IN_MS = 360;
   const PREFETCH_DELAY_MS = 90;
   const pageCache = new Map();
   let activeController = null;

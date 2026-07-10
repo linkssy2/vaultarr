@@ -1,6 +1,6 @@
-# Vaultarr 1.1.17 — Smooth Rendering & Transition Engine
+# Vaultarr 1.1.18 — Smooth Rendering & Transition Engine
 
-Vaultarr 1.1.17 is a focused frontend polish release built directly from the stable 1.1.7 source.
+Vaultarr 1.1.18 is a focused frontend polish release built directly from the stable 1.1.7 source.
 
 ## What changed
 

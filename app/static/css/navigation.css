@@ -1,5 +1,5 @@
 /* ============================================================
-   Vaultarr 1.1.17 — Smooth Rendering & Navigation
+   Vaultarr 1.1.18 — Calm Rendering & Focus Cleanup
    The current view stays visible while the next page is prepared.
    Card hover and Focus Mode animation systems are intentionally
    left untouched.
@@ -10,21 +10,21 @@
     transform: translate3d(0, 0, 0);
     filter: blur(0);
     transition:
-        opacity 150ms ease,
-        transform 170ms ease,
-        filter 170ms ease;
+        opacity 260ms cubic-bezier(0.22, 0.72, 0.24, 1),
+        transform 300ms cubic-bezier(0.22, 0.72, 0.24, 1),
+        filter 300ms ease;
     will-change: opacity, transform, filter;
 }
 
 body.vault-nav-leaving .vaultos-content {
     opacity: 0;
-    transform: translate3d(0, 7px, 0) scale(0.997);
-    filter: blur(1.25px);
+    transform: translate3d(0, 5px, 0) scale(0.9985);
+    filter: blur(0.75px);
     pointer-events: none;
 }
 
 body.vault-nav-entering .vaultos-content {
-    animation: vaultContentEnter 240ms cubic-bezier(0.2, 0.85, 0.25, 1) both;
+    animation: vaultContentEnter 360ms cubic-bezier(0.16, 0.82, 0.24, 1) both;
 }
 
 /* Loading only draws the thin progress sweep. It never hides or clears the
@@ -56,8 +56,8 @@ body.vault-nav-loading .vaultos-content::before {
 @keyframes vaultContentEnter {
     from {
         opacity: 0;
-        transform: translate3d(0, 9px, 0) scale(0.997);
-        filter: blur(1.25px);
+        transform: translate3d(0, 6px, 0) scale(0.9985);
+        filter: blur(0.75px);
     }
     to {
         opacity: 1;

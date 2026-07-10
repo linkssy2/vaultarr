@@ -1,4 +1,4 @@
-## Vaultarr 1.1.17
+## Vaultarr 1.1.18
 
 ### Smooth Rendering & Transition Engine
 - Kept the current screen visible until the destination view is fully fetched and parsed.

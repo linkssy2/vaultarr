@@ -420,7 +420,9 @@
 
       stopTrailerPlayback(false);
       isAnimating = true;
-      const start = activeStartRect;
+      const liveCard = activeTrigger?.querySelector(".poster-card") || activeTrigger;
+      const liveRect = liveCard?.getBoundingClientRect?.();
+      const start = liveRect && liveRect.width > 0 && liveRect.height > 0 ? liveRect : activeStartRect;
 
       panel.classList.remove("is-expanded", "is-opening");
       panel.classList.add("is-closing");
@@ -428,10 +430,17 @@
       if (start) setPanelBox(start);
 
       window.setTimeout(() => {
+        // Freeze the panel fully transparent before clearing its inline geometry.
+        // Without this step the browser briefly reflows the still-visible panel at
+        // its default fixed position, producing the bottom-left rectangle flicker.
+        panel.style.transition = "none";
+        panel.style.opacity = "0";
+        panel.style.visibility = "hidden";
+        panel.getBoundingClientRect();
+
         body.classList.remove("focus-active", "focus-preparing");
         panel.classList.remove("is-closing");
         panel.setAttribute("aria-hidden", "true");
-        panel.removeAttribute("style");
 
         if (backdrop) backdrop.setAttribute("aria-hidden", "true");
         if (activeGrid) activeGrid.classList.remove("is-focusing");
@@ -449,8 +458,12 @@
         activeGrid = null;
         isAnimating = false;
 
+        requestAnimationFrame(() => {
+          panel.removeAttribute("style");
+        });
+
         document.dispatchEvent(new CustomEvent("vaultarr:focus-closed"));
-      }, 470);
+      }, 500);
     }
 
     function setActiveTab(tabName) {
