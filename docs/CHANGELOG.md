@@ -1,3 +1,10 @@
+## Vaultarr 1.1.6
+
+- Replaces the login page's flat square lettermark with the animated Orbital Vault Core.
+- Adds the full five-ring orbital field, preservation glyph nodes, halo, rotating energy ring, nebula, and comet motion.
+- Uses the same clean sans-serif Vaultarr glyph treatment as the application icons.
+- Preserves the corrected alpha-aware login and sidebar icon glow.
+
 # Changelog
 
 ## Vaultarr 1.1.5

@@ -22,9 +22,11 @@
   min-height: 520px;
   border-radius: 36px;
   overflow: hidden;
+  isolation: isolate;
   background:
-    radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--accent) 15%, transparent), transparent 34%),
-    linear-gradient(180deg, rgba(15,23,42,.52), rgba(2,6,23,.76));
+    radial-gradient(ellipse at 76% 12%, rgba(99, 102, 241, .22), transparent 30%),
+    radial-gradient(ellipse at 34% 38%, rgba(56, 189, 248, .16), transparent 34%),
+    linear-gradient(180deg, rgba(4, 8, 18, .72), rgba(3, 7, 16, .96));
   border: 1px solid color-mix(in srgb, var(--accent) 20%, transparent);
   box-shadow: inset 0 0 80px rgba(0,0,0,.35), 0 30px 90px rgba(0,0,0,.35);
 }
@@ -33,7 +35,7 @@
 .login-stars::after {
   content: "";
   position: absolute;
-  inset: 0;
+  inset: -10%;
   background-image:
     radial-gradient(circle, rgba(255,255,255,.55) 0 1px, transparent 1.5px),
     radial-gradient(circle, color-mix(in srgb, var(--accent) 60%, white 20%) 0 1px, transparent 1.4px);
@@ -42,48 +44,159 @@
   animation: loginStarDrift 90s linear infinite;
 }
 
-.login-orbit {
+.login-stars::after {
+  opacity: .16;
+  transform: scale(1.18) rotate(16deg);
+  animation-duration: 125s;
+  animation-direction: reverse;
+}
+
+.login-nebula {
   position: absolute;
-  inset: 50%;
-  width: var(--size);
-  height: var(--size);
-  margin: calc(var(--size) / -2);
+  inset: -22% -15% auto 4%;
+  height: 78%;
   border-radius: 50%;
-  border: 1px solid color-mix(in srgb, var(--accent) 26%, transparent);
-  animation: loginOrbit var(--speed) linear infinite;
-  box-shadow: 0 0 32px color-mix(in srgb, var(--accent) 10%, transparent);
+  background:
+    radial-gradient(ellipse at 38% 42%, rgba(99,102,241,.28), transparent 24%),
+    radial-gradient(ellipse at 58% 50%, rgba(59,130,246,.20), transparent 30%),
+    radial-gradient(ellipse at 46% 60%, rgba(168,85,247,.16), transparent 36%);
+  filter: blur(24px) saturate(1.15);
+  opacity: .38;
+  transform: rotate(-12deg);
+  animation: loginNebulaDrift 80s ease-in-out infinite alternate;
 }
 
-.login-orbit span {
+.login-comet {
   position: absolute;
-  top: 9%;
-  left: 50%;
-  width: 10px;
-  height: 10px;
+  top: 22%;
+  right: -30%;
+  width: 190px;
+  height: 2px;
   border-radius: 999px;
-  background: color-mix(in srgb, var(--accent) 82%, white 18%);
-  box-shadow: 0 0 22px var(--accent);
+  background: linear-gradient(90deg, transparent, rgba(125,211,252,.14), rgba(255,255,255,.86));
+  filter: drop-shadow(0 0 18px rgba(56,189,248,.5));
+  opacity: 0;
+  transform: rotate(-16deg);
+  animation: loginCometSweep 18s ease-in-out infinite;
 }
 
-.orbit-one { --size: 190px; --speed: 32s; }
-.orbit-two { --size: 286px; --speed: 52s; animation-direction: reverse; }
-.orbit-three { --size: 390px; --speed: 78s; }
-
-.login-core {
+.login-orbital-field {
   position: absolute;
   inset: 50%;
-  width: 112px;
-  height: 112px;
-  margin: -56px;
+  width: min(76%, 410px);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
   display: grid;
   place-items: center;
-  border-radius: 32px;
-  font-size: 46px;
+  filter: drop-shadow(0 0 42px color-mix(in srgb, var(--primary) 30%, transparent));
+}
+
+.login-orbit {
+  position: absolute;
+  inset: var(--inset);
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--accent) 24%, transparent);
+  transform: rotate(var(--tilt));
+  animation: loginOrbit var(--speed) linear infinite;
+  box-shadow: inset 0 0 18px rgba(96,165,250,.045), 0 0 20px rgba(96,165,250,.08);
+}
+
+.login-orbit::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  border: 1px solid transparent;
+  border-top-color: color-mix(in srgb, var(--primary) 78%, white 15%);
+  border-right-color: color-mix(in srgb, var(--accent) 54%, transparent);
+  opacity: .78;
+  filter: drop-shadow(0 0 10px rgba(56,189,248,.25));
+}
+
+.login-node {
+  position: absolute;
+  right: 6%;
+  top: 13%;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  font-style: normal;
+  color: #dbeafe;
+  border: 1px solid rgba(125,211,252,.34);
+  background:
+    radial-gradient(circle at 35% 28%, rgba(255,255,255,.26), transparent 20%),
+    linear-gradient(135deg, rgba(37,99,235,.76), rgba(6,182,212,.36));
+  box-shadow: 0 0 18px rgba(56,189,248,.36), inset 0 1px 0 rgba(255,255,255,.14);
+  animation: loginNodeGlow 4.8s ease-in-out infinite;
+}
+
+.orbit-one { --tilt: 18deg; --speed: 18s; --inset: 4%; }
+.orbit-two { --tilt: -28deg; --speed: 24s; --inset: 14%; animation-direction: reverse; opacity: .82; }
+.orbit-three { --tilt: 72deg; --speed: 31s; --inset: 24%; opacity: .68; }
+.orbit-four { --tilt: -9deg; --speed: 44s; --inset: -7%; opacity: .48; }
+.orbit-five { --tilt: 42deg; --speed: 58s; --inset: -17%; opacity: .34; animation-direction: reverse; }
+.orbit-two .login-node { animation-delay: .8s; }
+.orbit-three .login-node { animation-delay: 1.6s; }
+.orbit-four .login-node { animation-delay: 2.3s; }
+.orbit-five .login-node { animation-delay: 3.1s; }
+
+.login-core {
+  position: relative;
+  z-index: 3;
+  width: 126px;
+  height: 126px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(59,130,246,.34), rgba(8,13,23,.90) 60%),
+    conic-gradient(from 180deg, rgba(59,130,246,.06), rgba(168,85,247,.24), rgba(34,211,238,.18), rgba(59,130,246,.06));
+  border: 1px solid rgba(148,163,184,.24);
+  box-shadow: 0 0 42px rgba(59,130,246,.25);
+  animation: loginCoreBreathe 6.8s ease-in-out infinite;
+}
+
+.login-core::before {
+  content: "";
+  position: absolute;
+  inset: -34px;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, transparent, rgba(56,189,248,.26), transparent, rgba(168,85,247,.22), transparent);
+  mask: radial-gradient(circle, transparent 55%, black 57%, black 60%, transparent 62%);
+  -webkit-mask: radial-gradient(circle, transparent 55%, black 57%, black 60%, transparent 62%);
+  animation: loginCoreRingSpin 16s linear infinite;
+  opacity: .72;
+}
+
+.login-core::after {
+  content: "";
+  position: absolute;
+  inset: -18px;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--primary) 20%, transparent), transparent 64%);
+  z-index: -1;
+  animation: loginCoreHalo 4.8s ease-in-out infinite;
+}
+
+.login-core span {
+  width: 58px;
+  height: 58px;
+  border-radius: 17px;
+  display: grid;
+  place-items: center;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 31px;
   font-weight: 900;
+  line-height: 1;
   color: white;
   background: linear-gradient(135deg, var(--primary), var(--accent));
-  box-shadow: 0 0 58px color-mix(in srgb, var(--accent) 42%, transparent);
-  animation: loginCoreBreathe 7s ease-in-out infinite;
+  box-shadow: 0 0 24px color-mix(in srgb, var(--primary) 55%, transparent);
+  animation: loginCoreGlyphBreath 7s ease-in-out infinite;
 }
 
 .login-card {
@@ -156,9 +269,23 @@
   color: #fecaca;
 }
 
-@keyframes loginOrbit { to { transform: rotate(360deg); } }
+@keyframes loginOrbit {
+  from { transform: rotate(var(--tilt)) rotate(0deg); }
+  to { transform: rotate(var(--tilt)) rotate(360deg); }
+}
 @keyframes loginStarDrift { to { transform: translate3d(-120px, -80px, 0); } }
+@keyframes loginNebulaDrift { to { transform: rotate(-5deg) translate3d(4%, 3%, 0) scale(1.06); } }
+@keyframes loginCometSweep {
+  0%, 76% { opacity: 0; transform: rotate(-16deg) translateX(0); }
+  80% { opacity: .8; }
+  92% { opacity: 0; transform: rotate(-16deg) translateX(-760px); }
+  100% { opacity: 0; }
+}
 @keyframes loginCoreBreathe { 0%,100% { transform: scale(1); } 50% { transform: scale(1.035); } }
+@keyframes loginCoreHalo { 0%,100% { opacity: .25; transform: scale(.92); } 50% { opacity: .62; transform: scale(1.05); } }
+@keyframes loginCoreRingSpin { to { transform: rotate(360deg); } }
+@keyframes loginCoreGlyphBreath { 0%,100% { transform: scale(1); filter: brightness(1); } 50% { transform: scale(1.04); filter: brightness(1.14); } }
+@keyframes loginNodeGlow { 0%,100% { filter: brightness(.9); } 50% { filter: brightness(1.25); } }
 
 @media (max-width: 860px) {
   .login-shell { grid-template-columns: 1fr; }
@@ -169,10 +296,16 @@
   .login-stars::before,
   .login-stars::after,
   .login-orbit,
-  .login-core { animation: none !important; }
+  .login-node,
+  .login-nebula,
+  .login-comet,
+  .login-core,
+  .login-core::before,
+  .login-core::after,
+  .login-core span { animation: none !important; }
 }
 
-/* 1.1.5 branding: use the exact sidebar mark with no outer tile or outline. */
+/* 1.1.6 branding: use the exact sidebar mark with no outer tile or outline. */
 .login-brand .brand-mark,
 .login-brand .login-app-icon {
   width: 54px !important;
@@ -190,7 +323,7 @@
 }
 
 
-/* Vaultarr 1.1.5: alpha-aware login mark — no rectangular shadow or dark corners. */
+/* Vaultarr 1.1.6: alpha-aware login mark — no rectangular shadow or dark corners. */
 .login-brand .brand-mark.login-app-icon {
   overflow: visible !important;
   background: transparent !important;
