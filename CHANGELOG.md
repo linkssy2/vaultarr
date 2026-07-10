@@ -1,31 +1,19 @@
-# Changelog
+## [1.1.14] - 2026-07-10
 
-## [1.1.13] - 2026-07-10
-
-### Fixed
-- Restored smooth sidebar page transitions by running network loading and exit motion concurrently.
-- Prevented replacement pages from skipping their first entrance-animation frame.
-- Restored section, tab, card, panel, and orbital animation behavior affected by the 1.1.11 mobile performance rules.
-- Removed touch transforms from full cards that caused snapping and transition conflicts.
-- Preserved the 1.1.12 Focus Mode expansion and closing hotfix.
-- Kept reduced-motion behavior limited to users who explicitly request it.
-
-## 1.1.12 — Focus Mode Animation Hotfix
-
-### Fixed
-- Restored the smooth mobile card-expansion and closing behavior from 1.1.10.
-- Isolated Focus Mode animation geometry from the broader 1.1.11 mobile UX overrides.
-- Preserved all non-conflicting 1.1.11 mobile improvements.
-
-
-## [1.1.12] - 2026-07-10
-
-### Added
-- Unified mobile app bar, overlay navigation state, viewport/keyboard sizing, and safe-area support.
-- Mobile touch, form, search, Focus Mode, table, list-record, landscape, and performance systems.
+### Restored
+- Restored the known-good 1.1.10 frontend as the stable application baseline.
+- Restored smooth sidebar, section, panel, tab, overlay, and card animations.
+- Restored the proven 1.1.10 mobile card-expansion and Focus Mode behavior.
 
 ### Changed
-- Consolidated mobile presentation into the final responsive layer while preserving desktop and backend behavior.
+- Removed the broad 1.1.11–1.1.13 frontend overhaul from the stable release line.
+- Reserved future mobile UX work for smaller, page-scoped changes that do not alter shared animation systems.
+- Updated application, asset-cache, Docker, and release metadata to 1.1.14.
+
+### Stability
+- No backend, database, authentication, scanning, metadata, preservation, archive, or file-operation logic changed.
+
+## [1.1.10] - 2026-07-10
 
 ### Fixed
 - Reworked expanded game cards into a full-screen mobile focus view.
@@ -38,6 +26,8 @@
 - Expanded mobile layout coverage across all major Vaultarr pages.
 - Refined game grids, action rows, forms, filters, modals, tables, and Focus Mode for phones.
 - Preserved all desktop and backend behavior.
+
+# Changelog
 
 ## 1.1.10 — Mobile Compatibility
 - Added a mobile navigation drawer and compact top bar.

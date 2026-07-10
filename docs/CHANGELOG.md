@@ -1,20 +1,17 @@
-# Changelog
+## [1.1.14] - 2026-07-10
 
-## 1.1.12 — Focus Mode Animation Hotfix
-
-### Fixed
-- Restored the smooth mobile card-expansion and closing behavior from 1.1.10.
-- Isolated Focus Mode animation geometry from the broader 1.1.11 mobile UX overrides.
-- Preserved all non-conflicting 1.1.11 mobile improvements.
-
-
-## [1.1.12] - 2026-07-10
-
-### Added
-- Unified mobile app bar, overlay navigation, keyboard-aware viewport sizing, safe areas, touch patterns, and mobile performance rules.
+### Restored
+- Restored the known-good 1.1.10 frontend as the stable application baseline.
+- Restored smooth sidebar, section, panel, tab, overlay, and card animations.
+- Restored the proven 1.1.10 mobile card-expansion and Focus Mode behavior.
 
 ### Changed
-- Reworked mobile Focus Mode, search, forms, list records, tables, poster grids, and landscape behavior.
+- Removed the broad 1.1.11–1.1.13 frontend overhaul from the stable release line.
+- Reserved future mobile UX work for smaller, page-scoped changes that do not alter shared animation systems.
+- Updated application, asset-cache, Docker, and release metadata to 1.1.14.
+
+### Stability
+- No backend, database, authentication, scanning, metadata, preservation, archive, or file-operation logic changed.
 
 ## [1.1.10] - 2026-07-10
 

@@ -1,10 +1,6 @@
 (() => {
   const TRANSITION_OUT_MS = 170;
   const TRANSITION_IN_MS = 280;
-  let navigationController = null;
-  let navigationSequence = 0;
-
-  const wait = (ms) => new Promise((resolve) => window.setTimeout(resolve, ms));
 
   function isInternalLink(link) {
     if (!link || !link.href) return false;
@@ -48,10 +44,6 @@
     return { doc, content: nextContent.innerHTML, title: doc.title || "Vaultarr" };
   }
 
-  function resetTransitionState() {
-    document.body.classList.remove("vault-nav-loading", "vault-nav-leaving", "vault-nav-entering");
-  }
-
   async function loadPage(url, push = true) {
     const main = document.querySelector(".vaultos-content, .content");
     if (!main) {
@@ -59,48 +51,31 @@
       return;
     }
 
-    const sequence = ++navigationSequence;
-    if (navigationController) navigationController.abort();
-    navigationController = new AbortController();
-
     closeFocusIfOpen();
     document.body.classList.add("vault-nav-loading", "vault-nav-leaving");
     document.body.classList.remove("vault-nav-entering");
 
     try {
-      // Fetch and exit animation run together. Older builds waited for the fetch
-      // and then waited again, leaving the content faded out longer than needed.
-      const [response] = await Promise.all([
-        fetch(url, {
-          headers: {
-            "X-Vaultarr-Navigation": "smooth",
-            "Accept": "text/html,application/xhtml+xml",
-          },
-          signal: navigationController.signal,
-        }),
-        wait(TRANSITION_OUT_MS),
-      ]);
-
-      if (sequence !== navigationSequence) return;
+      const response = await fetch(url, {
+        headers: {
+          "X-Vaultarr-Navigation": "smooth",
+          "Accept": "text/html,application/xhtml+xml",
+        },
+      });
       if (!response.ok) throw new Error(`Navigation failed: ${response.status}`);
 
       const html = await response.text();
-      if (sequence !== navigationSequence) return;
       const next = extractMain(html);
 
-      main.innerHTML = next.content;
-      document.title = next.title;
-      if (push) history.pushState({ vaultarrSmooth: true }, next.title, url);
+      window.setTimeout(() => {
+        main.innerHTML = next.content;
+        document.title = next.title;
+        if (push) history.pushState({ vaultarrSmooth: true }, next.title, url);
 
-      window.scrollTo({ top: 0, left: 0, behavior: "instant" });
-      updateActiveNav(url);
+        window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+        updateActiveNav(url);
 
-      // Force the browser to commit the fresh layout before entering. This avoids
-      // the replacement content skipping the first animation frame on mobile.
-      document.body.classList.remove("vault-nav-leaving", "vault-nav-loading");
-      void main.offsetWidth;
-      requestAnimationFrame(() => {
-        if (sequence !== navigationSequence) return;
+        document.body.classList.remove("vault-nav-leaving", "vault-nav-loading");
         document.body.classList.add("vault-nav-entering");
 
         document.dispatchEvent(new CustomEvent("vaultarr:page-loaded", {
@@ -108,15 +83,11 @@
         }));
 
         window.setTimeout(() => {
-          if (sequence === navigationSequence) {
-            document.body.classList.remove("vault-nav-entering");
-          }
+          document.body.classList.remove("vault-nav-entering");
         }, TRANSITION_IN_MS);
-      });
+      }, TRANSITION_OUT_MS);
     } catch (error) {
-      if (error && error.name === "AbortError") return;
       console.warn("Vaultarr smooth navigation fell back to normal navigation:", error);
-      resetTransitionState();
       window.location.href = url;
     }
   }
