@@ -200,9 +200,18 @@
       panel.style.height = `${rect.height}px`;
     }
 
+    function isMobileFocusMode() {
+      return window.matchMedia("(max-width: 640px)").matches;
+    }
+
     function getFinalPanelRect() {
       const viewportWidth = window.innerWidth;
-      const viewportHeight = window.innerHeight;
+      const viewportHeight = window.visualViewport?.height || window.innerHeight;
+
+      if (isMobileFocusMode()) {
+        return { left: 0, top: 0, width: viewportWidth, height: viewportHeight };
+      }
+
       const sidebarWidth = viewportWidth > 1000 ? 240 : 0;
       const margin = viewportWidth > 1000 ? 44 : 18;
 
@@ -381,9 +390,14 @@
       trigger.classList.add("is-pressing");
       window.setTimeout(() => trigger.classList.remove("is-pressing"), 180);
 
-      scatterCards(trigger);
+      const mobileFocus = isMobileFocusMode();
+      if (!mobileFocus) scatterCards(trigger);
       setLoading(trigger);
+      setActiveTab("overview");
+      panel.scrollTop = 0;
+      fields.content?.scrollTo?.({ top: 0, behavior: "instant" });
 
+      body.classList.toggle("mobile-focus-active", mobileFocus);
       body.classList.add("focus-preparing", "focus-active");
       panel.setAttribute("aria-hidden", "false");
       if (backdrop) backdrop.setAttribute("aria-hidden", "false");
@@ -391,18 +405,28 @@
       const start = activeStartRect;
       const finalRect = getFinalPanelRect();
 
-      panel.classList.remove("is-expanded", "is-closing");
+      panel.classList.remove("is-expanded", "is-closing", "is-mobile-focus");
+      panel.classList.toggle("is-mobile-focus", mobileFocus);
       panel.classList.add("is-opening");
-      setPanelBox(start);
-      panel.getBoundingClientRect();
 
-      requestAnimationFrame(() => {
-        body.classList.remove("focus-preparing");
+      if (mobileFocus) {
         setPanelBox(finalRect);
-        panel.classList.add("is-expanded");
-      });
+        panel.getBoundingClientRect();
+        requestAnimationFrame(() => {
+          body.classList.remove("focus-preparing");
+          panel.classList.add("is-expanded");
+        });
+      } else {
+        setPanelBox(start);
+        panel.getBoundingClientRect();
+        requestAnimationFrame(() => {
+          body.classList.remove("focus-preparing");
+          setPanelBox(finalRect);
+          panel.classList.add("is-expanded");
+        });
+      }
 
-      window.setTimeout(() => { isAnimating = false; }, 560);
+      window.setTimeout(() => { isAnimating = false; }, mobileFocus ? 260 : 560);
 
       try {
         const response = await fetch(`/api/games/${gameId}`);
@@ -421,15 +445,16 @@
       stopTrailerPlayback(false);
       isAnimating = true;
       const start = activeStartRect;
+      const mobileFocus = panel.classList.contains("is-mobile-focus") || isMobileFocusMode();
 
       panel.classList.remove("is-expanded", "is-opening");
       panel.classList.add("is-closing");
 
-      if (start) setPanelBox(start);
+      if (!mobileFocus && start) setPanelBox(start);
 
       window.setTimeout(() => {
-        body.classList.remove("focus-active", "focus-preparing");
-        panel.classList.remove("is-closing");
+        body.classList.remove("focus-active", "focus-preparing", "mobile-focus-active");
+        panel.classList.remove("is-closing", "is-mobile-focus");
         panel.setAttribute("aria-hidden", "true");
         panel.removeAttribute("style");
 
@@ -450,7 +475,7 @@
         isAnimating = false;
 
         document.dispatchEvent(new CustomEvent("vaultarr:focus-closed"));
-      }, 470);
+      }, mobileFocus ? 220 : 470);
     }
 
     function setActiveTab(tabName) {

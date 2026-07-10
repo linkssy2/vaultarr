@@ -1,4 +1,11 @@
-## 1.1.9 — Mobile Refinement
+## [1.1.10] - 2026-07-10
+
+### Fixed
+- Reworked expanded game cards into a full-screen mobile focus view.
+- Added compact mobile artwork sizing, sticky tabs, fixed close control, and safe-area support.
+- Disabled desktop card-scatter and reverse-collapse animations on phones.
+
+## 1.1.10 — Mobile Refinement
 
 ### Improved
 - Expanded mobile layout coverage across all major Vaultarr pages.
@@ -7,7 +14,7 @@
 
 # Changelog
 
-## 1.1.9 — Mobile Compatibility
+## 1.1.10 — Mobile Compatibility
 - Added a mobile navigation drawer and compact top bar.
 - Made the login screen responsive while preserving the animated Orbital Vault Core.
 - Added adaptive layouts for cards, forms, focus mode, game details, modals, tables, and search.

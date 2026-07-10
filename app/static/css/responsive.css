@@ -1,4 +1,4 @@
-/* Vaultarr 1.1.9 responsive compatibility layer.
+/* Vaultarr 1.1.10 responsive compatibility layer.
    Desktop rules remain authoritative; these overrides only activate on smaller screens. */
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -277,7 +277,7 @@ table { max-width: 100%; }
   .mobile-nav-backdrop { transition-duration: 1ms !important; }
 }
 
-/* Vaultarr 1.1.9 mobile refinement layer */
+/* Vaultarr 1.1.10 mobile refinement layer */
 @media (max-width: 980px) {
   .content > * { max-width: 100%; }
 
@@ -530,4 +530,167 @@ table { max-width: 100%; }
   .detail-stat-strip, .focus-stat-grid, .badge-summary-grid, .focus-art-meta { grid-template-columns: 1fr !important; }
   .orbital-field { transform: scale(.68); }
   .home-vault-window, .hero-vault-window, .orbital-vault { min-height: 245px; }
+}
+
+/* Vaultarr 1.1.10 — mobile card expansion overhaul */
+@media (max-width: 640px) {
+  body.mobile-focus-active {
+    overflow: hidden;
+    overscroll-behavior: none;
+  }
+
+  body.mobile-focus-active .focus-backdrop {
+    background: rgba(3, 7, 18, 0.88);
+  }
+
+  .focus-panel.is-mobile-focus {
+    display: block;
+    inset: auto;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    padding: 0 !important;
+    border: 0;
+    border-radius: 0 !important;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    transition: opacity 180ms ease, transform 220ms cubic-bezier(.2,.8,.2,1) !important;
+    transform: translateY(18px);
+  }
+
+  .focus-panel.is-mobile-focus.is-expanded {
+    transform: translateY(0);
+  }
+
+  .focus-panel.is-mobile-focus.is-closing {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+
+  .focus-panel.is-mobile-focus .focus-close {
+    position: fixed;
+    top: max(10px, env(safe-area-inset-top));
+    right: max(10px, env(safe-area-inset-right));
+    width: 46px;
+    height: 46px;
+    z-index: 90;
+    background: rgba(3, 7, 18, .92);
+    backdrop-filter: blur(14px);
+  }
+
+  .focus-panel.is-mobile-focus .focus-art-column {
+    display: block;
+    padding: calc(58px + env(safe-area-inset-top)) 14px 14px;
+  }
+
+  .focus-panel.is-mobile-focus .focus-cover,
+  .focus-panel.is-mobile-focus .focus-art-column.collector-layout .focus-cover {
+    min-height: 0;
+    height: min(46dvh, 390px);
+    max-height: 390px;
+    border-radius: 18px;
+  }
+
+  .focus-panel.is-mobile-focus .focus-cover img,
+  .focus-panel.is-mobile-focus .focus-art-column.collector-layout .focus-cover img,
+  .focus-panel.is-mobile-focus .focus-cover.art-portrait img,
+  .focus-panel.is-mobile-focus .focus-cover.art-square img,
+  .focus-panel.is-mobile-focus .focus-cover.art-landscape img {
+    max-width: calc(100% - 28px);
+    max-height: calc(100% - 28px);
+    border-radius: 13px;
+  }
+
+  .focus-panel.is-mobile-focus .focus-art-meta {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .focus-panel.is-mobile-focus .focus-art-meta > div {
+    min-width: 0;
+    padding: 10px;
+  }
+
+  .focus-panel.is-mobile-focus .focus-content {
+    overflow: visible;
+    padding: 10px 14px calc(28px + env(safe-area-inset-bottom));
+  }
+
+  .focus-panel.is-mobile-focus .focus-kicker {
+    margin-bottom: 6px;
+  }
+
+  .focus-panel.is-mobile-focus #focusTitle {
+    margin: 0;
+    padding-right: 48px;
+    font-size: clamp(1.55rem, 7vw, 2rem);
+    line-height: 1.08;
+    overflow-wrap: anywhere;
+  }
+
+  .focus-panel.is-mobile-focus #focusPath {
+    font-size: .78rem;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+  }
+
+  .focus-panel.is-mobile-focus .focus-tabs {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    margin: 16px -14px 18px;
+    padding: 10px 14px;
+    background: rgba(10, 15, 25, .94);
+    backdrop-filter: blur(18px);
+    border-top: 1px solid rgba(148,163,184,.12);
+    border-bottom: 1px solid rgba(148,163,184,.18);
+    scrollbar-width: none;
+  }
+
+  .focus-panel.is-mobile-focus .focus-tabs::-webkit-scrollbar { display: none; }
+
+  .focus-panel.is-mobile-focus .focus-tab {
+    min-height: 42px;
+    padding: 9px 13px;
+    border-radius: 999px;
+  }
+
+  .focus-panel.is-mobile-focus .focus-stat-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px;
+  }
+
+  .focus-panel.is-mobile-focus .focus-stat-grid .card {
+    padding: 12px;
+  }
+
+  .focus-panel.is-mobile-focus .focus-stat-grid .card h2 {
+    font-size: .75rem;
+  }
+
+  .focus-panel.is-mobile-focus .focus-description {
+    font-size: .95rem;
+    line-height: 1.55;
+  }
+
+  .focus-panel.is-mobile-focus iframe,
+  .focus-panel.is-mobile-focus video {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 380px) {
+  .focus-panel.is-mobile-focus .focus-cover,
+  .focus-panel.is-mobile-focus .focus-art-column.collector-layout .focus-cover {
+    height: 42dvh;
+  }
+
+  .focus-panel.is-mobile-focus .focus-art-meta,
+  .focus-panel.is-mobile-focus .focus-stat-grid {
+    grid-template-columns: 1fr !important;
+  }
 }
