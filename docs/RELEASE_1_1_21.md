@@ -1,4 +1,4 @@
-# Vaultarr 1.1.21 — Exact Sidebar Motion Restoration
+# Vaultarr 1.1.22 — Exact Sidebar Motion Restoration
 
 This patch restores the sidebar navigation animation directly from the confirmed 1.1.7 source rather than approximating its appearance.
 

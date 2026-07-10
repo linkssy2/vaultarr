@@ -1,4 +1,4 @@
-# Vaultarr 1.1.21 — Sidebar Motion Restoration
+# Vaultarr 1.1.22 — Sidebar Motion Restoration
 
 This patch restores the stable, smooth sidebar section animation used before the shared rendering-engine changes, without removing the HTML-flash prevention introduced in 1.1.17.
 

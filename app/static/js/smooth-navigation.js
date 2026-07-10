@@ -323,6 +323,30 @@
 
   document.addEventListener("click", (event) => {
     const link = event.target.closest("a[href]");
+
+    // Clicking the route that is already open must be a true no-op. Without
+    // this guard the smooth-navigation handler intentionally declines the
+    // link, allowing the browser to perform a full document reload. That
+    // reload is the brief raw-HTML flash seen when clicking an active Library
+    // category (for example All Games while already viewing All Games), and
+    // the same problem can occur on other active section links.
+    if (link && !event.defaultPrevented && event.button === 0 &&
+        !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey &&
+        isInternalLink(link) && (!link.target || link.target === "_self") &&
+        !link.hasAttribute("download") && !link.hasAttribute("data-no-smooth-nav")) {
+      const clickedUrl = new URL(link.href, window.location.href);
+      const currentUrl = new URL(window.location.href);
+      const sameRoute = clickedUrl.pathname === currentUrl.pathname &&
+        clickedUrl.search === currentUrl.search &&
+        !clickedUrl.hash;
+
+      if (sameRoute) {
+        event.preventDefault();
+        updateActiveNav(currentUrl.href);
+        return;
+      }
+    }
+
     if (!shouldHandleClick(event, link)) return;
     event.preventDefault();
 

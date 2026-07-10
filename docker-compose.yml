@@ -1,6 +1,6 @@
 services:
   vaultarr:
-    build: .
+    image: ghcr.io/linkssy2/vaultarr:latest
     container_name: vaultarr
     ports:
       - "8787:8787"

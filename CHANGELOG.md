@@ -1,4 +1,17 @@
-# Vaultarr 1.1.21 — Exact Sidebar Motion Restoration
+# Vaultarr 1.1.22 — Active Route Reload Fix
+
+## Fixed
+
+- Clicking the Library category that is already active no longer performs a full browser reload.
+- Prevents the raw-HTML flash seen when clicking **All Games** while already viewing **All Games**, and applies the same protection to equivalent active links throughout Vaultarr.
+- Keeps the exact 1.1.21 sidebar motion, card UI, card expansion, Focus Mode, and close-flicker fix unchanged.
+
+## Deployment
+
+- The production Compose example now pulls `ghcr.io/linkssy2/vaultarr:latest` instead of using `build: .`.
+- README includes Linux, Windows, Dockge, update, and local-development instructions.
+
+# Vaultarr 1.1.22 — Exact Sidebar Motion Restoration
 
 This patch restores the sidebar navigation animation directly from the confirmed 1.1.7 source rather than approximating its appearance.
 
@@ -11,7 +24,7 @@ This patch restores the sidebar navigation animation directly from the confirmed
 - Preserved the 1.1.18 Focus Mode close-flicker repair.
 - Card UI, hover behavior, expansion geometry, Focus Mode layout, and backend behavior remain unchanged.
 
-# Vaultarr 1.1.21 — Sidebar Motion Restoration
+# Vaultarr 1.1.22 — Sidebar Motion Restoration
 
 ## Fixed
 - Restored the original smooth 1.1.7-style motion specifically for sidebar navigation.
