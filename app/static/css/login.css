@@ -300,7 +300,7 @@
   .login-comet { animation: none !important; }
 }
 
-/* 1.1.7 branding: use the exact sidebar mark with no outer tile or outline. */
+/* 1.1.16 branding: use the exact sidebar mark with no outer tile or outline. */
 .login-brand .brand-mark,
 .login-brand .login-app-icon {
   width: 54px !important;
@@ -318,7 +318,7 @@
 }
 
 
-/* Vaultarr 1.1.7: alpha-aware login mark — no rectangular shadow or dark corners. */
+/* Vaultarr 1.1.16: alpha-aware login mark — no rectangular shadow or dark corners. */
 .login-brand .brand-mark.login-app-icon {
   overflow: visible !important;
   background: transparent !important;
@@ -330,7 +330,7 @@
 }
 
 
-/* Vaultarr 1.1.7: force the login Vault Core animation to run and remain visible. */
+/* Vaultarr 1.1.16: force the login Vault Core animation to run and remain visible. */
 .login-orbit {
   animation-play-state: running !important;
   will-change: transform;
@@ -349,55 +349,3 @@
 .orbit-three { --speed: 21s; }
 .orbit-four { --speed: 28s; }
 .orbit-five { --speed: 36s; }
-
-/* 1.1.9 mobile login compatibility */
-.login-body { min-height: 100dvh; }
-
-@media (max-width: 860px) {
-  .login-body {
-    overflow-y: auto;
-    place-items: start center;
-    padding: max(18px, env(safe-area-inset-top)) 14px max(18px, env(safe-area-inset-bottom));
-  }
-
-  .login-shell {
-    width: 100%;
-    max-width: 520px;
-    min-height: calc(100dvh - 36px);
-    grid-template-columns: 1fr;
-    gap: 16px;
-    align-content: center;
-  }
-
-  .login-orbital {
-    min-height: clamp(220px, 38dvh, 300px);
-    border-radius: 24px;
-  }
-
-  .login-orbital-field { width: min(72vw, 280px); }
-  .login-core { width: 98px; height: 98px; }
-  .login-core span { width: 48px; height: 48px; font-size: 26px; border-radius: 14px; }
-
-  .login-card { padding: 24px 20px; border-radius: 24px; }
-  .login-brand { margin-bottom: 22px; gap: 13px; }
-  .login-brand h1 { font-size: clamp(30px, 9vw, 40px); }
-  .login-form input,
-  .login-form button { min-height: 48px; font-size: 16px; }
-}
-
-@media (max-width: 480px) {
-  .login-shell { align-content: start; }
-  .login-orbital { min-height: 210px; }
-  .login-card { padding: 21px 17px; }
-  .login-brand .brand-mark,
-  .login-brand .login-app-icon { width: 48px !important; height: 48px !important; flex-basis: 48px !important; }
-  .login-brand h1 { letter-spacing: -.055em; }
-  .login-brand .muted { font-size: 14px; }
-}
-
-@media (max-height: 720px) and (max-width: 860px) {
-  .login-shell { align-content: start; }
-  .login-orbital { min-height: 180px; }
-  .login-orbital-field { width: min(56vw, 220px); }
-  .login-card { padding-block: 18px; }
-}

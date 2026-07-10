@@ -1,29 +1,12 @@
-## 1.1.15 — Stable Frontend Rollback to 1.1.9
+## Vaultarr 1.1.16
 
-### Restored
-- Restored the complete known-good Vaultarr 1.1.9 frontend baseline.
-- Removed the card-expansion and broader mobile UX changes introduced after 1.1.9.
-- Restored the 1.1.9 animation, navigation, layout, and responsive behavior unchanged.
-
-### Stability
-- No backend, database, authentication, scanning, metadata-provider, preservation, archive, or file-operation logic was changed.
-- Only release metadata, cache-busting values, changelog entries, and release documentation were updated.
-
-## 1.1.15 — Mobile Refinement
-
-### Improved
-- Expanded mobile layout coverage across all major Vaultarr pages.
-- Refined game grids, action rows, forms, filters, modals, tables, and Focus Mode for phones.
-- Preserved all desktop and backend behavior.
+- Restored the complete known-good Vaultarr 1.1.7 source as the stable baseline.
+- Removed all mobile UX and animation changes introduced from 1.1.8 through 1.1.15.
+- Restored the original sidebar, page, section, tab, overlay, card, and Focus Mode animations.
+- Preserved the animated login Orbital Vault Core, login icon correction, and sidebar glow from 1.1.7.
+- Updated only release metadata, cache-busting references, and documentation for 1.1.16.
 
 # Changelog
-
-## 1.1.15 — Mobile Compatibility
-- Added a mobile navigation drawer and compact top bar.
-- Made the login screen responsive while preserving the animated Orbital Vault Core.
-- Added adaptive layouts for cards, forms, focus mode, game details, modals, tables, and search.
-- Added safe-area, dynamic viewport, touch-target, and mobile keyboard improvements.
-- Kept backend behavior and desktop layouts unchanged.
 
 ## 1.1.3
 - Rebuilt the official app icon without the dark outer outline.
