@@ -1,3 +1,11 @@
+# Changelog
+
+## 1.3.1 — Curator Progress Feedback
+- Added a smooth visible loading bar while an individual game is being curated.
+- Added rotating cataloging-stage messages and a disabled working button state.
+- Added completion and retry feedback without changing Curator matching behavior.
+- Added reduced-motion support for the new progress indicator.
+
 ## 1.2.4
 - Fixed Vimm PDF downloads that returned HTTP 400 when a manual was scanned below the hardcoded 200 DPI request.
 - Vaultarr now reads each Vimm manual detail page, uses that manual's actual maximum source DPI, preserves provider cookies, and retries lower supported resolutions when necessary.

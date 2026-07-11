@@ -14,10 +14,17 @@
     <div class="home-card-head"><div><p class="eyebrow">Collection Readiness</p><h2>Games needing attention</h2></div></div>
     <div class="curator-list">
     {% for game in games %}
-      <article class="curator-row">
-        <div><a href="/games/{{ game.id }}"><strong>{{ game.title }}</strong></a><small>{{ game.curator_status|replace('_',' ')|title }}{% if game.curator_last_error %} · {{ game.curator_last_error }}{% endif %}</small></div>
-        <div class="curator-meter"><span style="width:{{ game.curator_score or 0 }}%"></span></div><b>{{ game.curator_score or 0 }}%</b>
-        <button type="button" onclick="fetch('/api/curator/games/{{ game.id }}/run',{method:'POST'}).then(()=>location.reload())">Curate</button>
+      <article class="curator-row" data-curator-row data-game-id="{{ game.id }}">
+        <div class="curator-game-copy">
+          <a href="/games/{{ game.id }}"><strong>{{ game.title }}</strong></a>
+          <small data-curator-status>{{ game.curator_status|replace('_',' ')|title }}{% if game.curator_last_error %} · {{ game.curator_last_error }}{% endif %}</small>
+        </div>
+        <div class="curator-meter" role="progressbar" aria-label="Catalog completeness for {{ game.title }}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ game.curator_score or 0 }}">
+          <span class="curator-meter-fill" style="width:{{ game.curator_score or 0 }}%"></span>
+          <span class="curator-meter-runner" aria-hidden="true"></span>
+        </div>
+        <b data-curator-percent>{{ game.curator_score or 0 }}%</b>
+        <button type="button" class="curator-run-button" data-curator-run>Curate</button>
       </article>
     {% endfor %}
     </div>
@@ -25,4 +32,5 @@
   <section class="card alive-panel"><div class="home-card-head"><div><p class="eyebrow">Recent Work</p><h2>Curator activity</h2></div></div>
   {% for item in history %}<p><strong>{{ item.title or 'Removed game' }}</strong> — {{ item.message }} <span class="muted">{{ item.created_at }}</span></p>{% else %}<p class="muted">No curator activity yet.</p>{% endfor %}</section>
 </div>
+<script src="/static/js/curator.js" defer></script>
 {% endblock %}

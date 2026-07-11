@@ -2,6 +2,10 @@
 
 Vaultarr is a self-hosted game preservation dashboard for cataloging, enriching, and maintaining a personal game archive.
 
+## Curator progress feedback
+
+When you select **Curate** for a game, Vaultarr now shows an animated working bar and live stage messages until the cataloging request finishes. The button is temporarily disabled to prevent duplicate jobs, then the final museum-readiness score is displayed.
+
 ## What Vaultarr does
 
 - Library scanning and floating game cards
