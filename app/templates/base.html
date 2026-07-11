@@ -1,15 +1,15 @@
 <!doctype html>
 <html>
 <head>
-  <title>Vaultarr 1.4.3</title>
+  <title>Vaultarr 1.4.4</title>
   {% if theme.dark_reader_compat %}<meta name="darkreader-lock">{% endif %}
   <meta name="theme-color" content="#3b82f6">
-  <link rel="icon" href="/static/icons/favicon.ico?v=1.4.3" sizes="any">
-  <link rel="icon" type="image/svg+xml" href="/static/icons/vaultarr.svg?v=1.4.3">
-  <link rel="icon" type="image/png" sizes="32x32" href="/static/icons/favicon-32x32.png?v=1.4.3">
-  <link rel="icon" type="image/png" sizes="16x16" href="/static/icons/favicon-16x16.png?v=1.4.3">
-  <link rel="apple-touch-icon" href="/static/icons/apple-touch-icon.png?v=1.4.3">
-  <link rel="manifest" href="/static/site.webmanifest?v=1.4.3">
+  <link rel="icon" href="/static/icons/favicon.ico?v=1.4.4" sizes="any">
+  <link rel="icon" type="image/svg+xml" href="/static/icons/vaultarr.svg?v=1.4.4">
+  <link rel="icon" type="image/png" sizes="32x32" href="/static/icons/favicon-32x32.png?v=1.4.4">
+  <link rel="icon" type="image/png" sizes="16x16" href="/static/icons/favicon-16x16.png?v=1.4.4">
+  <link rel="apple-touch-icon" href="/static/icons/apple-touch-icon.png?v=1.4.4">
+  <link rel="manifest" href="/static/site.webmanifest?v=1.4.4">
 
   <link rel="stylesheet" href="/static/css/base.css">
   <link rel="stylesheet" href="/static/css/sidebar.css">
@@ -22,7 +22,7 @@
   <link rel="stylesheet" href="/static/css/focus-mode.css">
   <link rel="stylesheet" href="/static/css/preservation.css">
   <link rel="stylesheet" href="/static/css/vaultos.css">
-  <link rel="stylesheet" href="/static/css/navigation.css?v=1.4.3">
+  <link rel="stylesheet" href="/static/css/navigation.css?v=1.4.4">
   <link rel="stylesheet" href="/static/css/global-search.css">
   <link rel="stylesheet" href="/static/css/discovery.css">
   <link rel="stylesheet" href="/static/css/scrollbars.css">
@@ -33,7 +33,7 @@
   <link rel="stylesheet" href="/static/css/experience.css">
   <link rel="stylesheet" href="/static/css/readiness.css">
   <link rel="stylesheet" href="/static/css/responsive.css">
-  <link rel="stylesheet" href="/static/css/controls.css?v=1.4.3">
+  <link rel="stylesheet" href="/static/css/controls.css?v=1.4.4">
   <style id="vaultarr-theme">{{ theme_css|safe }}</style>
 </head>
 <body class="vaultos {{ 'advanced-mode' if ui_settings.advanced_mode else 'standard-mode' }} {% if theme.dark_reader_compat %}dark-reader-compat{% endif %}">
@@ -41,7 +41,7 @@
 
   <aside class="sidebar vaultos-sidebar">
     <a class="brand" href="/">
-      <img class="brand-mark" src="/static/icons/vaultarr.svg?v=1.4.3" alt="" width="38" height="38">
+      <img class="brand-mark" src="/static/icons/vaultarr.svg?v=1.4.4" alt="" width="38" height="38">
       <span>Vaultarr</span>
     </a>
 
@@ -68,7 +68,7 @@
     <div class="sidebar-footer">
       <div class="mini-stat vault-build-card">
         <span>Current build</span>
-        <strong>Vaultarr 1.4.3</strong>
+        <strong>Vaultarr 1.4.4</strong>
         <em></em>
       </div>
       {% if auth_enabled %}
@@ -530,7 +530,7 @@
   </dialog>
 
   <script src="/static/js/library.js"></script>
-  <script src="/static/js/focus-mode.js?v=1.4.3"></script>
+  <script src="/static/js/focus-mode.js?v=1.4.4"></script>
   <script src="/static/js/theme-compat.js"></script>
   <script src="/static/js/studio-navigation.js"></script>
   <script src="/static/js/orbital-vault.js"></script>
@@ -541,20 +541,51 @@
   <section class="global-search-panel" id="globalSearchPanel" aria-hidden="true" role="dialog" aria-label="Search Vaultarr">
     <div class="global-search-head">
       <div>
-        <span class="micro-label">Vault Search</span>
-        <h2>Search your vault</h2>
+        <span class="micro-label">Universal Search</span>
+        <h2 id="globalSearchHeading">Search your museum</h2>
       </div>
       <button class="global-search-close" id="globalSearchClose" type="button" aria-label="Close search">×</button>
+    </div>
+    <div class="global-search-modes" role="tablist" aria-label="Search location">
+      <button class="global-search-mode is-active" id="globalSearchMuseumMode" type="button" data-search-mode="museum" role="tab" aria-selected="true">My Museum</button>
+      <button class="global-search-mode" id="globalSearchDiscoverMode" type="button" data-search-mode="discover" role="tab" aria-selected="false">Discover & Add</button>
     </div>
     <div class="global-search-box">
       <input id="globalSearchInput" type="text" placeholder="Search games, collections, metadata..." autocomplete="off">
       <kbd>Esc</kbd>
     </div>
+    <div class="global-search-discover-options" id="globalSearchDiscoverOptions" hidden>
+      <label>Platform hint <input id="globalSearchPlatform" type="text" placeholder="Optional, e.g. Nintendo 64"></label>
+      <label>Information source
+        <select id="globalSearchProvider">
+          <option value="all">All enabled sources</option><option value="launchbox">LaunchBox</option><option value="igdb">IGDB</option><option value="rawg">RAWG</option><option value="steam">Steam</option><option value="wikipedia">Wikipedia</option>
+        </select>
+      </label>
+    </div>
     <div class="global-search-status" id="globalSearchStatus">Start typing to search across your library.</div>
     <div class="global-search-results" id="globalSearchResults"></div>
   </section>
 
-  <script src="/static/js/smooth-navigation.js?v=1.4.3"></script>
-  <script src="/static/js/global-search.js"></script>
+  <div class="global-add-backdrop" id="globalAddBackdrop" hidden></div>
+  <section class="global-add-dialog" id="globalAddDialog" hidden aria-modal="true" role="dialog" aria-labelledby="globalAddTitle">
+    <button class="global-add-close" id="globalAddClose" type="button" aria-label="Close add dialog">×</button>
+    <div class="global-add-cover" id="globalAddCover"><span>🎮</span></div>
+    <div class="global-add-copy">
+      <p class="eyebrow">Add to the museum</p>
+      <h2 id="globalAddTitle">Loading game…</h2>
+      <p class="muted" id="globalAddSummary"></p>
+      <p class="global-add-description" id="globalAddDescription"></p>
+      <div class="global-add-facts" id="globalAddFacts"></div>
+      <div class="global-add-options">
+        <label>Folder Path <span class="muted">optional</span><input id="globalAddPath" placeholder="E:\Games\Game Folder"></label>
+        <label>Category<select id="globalAddCategory"><option>Unsorted</option><option>Manual</option><option>Fanmade</option><option>PC Port</option><option>Homebrew</option><option>Prototype</option><option>Abandonware</option><option>Other</option></select></label>
+      </div>
+      <div class="global-add-actions"><button class="secondary" id="globalAddCancel" type="button">Back to results</button><button id="globalAddConfirm" type="button">Add to Museum</button></div>
+      <p class="global-add-status" id="globalAddStatus" aria-live="polite"></p>
+    </div>
+  </section>
+
+  <script src="/static/js/smooth-navigation.js?v=1.4.4"></script>
+  <script src="/static/js/global-search.js?v=1.4.4"></script>
 </body>
 </html>

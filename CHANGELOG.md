@@ -1,3 +1,14 @@
+# 1.4.4 — Universal Search & Add
+
+- Replaced the separate search-to-add page with one Universal Search dialog.
+- Added **My Museum** and **Discover & Add** modes to the sidebar search.
+- Discover mode searches enabled game-information sources and adds a selected release directly to the museum.
+- Added an in-search preview with optional folder path and category selection.
+- Newly added games are automatically queued for Curator preparation.
+- Library **Add Game** now opens the detailed manual-entry form for custom and unmatched titles.
+- Existing card, Curator, manual, and navigation behavior remains unchanged.
+- Retained the published GHCR image in all production Docker examples.
+
 # 1.4.3 — Search-to-Add Games
 
 - Reworked **Add Game** into a search-first workflow.

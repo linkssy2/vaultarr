@@ -1,12 +1,12 @@
-# Vaultarr 1.4.3
+# Vaultarr 1.4.4
 
-> Current release: **Vaultarr 1.4.3 — Search-to-Add Games**
+> Current release: **Vaultarr 1.4.4 — Universal Search & Add**
 
 Vaultarr is a self-hosted game preservation dashboard for cataloging, enriching, and maintaining a personal game archive.
 
 ## The Curator Experience
 
-Vaultarr 1.4.3 simplifies the day-to-day experience around one goal: add a game and let Vaultarr prepare the museum record. Standard Mode shows only the essential collection pages, while technical provider, cache, and diagnostic tools remain available through **Advanced Mode** in Settings.
+Vaultarr 1.4.4 simplifies the day-to-day experience around one goal: add a game and let Vaultarr prepare the museum record. Standard Mode shows only the essential collection pages, while technical provider, cache, and diagnostic tools remain available through **Advanced Mode** in Settings.
 
 Newly scanned games can be queued automatically for Curator processing. Vaultarr researches game information, chooses available artwork, looks for a manual, respects user edits and metadata locks, and surfaces only items that need review.
 
@@ -216,3 +216,13 @@ Games can be removed from Vaultarr without deleting the original game folder. Re
 ## Search-to-Add games
 
 The **Add Game** page now starts with a provider search instead of an empty form. Search the enabled information sources, optionally boost a platform, preview the selected release, and add it with one click. Vaultarr saves the available game information, downloads the selected cover when possible, and queues the new record for the Curator. The original manual-entry form remains available for fan projects, prototypes, homebrew, and titles that are not listed by a provider.
+
+
+## Universal Search
+
+Open **Search** in the sidebar (or press `Ctrl+K`) and choose:
+
+- **My Museum** to find games and collections already in Vaultarr.
+- **Discover & Add** to search enabled information sources, preview a release, and add it directly.
+
+The **Add Game** button on the Library page opens the detailed manual form for prototypes, fan games, homebrew, custom ports, and unmatched titles.
