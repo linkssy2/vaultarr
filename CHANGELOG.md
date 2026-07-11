@@ -1,3 +1,8 @@
+## 1.2.4
+- Fixed Vimm PDF downloads that returned HTTP 400 when a manual was scanned below the hardcoded 200 DPI request.
+- Vaultarr now reads each Vimm manual detail page, uses that manual's actual maximum source DPI, preserves provider cookies, and retries lower supported resolutions when necessary.
+- Kept global Vimm searching, cross-platform results, local manual caching, card expansion, Focus Mode, and sidebar motion unchanged.
+
 ## 1.2.3
 - Fixed Vimm searches to use the provider's all-platform endpoint (`/manual/?p=list&q=...`) before any system-specific fallback.
 - Preserved alternate-platform manual results and direct PDF downloads.

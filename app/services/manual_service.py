@@ -1049,6 +1049,73 @@ def manual_file_info(filename):
     }
 
 
+def _vimm_download_context(manual_url):
+    """Resolve a Vimm manual download using the manual's own detail page.
+
+    Vimm validates ``destDPI`` against each manual's source resolution. Older
+    Vaultarr builds always requested 200 DPI, which returns HTTP 400 for manuals
+    scanned below 200 DPI. Fetching the detail page also preserves any session
+    cookies Vimm may issue before the PDF request.
+    """
+    parsed = urlparse(manual_url)
+    match = re.search(r'(?:^|[?&])manualId=(\d+)', parsed.query)
+    if not match:
+        raise ValueError('The Vimm manual download URL did not contain a manual ID.')
+
+    manual_id = match.group(1)
+    detail_url = f'https://vimm.net/manual/{manual_id}'
+    session = requests.Session()
+    session.cookies.set('counted', '1', domain='vimm.net', path='/')
+    browser_headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:152.0) Gecko/20100101 Firefox/152.0',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.9',
+        'Referer': 'https://vimm.net/',
+    }
+
+    source_dpi = None
+    try:
+        detail = session.get(detail_url, headers=browser_headers, timeout=20, allow_redirects=True)
+        detail.raise_for_status()
+        page = detail.text or ''
+        dpi_patterns = (
+            r'name=["\']sourceDPI["\'][^>]*value=["\'](\d+)',
+            r'name=["\']destDPI["\'][^>]*max=["\'](\d+)',
+            r'Scan Resolution:\s*</td>\s*<td>\s*(\d+)\s*dpi',
+        )
+        for pattern in dpi_patterns:
+            found = re.search(pattern, page, flags=re.I | re.S)
+            if found:
+                source_dpi = int(found.group(1))
+                break
+    except requests.RequestException:
+        # The download retry ladder below still gives a useful fallback when
+        # the detail page is temporarily unavailable.
+        pass
+
+    requested = None
+    try:
+        requested = int(requests.utils.urlparse(manual_url).query.split('destDPI=', 1)[1].split('&', 1)[0])
+    except Exception:
+        requested = None
+
+    candidates = []
+    if source_dpi:
+        candidates.append(max(50, min(source_dpi, requested or source_dpi)))
+    if requested:
+        candidates.append(max(50, min(requested, source_dpi or requested)))
+    candidates.extend([200, 150, 100, 75, 50])
+    dpi_values = []
+    for value in candidates:
+        value = int(value)
+        if source_dpi:
+            value = min(value, source_dpi)
+        if value >= 50 and value not in dpi_values:
+            dpi_values.append(value)
+
+    return session, manual_id, detail_url, dpi_values
+
+
 def download_manual_pdf(game_id, manual_url, title='Manual'):
     manual_url = (manual_url or '').strip()
     parsed = urlparse(manual_url)
@@ -1060,10 +1127,61 @@ def download_manual_pdf(game_id, manual_url, title='Manual'):
         raise ValueError('This looks like a source page, not a direct PDF download.')
 
     MANUALS_DIR.mkdir(parents=True, exist_ok=True)
-    headers = {'User-Agent': 'Vaultarr/1.2.1 Manual Downloader', 'Accept': 'application/pdf,*/*;q=0.8'}
+    safe_title = re.sub(r'[^A-Za-z0-9._ -]+', '_', title or f'game-{game_id}').strip(' ._') or f'game-{game_id}'
+
     if is_vimm_download:
-        headers.update({'Referer': 'https://vimm.net/', 'Cookie': 'counted=1'})
-    with requests.get(manual_url, headers=headers, timeout=35, stream=True, allow_redirects=True) as response:
+        session, manual_id, detail_url, dpi_values = _vimm_download_context(manual_url)
+        last_status = None
+        for dpi in dpi_values:
+            params = {'manualId': manual_id, 'category': 'pdf', 'destDPI': str(dpi)}
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:152.0) Gecko/20100101 Firefox/152.0',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+                'Accept-Language': 'en-US,en;q=0.9',
+                'Referer': detail_url,
+                'Upgrade-Insecure-Requests': '1',
+            }
+            with session.get('https://dl.vimm.net/download/', params=params, headers=headers, timeout=90, stream=True, allow_redirects=True) as response:
+                last_status = response.status_code
+                if response.status_code == 400:
+                    continue
+                response.raise_for_status()
+                content_type = response.headers.get('content-type', '').lower()
+                if 'pdf' not in content_type:
+                    continue
+                disposition = response.headers.get('content-disposition', '')
+                filename_match = re.search(r'filename\*?=(?:UTF-8\'\')?["\']?([^"\';]+)', disposition, flags=re.I)
+                path_name = _safe_filename(filename_match.group(1) if filename_match else f'manual-{manual_id}.pdf')
+                if not path_name.lower().endswith('.pdf'):
+                    path_name += '.pdf'
+                filename = f'{game_id}_{safe_title}_{path_name}'[:180]
+                if not filename.lower().endswith('.pdf'):
+                    filename += '.pdf'
+                destination = MANUALS_DIR / filename
+                size = 0
+                with open(destination, 'wb') as fh:
+                    for chunk in response.iter_content(chunk_size=1024 * 128):
+                        if not chunk:
+                            continue
+                        size += len(chunk)
+                        if size > 250 * 1024 * 1024:
+                            fh.close()
+                            destination.unlink(missing_ok=True)
+                            raise ValueError('Manual PDF is larger than the 250 MB safety limit.')
+                        fh.write(chunk)
+                if not validate_pdf_file(destination):
+                    destination.unlink(missing_ok=True)
+                    continue
+                return {
+                    'filename': filename, 'path': filename, 'size': size,
+                    'url': f'/manuals/{filename}',
+                    'viewer_url': f'/manuals/{filename}#toolbar=0&navpanes=0&scrollbar=0',
+                    'dpi': dpi,
+                }
+        raise ValueError(f'Vimm rejected the PDF request at every supported resolution (last HTTP status: {last_status or "unknown"}).')
+
+    headers = {'User-Agent': 'Vaultarr/1.2.4 Manual Downloader', 'Accept': 'application/pdf,*/*;q=0.8'}
+    with requests.get(manual_url, headers=headers, timeout=90, stream=True, allow_redirects=True) as response:
         response.raise_for_status()
         content_type = response.headers.get('content-type', '').lower()
         disposition = response.headers.get('content-disposition', '')
@@ -1071,16 +1189,12 @@ def download_manual_pdf(game_id, manual_url, title='Manual'):
         path_name = _safe_filename(filename_match.group(1) if filename_match else parsed.path)
         if not path_name.lower().endswith('.pdf'):
             path_name += '.pdf'
-
         if 'pdf' not in content_type:
             raise ValueError('The linked manual did not return a PDF response.')
-
-        safe_title = re.sub(r'[^A-Za-z0-9._ -]+', '_', title or f'game-{game_id}').strip(' ._') or f'game-{game_id}'
         filename = f'{game_id}_{safe_title}_{path_name}'[:180]
         if not filename.lower().endswith('.pdf'):
             filename += '.pdf'
         destination = MANUALS_DIR / filename
-
         size = 0
         with open(destination, 'wb') as fh:
             for chunk in response.iter_content(chunk_size=1024 * 128):
@@ -1096,11 +1210,8 @@ def download_manual_pdf(game_id, manual_url, title='Manual'):
     if not validate_pdf_file(destination):
         destination.unlink(missing_ok=True)
         raise ValueError('The downloaded file was not a valid PDF. It may be a webpage, redirect, or protected download page.')
-
     return {
-        'filename': filename,
-        'path': filename,
-        'size': size,
+        'filename': filename, 'path': filename, 'size': size,
         'url': f'/manuals/{filename}',
         'viewer_url': f'/manuals/{filename}#toolbar=0&navpanes=0&scrollbar=0',
     }

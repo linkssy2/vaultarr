@@ -118,6 +118,10 @@ Vaultarr stores its database and generated app data under `LOCALAPPDATA/Vaultarr
 Open `/onboarding` after first launch. Add a library, scan it from Studio, then use Provider Intelligence to build records.
 
 
+## Vimm manual download behavior
+
+Vaultarr reads the selected Vimm manual page before downloading so it can request a DPI supported by that specific scan. This prevents HTTP 400 errors caused by assuming every manual supports 200 DPI.
+
 ## Manual providers
 
 Vaultarr uses two complementary manual providers:
