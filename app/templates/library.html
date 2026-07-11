@@ -48,25 +48,7 @@
 
       <div class="game-grid poster-grid focus-grid" id="libraryGrid">
         {% for game in games %}
-          {% set source = game.source_type or ('Manual' if game.manual_entry else 'Scanned') %}
-          {% set search_blob = (game.title ~ ' ' ~ game.path ~ ' ' ~ game.developer ~ ' ' ~ game.publisher ~ ' ' ~ game.genre ~ ' ' ~ game.description ~ ' ' ~ game.tags ~ ' ' ~ game.category ~ ' ' ~ game.notes ~ ' ' ~ game.executables ~ ' ' ~ game.platform ~ ' ' ~ game.release_year ~ ' ' ~ source)|lower %}
-          <button class="game-card-link focus-card-trigger" type="button" data-game-id="{{ game.id }}" data-search="{{ search_blob|e }}" data-title="{{ game.title|lower|e }}" data-size="{{ game.size_bytes or 0 }}" data-scanned="{{ game.last_scanned or '' }}" data-added="{{ game.added_at or '' }}">
-            <article class="poster-card source-{{ source|lower|replace(' ', '-') }}">
-              <div class="poster-art">
-                <div class="poster-gloss"></div>
-
-                {% if game.cover_path %}
-                  <img class="poster-cover" src="/covers/{{ game.cover_path }}?v={{ game.updated_at or game.last_scanned or game.id }}" alt="{{ game.title }}">
-                {% else %}
-                  <div class="poster-placeholder">🎮</div>
-                {% endif %}
-              </div>
-
-              <div class="poster-info title-only">
-                <h3>{{ game.title }}</h3>
-              </div>
-            </article>
-          </button>
+          {% include "_game_card.html" %}
         {% endfor %}
       </div>
 

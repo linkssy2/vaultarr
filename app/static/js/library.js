@@ -167,7 +167,7 @@
     if (!grid || grid.dataset.vaultarrSearchBound === "1") return;
     grid.dataset.vaultarrSearchBound = "1";
 
-    const triggers = Array.from(grid.querySelectorAll(".focus-card-trigger"));
+    const getTriggers = () => Array.from(grid.querySelectorAll(".focus-card-trigger"));
 
     function normalize(value) {
       return String(value || "").toLowerCase().trim();
@@ -177,7 +177,7 @@
       const query = normalize(searchInput?.value || "");
       let visible = 0;
 
-      triggers.forEach((trigger) => {
+      getTriggers().forEach((trigger) => {
         const haystack = normalize(trigger.dataset.search || "");
         const title = normalize(trigger.dataset.title || "");
         const terms = query.split(/\s+/).filter(Boolean);
@@ -194,7 +194,7 @@
 
     function applySort() {
       const sort = sortSelect?.value || "title";
-      const sorted = [...triggers].sort((a, b) => {
+      const sorted = getTriggers().sort((a, b) => {
         if (sort === "size") return Number(b.dataset.size || 0) - Number(a.dataset.size || 0);
         if (sort === "scanned") return String(b.dataset.scanned || "").localeCompare(String(a.dataset.scanned || ""));
         if (sort === "added") return String(b.dataset.added || "").localeCompare(String(a.dataset.added || ""));
@@ -223,6 +223,60 @@
     // caused two handlers to fight over focus and could make the dialog feel
     // disabled after it opened.
     return;
+  }
+
+
+  async function insertLiveGame(detail) {
+    const shell = document.getElementById("libraryShell");
+    const grid = document.getElementById("libraryGrid");
+    if (!shell || !grid || !detail?.game_id) return false;
+    if (grid.querySelector(`[data-game-id="${detail.game_id}"]`)) return true;
+
+    try {
+      const response = await fetch(`/api/games/${encodeURIComponent(detail.game_id)}/card`, { headers: { Accept: "application/json" } });
+      const data = await response.json();
+      if (!response.ok || !data.success || !data.html) throw new Error(data.message || "Could not load the new game card.");
+
+      const activeChip = document.querySelector(".category-chip.active");
+      const activeCategory = activeChip?.getAttribute("href")?.includes("category=")
+        ? new URL(activeChip.href, location.origin).searchParams.get("category")
+        : "All Games";
+      const belongsHere = activeCategory === "All Games" || activeCategory === data.category;
+
+      document.querySelectorAll(".category-chip").forEach((chip) => {
+        const href = chip.getAttribute("href") || "";
+        let key = "All Games";
+        try { key = new URL(href, location.origin).searchParams.get("category") || "All Games"; } catch (_error) {}
+        const count = key === "All Games" ? data.total_count : Number(data.category_counts?.[key] || 0);
+        const badge = chip.querySelector("span");
+        if (badge) badge.textContent = String(count);
+      });
+
+      if (!belongsHere) return true;
+
+      const holder = document.createElement("div");
+      holder.innerHTML = data.html.trim();
+      const card = holder.firstElementChild;
+      if (!card) return false;
+      const sort = document.getElementById("librarySort")?.value || "title";
+      if (sort === "added") grid.prepend(card); else grid.appendChild(card);
+      window.VaultarrInitLibrary?.();
+      document.getElementById("librarySearch")?.dispatchEvent(new Event("input", { bubbles: true }));
+      window.setTimeout(() => card.classList.remove("vaultarr-card-enter"), 900);
+      window.setTimeout(() => card.querySelector(".poster-live-status")?.remove(), 4200);
+      card.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      return true;
+    } catch (error) {
+      console.error("Live library insertion failed", error);
+      return false;
+    }
+  }
+
+  if (!window.__vaultarrLiveLibraryBound) {
+    window.__vaultarrLiveLibraryBound = true;
+    document.addEventListener("vaultarr:game-added", (event) => {
+      insertLiveGame(event.detail || {});
+    });
   }
 
   window.VaultarrInitLibrary = function VaultarrInitLibrary() {

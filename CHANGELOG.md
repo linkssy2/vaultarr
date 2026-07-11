@@ -1,3 +1,14 @@
+# 1.4.7 — Live Library Synchronization
+
+- Added a lightweight client event system for live application updates.
+- Discover & Add now emits a game-added event instead of redirecting or requiring a refresh.
+- Added an API-rendered library card endpoint for newly created records.
+- New game cards are inserted into the active Library view with a smooth arrival animation.
+- Library category totals, search counts, filtering, sorting, hover motion, and card expansion now recognize inserted games immediately.
+- Added a global success notification with a direct View action.
+- Existing records are handled without duplicate cards.
+- Retained the published GHCR image as the default production Docker installation.
+
 # 1.4.6 — Interaction Reliability Repair
 
 - Repaired universal search reopening and mode switching.

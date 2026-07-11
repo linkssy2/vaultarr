@@ -149,6 +149,28 @@ def delete_game(game_id):
         abort(404)
     return redirect('/library?removed=1')
 
+@library_bp.route('/api/games/<int:game_id>/card')
+def game_card_api(game_id):
+    conn = get_connection()
+    game = conn.execute('SELECT * FROM games WHERE id=?', (game_id,)).fetchone()
+    if game is None:
+        conn.close()
+        return jsonify({'success': False, 'message': 'Game not found.'}), 404
+    _, category_counts = _category_counts(conn)
+    total_count = conn.execute('SELECT COUNT(*) count FROM games').fetchone()['count']
+    conn.close()
+    return jsonify({
+        'success': True,
+        'game_id': game_id,
+        'title': game['title'],
+        'category': game['category'] or 'Unsorted',
+        'html': render_template('_game_card.html', game=game, newly_added=True),
+        'category_counts': category_counts,
+        'total_count': total_count,
+        'redirect': f'/games/{game_id}',
+    })
+
+
 @library_bp.route('/api/games/add/search')
 def add_game_search_api():
     query = request.args.get('query', '').strip()
@@ -229,7 +251,16 @@ def add_game_from_provider_api():
         existing = conn.execute('SELECT id FROM games WHERE path=?', (path,)).fetchone()
         conn.close()
         if existing:
-            return jsonify({'success': True, 'game_id': existing['id'], 'redirect': f'/games/{existing["id"]}', 'existing': True})
+            existing_game = conn.execute('SELECT title, category FROM games WHERE id=?', (existing['id'],)).fetchone()
+            return jsonify({
+                'success': True,
+                'game_id': existing['id'],
+                'title': existing_game['title'] if existing_game else title,
+                'category': (existing_game['category'] if existing_game else category) or 'Unsorted',
+                'redirect': f'/games/{existing["id"]}',
+                'existing': True,
+                'message': f'{title} is already in the museum.',
+            })
         return jsonify({'success': False, 'message': str(exc)}), 500
     conn.close()
 
@@ -252,6 +283,8 @@ def add_game_from_provider_api():
     return jsonify({
         'success': True,
         'game_id': game_id,
+        'title': title,
+        'category': category,
         'redirect': f'/games/{game_id}',
         'message': f'{title} was added and queued for preparation.',
     })

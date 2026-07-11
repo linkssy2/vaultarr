@@ -373,3 +373,12 @@
         background: rgba(10, 15, 26, 0.88);
     }
 }
+
+/* 1.4.7 live library synchronization */
+.vaultarr-card-enter{animation:vaultarrCardArrive .72s cubic-bezier(.22,.8,.24,1) both}
+@keyframes vaultarrCardArrive{0%{opacity:0;transform:translateY(24px) scale(.94);filter:blur(8px)}65%{opacity:1;filter:blur(0)}100%{opacity:1;transform:none;filter:none}}
+.poster-live-status{position:absolute;left:12px;right:12px;bottom:12px;z-index:4;padding:8px 10px;border:1px solid rgba(56,189,248,.35);border-radius:12px;background:rgba(5,13,28,.86);color:#7dd3fc;font-size:.78rem;font-weight:800;text-align:center;backdrop-filter:blur(10px);animation:vaultarrStatusPulse 1.8s ease-in-out infinite}
+@keyframes vaultarrStatusPulse{50%{box-shadow:0 0 22px rgba(56,189,248,.22)}}
+.vaultarr-live-toast{position:fixed;right:24px;bottom:24px;z-index:10050;display:flex;align-items:center;gap:18px;min-width:290px;max-width:460px;padding:15px 17px;border:1px solid rgba(52,211,153,.38);border-radius:16px;background:rgba(8,16,30,.97);box-shadow:0 22px 60px rgba(0,0,0,.42);opacity:0;transform:translateY(18px) scale(.98);transition:opacity .24s ease,transform .24s ease}
+.vaultarr-live-toast.show{opacity:1;transform:none}.vaultarr-live-toast>div{display:grid;gap:3px;min-width:0}.vaultarr-live-toast strong{color:#fff}.vaultarr-live-toast span{color:var(--muted);line-height:1.35}.vaultarr-live-toast button{margin-left:auto;white-space:nowrap;padding:9px 13px;border-radius:11px}.vaultarr-live-toast.warning{border-color:rgba(251,191,36,.42)}
+@media(max-width:700px){.vaultarr-live-toast{left:14px;right:14px;bottom:14px;min-width:0}}
