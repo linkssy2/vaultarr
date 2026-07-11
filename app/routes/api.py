@@ -12,7 +12,7 @@ from urllib.parse import quote_plus
 from app.database.database import get_connection
 from app.services.preservation_engine import enrich_preservation
 from app.services.media_service import all_media_results, cached_media, download_media_asset, media_count, MEDIA_DIR, delete_media_asset, clear_game_media_cache, media_cache_summary, cleanup_orphaned_media_files
-from app.services.manual_service import MANUAL_PROVIDERS, manual_search_results, download_manual_pdf, manual_file_info, is_probably_pdf_url
+from app.services.manual_service import MANUAL_PROVIDERS, manual_search_results, download_manual_pdf, manual_file_info, is_probably_pdf_url, manual_catalog_status, sync_manual_catalog, clear_manual_catalog, search_manual_catalog
 from app.services.patch_service import patch_search_results, playability_score, patch_status
 from app.services.launchbox_service import get_launchbox_details
 from app.services.metadata_service import (
@@ -491,6 +491,36 @@ def api_global_search():
 @api_bp.route("/api/manual-providers")
 def api_manual_providers():
     return jsonify({"success": True, "providers": MANUAL_PROVIDERS})
+
+
+@api_bp.route("/api/manual-catalog/status")
+def api_manual_catalog_status():
+    return jsonify({"success": True, **manual_catalog_status()})
+
+
+@api_bp.route("/api/manual-catalog/search")
+def api_manual_catalog_search():
+    query = (request.args.get("query") or "").strip()
+    platform = (request.args.get("platform") or "").strip()
+    provider = (request.args.get("provider") or "all").strip()
+    limit = request.args.get("limit", 50, type=int)
+    if not query:
+        return jsonify({"success": False, "message": "Enter a game title to search."}), 400
+    return jsonify({"success": True, "query": query, "results": search_manual_catalog(query, platform, provider, limit), "catalog": manual_catalog_status()})
+
+
+@api_bp.route("/api/manual-catalog/refresh", methods=["POST"])
+def api_manual_catalog_refresh():
+    payload = request.get_json(silent=True) or {}
+    provider = (payload.get("provider") or "all").strip()
+    force = bool(payload.get("force", True))
+    result = sync_manual_catalog(force=force, provider_id=provider)
+    return jsonify(result), (200 if result.get("success") else 409)
+
+
+@api_bp.route("/api/manual-catalog/clear", methods=["POST"])
+def api_manual_catalog_clear():
+    return jsonify({"success": True, **clear_manual_catalog()})
 
 
 @api_bp.route("/api/games/<int:game_id>/manuals/search")

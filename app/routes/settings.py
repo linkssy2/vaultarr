@@ -13,6 +13,7 @@ from app.services.theme_service import (
 )
 from app.services.launchbox_service import sync_launchbox_metadata, sync_status
 from app.services.media_service import media_cache_summary
+from app.services.manual_service import manual_catalog_status, sync_manual_catalog, clear_manual_catalog
 from app.services.reset_service import reset_vault
 from app.services.auth_service import load_auth_settings, update_auth_from_form
 from app.services.provider_settings import (
@@ -43,6 +44,7 @@ def settings():
         provider_settings=load_provider_settings(),
         launchbox_status=sync_status(),
         media_cache=media_cache_summary(),
+        manual_catalog=manual_catalog_status(),
         auth_settings=load_auth_settings(),
         masked=masked,
         saved=saved,
@@ -103,6 +105,22 @@ def sync_launchbox_route():
 
 
 
+
+
+
+@settings_bp.route('/settings/manual-catalog/refresh', methods=['POST'])
+def refresh_manual_catalog_route():
+    try:
+        result = sync_manual_catalog(force=True)
+        return redirect(f"/settings?saved=manual_catalog&manual_entries={result.get('entries',0)}")
+    except Exception as exc:
+        return redirect(f"/settings?saved=manual_catalog_error&manual_error={str(exc)[:160]}")
+
+
+@settings_bp.route('/settings/manual-catalog/clear', methods=['POST'])
+def clear_manual_catalog_route():
+    clear_manual_catalog()
+    return redirect('/settings?saved=manual_catalog_cleared')
 
 @settings_bp.route('/settings/security', methods=['POST'])
 def save_security_route():

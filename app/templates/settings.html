@@ -39,6 +39,17 @@
   <section class="studio-toast warning"><strong>LaunchBox Sync Failed</strong><span>{{ request.args.get('lb_error', 'Unknown error') }}</span></section>
   {% endif %}
 
+
+  {% if saved == 'manual_catalog' %}
+  <section class="studio-toast success"><strong>Manual Catalog Refreshed</strong><span>{{ request.args.get('manual_entries', manual_catalog.entries) }} searchable manual records are ready.</span></section>
+  {% endif %}
+  {% if saved == 'manual_catalog_cleared' %}
+  <section class="studio-toast success"><strong>Manual Catalog Cleared</strong><span>The local manual index will rebuild on the next search or refresh.</span></section>
+  {% endif %}
+  {% if saved == 'manual_catalog_error' %}
+  <section class="studio-toast warning"><strong>Manual Catalog Refresh Failed</strong><span>{{ request.args.get('manual_error', 'Unknown error') }}</span></section>
+  {% endif %}
+
   {% if saved == 'providers' %}
   <section class="studio-toast success"><strong>Providers Saved</strong><span>Metadata provider settings were updated.</span></section>
   {% endif %}
@@ -162,6 +173,35 @@
   </section>
 
   <section class="studio-two-column">
+
+  <section class="studio-card-panel alive-panel manual-catalog-panel" id="manualCatalogPanel">
+    <div class="studio-section-head compact">
+      <div>
+        <p class="eyebrow">Manual Catalog</p>
+        <h2>Local Search Index</h2>
+        <p class="muted">Caches manual listings like a local metadata database. Searches use the entire catalog; platform only improves ranking and never hides alternate-system manuals.</p>
+      </div>
+      <span class="studio-section-badge">{{ 'Refreshing' if manual_catalog.refreshing else ('Ready' if manual_catalog.entries else 'Not Built') }}</span>
+    </div>
+    <div class="studio-metric-strip">
+      <div><span>Manuals</span><strong>{{ manual_catalog.entries }}</strong></div>
+      <div><span>Platforms</span><strong>{{ manual_catalog.platforms }}</strong></div>
+      <div><span>Last Refresh</span><strong>{{ manual_catalog.last_refresh or 'Never' }}</strong></div>
+      <div><span>Refresh Cycle</span><strong>7 days</strong></div>
+    </div>
+    <div class="manual-provider-state-list">
+      {% for provider in manual_catalog.providers %}
+      <div class="manual-provider-state"><span><strong>{{ provider.provider_name }}</strong><small>{{ provider.status|replace('_',' ')|title }}</small></span><strong>{{ provider.entry_count }}</strong></div>
+      {% else %}
+      <div class="manual-provider-state"><span><strong>No provider cache yet</strong><small>Build it now or run your first manual search.</small></span><strong>0</strong></div>
+      {% endfor %}
+    </div>
+    <div class="studio-actions split">
+      <form action="/settings/manual-catalog/refresh" method="post"><button>Refresh Manual Catalog</button></form>
+      <form action="/settings/manual-catalog/clear" method="post" onsubmit="return confirm('Clear the local manual catalog? Downloaded manuals will not be removed.');"><button class="secondary">Clear Catalog</button></form>
+    </div>
+  </section>
+
     <section class="studio-card-panel alive-panel launchbox-sync-panel">
       <div class="studio-section-head compact">
         <div><p class="eyebrow">LaunchBox Cache</p><h2>Local Index</h2></div>

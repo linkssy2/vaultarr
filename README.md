@@ -1,4 +1,4 @@
-# Vaultarr 1.1.23
+# Vaultarr 1.2.0
 
 Vaultarr is a self-hosted game preservation dashboard for cataloging, enriching, and maintaining a personal game archive.
 
@@ -150,3 +150,16 @@ Your persistent `/config`, `/games`, and `/backups` mounts are retained.
 ## Health check
 
 Open `/health` to inspect database, library, provider, and cache readiness.
+
+
+## Local Manual Catalog (1.2.0)
+
+Vaultarr now builds a local, LaunchBox-style search index for manual listings from **VideoGameManual.com** and the manuals-only portion of **Vimm's Lair Manual Project**. It stores catalog records—not the PDF files—in `/config` through Vaultarr's persistent application data.
+
+- The first manual search builds the catalog if it is empty.
+- A stale catalog refreshes after seven days.
+- Use **Settings → Manual Catalog → Refresh Manual Catalog** to force a rebuild.
+- Platform is a ranking hint, not a filter. A PC game can use a PlayStation, Xbox, Nintendo, or other platform manual when that is the best available match.
+- PDF files are downloaded only when you explicitly choose **Download to Vaultarr**.
+
+Keep `/config` mapped to persistent storage so the manual catalog survives container updates.

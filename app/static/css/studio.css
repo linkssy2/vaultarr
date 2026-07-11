@@ -311,3 +311,7 @@ button.danger:hover {
   opacity: .74;
   cursor: default;
 }
+
+
+/* Vaultarr 1.2.0 manual catalog */
+.manual-catalog-panel{min-width:0}.manual-provider-state-list{display:grid;gap:10px;margin:16px 0}.manual-provider-state{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:12px 14px;border:1px solid var(--border);border-radius:12px;background:rgba(255,255,255,.025)}.manual-provider-state span{display:grid;gap:3px}.manual-provider-state small{color:var(--muted);font-size:.78rem}.manual-provider-state>strong{font-size:1.05rem}

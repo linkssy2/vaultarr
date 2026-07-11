@@ -1,4 +1,4 @@
-# Vaultarr 1.1.23 — Manual Provider Reliability Update
+# Vaultarr 1.2.0 — Manual Provider Reliability Update
 
 This release replaces unreliable broad manual searches with a focused two-provider workflow.
 

@@ -4,6 +4,8 @@ from difflib import SequenceMatcher
 import json
 import os
 import re
+import sqlite3
+import threading
 from pathlib import Path
 import requests
 
@@ -44,6 +46,10 @@ MANUAL_CACHE_DIR = APP_DIR / 'manual_provider_cache'
 VGM_CACHE_FILE = MANUAL_CACHE_DIR / 'videogamemanual_index.json'
 VIMM_CACHE_FILE = MANUAL_CACHE_DIR / 'vimm_manual_index.json'
 PDF_MAGIC = b'%PDF-'
+MANUAL_CATALOG_DB = MANUAL_CACHE_DIR / 'manual_catalog.sqlite3'
+CATALOG_MAX_AGE_HOURS = 168
+_CATALOG_REFRESH_LOCK = threading.Lock()
+_CATALOG_REFRESH_THREAD = None
 
 _PLATFORM_FOLDER_ALIASES = {
     "ps2": "PS2",
@@ -85,6 +91,317 @@ _PLATFORM_FOLDER_ALIASES = {
 _COMMON_PLATFORM_FOLDERS = ['PC', 'PS2', 'Xbox', 'PS1', 'GameCube', 'Dreamcast']
 _LETTER_PAGES = ['index.html', '0.htm', '1.htm'] + [f'{chr(code)}.htm' for code in range(ord('A'), ord('Z') + 1)]
 _MANUAL_URL_CACHE = {}
+
+
+# Known platform folders are fallbacks only. The catalog builder also discovers
+# platform indexes from the provider homepage so it can expand without a code update.
+_VGM_KNOWN_PLATFORM_FOLDERS = [
+    '3DO', 'Atari2600', 'Atari5200', 'Atari7800', 'AtariJaguar', 'ColecoVision',
+    'Dreamcast', 'GB', 'GBA', 'GBC', 'GameCube', 'Genesis', 'Intellivision',
+    'N64', 'NES', 'NeoGeo', 'PC', 'PS1', 'PS2', 'PS3', 'PSP', 'Saturn', 'SegaCD',
+    'SNES', 'TurboGrafx16', 'Wii', 'WiiU', 'Xbox', 'Xbox360'
+]
+
+
+def _catalog_connection():
+    MANUAL_CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    conn = sqlite3.connect(MANUAL_CATALOG_DB, timeout=30)
+    conn.row_factory = sqlite3.Row
+    conn.execute('PRAGMA journal_mode=WAL')
+    conn.execute('PRAGMA synchronous=NORMAL')
+    conn.executescript('''
+        CREATE TABLE IF NOT EXISTS manual_entries (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            provider_id TEXT NOT NULL,
+            provider_name TEXT NOT NULL,
+            title TEXT NOT NULL,
+            normalized_title TEXT NOT NULL,
+            platform TEXT DEFAULT '',
+            region TEXT DEFAULT '',
+            variant TEXT DEFAULT '',
+            manual_url TEXT NOT NULL,
+            source_page_url TEXT DEFAULT '',
+            verified_pdf INTEGER DEFAULT 0,
+            first_seen_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            last_seen_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE(provider_id, manual_url)
+        );
+        CREATE INDEX IF NOT EXISTS idx_manual_title ON manual_entries(normalized_title);
+        CREATE INDEX IF NOT EXISTS idx_manual_platform ON manual_entries(platform);
+        CREATE INDEX IF NOT EXISTS idx_manual_provider ON manual_entries(provider_id);
+        CREATE TABLE IF NOT EXISTS manual_provider_state (
+            provider_id TEXT PRIMARY KEY,
+            provider_name TEXT NOT NULL,
+            status TEXT DEFAULT 'never',
+            entry_count INTEGER DEFAULT 0,
+            pages_checked INTEGER DEFAULT 0,
+            last_refresh TEXT DEFAULT '',
+            last_error TEXT DEFAULT ''
+        );
+        CREATE TABLE IF NOT EXISTS manual_refresh_history (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            provider_id TEXT NOT NULL,
+            started_at TEXT NOT NULL,
+            finished_at TEXT DEFAULT '',
+            status TEXT DEFAULT 'running',
+            entries_found INTEGER DEFAULT 0,
+            pages_checked INTEGER DEFAULT 0,
+            message TEXT DEFAULT ''
+        );
+    ''')
+    return conn
+
+
+def _catalog_upsert_entries(provider_id, provider_name, entries):
+    now = datetime.utcnow().isoformat(timespec='seconds') + 'Z'
+    conn = _catalog_connection()
+    with conn:
+        for entry in entries:
+            url = (entry.get('url') or entry.get('manual_url') or '').strip()
+            title = _clean_title(entry.get('title') or '')
+            if not url or not title:
+                continue
+            conn.execute('''
+                INSERT INTO manual_entries (
+                    provider_id, provider_name, title, normalized_title, platform,
+                    region, variant, manual_url, source_page_url, verified_pdf,
+                    first_seen_at, last_seen_at
+                ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)
+                ON CONFLICT(provider_id, manual_url) DO UPDATE SET
+                    provider_name=excluded.provider_name,
+                    title=excluded.title,
+                    normalized_title=excluded.normalized_title,
+                    platform=excluded.platform,
+                    region=excluded.region,
+                    variant=excluded.variant,
+                    source_page_url=excluded.source_page_url,
+                    verified_pdf=excluded.verified_pdf,
+                    last_seen_at=excluded.last_seen_at
+            ''', (
+                provider_id, provider_name, title,
+                entry.get('match_title') or _normalize_match_text(title),
+                entry.get('platform_folder') or entry.get('platform') or '',
+                entry.get('region') or '', entry.get('variant') or '', url,
+                entry.get('source_page_url') or '', 1 if urlparse(url).path.lower().endswith('.pdf') else 0,
+                now, now,
+            ))
+    conn.close()
+
+
+def _catalog_provider_state(provider_id, provider_name, status, entry_count=0, pages_checked=0, error=''):
+    now = datetime.utcnow().isoformat(timespec='seconds') + 'Z'
+    conn = _catalog_connection()
+    with conn:
+        conn.execute('''
+            INSERT INTO manual_provider_state(provider_id, provider_name, status, entry_count, pages_checked, last_refresh, last_error)
+            VALUES (?,?,?,?,?,?,?)
+            ON CONFLICT(provider_id) DO UPDATE SET
+                provider_name=excluded.provider_name,
+                status=excluded.status,
+                entry_count=excluded.entry_count,
+                pages_checked=excluded.pages_checked,
+                last_refresh=excluded.last_refresh,
+                last_error=excluded.last_error
+        ''', (provider_id, provider_name, status, entry_count, pages_checked, now, error[:500]))
+    conn.close()
+
+
+def manual_catalog_status():
+    conn = _catalog_connection()
+    total = conn.execute('SELECT COUNT(*) FROM manual_entries').fetchone()[0]
+    providers = [dict(row) for row in conn.execute('SELECT * FROM manual_provider_state ORDER BY provider_id').fetchall()]
+    platform_count = conn.execute("SELECT COUNT(DISTINCT platform) FROM manual_entries WHERE platform <> ''").fetchone()[0]
+    latest = conn.execute("SELECT MAX(last_refresh) FROM manual_provider_state").fetchone()[0] or ''
+    conn.close()
+    stale = True
+    if latest:
+        try:
+            stale = datetime.utcnow() - datetime.fromisoformat(latest.replace('Z','')) >= timedelta(hours=CATALOG_MAX_AGE_HOURS)
+        except Exception:
+            stale = True
+    return {
+        'database_path': str(MANUAL_CATALOG_DB),
+        'exists': MANUAL_CATALOG_DB.exists(),
+        'entries': int(total),
+        'platforms': int(platform_count),
+        'last_refresh': latest,
+        'stale': stale,
+        'refreshing': bool(_CATALOG_REFRESH_THREAD and _CATALOG_REFRESH_THREAD.is_alive()),
+        'providers': providers,
+    }
+
+
+def clear_manual_catalog():
+    conn = _catalog_connection()
+    with conn:
+        conn.execute('DELETE FROM manual_entries')
+        conn.execute('DELETE FROM manual_provider_state')
+        conn.execute('DELETE FROM manual_refresh_history')
+    conn.close()
+    return manual_catalog_status()
+
+
+def _discover_vgm_platform_folders():
+    folders = []
+    try:
+        html = _fetch_text('https://www.videogamemanual.com/')
+        for href in re.findall(r'href=["\']([^"\']+)["\']', html or '', flags=re.I):
+            parsed = urlparse(urljoin('https://www.videogamemanual.com/', href))
+            if parsed.netloc.lower() != 'www.videogamemanual.com':
+                continue
+            parts = [unquote(part) for part in parsed.path.split('/') if part]
+            if not parts:
+                continue
+            folder = parts[0]
+            if folder.lower() in ('images','css','js','manuals') or '.' in folder:
+                continue
+            if folder not in folders:
+                folders.append(folder)
+    except Exception:
+        pass
+    for folder in _VGM_KNOWN_PLATFORM_FOLDERS:
+        if folder not in folders:
+            folders.append(folder)
+    return folders
+
+
+def sync_manual_catalog(force=False, provider_id='all'):
+    if not _CATALOG_REFRESH_LOCK.acquire(blocking=False):
+        return {'success': False, 'message': 'A manual catalog refresh is already running.', **manual_catalog_status()}
+    started = datetime.utcnow().isoformat(timespec='seconds') + 'Z'
+    summary = {'success': True, 'started_at': started, 'providers': {}, 'errors': []}
+    try:
+        if provider_id in ('all', 'videogamemanual'):
+            found, pages, errors = [], 0, []
+            for folder in _discover_vgm_platform_folders():
+                try:
+                    entries = _sync_videogamemanual_platform(folder, force=force)
+                    found.extend(entries)
+                    cache = _load_vgm_cache().get('platforms', {}).get(folder, {})
+                    pages += int(cache.get('pages_checked') or 0)
+                except Exception as exc:
+                    errors.append(f'{folder}: {exc}')
+            _catalog_upsert_entries('videogamemanual', 'VideoGameManual.com', found)
+            conn = _catalog_connection()
+            count = conn.execute("SELECT COUNT(*) FROM manual_entries WHERE provider_id='videogamemanual'").fetchone()[0]
+            conn.close()
+            _catalog_provider_state('videogamemanual', 'VideoGameManual.com', 'ready' if count else 'empty', count, pages, '; '.join(errors[-5:]))
+            summary['providers']['videogamemanual'] = {'entries': count, 'pages_checked': pages, 'errors': errors[-5:]}
+        if provider_id in ('all', 'vimm'):
+            try:
+                entries = _sync_vimm_catalog(force=force)
+                _catalog_upsert_entries('vimm', "Vimm's Lair Manual Project", entries)
+                conn = _catalog_connection()
+                count = conn.execute("SELECT COUNT(*) FROM manual_entries WHERE provider_id='vimm'").fetchone()[0]
+                conn.close()
+                cache = _load_json_cache(VIMM_CACHE_FILE, {})
+                _catalog_provider_state('vimm', "Vimm's Lair Manual Project", 'ready' if count else 'source_only', count, int(cache.get('pages_checked') or 0), '; '.join(cache.get('errors') or []))
+                summary['providers']['vimm'] = {'entries': count, 'pages_checked': int(cache.get('pages_checked') or 0), 'errors': cache.get('errors') or []}
+            except Exception as exc:
+                _catalog_provider_state('vimm', "Vimm's Lair Manual Project", 'error', 0, 0, str(exc))
+                summary['errors'].append(str(exc))
+        summary.update(manual_catalog_status())
+        return summary
+    finally:
+        _CATALOG_REFRESH_LOCK.release()
+
+
+def _background_refresh(force=False):
+    global _CATALOG_REFRESH_THREAD
+    def runner():
+        try:
+            sync_manual_catalog(force=force)
+        except Exception:
+            pass
+    if _CATALOG_REFRESH_THREAD and _CATALOG_REFRESH_THREAD.is_alive():
+        return False
+    _CATALOG_REFRESH_THREAD = threading.Thread(target=runner, name='vaultarr-manual-catalog', daemon=True)
+    _CATALOG_REFRESH_THREAD.start()
+    return True
+
+
+def ensure_manual_catalog():
+    status = manual_catalog_status()
+    if status['entries'] == 0:
+        # The first manual search performs a real initial catalog build so the
+        # requested title can be searched immediately.
+        sync_manual_catalog(force=False)
+        return manual_catalog_status()
+    if status['stale']:
+        _background_refresh(force=False)
+    return status
+
+
+def _token_score(query_norm, candidate_norm):
+    q = set(query_norm.split())
+    c = set(candidate_norm.split())
+    if not q or not c:
+        return 0.0
+    overlap = len(q & c) / max(1, len(q | c))
+    containment = len(q & c) / max(1, len(q))
+    sequence = SequenceMatcher(None, query_norm, candidate_norm).ratio()
+    return (sequence * 0.50) + (containment * 0.35) + (overlap * 0.15)
+
+
+def search_manual_catalog(title, platform='', provider_id='all', limit=30):
+    ensure_manual_catalog()
+    query_norm = _normalize_match_text(title)
+    if not query_norm:
+        return []
+    conn = _catalog_connection()
+    sql = 'SELECT * FROM manual_entries'
+    params = []
+    if provider_id and provider_id != 'all':
+        sql += ' WHERE provider_id=?'
+        params.append(provider_id)
+    rows = [dict(row) for row in conn.execute(sql, params).fetchall()]
+    conn.close()
+    preferred = set(_platform_folders(platform)) if platform else set()
+    results = []
+    for row in rows:
+        candidate_norm = row.get('normalized_title') or _normalize_match_text(row.get('title') or '')
+        base = _token_score(query_norm, candidate_norm)
+        exact = query_norm == candidate_norm
+        contains = query_norm in candidate_norm or candidate_norm in query_norm
+        platform_match = bool(preferred and row.get('platform') in preferred)
+        score = base
+        if exact:
+            score += 0.22
+        elif contains:
+            score += 0.10
+        # Platform is intentionally a modest ranking bonus, never a filter.
+        if platform_match:
+            score += 0.07
+        if row.get('region') == 'USA':
+            score += 0.02
+        confidence = max(1, min(100, int(round(score * 100))))
+        if confidence < 48:
+            continue
+        results.append({
+            'provider': row.get('provider_name'),
+            'provider_id': row.get('provider_id'),
+            'kind': 'direct_pdf' if row.get('verified_pdf') else 'source_search',
+            'title': row.get('title'),
+            'description': ('Same-platform catalog match.' if platform_match else 'Catalog match from an alternate platform or edition.'),
+            'url': row.get('manual_url'),
+            'source_page_url': row.get('source_page_url'),
+            'action': 'Open PDF' if row.get('verified_pdf') else 'Open Source',
+            'confidence': confidence,
+            'is_pdf_candidate': bool(row.get('verified_pdf')),
+            'can_download': bool(row.get('verified_pdf')),
+            'region': row.get('region') or 'Unknown',
+            'platform_folder': row.get('platform') or 'Unknown',
+            'platform_match': platform_match,
+            'cross_platform': bool(platform and not platform_match),
+            'verified_pdf': bool(row.get('verified_pdf')),
+            'indexed_provider': True,
+        })
+    results.sort(key=lambda item: (
+        int(item.get('confidence') or 0),
+        1 if item.get('platform_match') else 0,
+        1 if item.get('verified_pdf') else 0,
+    ), reverse=True)
+    return _dedupe_manual_results(results)[:max(1, min(int(limit or 30), 100))]
 
 
 def _clean_title(title):
@@ -196,7 +513,7 @@ def _cache_is_fresh(platform_data, max_age_hours=168):
 
 def _fetch_text(url):
     headers = {
-        'User-Agent': 'Vaultarr/1.1.23 Manual Indexer (+self-hosted archive manager)',
+        'User-Agent': 'Vaultarr/1.2.0 Manual Catalog (+self-hosted archive manager)',
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
     }
     response = requests.get(url, headers=headers, timeout=15, allow_redirects=True)
@@ -494,85 +811,38 @@ def _videogamemanual_candidates(title, platform=''):
 def manual_search_results(title, platform="", provider_id="all"):
     search_title = _clean_title(title)
     query = normalize_query(search_title, platform)
-    encoded = quote_plus(query)
-    providers = MANUAL_PROVIDERS
-    if provider_id and provider_id != "all":
-        providers = [provider for provider in providers if provider["id"] == provider_id]
+    results = search_manual_catalog(search_title, platform, provider_id, limit=36)
 
-    results = []
-    for provider in providers:
-        if provider["id"] == "videogamemanual":
-            direct = _videogamemanual_candidates(search_title, platform)
-            results.extend(direct)
-            if not direct:
-                platform_hint = _platform_folders(platform)[0] if _platform_folders(platform) else 'PS2'
-                results.append({
-                    "provider": provider["name"],
-                    "provider_id": provider["id"],
-                    "kind": "source_search",
-                    "title": f"Open {provider['name']} {platform_hint} index",
-                    "description": "No exact cached direct PDF match was found. Open the provider index and copy a direct PDF if needed.",
-                    "url": f"https://www.videogamemanual.com/{quote(platform_hint)}/index.html",
-                    "action": "Open Provider Index",
-                    "confidence": 35,
-                    "is_pdf_candidate": False,
-                    "can_download": False,
-                })
-            continue
-
-        if provider["id"] == "vimm":
-            direct = _vimm_candidates(search_title, platform)
-            results.extend(direct)
-            if not direct:
-                results.append({
-                    "provider": provider["name"],
-                    "provider_id": provider["id"],
-                    "kind": "source_search",
-                    "title": "Open Vimm's Manual Project",
-                    "description": "No direct cached PDF was exposed by the archive. Open the dedicated Manual Project and search there without entering Vimm's game-download areas.",
-                    "url": "https://vimm.net/?p=manual",
-                    "action": "Open Manual Project",
-                    "confidence": 34,
-                    "is_pdf_candidate": False,
-                    "can_download": False,
-                })
-            continue
-
-        if provider["kind"] == "local":
+    # Keep useful source-page fallbacks when the local catalog has no direct hit.
+    if not results:
+        selected = MANUAL_PROVIDERS if provider_id in ('', 'all') else [p for p in MANUAL_PROVIDERS if p['id'] == provider_id]
+        for provider in selected:
+            if provider['id'] == 'local':
+                continue
             results.append({
-                "provider": provider["name"],
-                "provider_id": provider["id"],
-                "kind": provider["kind"],
-                "title": "Local manual scan",
-                "description": "Use Vaultarr's asset scan to detect local PDF/manual files, or paste a manual URL.",
-                "url": "",
-                "action": "Scan Local Assets",
-                "confidence": 40,
-                "is_pdf_candidate": False,
-                "can_download": False,
+                'provider': provider['name'],
+                'provider_id': provider['id'],
+                'kind': 'source_search',
+                'title': f"Browse {provider['name']}",
+                'description': 'No strong local-catalog match was found. Open the provider archive and try a broader title.',
+                'url': provider['homepage'],
+                'source_page_url': provider['homepage'],
+                'action': 'Open Manual Archive',
+                'confidence': 40,
+                'is_pdf_candidate': False,
+                'can_download': False,
+                'platform_folder': '',
+                'platform_match': False,
+                'cross_platform': False,
             })
-            continue
-
-        results.append({
-            "provider": provider["name"],
-            "provider_id": provider["id"],
-            "kind": provider["kind"],
-            "title": f"Search {provider['name']}",
-            "description": provider["description"],
-            "url": provider["search_template"].format(query=encoded),
-            "action": "Open Provider Search",
-            "confidence": 55,
-            "is_pdf_candidate": False,
-            "can_download": False,
-        })
 
     return {
-        "query": query,
-        "checked_at": datetime.utcnow().isoformat(timespec="seconds") + "Z",
-        "providers": MANUAL_PROVIDERS,
-        "results": _dedupe_manual_results(results)[:10],
+        'query': query,
+        'checked_at': datetime.utcnow().isoformat(timespec='seconds') + 'Z',
+        'providers': MANUAL_PROVIDERS,
+        'catalog': manual_catalog_status(),
+        'results': results[:36],
     }
-
 
 def _safe_filename(value):
     value = unquote(value or '').strip().replace('\\', '/').split('/')[-1]
@@ -616,7 +886,7 @@ def download_manual_pdf(game_id, manual_url, title='Manual'):
         raise ValueError('This looks like a source page, not a direct PDF. Open the source page and copy the direct PDF URL first.')
 
     MANUALS_DIR.mkdir(parents=True, exist_ok=True)
-    headers = {'User-Agent': 'Vaultarr/1.1.23 Manual Downloader', 'Accept': 'application/pdf,*/*;q=0.8'}
+    headers = {'User-Agent': 'Vaultarr/1.2.0 Manual Downloader', 'Accept': 'application/pdf,*/*;q=0.8'}
     with requests.get(manual_url, headers=headers, timeout=35, stream=True, allow_redirects=True) as response:
         response.raise_for_status()
         content_type = response.headers.get('content-type', '').lower()
