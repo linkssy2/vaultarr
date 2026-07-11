@@ -1,3 +1,8 @@
+## 1.2.3
+- Fixed Vimm searches to use the provider's all-platform endpoint (`/manual/?p=list&q=...`) before any system-specific fallback.
+- Preserved alternate-platform manual results and direct PDF downloads.
+- Reduced unnecessary Vimm requests to avoid empty results and throttling.
+
 ## 1.2.2
 - Fixed Vimm live-search request compatibility and result parsing.
 - Added browser-compatible headers/cookie and reduced request concurrency.

@@ -28,7 +28,7 @@ MANUAL_PROVIDERS = [
         "name": "Vimm's Lair Manual Project",
         "kind": "live_search_provider",
         "description": "Searches Vimm's Manual Project live and returns downloadable PDF records without caching the full site.",
-        "search_template": "https://vimm.net/manual/?p=list&system={platform}&q={query}",
+        "search_template": "https://vimm.net/manual/?p=list&q={query}",
         "homepage": "https://vimm.net/?p=manual",
         "priority": 2,
     },
@@ -808,8 +808,14 @@ def _extract_vimm_search_results(page_html, system):
     return results
 
 
-def _search_vimm_system(title, system):
-    # Vimm serves different/empty responses to obvious application user agents.
+def _search_vimm_system(title, system=None):
+    """Search Vimm's Manual Project.
+
+    Vimm's normal site search works across the complete manual archive when the
+    ``system`` parameter is omitted.  That is the primary path used here.  A
+    system-scoped request is retained only as a fallback for provider-side
+    changes or unusually broad searches.
+    """
     # Match a normal browser navigation and retain the harmless visit cookie
     # observed in the confirmed browser request.
     headers = {
@@ -819,11 +825,14 @@ def _search_vimm_system(title, system):
         'Referer': 'https://vimm.net/',
         'Cache-Control': 'no-cache',
     }
+    params = {'p': 'list', 'q': title}
+    if system:
+        params['system'] = system
     session = requests.Session()
     session.cookies.set('counted', '1', domain='vimm.net', path='/')
     response = session.get(
         'https://vimm.net/manual/',
-        params={'p': 'list', 'system': system, 'q': title},
+        params=params,
         headers=headers,
         timeout=20,
         allow_redirects=True,
@@ -832,26 +841,43 @@ def _search_vimm_system(title, system):
     content_type = (response.headers.get('Content-Type') or '').lower()
     if 'html' not in content_type and response.text.lstrip().lower().startswith(('<!doctype', '<html')) is False:
         return []
-    return _extract_vimm_search_results(response.text or '', system)
+    return _extract_vimm_search_results(response.text or '', system or 'All Platforms')
 
 
 def _vimm_live_candidates(title, platform='', limit=16):
     search_title = _clean_title(title)
     if not search_title:
         return []
-    systems = _vimm_system_order(platform)
     preferred = set()
     for folder in _platform_folders(platform):
         preferred.update(_VIMM_SYSTEM_ALIASES.get(folder, []))
-    entries = []
-    # Keep concurrency low: this is a user-triggered search, not a crawler.
-    with ThreadPoolExecutor(max_workers=2, thread_name_prefix='vaultarr-vimm') as pool:
-        futures = {pool.submit(_search_vimm_system, search_title, system): system for system in systems}
-        for future in as_completed(futures):
-            try:
-                entries.extend(future.result())
-            except Exception:
-                continue
+
+    # Vimm's own working search URL omits ``system`` and searches the entire
+    # Manual Project, e.g. /manual/?p=list&q=zelda.  The previous implementation
+    # always supplied a system value, which could return no rows even though the
+    # global search contained a valid manual.
+    try:
+        entries = _search_vimm_system(search_title, None)
+    except Exception:
+        entries = []
+
+    # Only use a small number of system-specific requests when the global search
+    # yields nothing.  This avoids unnecessary provider traffic and throttling.
+    if not entries:
+        systems = _vimm_system_order(platform)
+        fallback_systems = []
+        for system in systems:
+            if system in preferred or len(fallback_systems) < 4:
+                fallback_systems.append(system)
+            if len(fallback_systems) >= 6:
+                break
+        with ThreadPoolExecutor(max_workers=2, thread_name_prefix='vaultarr-vimm') as pool:
+            futures = {pool.submit(_search_vimm_system, search_title, system): system for system in fallback_systems}
+            for future in as_completed(futures):
+                try:
+                    entries.extend(future.result())
+                except Exception:
+                    continue
     candidates = []
     for entry in entries:
         query_norm = _normalize_match_text(search_title)

@@ -123,7 +123,7 @@ Open `/onboarding` after first launch. Add a library, scan it from Studio, then 
 Vaultarr uses two complementary manual providers:
 
 - **VideoGameManual.com** is cached into the local manual catalog for fast searches.
-- **Vimm's Lair Manual Project** is searched live and does not require a full-site cache.
+- **Vimm's Lair Manual Project** is searched live across the complete manual archive using its all-platform search endpoint and does not require a full-site cache.
 
 Manual searches are not restricted to the game's platform. Matching manuals from the same platform rank first, while alternate-platform versions remain available. Vimm results open the manual detail page and can be downloaded directly into Vaultarr as a validated PDF.
 
