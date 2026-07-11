@@ -19,6 +19,7 @@ from app.routes.auth import auth_bp
 from app.routes.curator import curator_bp
 from app.services.auth_service import get_secret_key, auth_is_enabled, load_auth_settings
 from app.services.theme_service import load_theme, css_variables
+from app.services.ui_settings import load_ui_settings
 
 app = Flask(__name__)
 app.secret_key = get_secret_key()
@@ -29,11 +30,13 @@ migrate()
 def inject_theme():
     theme = load_theme()
     auth_settings = load_auth_settings()
+    ui_settings = load_ui_settings()
     return {
         "theme": theme,
         "theme_css": css_variables(theme),
         "auth_enabled": bool(auth_settings.get("enabled") and auth_settings.get("password_hash")),
         "current_user": session.get("vaultarr_user"),
+        "ui_settings": ui_settings,
     }
 
 

@@ -1,12 +1,20 @@
-# Vaultarr 1.2.0
+# Vaultarr 1.4.0
 
-> Current release: **Vaultarr 1.3.2 — UI Component Polish**
+> Current release: **Vaultarr 1.4.0 — The Curator Experience**
 
 Vaultarr is a self-hosted game preservation dashboard for cataloging, enriching, and maintaining a personal game archive.
 
-## Curator progress feedback
+## The Curator Experience
 
-When you select **Curate** for a game, Vaultarr now shows an animated working bar and live stage messages until the cataloging request finishes. The button is temporarily disabled to prevent duplicate jobs, then the final museum-readiness score is displayed.
+Vaultarr 1.4.0 simplifies the day-to-day experience around one goal: add a game and let Vaultarr prepare the museum record. Standard Mode shows only the essential collection pages, while technical provider, cache, and diagnostic tools remain available through **Advanced Mode** in Settings.
+
+Newly scanned games can be queued automatically for Curator processing. Vaultarr researches game information, chooses available artwork, looks for a manual, respects user edits and metadata locks, and surfaces only items that need review.
+
+### Standard and Advanced modes
+
+- **Standard Mode** keeps navigation and Settings focused on Library, Collections, Discover, Curate, Time Capsule, security, appearance, and library folders.
+- **Advanced Mode** reveals provider configuration, metadata queues, manual catalogs, caches, preservation tools, and diagnostics.
+- Switching modes changes presentation only; it does not remove data or disable existing features.
 
 ## What Vaultarr does
 
@@ -20,7 +28,7 @@ When you select **Curate** for a game, Vaultarr now shows an animated working ba
 - Preservation Mission Control
 - Smart Collections and collection milestones
 - Time Capsule backups
-- Studio/Provider Workshop
+- Simplified Settings with optional Advanced Mode
 
 ## Quick start: Docker Compose
 

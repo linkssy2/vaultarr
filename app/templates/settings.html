@@ -4,16 +4,51 @@
 <section class="studio-workshop">
   <section class="studio-hero alive-panel">
     <div class="studio-hero-copy">
-      <p class="eyebrow">Vault Studio</p>
-      <h1>Refine the vault.</h1>
-      <p class="muted hero-copy">A calmer workshop for providers, artwork sources, themes, library roots, and scans.</p>
+      <p class="eyebrow">Settings</p>
+      <h1>Keep Vaultarr simple.</h1>
+      <p class="muted hero-copy">Vaultarr handles cataloging automatically. Technical tools stay out of the way unless you choose Advanced Mode.</p>
     </div>
     <div class="studio-status-grid">
-      <div><span>Mode</span><strong>Studio</strong></div>
+      <div><span>Mode</span><strong>{{ 'Advanced' if ui_settings.advanced_mode else 'Standard' }}</strong></div>
       <div><span>Theme</span><strong>{{ current_theme.name or 'Custom' }}</strong></div>
       <div><span>Libraries</span><strong>{{ libraries|length }}</strong></div>
       <div><span>LaunchBox</span><strong>{% if launchbox_status.synced %}Synced{% else %}Offline{% endif %}</strong></div>
     </div>
+  </section>
+
+  {% if saved == 'experience' %}
+  <section class="studio-toast success"><strong>Experience Updated</strong><span>Your simplicity and automation preferences were saved.</span></section>
+  {% endif %}
+
+  <section class="studio-section alive-panel experience-settings-panel">
+    <div class="studio-section-head">
+      <div>
+        <p class="eyebrow">Curator Experience</p>
+        <h2>Let Vaultarr do the work</h2>
+        <p class="muted">Standard Mode keeps the app focused on your collection. Advanced tools remain available whenever you need them.</p>
+      </div>
+      <span class="studio-section-badge">{{ 'Advanced' if ui_settings.advanced_mode else 'Standard' }}</span>
+    </div>
+    <div class="experience-mode-summary">
+      <div><span>Navigation</span><strong>{{ 'All tools visible' if ui_settings.advanced_mode else 'Essential pages only' }}</strong></div>
+      <div><span>New games</span><strong>{{ 'Queued automatically' if ui_settings.auto_curate else 'Curate manually' }}</strong></div>
+      <div><span>Language</span><strong>{{ 'Friendly labels' if ui_settings.friendly_language else 'Technical labels' }}</strong></div>
+    </div>
+    <form action="/settings/experience" method="post" class="studio-option-form">
+      <label class="studio-toggle-card full">
+        <input type="checkbox" name="auto_curate" {% if ui_settings.auto_curate %}checked{% endif %}>
+        <span><strong>Automatically prepare new games</strong><small>Newly scanned games are added to the Curator queue without extra steps.</small></span>
+      </label>
+      <label class="studio-toggle-card full">
+        <input type="checkbox" name="friendly_language" {% if ui_settings.friendly_language %}checked{% endif %}>
+        <span><strong>Use simple, friendly language</strong><small>Prefer terms such as Game Information, Sources, and Archive Health.</small></span>
+      </label>
+      <label class="studio-toggle-card full">
+        <input type="checkbox" name="advanced_mode" {% if ui_settings.advanced_mode %}checked{% endif %}>
+        <span><strong>Show Advanced Mode</strong><small>Reveal provider tools, caches, diagnostics, and preservation controls.</small></span>
+      </label>
+      <div class="studio-actions"><button>Save Experience</button></div>
+    </form>
   </section>
 
   {% if saved == 'theme' %}
@@ -78,7 +113,7 @@
   <section class="studio-toast warning"><strong>Reset Failed</strong><span>Vaultarr could not remove one or more active data files. Close other windows and try again.</span></section>
   {% endif %}
 
-  <section class="studio-intro-strip alive-panel">
+  <section class="studio-intro-strip alive-panel advanced-only">
     <span>Studio is organized as a flowing workshop: providers first, visual tuning second, archive maintenance last.</span>
     <a href="/metadata-queue">Open Metadata Queue →</a>
   </section>
@@ -113,7 +148,7 @@
     </form>
   </section>
 
-  <section id="studioMetadata" class="studio-section alive-panel">
+  <section id="studioMetadata" class="studio-section alive-panel advanced-only">
     <div class="studio-section-head">
       <div>
         <p class="eyebrow">Metadata Tools</p>
@@ -174,7 +209,7 @@
 
   <section class="studio-two-column">
 
-  <section class="studio-card-panel alive-panel manual-catalog-panel" id="manualCatalogPanel">
+  <section class="studio-card-panel alive-panel manual-catalog-panel advanced-only" id="manualCatalogPanel">
     <div class="studio-section-head compact">
       <div>
         <p class="eyebrow">Manual Catalog</p>
@@ -202,7 +237,7 @@
     </div>
   </section>
 
-    <section class="studio-card-panel alive-panel launchbox-sync-panel">
+    <section class="studio-card-panel alive-panel launchbox-sync-panel advanced-only">
       <div class="studio-section-head compact">
         <div><p class="eyebrow">LaunchBox Cache</p><h2>Local Index</h2></div>
       </div>
@@ -274,7 +309,7 @@
   </section>
 
 
-  <section class="studio-section alive-panel media-cache-manager" id="studioMediaCache">
+  <section class="studio-section alive-panel media-cache-manager advanced-only" id="studioMediaCache">
     <div class="studio-section-head">
       <div>
         <p class="eyebrow">Media Cache</p>

@@ -1,3 +1,19 @@
+# 1.4.0 — The Curator Experience
+
+- Added Standard and Advanced interface modes.
+- Simplified primary navigation and user-facing Curator language.
+- Added automatic Curator queue preference for newly scanned games.
+- Added one-at-a-time automatic preparation from the Curator page.
+- Moved provider, cache, and diagnostic surfaces behind Advanced Mode.
+- Preserved manual editing, metadata locks, card behavior, and established motion systems.
+
+# 1.3.5 — Curator Determinate Progress
+
+- Curate now reacts immediately without requiring a page refresh.
+- Replaced the indeterminate bar sweep with a smooth percentage-based fill.
+- Added staged progress labels and continuously updating percentages while cataloging runs.
+- Preserved the server-provided final readiness score as the authoritative result.
+
 # 1.3.3
 - Added safe per-game removal, optional cached asset cleanup, and scan-ignore restoration.
 

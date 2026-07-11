@@ -181,3 +181,32 @@ input[type="checkbox"]:disabled {
   input[type="checkbox"]::before,
   input[type="checkbox"]::after { transition-duration: 1ms !important; }
 }
+
+/* Vaultarr 1.4.0 — Curator Experience */
+.standard-mode .advanced-only { display: none !important; }
+.advanced-mode .advanced-only { display: initial; }
+.advanced-mode section.advanced-only,
+.advanced-mode div.advanced-only { display: block; }
+
+.experience-settings-panel {
+  border-color: color-mix(in srgb, var(--accent, #38bdf8) 38%, var(--border));
+  background: linear-gradient(145deg, color-mix(in srgb, var(--panel) 94%, var(--accent) 6%), var(--panel));
+}
+.experience-mode-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin: 20px 0;
+}
+.experience-mode-summary > div {
+  padding: 16px 18px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--background) 72%, transparent);
+}
+.experience-mode-summary span { display:block; color:var(--muted); font-size:.82rem; margin-bottom:5px; }
+.experience-mode-summary strong { font-size:1.05rem; }
+.curator-simple-note { margin-top: 10px; }
+@media (max-width: 760px) {
+  .experience-mode-summary { grid-template-columns: 1fr; }
+}
