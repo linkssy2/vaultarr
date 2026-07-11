@@ -1,5 +1,7 @@
 # Vaultarr 1.2.0
 
+> Current release: **Vaultarr 1.3.2 — UI Component Polish**
+
 Vaultarr is a self-hosted game preservation dashboard for cataloging, enriching, and maintaining a personal game archive.
 
 ## Curator progress feedback

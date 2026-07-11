@@ -1,0 +1,183 @@
+/* Vaultarr 1.3.2 — unified form controls */
+
+:root {
+  --vault-control-track: rgba(12, 20, 34, .96);
+  --vault-control-border: color-mix(in srgb, var(--text-muted) 32%, var(--border));
+  --vault-control-on: linear-gradient(135deg, var(--primary), var(--accent));
+  --vault-control-glow: color-mix(in srgb, var(--accent) 28%, transparent);
+}
+
+/* Remove inconsistent browser-native checkbox rendering everywhere. */
+input[type="checkbox"] {
+  -webkit-appearance: none;
+  appearance: none;
+  position: relative;
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  margin: 0;
+  border: 1px solid var(--vault-control-border);
+  border-radius: 10px;
+  background: var(--vault-control-track);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.04), 0 5px 14px rgba(0,0,0,.18);
+  cursor: pointer;
+  outline: none;
+  transition:
+    transform 180ms cubic-bezier(.2,.8,.2,1),
+    border-color 180ms ease,
+    background 200ms ease,
+    box-shadow 200ms ease;
+}
+
+input[type="checkbox"]::after {
+  content: "";
+  position: absolute;
+  left: 9px;
+  top: 5px;
+  width: 8px;
+  height: 14px;
+  border: solid white;
+  border-width: 0 3px 3px 0;
+  transform: rotate(45deg) scale(.35);
+  opacity: 0;
+  transition: transform 180ms cubic-bezier(.2,.9,.25,1.25), opacity 140ms ease;
+}
+
+input[type="checkbox"]:hover {
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--accent) 62%, var(--border));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.055), 0 8px 20px rgba(0,0,0,.24), 0 0 18px var(--vault-control-glow);
+}
+
+input[type="checkbox"]:active { transform: scale(.94); }
+
+input[type="checkbox"]:checked {
+  border-color: color-mix(in srgb, var(--accent) 72%, white 8%);
+  background: var(--vault-control-on);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.22), 0 8px 22px color-mix(in srgb, var(--primary) 24%, transparent), 0 0 20px var(--vault-control-glow);
+}
+
+input[type="checkbox"]:checked::after {
+  opacity: 1;
+  transform: rotate(45deg) scale(1);
+}
+
+input[type="checkbox"]:focus-visible {
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 22%, transparent), 0 0 0 1px var(--accent), 0 8px 22px rgba(0,0,0,.24);
+}
+
+input[type="checkbox"]:disabled {
+  cursor: not-allowed;
+  opacity: .48;
+  filter: saturate(.45);
+  transform: none;
+}
+
+/* Binary settings use a clear, spacious VaultToggle. */
+.studio-toggle-card > input[type="checkbox"],
+.toggle-row > input[type="checkbox"],
+.capsule-option > input[type="checkbox"] {
+  width: 54px;
+  height: 30px;
+  border-radius: 999px;
+  background: rgba(8, 14, 25, .94);
+}
+
+.studio-toggle-card > input[type="checkbox"]::before,
+.toggle-row > input[type="checkbox"]::before,
+.capsule-option > input[type="checkbox"]::before {
+  content: "";
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #d8e3f1;
+  box-shadow: 0 3px 9px rgba(0,0,0,.38), inset 0 1px 0 rgba(255,255,255,.72);
+  transition: transform 220ms cubic-bezier(.2,.85,.25,1.15), background 180ms ease, box-shadow 180ms ease;
+}
+
+.studio-toggle-card > input[type="checkbox"]::after,
+.toggle-row > input[type="checkbox"]::after,
+.capsule-option > input[type="checkbox"]::after { display: none; }
+
+.studio-toggle-card > input[type="checkbox"]:checked,
+.toggle-row > input[type="checkbox"]:checked,
+.capsule-option > input[type="checkbox"]:checked {
+  background: var(--vault-control-on);
+}
+
+.studio-toggle-card > input[type="checkbox"]:checked::before,
+.toggle-row > input[type="checkbox"]:checked::before,
+.capsule-option > input[type="checkbox"]:checked::before {
+  transform: translateX(24px);
+  background: white;
+  box-shadow: 0 4px 12px rgba(0,0,0,.34), 0 0 12px rgba(255,255,255,.34);
+}
+
+/* Keep text and controls aligned as one intentional component. */
+.studio-toggle-card {
+  align-items: center;
+  gap: 18px;
+}
+
+.studio-toggle-card > input[type="checkbox"] {
+  margin-top: 0;
+  align-self: center;
+}
+
+.studio-toggle-card:has(input[type="checkbox"]:checked) {
+  border-color: color-mix(in srgb, var(--accent) 38%, var(--border));
+  background: color-mix(in srgb, var(--accent) 6%, rgba(7,12,22,.58));
+}
+
+.studio-toggle-card.studio-provider-card {
+  grid-template-columns: 82px minmax(0, 1fr) 58px;
+}
+
+.studio-toggle-card.studio-provider-card > input[type="checkbox"] {
+  width: 54px;
+  height: 30px;
+  align-self: start;
+}
+
+.capsule-option {
+  grid-template-columns: 54px minmax(0, 1fr);
+  column-gap: 14px;
+  align-items: center;
+}
+
+.capsule-option input[type="checkbox"] {
+  width: 54px;
+  height: 30px;
+  align-self: center;
+}
+
+.mini-check,
+.checkbox-row {
+  gap: 13px;
+  align-items: center;
+  min-height: 38px;
+}
+
+.mini-check input[type="checkbox"],
+.checkbox-row input[type="checkbox"] {
+  width: 30px;
+  height: 30px;
+  margin: 0;
+}
+
+@media (max-width: 720px) {
+  input[type="checkbox"] { min-width: 30px; min-height: 30px; }
+  .studio-toggle-card { gap: 14px; }
+  .studio-toggle-card > input[type="checkbox"],
+  .toggle-row > input[type="checkbox"],
+  .capsule-option > input[type="checkbox"] { min-width: 54px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  input[type="checkbox"],
+  input[type="checkbox"]::before,
+  input[type="checkbox"]::after { transition-duration: 1ms !important; }
+}

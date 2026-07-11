@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.3.2 — UI Component Polish
+
+- Replaced browser-native checkboxes with unified VaultToggle and VaultCheckbox styling.
+- Increased control size, spacing, and touch targets throughout Vaultarr.
+- Added smooth hover, press, focus, enable, and disable states.
+- Standardized controls across Studio, Time Capsule, game editing, and manual entry.
+- Preserved existing Curator, card, Focus Mode, and sidebar behavior.
+
 ## 1.3.1 — Curator Progress Feedback
 - Added a smooth visible loading bar while an individual game is being curated.
 - Added rotating cataloging-stage messages and a disabled working button state.
