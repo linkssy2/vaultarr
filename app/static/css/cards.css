@@ -123,3 +123,13 @@
     color: var(--text-muted);
     font-size: 13px;
 }
+
+/* 1.4.6 keep every library card as a live pointer target after SPA swaps */
+.focus-card-trigger,
+.poster-card {
+  position: relative;
+  pointer-events: auto;
+}
+.poster-card {
+  isolation: isolate;
+}

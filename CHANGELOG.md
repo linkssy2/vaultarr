@@ -1,3 +1,12 @@
+# 1.4.6 — Interaction Reliability Repair
+
+- Repaired universal search reopening and mode switching.
+- Removed the competing Library Ctrl/Cmd+K handler.
+- Prevented invisible search layers from intercepting the rest of the UI.
+- Reinitialized card interactions after smooth page swaps.
+- Restored reliable hover behavior for game cards and Discovery timeline capsules.
+- Added a shared post-navigation interaction cleanup pass.
+
 # 1.4.5 — Universal Search Interaction Fix
 
 - Fixed the search field becoming non-interactive after switching between **My Museum** and **Discover & Add**.

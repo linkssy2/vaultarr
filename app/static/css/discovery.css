@@ -157,3 +157,28 @@
     .discovery-game-row { grid-template-columns: repeat(4, minmax(120px, 1fr)); }
 }
 @media (max-width: 720px) { .discovery-game-row { grid-template-columns: repeat(2, minmax(120px, 1fr)); } }
+
+/* 1.4.6 resilient discovery hover targets */
+.timeline-strip a,
+.discovery-game-card,
+.cluster-grid a,
+.mini-discovery-list a {
+  position: relative;
+  z-index: 1;
+  pointer-events: auto;
+  cursor: pointer;
+}
+.timeline-strip a:hover,
+.timeline-strip a:focus-visible {
+  z-index: 3;
+}
+.timeline-strip a:hover i,
+.timeline-strip a:focus-visible i {
+  transform: translateY(-8px) scale(1.04);
+  filter: brightness(1.22);
+  box-shadow: 0 14px 34px color-mix(in srgb, var(--accent) 34%, transparent);
+}
+.discovery-game-card:hover div,
+.discovery-game-card:focus-visible div {
+  transform: translateY(-6px) scale(1.015);
+}

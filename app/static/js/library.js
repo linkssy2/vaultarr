@@ -219,19 +219,10 @@
   }
 
   function bindGlobalSearchShortcut() {
-    if (window.__vaultarrLibraryKeyBound) return;
-    window.__vaultarrLibraryKeyBound = true;
-
-    document.addEventListener("keydown", (event) => {
-      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
-        const searchInput = document.getElementById("librarySearch");
-        if (searchInput) {
-          event.preventDefault();
-          searchInput.focus();
-          searchInput.select();
-        }
-      }
-    });
+    // Universal Search owns Ctrl/Cmd+K. Keeping a second Library shortcut
+    // caused two handlers to fight over focus and could make the dialog feel
+    // disabled after it opened.
+    return;
   }
 
   window.VaultarrInitLibrary = function VaultarrInitLibrary() {

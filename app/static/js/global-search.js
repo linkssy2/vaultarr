@@ -10,8 +10,49 @@
     addBackdrop:qs('globalAddBackdrop'), addDialog:qs('globalAddDialog'), addClose:qs('globalAddClose'), addCancel:qs('globalAddCancel'), addConfirm:qs('globalAddConfirm'), addStatus:qs('globalAddStatus')
   });
   function setStatus(message){ const el=elements(); if(el.status) el.status.textContent=message; }
-  function openSearch(seed='', mode=state.mode){ const el=elements(); if(!el.panel||!el.input)return; setMode(mode,false); state.isOpen=true; document.body.classList.add('global-search-open'); el.panel.setAttribute('aria-hidden','false'); el.backdrop?.setAttribute('aria-hidden','false'); setTimeout(()=>{el.input.focus();if(seed)el.input.value=seed;el.input.select();runSearch(el.input.value.trim());},40); }
-  function closeSearch(){ const el=elements();state.isOpen=false;state.activeIndex=-1;document.body.classList.remove('global-search-open');el.panel?.setAttribute('aria-hidden','true');el.backdrop?.setAttribute('aria-hidden','true'); }
+  function openSearch(seed='', mode=state.mode){
+    const el=elements();
+    if(!el.panel||!el.input)return;
+
+    // Reopening an already visible search should never rebuild or disable the
+    // dialog. It simply restores the controls and returns focus to the query.
+    if(state.isOpen && document.body.classList.contains('global-search-open')){
+      restoreSearchControls(el);
+      if(seed) el.input.value=seed;
+      el.input.focus({preventScroll:true});
+      const length=el.input.value.length;
+      try{el.input.setSelectionRange(length,length);}catch(_error){}
+      return;
+    }
+
+    setMode(mode,false);
+    state.isOpen=true;
+    document.body.classList.add('global-search-open');
+    el.panel.removeAttribute('inert');
+    el.panel.setAttribute('aria-hidden','false');
+    el.backdrop?.setAttribute('aria-hidden','false');
+    window.setTimeout(()=>{
+      restoreSearchControls(el);
+      if(seed)el.input.value=seed;
+      el.input.focus({preventScroll:true});
+      el.input.select();
+      runSearch(el.input.value.trim());
+    },40);
+  }
+
+  function closeSearch(){
+    const el=elements();
+    state.isOpen=false;
+    state.activeIndex=-1;
+    state.requestToken+=1;
+    clearTimeout(state.debounce);
+    document.body.classList.remove('global-search-open');
+    el.panel?.setAttribute('aria-hidden','true');
+    el.backdrop?.setAttribute('aria-hidden','true');
+    window.setTimeout(()=>{
+      if(!state.isOpen) el.panel?.setAttribute('inert','');
+    },220);
+  }
   function restoreSearchControls(el){
     if(!el.input)return;
     el.input.disabled=false;
@@ -89,6 +130,73 @@
   async function confirmAdd(){const el=elements();if(!state.selected)return;el.addConfirm.disabled=true;el.addConfirm.textContent='Adding…';el.addStatus.textContent='Creating the museum record and sending it to the Curator…';try{const r=await fetch('/api/games/add/from-provider',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({source:state.selected.source,external_id:state.selected.external_id,path:qs('globalAddPath').value.trim(),category:qs('globalAddCategory').value,source_type:'Imported'})}),d=await r.json();if(!r.ok||!d.success)throw new Error(d.message||'The game could not be added.');el.addStatus.textContent=d.message||'Game added.';el.addConfirm.textContent='Added';setTimeout(()=>{closeAdd();closeSearch();window.VaultarrSmoothNavigate?window.VaultarrSmoothNavigate(d.redirect||`/games/${d.game_id}`,true):location.assign(d.redirect||`/games/${d.game_id}`);},500);}catch(error){el.addStatus.textContent=error.message||'The game could not be added.';el.addConfirm.disabled=false;el.addConfirm.textContent='Add to Museum';}}
   function activate(button){const kind=button.dataset.kind;if(kind==='game')openGame(button.dataset.gameId);else if(kind==='collection')openCollection(button.dataset.category||'All Games');else if(kind==='discover')openAdd(button);}
   function setActive(index){const buttons=[...(elements().results?.querySelectorAll('[data-kind]')||[])];if(!buttons.length)return;state.activeIndex=Math.max(0,Math.min(buttons.length-1,index));buttons.forEach((b,i)=>b.classList.toggle('is-active',i===state.activeIndex));buttons[state.activeIndex]?.scrollIntoView({block:'nearest'});}
-  function bind(){const el=elements();if(!el.panel||el.panel.dataset.bound==='1')return;el.panel.dataset.bound='1';el.openButton?.addEventListener('click',()=>openSearch());el.closeButton?.addEventListener('click',closeSearch);el.backdrop?.addEventListener('click',closeSearch);el.input?.addEventListener('input',scheduleSearch);el.platform?.addEventListener('input',scheduleSearch);el.provider?.addEventListener('change',scheduleSearch);el.museumMode?.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();setMode('museum');});el.discoverMode?.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();setMode('discover');});el.results?.addEventListener('click',e=>{const b=e.target.closest('[data-kind]');if(b)activate(b);});el.addClose?.addEventListener('click',closeAdd);el.addCancel?.addEventListener('click',closeAdd);el.addBackdrop?.addEventListener('click',closeAdd);el.addConfirm?.addEventListener('click',confirmAdd);document.addEventListener('keydown',event=>{if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==='k'){event.preventDefault();openSearch();return;}if(!state.isOpen)return;if(event.key==='Escape'){event.preventDefault();if(!el.addDialog?.hidden)closeAdd();else closeSearch();return;}const buttons=[...(elements().results?.querySelectorAll('[data-kind]')||[])];if(!buttons.length)return;if(event.key==='ArrowDown'){event.preventDefault();setActive(state.activeIndex+1);}if(event.key==='ArrowUp'){event.preventDefault();setActive(state.activeIndex<=0?buttons.length-1:state.activeIndex-1);}if(event.key==='Enter'&&state.activeIndex>=0){event.preventDefault();activate(buttons[state.activeIndex]);}});}
-  window.VaultarrOpenGlobalSearch=openSearch;document.addEventListener('DOMContentLoaded',bind);document.addEventListener('vaultarr:page-loaded',bind);
+  function bind(){
+    const el=elements();
+    if(!el.panel)return;
+
+    // Controls inside the persistent dialog are bound once. The sidebar open
+    // button is handled through delegation so smooth page swaps can never
+    // leave behind a stale, non-working button reference.
+    if(el.panel.dataset.bound!=='1'){
+      el.panel.dataset.bound='1';
+      el.closeButton?.addEventListener('click',closeSearch);
+      el.backdrop?.addEventListener('click',closeSearch);
+      el.input?.addEventListener('input',scheduleSearch);
+      el.platform?.addEventListener('input',scheduleSearch);
+      el.provider?.addEventListener('change',scheduleSearch);
+      el.museumMode?.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();setMode('museum');});
+      el.discoverMode?.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();setMode('discover');});
+      el.results?.addEventListener('click',event=>{const button=event.target.closest('[data-kind]');if(button)activate(button);});
+      el.addClose?.addEventListener('click',closeAdd);
+      el.addCancel?.addEventListener('click',closeAdd);
+      el.addBackdrop?.addEventListener('click',closeAdd);
+      el.addConfirm?.addEventListener('click',confirmAdd);
+      el.panel.setAttribute('inert','');
+    }
+
+    if(!window.__vaultarrGlobalSearchDelegated){
+      window.__vaultarrGlobalSearchDelegated=true;
+      document.addEventListener('click',event=>{
+        const opener=event.target.closest('#globalSearchOpen');
+        if(!opener)return;
+        event.preventDefault();
+        event.stopPropagation();
+        openSearch();
+      },true);
+
+      document.addEventListener('keydown',event=>{
+        if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==='k'){
+          event.preventDefault();
+          event.stopImmediatePropagation();
+          openSearch();
+          return;
+        }
+        if(!state.isOpen)return;
+        if(event.key==='Escape'){
+          event.preventDefault();
+          if(!elements().addDialog?.hidden)closeAdd();else closeSearch();
+          return;
+        }
+        const buttons=[...(elements().results?.querySelectorAll('[data-kind]')||[])];
+        if(!buttons.length)return;
+        if(event.key==='ArrowDown'){event.preventDefault();setActive(state.activeIndex+1);}
+        if(event.key==='ArrowUp'){event.preventDefault();setActive(state.activeIndex<=0?buttons.length-1:state.activeIndex-1);}
+        if(event.key==='Enter'&&state.activeIndex>=0){event.preventDefault();activate(buttons[state.activeIndex]);}
+      },true);
+    }
+
+    // A page swap must not leave an invisible modal layer over the app.
+    if(!state.isOpen){
+      document.body.classList.remove('global-search-open');
+      el.panel.setAttribute('aria-hidden','true');
+      el.panel.setAttribute('inert','');
+      el.backdrop?.setAttribute('aria-hidden','true');
+    }else{
+      restoreSearchControls(el);
+    }
+  }
+  window.VaultarrOpenGlobalSearch=openSearch;
+  window.VaultarrCloseGlobalSearch=closeSearch;
+  document.addEventListener('DOMContentLoaded',bind);
+  document.addEventListener('vaultarr:page-loaded',bind);
 })();

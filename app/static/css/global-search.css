@@ -245,3 +245,39 @@ body.global-search-open .global-search-panel {
   color: var(--text);
   -webkit-text-fill-color: var(--text);
 }
+
+/* 1.4.6 interaction lifecycle safeguards */
+.global-search-backdrop[aria-hidden="true"],
+.global-search-panel[aria-hidden="true"] {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  visibility: hidden;
+}
+
+.global-search-backdrop[aria-hidden="false"],
+.global-search-panel[aria-hidden="false"] {
+  visibility: visible;
+}
+
+.global-add-backdrop[hidden],
+.global-add-dialog[hidden] {
+  display: none !important;
+  pointer-events: none !important;
+}
+
+body.global-search-open .vaultos-sidebar {
+  z-index: 2002;
+}
+
+body.global-search-open .global-search-panel {
+  z-index: 2003;
+}
+
+body.global-search-open .global-search-backdrop {
+  left: 240px;
+}
+
+@media (max-width: 900px) {
+  body.global-search-open .global-search-backdrop { left: 0; }
+  body.global-search-open .vaultos-sidebar { z-index: 20; }
+}
