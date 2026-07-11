@@ -32,5 +32,5 @@
   <section class="card alive-panel"><div class="home-card-head"><div><p class="eyebrow">Recent Work</p><h2>Recent activity</h2></div></div>
   {% for item in history %}<p><strong>{{ item.title or 'Removed game' }}</strong> — {{ item.message }} <span class="muted">{{ item.created_at }}</span></p>{% else %}<p class="muted">No curator activity yet.</p>{% endfor %}</section>
 </div>
-<script src="/static/js/curator.js?v=1.4.9" defer></script>
+<script src="/static/js/curator.js?v=1.4.10" defer></script>
 {% endblock %}

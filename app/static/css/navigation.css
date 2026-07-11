@@ -24,7 +24,7 @@ body.vault-nav-entering .vaultos-content {
     animation: vaultContentEnter 260ms cubic-bezier(0.2, 0.85, 0.25, 1) both;
 }
 
-body.vault-nav-loading .vaultos-content::before {
+body.vault-nav-loading.vault-nav-loading-visible .vaultos-content::before {
     content: "";
     position: fixed;
     left: 240px;
@@ -68,7 +68,7 @@ body.vault-nav-loading .vaultos-content::before {
 }
 
 @media (max-width: 900px) {
-    body.vault-nav-loading .vaultos-content::before {
+    body.vault-nav-loading.vault-nav-loading-visible .vaultos-content::before {
         left: 0;
     }
 }

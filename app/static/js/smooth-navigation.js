@@ -4,10 +4,16 @@
   const SIDEBAR_OUT_MS = 170;
   const SIDEBAR_IN_MS = 280;
   const PREFETCH_DELAY_MS = 90;
+  const CACHE_TTL_MS = 45000;
+  const REQUEST_TIMEOUT_MS = 12000;
+  const LOADING_INDICATOR_DELAY_MS = 160;
   const pageCache = new Map();
+  const inFlightPages = new Map();
   let activeController = null;
+  let activeTarget = "";
   let navigationId = 0;
   let prefetchTimer = null;
+  let loadingIndicatorTimer = null;
 
   function isHttpUrl(value) {
     return /^https?:$/i.test(value.protocol);
@@ -95,13 +101,27 @@
     };
   }
 
+  function awaitWithSignal(promise, signal) {
+    if (!signal) return promise;
+    if (signal.aborted) return Promise.reject(new DOMException("Navigation aborted", "AbortError"));
+    return new Promise((resolve, reject) => {
+      const onAbort = () => reject(new DOMException("Navigation aborted", "AbortError"));
+      signal.addEventListener("abort", onAbort, { once: true });
+      promise.then(
+        (value) => { signal.removeEventListener("abort", onAbort); resolve(value); },
+        (error) => { signal.removeEventListener("abort", onAbort); reject(error); },
+      );
+    });
+  }
+
   async function fetchPage(url, signal) {
     const keyUrl = new URL(url, window.location.href);
     const key = keyUrl.href;
+    const dirty = Boolean(window.VaultarrStore?.isDirty(keyUrl.pathname));
 
     // Mutations such as Discover & Add mark affected routes dirty. Never
     // reuse prefetched HTML for those routes; fetch the latest server state.
-    if (window.VaultarrStore?.isDirty(keyUrl.pathname)) {
+    if (dirty) {
       for (const cachedKey of Array.from(pageCache.keys())) {
         const cachedUrl = new URL(cachedKey, window.location.href);
         if (cachedUrl.pathname === keyUrl.pathname ||
@@ -112,21 +132,54 @@
       }
     }
 
-    if (pageCache.has(key)) return pageCache.get(key);
+    const cached = pageCache.get(key);
+    if (!dirty && cached && (Date.now() - cached.storedAt) < CACHE_TTL_MS) return cached.page;
+    if (cached) pageCache.delete(key);
 
-    const response = await fetch(key, {
-      signal,
-      credentials: "same-origin",
-      headers: {
-        "X-Vaultarr-Navigation": "smooth",
-        "Accept": "text/html,application/xhtml+xml",
-      },
-    });
-    if (!response.ok) throw new Error(`Navigation failed: ${response.status}`);
-    const page = extractPage(await response.text());
-    pageCache.set(key, page);
-    window.VaultarrStore?.clearDirty(keyUrl.pathname);
-    return page;
+    if (inFlightPages.has(key)) return awaitWithSignal(inFlightPages.get(key), signal);
+
+    const request = (async () => {
+      const controller = new AbortController();
+      const timeout = window.setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+      try {
+        const response = await fetch(key, {
+          signal: controller.signal,
+          credentials: "same-origin",
+          headers: {
+            "X-Vaultarr-Navigation": "smooth",
+            "Accept": "text/html,application/xhtml+xml",
+          },
+        });
+        if (!response.ok) throw new Error(`Navigation failed: ${response.status}`);
+        const page = extractPage(await response.text());
+        pageCache.set(key, { page, storedAt: Date.now() });
+        window.VaultarrStore?.clearDirty(keyUrl.pathname);
+        return page;
+      } catch (error) {
+        if (error?.name === "AbortError") throw new Error("Navigation request timed out");
+        throw error;
+      } finally {
+        window.clearTimeout(timeout);
+        inFlightPages.delete(key);
+      }
+    })();
+
+    inFlightPages.set(key, request);
+    return awaitWithSignal(request, signal);
+  }
+
+  function beginDelayedLoadingIndicator(id) {
+    window.clearTimeout(loadingIndicatorTimer);
+    document.body.classList.remove("vault-nav-loading-visible");
+    loadingIndicatorTimer = window.setTimeout(() => {
+      if (id === navigationId) document.body.classList.add("vault-nav-loading-visible");
+    }, LOADING_INDICATOR_DELAY_MS);
+  }
+
+  function endLoadingIndicator() {
+    window.clearTimeout(loadingIndicatorTimer);
+    loadingIndicatorTimer = null;
+    document.body.classList.remove("vault-nav-loading-visible");
   }
 
   function runPageScripts(scripts) {
@@ -284,46 +337,60 @@
     }
 
     const target = new URL(url, window.location.href).href;
+    if (activeTarget === target && activeController) return;
+
     const id = ++navigationId;
+    activeTarget = target;
     document.body.dataset.vaultNavActive = String(id);
     if (activeController) activeController.abort();
     activeController = new AbortController();
 
     closeFocusIfOpen();
-    document.body.classList.add("vault-nav-loading", "vault-nav-leaving");
+    document.body.classList.add("vault-nav-loading");
     document.body.classList.remove(
       "vault-nav-entering",
+      "vault-nav-leaving",
       "vault-sidebar-nav-entering",
       "vault-sidebar-nav-leaving",
       "vault-view-transitioning"
     );
+    updateActiveNav(target);
+    beginDelayedLoadingIndicator(id);
 
     try {
+      // Prepare the next page while the current page remains fully visible.
+      // Network or server latency can no longer stretch the exit animation.
       const next = await fetchPage(target, activeController.signal);
       if (id !== navigationId) return;
 
-      // This intentionally matches the original 1.1.7 sidebar timing: the
-      // outgoing view starts fading immediately, then the prepared page is
-      // committed after the original 170 ms handoff pause.
+      endLoadingIndicator();
+      document.body.classList.add("vault-nav-leaving");
+      await waitForTransition(main, SIDEBAR_OUT_MS);
+      if (id !== navigationId) return;
+
+      commitPage(main, next, target, push);
+      document.body.classList.remove("vault-nav-leaving", "vault-nav-loading");
+      void main.offsetWidth;
+      document.body.classList.add("vault-nav-entering");
+
       window.setTimeout(() => {
-        if (id !== navigationId) return;
-        commitPage(main, next, target, push);
-
-        document.body.classList.remove("vault-nav-leaving", "vault-nav-loading");
-        document.body.classList.add("vault-nav-entering");
-
-        window.setTimeout(() => {
-          if (id === navigationId) {
-            document.body.classList.remove("vault-nav-entering");
-            if (document.body.dataset.vaultNavActive === String(id)) delete document.body.dataset.vaultNavActive;
-            activeController = null;
-          }
-        }, SIDEBAR_IN_MS);
-      }, SIDEBAR_OUT_MS);
+        if (id === navigationId) {
+          document.body.classList.remove("vault-nav-entering");
+          if (document.body.dataset.vaultNavActive === String(id)) delete document.body.dataset.vaultNavActive;
+          activeController = null;
+          activeTarget = "";
+        }
+      }, SIDEBAR_IN_MS + 30);
     } catch (error) {
       if (error && error.name === "AbortError") return;
       console.warn("Vaultarr sidebar navigation fell back to normal navigation:", error);
+      endLoadingIndicator();
+      document.body.classList.remove("vault-nav-loading", "vault-nav-leaving");
       window.location.href = target;
+    } finally {
+      if (id === navigationId && !document.body.classList.contains("vault-nav-entering")) {
+        endLoadingIndicator();
+      }
     }
   }
 

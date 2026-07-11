@@ -1,3 +1,12 @@
+# 1.4.10 — Navigation Load Consistency
+
+- Prepared sidebar destinations before beginning the exit animation.
+- Reused in-flight requests and ignored duplicate clicks to the same route.
+- Added a brief cache lifetime while respecting Unified Vault State invalidation.
+- Delayed the loading sweep until a request takes longer than 160 ms.
+- Added request timeout and graceful full-navigation fallback behavior.
+- Preserved existing sidebar motion timing and all current interaction systems.
+
 # 1.4.2 — Smooth Curator Progress
 
 - Interpolates Curator progress continuously between live server updates.
