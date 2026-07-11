@@ -1,4 +1,10 @@
-# 1.3.3
+# 1.3.4 — Expanded Card Game Actions
+
+- Added Actions tab and safe Deaccession flow directly inside expanded game cards.
+- Original game files are never deleted.
+- Added smooth card removal after a successful catalog deletion.
+
+# 1.3.4
 - Added safe per-game removal, optional cached asset cleanup, and scan-ignore restoration.
 
 # Changelog

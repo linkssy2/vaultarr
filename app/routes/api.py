@@ -15,6 +15,7 @@ from app.services.media_service import all_media_results, cached_media, download
 from app.services.manual_service import MANUAL_PROVIDERS, manual_search_results, download_manual_pdf, manual_file_info, is_probably_pdf_url, manual_catalog_status, sync_manual_catalog, clear_manual_catalog, search_manual_catalog
 from app.services.patch_service import patch_search_results, playability_score, patch_status
 from app.services.launchbox_service import get_launchbox_details
+from app.services.game_removal_service import remove_game
 from app.services.metadata_service import (
     search_metadata_diagnostics,
     get_steam_details,
@@ -295,6 +296,19 @@ def build_metadata_comparison(current, details):
         "change_count": change_count,
         "rows": rows,
     }
+
+
+@api_bp.route("/api/games/<int:game_id>/remove", methods=["POST"])
+def api_remove_game(game_id):
+    payload = request.get_json(silent=True) or {}
+    result = remove_game(
+        game_id,
+        ignore_path=bool(payload.get("ignore_path", True)),
+        delete_cached_assets=bool(payload.get("delete_cached_assets", True)),
+    )
+    if not result.get("removed"):
+        return jsonify({"success": False, "message": "Game not found."}), 404
+    return jsonify({"success": True, **result})
 
 
 @api_bp.route("/api/games/<int:game_id>")

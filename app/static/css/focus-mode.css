@@ -2767,3 +2767,15 @@ body.focus-active .focus-backdrop {
     align-items: center;
     justify-content: center;
 }
+
+
+/* Vaultarr 1.3.4 — expanded-card game actions and safe deaccession */
+.focus-actions-workspace { display: grid; gap: 24px; padding-bottom: 20px; }
+.focus-action-section, .focus-danger-zone { border: 1px solid rgba(113, 145, 190, .24); border-radius: 24px; padding: 26px; background: rgba(9, 17, 31, .7); display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+.focus-action-section h2, .focus-danger-zone h2 { margin: 4px 0 8px; }
+.focus-action-buttons { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 12px; }
+.focus-danger-zone { border-color: rgba(255, 102, 122, .34); background: linear-gradient(135deg, rgba(64, 13, 28, .18), rgba(9, 17, 31, .76)); }
+.focus-danger-zone .danger-button { min-width: 190px; }
+.focus-remove-dialog { width: min(680px, calc(100vw - 32px)); }
+.game-card-removing { opacity: 0 !important; transform: scale(.92) translateY(18px) !important; filter: blur(5px); transition: opacity .32s ease, transform .32s ease, filter .32s ease !important; pointer-events: none; }
+@media (max-width: 780px) { .focus-action-section, .focus-danger-zone { align-items: stretch; flex-direction: column; } .focus-action-buttons { justify-content: stretch; } .focus-action-buttons > *, .focus-danger-zone .danger-button { width: 100%; text-align: center; } }

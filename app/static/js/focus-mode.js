@@ -117,6 +117,17 @@
       artworkType: document.getElementById("focusArtworkType"),
       artworkResolution: document.getElementById("focusArtworkResolution"),
       artworkLock: document.getElementById("focusArtworkLock"),
+      editGameLink: document.getElementById("focusEditGameLink"),
+      refreshGameLink: document.getElementById("focusRefreshGameLink"),
+      fullDetailsLink: document.getElementById("focusFullDetailsLink"),
+      removeGameButton: document.getElementById("focusRemoveGameButton"),
+      removeGameDialog: document.getElementById("focusRemoveGameDialog"),
+      removeGameTitle: document.getElementById("focusRemoveGameTitle"),
+      removeIgnorePath: document.getElementById("focusRemoveIgnorePath"),
+      removeCachedAssets: document.getElementById("focusRemoveCachedAssets"),
+      removeCancelButton: document.getElementById("focusRemoveCancelButton"),
+      removeConfirmButton: document.getElementById("focusRemoveConfirmButton"),
+      removeStatus: document.getElementById("focusRemoveGameStatus"),
     };
 
     function getTriggers() {
@@ -291,6 +302,12 @@
       if (fields.platform) fields.platform.textContent = text(game.platform);
       if (fields.source) fields.source.textContent = game.metadata_source ? `${game.metadata_source} #${game.metadata_external_id || ""}` : "None";
       if (fields.metadataLink) fields.metadataLink.href = `/games/${game.id}`;
+      if (fields.editGameLink) fields.editGameLink.href = `/games/${game.id}#manual-edit`;
+      if (fields.refreshGameLink) fields.refreshGameLink.href = `/games/${game.id}?refresh=1`;
+      if (fields.fullDetailsLink) fields.fullDetailsLink.href = `/games/${game.id}`;
+      if (fields.removeGameTitle) fields.removeGameTitle.textContent = `Remove ${game.title || "game"}?`;
+      if (fields.removeStatus) fields.removeStatus.innerHTML = "";
+      if (fields.removeConfirmButton) { fields.removeConfirmButton.disabled = false; fields.removeConfirmButton.textContent = "Remove Game"; }
       if (fields.metadataQuery) fields.metadataQuery.value = game.title || "";
       resetProviderIntelligence("Analyze provider quality for this game.");
 
@@ -1876,8 +1893,55 @@
       openFocus(trigger);
     });
 
+    function openRemoveGameDialog() {
+      if (!activeGameId || !fields.removeGameDialog) return;
+      if (fields.removeGameTitle) fields.removeGameTitle.textContent = `Remove ${activeGame?.title || "game"}?`;
+      if (fields.removeStatus) fields.removeStatus.innerHTML = "";
+      fields.removeGameDialog.showModal();
+    }
+
+    async function confirmRemoveGame() {
+      if (!activeGameId || !fields.removeConfirmButton) return;
+      fields.removeConfirmButton.disabled = true;
+      fields.removeConfirmButton.textContent = "Removing...";
+      if (fields.removeStatus) fields.removeStatus.innerHTML = '<span class="metadata-provider-pill"><strong>Vaultarr</strong><span>Removing catalog record...</span></span>';
+      try {
+        const removedId = String(activeGameId);
+        const response = await fetch(`/api/games/${activeGameId}/remove`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ignore_path: fields.removeIgnorePath?.checked ?? true,
+            delete_cached_assets: fields.removeCachedAssets?.checked ?? true,
+          }),
+        });
+        const data = await response.json();
+        if (!response.ok || !data.success) throw new Error(data.message || "Could not remove game.");
+        fields.removeGameDialog.close();
+        const removedTrigger = document.querySelector(`.focus-card-trigger[data-game-id="${CSS.escape(removedId)}"]`);
+        closeFocus();
+        window.setTimeout(() => {
+          if (removedTrigger) {
+            removedTrigger.classList.add("game-card-removing");
+            window.setTimeout(() => {
+              removedTrigger.remove();
+              const grid = document.getElementById("libraryGrid");
+              if (grid && !grid.querySelector(".focus-card-trigger")) window.location.reload();
+            }, 360);
+          }
+        }, 520);
+      } catch (error) {
+        fields.removeConfirmButton.disabled = false;
+        fields.removeConfirmButton.textContent = "Remove Game";
+        if (fields.removeStatus) fields.removeStatus.innerHTML = `<span class="metadata-provider-pill error"><strong>Error</strong><span>${escapeHtml(error.message || "Could not remove game.")}</span></span>`;
+      }
+    }
+
     if (closeButton) closeButton.addEventListener("click", closeFocus);
     if (backdrop) backdrop.addEventListener("click", closeFocus);
+    if (fields.removeGameButton) fields.removeGameButton.addEventListener("click", openRemoveGameDialog);
+    if (fields.removeCancelButton) fields.removeCancelButton.addEventListener("click", () => fields.removeGameDialog?.close());
+    if (fields.removeConfirmButton) fields.removeConfirmButton.addEventListener("click", confirmRemoveGame);
     if (fields.metadataForm) fields.metadataForm.addEventListener("submit", searchMetadata);
     if (fields.providerIntelligenceButton) fields.providerIntelligenceButton.addEventListener("click", analyzeProviders);
     if (fields.mergeBestButton) fields.mergeBestButton.addEventListener("click", mergeBestFields);
