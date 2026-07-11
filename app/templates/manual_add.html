@@ -2,75 +2,45 @@
 
 {% block content %}
 <a class="back-link" href="/library">← Back to Library</a>
-
-<div class="vault-page-shell">
-  <div class="page-header">
-    <div>
-      <p class="eyebrow">Manual Entry</p>
-      <h1>Add Game</h1>
-      <p class="muted">Add a game even if the scanner did not find it. You can match metadata after saving.</p>
+<div class="vault-page-shell add-game-page">
+  <div class="page-header"><div><p class="eyebrow">Add to the museum</p><h1>Add Game</h1><p class="muted">Search your enabled information sources, choose the correct release, and let Vaultarr fill in the record.</p></div></div>
+  <section class="panel search-to-add-panel" data-add-game-search>
+    <div class="add-game-mode-tabs" role="tablist" aria-label="Add game method">
+      <button class="add-game-mode active" type="button" data-add-mode="search" aria-selected="true">Search for a game</button>
+      <button class="add-game-mode secondary" type="button" data-add-mode="manual" aria-selected="false">Enter details manually</button>
     </div>
-  </div>
-
-  <section class="panel manual-add-panel">
-    <form class="clean-form" action="/games/add" method="post">
-      <div class="form-grid">
-        <div>
-          <label>Title</label>
-          <input name="title" placeholder="My Fan Game" required>
+    <div class="add-game-mode-panel active" data-add-panel="search">
+      <form class="add-game-search-form" id="addGameSearchForm">
+        <div class="add-game-search-grid">
+          <div class="add-game-search-main"><label for="addGameQuery">Game title</label><input id="addGameQuery" name="query" placeholder="The Legend of Zelda: Ocarina of Time" autocomplete="off" required></div>
+          <div><label for="addGamePlatform">Platform <span class="muted">optional</span></label><input id="addGamePlatform" name="platform" placeholder="Nintendo 64"></div>
+          <div><label for="addGameProvider">Information source</label><select id="addGameProvider" name="provider"><option value="all">All enabled sources</option><option value="launchbox">LaunchBox</option><option value="igdb">IGDB</option><option value="rawg">RAWG</option><option value="steam">Steam</option><option value="wikipedia">Wikipedia</option></select></div>
         </div>
-        <div>
-          <label>Source</label>
-          <select name="source_type">
-            <option>Manual</option>
-            <option>Fan Project</option>
-            <option>PC Port</option>
-            <option>Homebrew</option>
-            <option>Prototype</option>
-            <option>Imported</option>
-          </select>
-        </div>
-        <div>
-          <label>Category</label>
-          <select name="category">
-            <option>Manual</option>
-            <option>Fanmade</option>
-            <option>PC Port</option>
-            <option>Homebrew</option>
-            <option>Prototype</option>
-            <option>Abandonware</option>
-            <option>Other</option>
-            <option>Unsorted</option>
-          </select>
-        </div>
-        <div>
-          <label>Folder Path <span class="muted">optional</span></label>
-          <input name="path" placeholder="E:\Games\My Fan Game">
-        </div>
-      </div>
-
-      <label>Description</label>
-      <textarea name="description" placeholder="What is this game? Why is it in the vault?"></textarea>
-
-      <div class="form-grid">
-        <div><label>Developer</label><input name="developer"></div>
-        <div><label>Publisher</label><input name="publisher"></div>
-        <div><label>Year</label><input name="release_year"></div>
-        <div><label>Genre</label><input name="genre"></div>
-        <div><label>Platform</label><input name="platform" placeholder="PC, DOS, Windows"></div>
-        <div><label>Tags</label><input name="tags" placeholder="hidden gem, horror, fps"></div>
-      </div>
-
-      <label>Notes</label>
-      <textarea name="notes" placeholder="Install notes, version details, source notes, fixes, patches, etc."></textarea>
-
-      <label class="checkbox-row">
-        <input type="checkbox" name="metadata_locked">
-        <span>Lock manual metadata so future automated updates do not overwrite it.</span>
-      </label>
-
-      <button type="submit">Add Game</button>
-    </form>
+        <button type="submit" id="addGameSearchButton">Search</button>
+      </form>
+      <div class="add-game-search-status" id="addGameSearchStatus" aria-live="polite"></div>
+      <div class="add-game-results" id="addGameResults"></div>
+    </div>
+    <div class="add-game-mode-panel" data-add-panel="manual" hidden>
+      <form class="clean-form" action="/games/add" method="post">
+        <div class="form-grid"><div><label>Title</label><input name="title" placeholder="My Fan Game" required></div><div><label>Source</label><select name="source_type"><option>Manual</option><option>Fan Project</option><option>PC Port</option><option>Homebrew</option><option>Prototype</option><option>Imported</option></select></div><div><label>Category</label><select name="category"><option>Manual</option><option>Fanmade</option><option>PC Port</option><option>Homebrew</option><option>Prototype</option><option>Abandonware</option><option>Other</option><option>Unsorted</option></select></div><div><label>Folder Path <span class="muted">optional</span></label><input name="path" placeholder="E:\Games\My Fan Game"></div></div>
+        <label>Description</label><textarea name="description" placeholder="What is this game? Why is it in the vault?"></textarea>
+        <div class="form-grid"><div><label>Developer</label><input name="developer"></div><div><label>Publisher</label><input name="publisher"></div><div><label>Year</label><input name="release_year"></div><div><label>Genre</label><input name="genre"></div><div><label>Platform</label><input name="platform" placeholder="PC, DOS, Windows"></div><div><label>Tags</label><input name="tags" placeholder="hidden gem, horror, fps"></div></div>
+        <label>Notes</label><textarea name="notes" placeholder="Install notes, version details, source notes, fixes, patches, etc."></textarea>
+        <label class="checkbox-row"><input type="checkbox" name="metadata_locked"><span>Lock manual information so future automated updates do not overwrite it.</span></label>
+        <button type="submit">Add Game Manually</button>
+      </form>
+    </div>
   </section>
 </div>
+<div class="add-game-preview-backdrop" id="addGamePreviewBackdrop" hidden></div>
+<section class="add-game-preview" id="addGamePreview" hidden aria-modal="true" role="dialog" aria-labelledby="addGamePreviewTitle">
+  <button class="add-game-preview-close" id="addGamePreviewClose" type="button" aria-label="Close preview">×</button>
+  <div class="add-game-preview-cover" id="addGamePreviewCover"><span>🎮</span></div>
+  <div class="add-game-preview-content"><p class="eyebrow">Ready to add</p><h2 id="addGamePreviewTitle">Loading game…</h2><p class="muted" id="addGamePreviewSummary"></p><p class="add-game-preview-description" id="addGamePreviewDescription"></p><div class="add-game-preview-facts" id="addGamePreviewFacts"></div>
+    <div class="form-grid add-game-import-options"><div><label for="addGamePath">Folder Path <span class="muted">optional</span></label><input id="addGamePath" placeholder="E:\Games\Game Folder"></div><div><label for="addGameCategory">Category</label><select id="addGameCategory"><option>Unsorted</option><option>Manual</option><option>Fanmade</option><option>PC Port</option><option>Homebrew</option><option>Prototype</option><option>Abandonware</option><option>Other</option></select></div></div>
+    <div class="add-game-preview-actions"><button class="secondary" id="addGamePreviewCancel" type="button">Back to results</button><button id="addGameConfirm" type="button">Add to Library</button></div><p class="add-game-confirm-status" id="addGameConfirmStatus" aria-live="polite"></p>
+  </div>
+</section>
+<link rel="stylesheet" href="/static/css/add-game.css?v=1.4.3"><script src="/static/js/add-game.js?v=1.4.3" defer></script>
 {% endblock %}

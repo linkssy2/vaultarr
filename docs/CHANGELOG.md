@@ -1,3 +1,10 @@
+# 1.4.2 — Smooth Curator Progress
+
+- Interpolates Curator progress continuously between live server updates.
+- Smoothly animates both the bar and percentage from the first click through completion.
+- Removes visible polling jumps without changing curator matching or provider behavior.
+- Preserves the production GHCR Docker setup and release documentation.
+
 # 1.4.1 — Live Curator Progress
 
 - Curator jobs now start asynchronously and return control to the browser immediately.

@@ -1,3 +1,22 @@
+# 1.4.3 — Search-to-Add Games
+
+- Reworked **Add Game** into a search-first workflow.
+- Searches all enabled game-information sources or one selected source.
+- Optional platform hints improve ranking without hiding other releases.
+- Added a polished result list with covers, source labels, and match confidence.
+- Added a preview dialog showing the selected release before it is created.
+- One-click add stores the provider record, downloads available cover art, and queues Curator preparation.
+- Preserved the full manual-entry form as a fallback for fan games, prototypes, homebrew, and obscure releases.
+- Added responsive mobile layouts and reduced-motion support.
+- Retained the published GHCR image in all production Docker examples.
+
+# 1.4.2 — Smooth Curator Progress
+
+- Interpolates Curator progress continuously between live server updates.
+- Smoothly animates both the bar and percentage from the first click through completion.
+- Removes visible polling jumps without changing curator matching or provider behavior.
+- Preserves the production GHCR Docker setup and release documentation.
+
 # 1.4.1 — Live Curator Progress
 
 - Curator jobs now start asynchronously and return control to the browser immediately.

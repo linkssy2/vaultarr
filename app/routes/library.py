@@ -1,10 +1,12 @@
 from urllib.parse import urlencode
 from uuid import uuid4
 
-from flask import Blueprint, render_template, abort, request, redirect
+from flask import Blueprint, render_template, abort, request, redirect, jsonify
 from app.database.database import get_connection
 from app.services.metadata_service import search_metadata_diagnostics, get_steam_details, get_wikipedia_details, get_rawg_details, get_igdb_details, get_steamgriddb_details, download_cover
 from app.services.game_removal_service import remove_game
+from app.services.provider_intelligence import get_provider_details
+from app.services.curator_service import queue_game
 
 library_bp = Blueprint('library', __name__)
 
@@ -146,3 +148,110 @@ def delete_game(game_id):
     if not result.get('removed'):
         abort(404)
     return redirect('/library?removed=1')
+
+@library_bp.route('/api/games/add/search')
+def add_game_search_api():
+    query = request.args.get('query', '').strip()
+    provider = request.args.get('provider', 'all').strip() or 'all'
+    platform = request.args.get('platform', '').strip().lower()
+    if not query:
+        return jsonify({'success': True, 'results': [], 'logs': []})
+
+    data = search_metadata_diagnostics(query, provider)
+    results = data.get('results', [])
+    if platform:
+        for item in results:
+            haystack = f"{item.get('platform','')} {item.get('description','')}".lower()
+            item['platform_match'] = platform in haystack
+        results.sort(key=lambda item: (bool(item.get('platform_match')), int(item.get('confidence') or 0)), reverse=True)
+
+    return jsonify({'success': True, 'results': results, 'logs': data.get('logs', [])})
+
+
+@library_bp.route('/api/games/add/preview')
+def add_game_preview_api():
+    source = request.args.get('source', '').strip()
+    external_id = request.args.get('external_id', '').strip()
+    if not source or not external_id:
+        return jsonify({'success': False, 'message': 'A source and game ID are required.'}), 400
+    try:
+        details = get_provider_details(source, external_id)
+    except Exception as exc:
+        return jsonify({'success': False, 'message': str(exc)}), 502
+    if not details:
+        return jsonify({'success': False, 'message': 'The selected information source did not return game details.'}), 404
+    return jsonify({'success': True, 'details': details})
+
+
+@library_bp.route('/api/games/add/from-provider', methods=['POST'])
+def add_game_from_provider_api():
+    payload = request.get_json(silent=True) or {}
+    source = str(payload.get('source') or '').strip()
+    external_id = str(payload.get('external_id') or '').strip()
+    path = str(payload.get('path') or '').strip()
+    source_type = str(payload.get('source_type') or 'Imported').strip() or 'Imported'
+    category = str(payload.get('category') or 'Unsorted').strip() or 'Unsorted'
+
+    if not source or not external_id:
+        return jsonify({'success': False, 'message': 'Select a game before adding it.'}), 400
+    try:
+        details = get_provider_details(source, external_id)
+    except Exception as exc:
+        return jsonify({'success': False, 'message': str(exc)}), 502
+    if not details:
+        return jsonify({'success': False, 'message': 'The selected game could not be loaded from its information source.'}), 404
+
+    title = str(details.get('title') or 'Untitled Game').strip()
+    if not path:
+        path = f"manual://{title.lower().replace(' ', '-')}-{uuid4().hex[:10]}"
+
+    conn = get_connection()
+    try:
+        conn.execute(
+            '''
+            INSERT INTO games (
+                library_id,title,path,category,source_type,manual_entry,metadata_locked,
+                description,developer,publisher,release_year,genre,platform,tags,notes,
+                cover_url,metadata_source,metadata_external_id,added_at,updated_at
+            ) VALUES (NULL,?,?,?,?,1,0,?,?,?,?,?,?,?,?,?,?,?,CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)
+            ''',
+            (
+                title, path, category, source_type,
+                details.get('description',''), details.get('developer',''), details.get('publisher',''),
+                details.get('release_year',''), details.get('genre',''), details.get('platform',''),
+                '', 'Added from the search-to-add workflow.', details.get('cover_url',''),
+                details.get('metadata_source') or source, details.get('metadata_external_id') or external_id,
+            ),
+        )
+        conn.commit()
+        game_id = conn.execute('SELECT last_insert_rowid() id').fetchone()['id']
+    except Exception as exc:
+        existing = conn.execute('SELECT id FROM games WHERE path=?', (path,)).fetchone()
+        conn.close()
+        if existing:
+            return jsonify({'success': True, 'game_id': existing['id'], 'redirect': f'/games/{existing["id"]}', 'existing': True})
+        return jsonify({'success': False, 'message': str(exc)}), 500
+    conn.close()
+
+    cover_path = ''
+    try:
+        cover_path = download_cover(game_id, details.get('cover_url',''))
+    except Exception:
+        cover_path = ''
+    if cover_path:
+        conn = get_connection()
+        conn.execute('UPDATE games SET cover_path=?, updated_at=CURRENT_TIMESTAMP WHERE id=?', (cover_path, game_id))
+        conn.commit()
+        conn.close()
+
+    try:
+        queue_game(game_id, 'search-to-add')
+    except Exception:
+        pass
+
+    return jsonify({
+        'success': True,
+        'game_id': game_id,
+        'redirect': f'/games/{game_id}',
+        'message': f'{title} was added and queued for preparation.',
+    })

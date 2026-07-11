@@ -1,12 +1,12 @@
-# Vaultarr 1.4.1
+# Vaultarr 1.4.3
 
-> Current release: **Vaultarr 1.4.1 — The Curator Experience**
+> Current release: **Vaultarr 1.4.3 — Search-to-Add Games**
 
 Vaultarr is a self-hosted game preservation dashboard for cataloging, enriching, and maintaining a personal game archive.
 
 ## The Curator Experience
 
-Vaultarr 1.4.1 simplifies the day-to-day experience around one goal: add a game and let Vaultarr prepare the museum record. Standard Mode shows only the essential collection pages, while technical provider, cache, and diagnostic tools remain available through **Advanced Mode** in Settings.
+Vaultarr 1.4.3 simplifies the day-to-day experience around one goal: add a game and let Vaultarr prepare the museum record. Standard Mode shows only the essential collection pages, while technical provider, cache, and diagnostic tools remain available through **Advanced Mode** in Settings.
 
 Newly scanned games can be queued automatically for Curator processing. Vaultarr researches game information, chooses available artwork, looks for a manual, respects user edits and metadata locks, and surfaces only items that need review.
 
@@ -212,3 +212,7 @@ Do not replace `image:` with `build: .` unless you are intentionally developing 
 ## Safe game removal
 
 Games can be removed from Vaultarr without deleting the original game folder. Removed scan paths may be ignored so they do not return automatically, and can be restored later from Settings.
+
+## Search-to-Add games
+
+The **Add Game** page now starts with a provider search instead of an empty form. Search the enabled information sources, optionally boost a platform, preview the selected release, and add it with one click. Vaultarr saves the available game information, downloads the selected cover when possible, and queues the new record for the Curator. The original manual-entry form remains available for fan projects, prototypes, homebrew, and titles that are not listed by a provider.

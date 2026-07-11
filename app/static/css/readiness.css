@@ -422,3 +422,28 @@
 }
 .curator-meter-fill{transition:width .55s cubic-bezier(.22,.61,.36,1)}
 .curator-toast{position:fixed;right:24px;bottom:24px;z-index:9999;display:grid;gap:4px;min-width:260px;max-width:420px;padding:16px 18px;border:1px solid var(--border);border-radius:16px;background:rgba(10,18,32,.96);box-shadow:0 18px 50px rgba(0,0,0,.35);transform:translateY(18px);opacity:0;transition:.24s ease}.curator-toast.show{transform:none;opacity:1}.curator-toast strong{color:#fff}.curator-toast span{color:var(--muted)}.curator-toast.success{border-color:rgba(52,211,153,.45)}.curator-toast.warning{border-color:rgba(251,191,36,.45)}
+
+
+/* Vaultarr 1.4.2 — continuously interpolated Curator progress */
+.curator-meter {
+  contain: layout paint;
+}
+.curator-meter-fill {
+  width: var(--curator-progress, 0%);
+  transition: none !important;
+  will-change: width;
+  transform: translateZ(0);
+}
+.curator-row.is-curating .curator-meter-fill {
+  background-size: 240% 100%;
+  animation-duration: 4.2s;
+  animation-timing-function: linear;
+}
+.curator-row.is-curating [data-curator-percent] {
+  transition: color .35s ease, opacity .35s ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  .curator-meter-fill {
+    transition: none !important;
+  }
+}
