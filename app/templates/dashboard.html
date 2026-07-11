@@ -4,14 +4,14 @@
 <section class="home-launchpad">
   <section class="home-hero alive-panel vault-pulse-panel">
     <div class="home-hero-copy">
-      <p class="eyebrow">{{ 'Vaultarr 1.0.3' if stats.game_count else 'Vaultarr 1.0.3 Setup' }}</p>
+      <p class="eyebrow">{{ 'Vaultarr 1.3.0' if stats.game_count else 'Vaultarr 1.3.0 Setup' }}</p>
       <p class="greeting">{{ stats.hero.accent }}</p>
       <h1>{{ stats.hero.title }}</h1>
       <p class="muted hero-copy">{{ stats.hero.message }}</p>
 
       <div class="hero-actions slim-actions">
         {% if stats.game_count %}<a class="button-link" href="/library">Open Library →</a>
-        <a class="button-link secondary" href="/preservation">Continue Improving</a>{% else %}<a class="button-link" href="/onboarding">Start Setup →</a>
+        <a class="button-link secondary" href="/curator">Run Curator</a>{% else %}<a class="button-link" href="/onboarding">Start Setup →</a>
         <a class="button-link secondary" href="/settings">Open Studio</a>{% endif %}
       </div>
     </div>

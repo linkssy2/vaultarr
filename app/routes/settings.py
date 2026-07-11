@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, redirect
 from pathlib import Path
 from app.database.database import get_connection
 from app.services.scanner import scan_library
+from app.services.curator_service import queue_game, refresh_game_score
 from app.services.theme_service import (
     THEME_PACKS,
     load_theme,
@@ -230,6 +231,12 @@ def scan_library_route(library_id):
                 added += 1
 
         conn.commit()
+        queued_rows = conn.execute("SELECT id FROM games WHERE library_id=? AND curator_paused=0", (library_id,)).fetchall()
+    else:
+        queued_rows = []
 
     conn.close()
+    for queued_row in queued_rows:
+        refresh_game_score(queued_row['id'])
+        queue_game(queued_row['id'], 'library scan')
     return redirect(f'/settings?added={added}&updated={updated}&skipped={skipped}&errors={errors}')

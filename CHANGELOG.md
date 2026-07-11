@@ -141,3 +141,6 @@ First public-ready release of Vaultarr.
 ## Previous development builds
 
 Vaultarr moved through the Alpha 1–30 series before the 1.0 release. Detailed historical notes are retained in `docs/` where available.
+
+## 1.3.0
+- Added the Museum Curator Engine, queue, readiness score, history, safe metadata-lock behavior, and high-confidence automated enrichment.

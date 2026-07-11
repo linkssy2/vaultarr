@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="vault-page-shell vault-space curator-space">
+  <section class="vault-space-hero alive-panel">
+    <div><p class="eyebrow">Museum Curator</p><h1>Quietly complete your collection.</h1><p class="muted hero-copy">Vaultarr identifies games, merges the best available information, selects artwork, looks for a high-confidence manual, and leaves uncertain items for review.</p></div>
+    <div class="space-hero-metrics"><div><span>Queued</span><strong>{{ counts.get('queued',0) }}</strong></div><div><span>Needs Review</span><strong>{{ counts.get('failed',0) }}</strong></div></div>
+  </section>
+  <section class="card alive-panel curator-controls">
+    <form action="/curator/queue-all" method="post"><button type="submit">Find Incomplete Games</button></form>
+    <form action="/curator/run" method="post"><input type="hidden" name="limit" value="5"><button type="submit">Catalog Next 5</button></form>
+    <p class="muted">Locked metadata and paused games are never overwritten. Cross-platform manuals only attach automatically at high confidence.</p>
+  </section>
+  <section class="card alive-panel">
+    <div class="home-card-head"><div><p class="eyebrow">Collection Readiness</p><h2>Games needing attention</h2></div></div>
+    <div class="curator-list">
+    {% for game in games %}
+      <article class="curator-row">
+        <div><a href="/games/{{ game.id }}"><strong>{{ game.title }}</strong></a><small>{{ game.curator_status|replace('_',' ')|title }}{% if game.curator_last_error %} · {{ game.curator_last_error }}{% endif %}</small></div>
+        <div class="curator-meter"><span style="width:{{ game.curator_score or 0 }}%"></span></div><b>{{ game.curator_score or 0 }}%</b>
+        <button type="button" onclick="fetch('/api/curator/games/{{ game.id }}/run',{method:'POST'}).then(()=>location.reload())">Curate</button>
+      </article>
+    {% endfor %}
+    </div>
+  </section>
+  <section class="card alive-panel"><div class="home-card-head"><div><p class="eyebrow">Recent Work</p><h2>Curator activity</h2></div></div>
+  {% for item in history %}<p><strong>{{ item.title or 'Removed game' }}</strong> — {{ item.message }} <span class="muted">{{ item.created_at }}</span></p>{% else %}<p class="muted">No curator activity yet.</p>{% endfor %}</section>
+</div>
+{% endblock %}

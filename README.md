@@ -177,3 +177,19 @@ Vaultarr now builds a local, LaunchBox-style search index for manual listings fr
 - PDF files are downloaded only when you explicitly choose **Download to Vaultarr**.
 
 Keep `/config` mapped to persistent storage so the manual catalog survives container updates.
+
+## Museum Curator Engine (1.3.0)
+
+Open **Curator** from the sidebar to find incomplete games and catalog them in controlled batches. Library scans automatically queue games, while provider work runs separately so scans remain stable.
+
+The Curator can merge metadata, cache suitable artwork, and attach a high-confidence manual. It respects metadata locks and paused games, records errors instead of guessing, and leaves all game information manually editable.
+
+For production, continue using the published image:
+
+```yaml
+services:
+  vaultarr:
+    image: ghcr.io/linkssy2/vaultarr:latest
+```
+
+Do not replace `image:` with `build: .` unless you are intentionally developing from source.

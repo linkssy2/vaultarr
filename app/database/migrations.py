@@ -119,6 +119,30 @@ def migrate():
         UNIQUE(game_id, collection_id)
     )
     """)
+    for col, definition in {
+        "curator_status": "TEXT DEFAULT 'waiting'",
+        "curator_score": "INTEGER DEFAULT 0",
+        "curator_missing": "TEXT DEFAULT '[]'",
+        "curator_last_run": "TEXT DEFAULT ''",
+        "curator_last_error": "TEXT DEFAULT ''",
+        "curator_paused": "INTEGER DEFAULT 0",
+    }.items():
+        ensure_column(c, "games", col, definition)
+    c.execute("""
+    CREATE TABLE IF NOT EXISTS curator_jobs (
+        id INTEGER PRIMARY KEY AUTOINCREMENT, game_id INTEGER NOT NULL UNIQUE,
+        status TEXT DEFAULT 'queued', reason TEXT DEFAULT 'scan', attempts INTEGER DEFAULT 0,
+        last_error TEXT DEFAULT '', created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+        updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+    )
+    """)
+    c.execute("""
+    CREATE TABLE IF NOT EXISTS curator_history (
+        id INTEGER PRIMARY KEY AUTOINCREMENT, game_id INTEGER NOT NULL, action TEXT DEFAULT 'curate',
+        status TEXT DEFAULT '', message TEXT DEFAULT '', details_json TEXT DEFAULT '{}',
+        created_at TEXT DEFAULT CURRENT_TIMESTAMP
+    )
+    """)
     conn.commit()
     conn.close()
 
