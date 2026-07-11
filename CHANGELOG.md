@@ -1,4 +1,14 @@
-# 1.4.8 — Navigation Motion Stability
+# 1.4.9 — Unified Vault State
+
+- Added a shared client-side Vault state for library mutations.
+- Games added through Discover & Add now invalidate prefetched Library, Home, Collections, Curator, and Discover pages immediately.
+- Smooth navigation now bypasses stale cached HTML after a game is added, edited, or removed.
+- Opening Library later from another page now fetches the current server state without requiring a browser refresh.
+- Preserved live insertion when the user is already viewing Library.
+- Added route-family cache invalidation so category-specific Library pages cannot reuse stale counts or cards.
+- Kept Universal Search, card expansion, Curator progress, manuals, and navigation motion unchanged.
+
+# 1.4.9 — Navigation Motion Stability
 
 - Fixed the delayed jerk/stutter that appeared after otherwise smooth sidebar page transitions.
 - Prevented the interaction repair layer from removing active navigation animation classes mid-transition.
@@ -6,7 +16,7 @@
 - Preserved page-specific interaction reinitialization without interrupting the entrance animation.
 - Left card expansion, Universal Search, Curator, manuals, and live library synchronization unchanged.
 
-# 1.4.8 — Live Library Synchronization
+# 1.4.9 — Live Library Synchronization
 
 - Added a lightweight client event system for live application updates.
 - Discover & Add now emits a game-added event instead of redirecting or requiring a refresh.

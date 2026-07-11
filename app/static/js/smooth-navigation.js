@@ -96,7 +96,22 @@
   }
 
   async function fetchPage(url, signal) {
-    const key = new URL(url, window.location.href).href;
+    const keyUrl = new URL(url, window.location.href);
+    const key = keyUrl.href;
+
+    // Mutations such as Discover & Add mark affected routes dirty. Never
+    // reuse prefetched HTML for those routes; fetch the latest server state.
+    if (window.VaultarrStore?.isDirty(keyUrl.pathname)) {
+      for (const cachedKey of Array.from(pageCache.keys())) {
+        const cachedUrl = new URL(cachedKey, window.location.href);
+        if (cachedUrl.pathname === keyUrl.pathname ||
+            cachedUrl.pathname.startsWith(`${keyUrl.pathname.replace(/\/$/, '')}/`) ||
+            keyUrl.pathname.startsWith(`${cachedUrl.pathname.replace(/\/$/, '')}/`)) {
+          pageCache.delete(cachedKey);
+        }
+      }
+    }
+
     if (pageCache.has(key)) return pageCache.get(key);
 
     const response = await fetch(key, {
@@ -110,6 +125,7 @@
     if (!response.ok) throw new Error(`Navigation failed: ${response.status}`);
     const page = extractPage(await response.text());
     pageCache.set(key, page);
+    window.VaultarrStore?.clearDirty(keyUrl.pathname);
     return page;
   }
 
@@ -320,9 +336,22 @@
   }
 
   window.VaultarrSmoothNavigate = loadPage;
-  window.VaultarrInvalidatePageCache = (url) => {
-    if (url) pageCache.delete(new URL(url, window.location.href).href);
-    else pageCache.clear();
+  window.VaultarrInvalidatePageCache = (url, options = {}) => {
+    if (!url) {
+      pageCache.clear();
+      return;
+    }
+    const target = new URL(url, window.location.href);
+    const prefix = options.prefix !== false;
+    for (const key of Array.from(pageCache.keys())) {
+      const cached = new URL(key, window.location.href);
+      const sameExactRoute = cached.pathname === target.pathname;
+      const sameRouteFamily = prefix && (
+        cached.pathname.startsWith(`${target.pathname.replace(/\/$/, '')}/`) ||
+        target.pathname.startsWith(`${cached.pathname.replace(/\/$/, '')}/`)
+      );
+      if (sameExactRoute || sameRouteFamily) pageCache.delete(key);
+    }
   };
 
   document.addEventListener("click", (event) => {

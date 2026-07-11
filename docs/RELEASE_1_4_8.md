@@ -1,4 +1,4 @@
-# Vaultarr 1.4.8 — Navigation Motion Stability
+# Vaultarr 1.4.9 — Navigation Motion Stability
 
 This patch removes the second-stage jerk that could appear after switching sidebar pages several times.
 

@@ -1,4 +1,4 @@
-# Vaultarr 1.4.8 — Live Library Synchronization
+# Vaultarr 1.4.9 — Live Library Synchronization
 
 Vaultarr now updates the Library immediately after a game is added through Universal Search.
 
@@ -23,4 +23,4 @@ services:
     image: ghcr.io/linkssy2/vaultarr:latest
 ```
 
-Restart the container and hard-refresh the browser after upgrading so the 1.4.8 JavaScript bundle is loaded.
+Restart the container and hard-refresh the browser after upgrading so the 1.4.9 JavaScript bundle is loaded.
