@@ -113,7 +113,7 @@ def _auto_manual(game):
     return {"downloaded": True, "provider": best.get("provider"), "filename": saved.get("filename")}
 
 
-def run_game(game_id, include_manual=True):
+def run_game(game_id, include_manual=True, progress_callback=None):
     conn = get_connection()
     row = conn.execute("SELECT * FROM games WHERE id=?", (game_id,)).fetchone()
     if not row:
@@ -127,35 +127,46 @@ def run_game(game_id, include_manual=True):
     conn.commit(); conn.close()
 
     actions = []
+    def report(progress, stage):
+        conn = get_connection()
+        conn.execute("UPDATE curator_jobs SET status='running', progress=?, stage=?, updated_at=CURRENT_TIMESTAMP WHERE game_id=?", (int(progress), stage, game_id))
+        conn.commit(); conn.close()
+        if progress_callback:
+            progress_callback(int(progress), stage)
     try:
+        report(8, "Identifying game")
         if int(game.get("metadata_locked") or 0):
             actions.append({"metadata": "skipped", "reason": "metadata locked"})
         else:
+            report(24, "Researching game information")
             result = apply_merge_best(game_id, game.get("title") or "", enrich=True)
             if result.get("success"):
                 actions.append({"metadata": "merged", "message": result.get("message")})
             else:
                 actions.append({"metadata": "review", "message": result.get("message")})
 
+        report(52, "Building museum record")
         conn = get_connection(); refreshed = conn.execute("SELECT * FROM games WHERE id=?", (game_id,)).fetchone(); conn.close()
         if include_manual and refreshed:
             try:
+                report(72, "Looking for a manual")
                 actions.append({"manual": _auto_manual(dict(refreshed))})
             except Exception as exc:
                 actions.append({"manual": "review", "message": str(exc)})
 
+        report(90, "Calculating readiness")
         summary = refresh_game_score(game_id) or {"score": 0, "status": "needs_review", "missing": []}
         final_status = summary["status"]
         conn = get_connection()
         conn.execute("UPDATE games SET curator_status=?, curator_last_error='', curator_last_run=? WHERE id=?", (final_status, _now(), game_id))
-        conn.execute("UPDATE curator_jobs SET status='complete', attempts=attempts+1, last_error='', updated_at=CURRENT_TIMESTAMP WHERE game_id=?", (game_id,))
+        conn.execute("UPDATE curator_jobs SET status='complete', progress=100, stage='Museum Ready', result_json=?, attempts=attempts+1, last_error='', updated_at=CURRENT_TIMESTAMP WHERE game_id=?", (json.dumps(summary), game_id))
         conn.commit(); conn.close()
         _history(game_id, "curate", "complete", f"Cataloging finished at {summary['score']}%.", {"actions": actions, **summary})
         return {"success": True, "game_id": game_id, "actions": actions, **summary}
     except Exception as exc:
         conn = get_connection()
         conn.execute("UPDATE games SET curator_status='needs_review', curator_last_error=?, curator_last_run=? WHERE id=?", (str(exc), _now(), game_id))
-        conn.execute("UPDATE curator_jobs SET status='failed', attempts=attempts+1, last_error=?, updated_at=CURRENT_TIMESTAMP WHERE game_id=?", (str(exc), game_id))
+        conn.execute("UPDATE curator_jobs SET status='failed', stage='Needs Review', result_json=?, attempts=attempts+1, last_error=?, updated_at=CURRENT_TIMESTAMP WHERE game_id=?", (json.dumps({'message': str(exc)}), str(exc), game_id))
         conn.commit(); conn.close()
         _history(game_id, "curate", "failed", str(exc))
         return {"success": False, "game_id": game_id, "message": str(exc)}

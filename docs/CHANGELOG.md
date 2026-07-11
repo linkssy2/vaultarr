@@ -1,3 +1,12 @@
+# 1.4.1 — Live Curator Progress
+
+- Curator jobs now start asynchronously and return control to the browser immediately.
+- Added per-game progress and status endpoints.
+- Progress reflects real curator stages instead of requiring a page refresh.
+- Completed rows update in place with no full-page reload or HTML flash.
+- Added unobtrusive success and failure notifications.
+- Preserved the simplified Curator Experience, manual providers, card expansion, and navigation motion.
+
 # 1.4.0 — The Curator Experience
 
 - Added Standard and Advanced interface modes.

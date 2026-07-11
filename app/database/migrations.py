@@ -136,6 +136,13 @@ def migrate():
         updated_at TEXT DEFAULT CURRENT_TIMESTAMP
     )
     """)
+    for col, definition in {
+        "progress": "INTEGER DEFAULT 0",
+        "stage": "TEXT DEFAULT ''",
+        "result_json": "TEXT DEFAULT '{}'"
+    }.items():
+        ensure_column(c, "curator_jobs", col, definition)
+
     c.execute("""
     CREATE TABLE IF NOT EXISTS curator_history (
         id INTEGER PRIMARY KEY AUTOINCREMENT, game_id INTEGER NOT NULL, action TEXT DEFAULT 'curate',
