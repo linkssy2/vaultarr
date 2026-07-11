@@ -1,4 +1,4 @@
-# Vaultarr 1.4.4 — Universal Search & Add
+# Vaultarr 1.4.5 — Universal Search & Add
 
 Vaultarr now uses the existing sidebar search as the single place to find both games already in the museum and games available through enabled information sources.
 

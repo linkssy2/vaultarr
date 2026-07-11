@@ -1,4 +1,12 @@
-# 1.4.4 — Universal Search & Add
+# 1.4.5 — Universal Search Interaction Fix
+
+- Fixed the search field becoming non-interactive after switching between **My Museum** and **Discover & Add**.
+- Search text is preserved when changing modes and the field immediately regains focus.
+- Cancelled stale search responses can no longer overwrite the newly selected mode.
+- Added explicit control-state restoration for the search field, platform hint, and information-source selector.
+- Kept Universal Search, Curator, card expansion, manuals, and navigation behavior otherwise unchanged.
+
+# 1.4.5 — Universal Search & Add
 
 - Replaced the separate search-to-add page with one Universal Search dialog.
 - Added **My Museum** and **Discover & Add** modes to the sidebar search.
