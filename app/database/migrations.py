@@ -143,6 +143,14 @@ def migrate():
         created_at TEXT DEFAULT CURRENT_TIMESTAMP
     )
     """)
+    c.execute("""
+    CREATE TABLE IF NOT EXISTS ignored_game_paths (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        path TEXT NOT NULL UNIQUE,
+        title TEXT DEFAULT '',
+        ignored_at TEXT DEFAULT CURRENT_TIMESTAMP
+    )
+    """)
     conn.commit()
     conn.close()
 

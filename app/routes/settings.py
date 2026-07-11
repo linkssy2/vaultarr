@@ -17,6 +17,7 @@ from app.services.media_service import media_cache_summary
 from app.services.manual_service import manual_catalog_status, sync_manual_catalog, clear_manual_catalog
 from app.services.reset_service import reset_vault
 from app.services.auth_service import load_auth_settings, update_auth_from_form
+from app.services.game_removal_service import ignored_paths, restore_ignored_path
 from app.services.provider_settings import (
     load_provider_settings,
     save_provider_settings,
@@ -49,6 +50,7 @@ def settings():
         auth_settings=load_auth_settings(),
         masked=masked,
         saved=saved,
+        ignored_games=ignored_paths(),
     )
 
 @settings_bp.route('/settings/theme/preset', methods=['POST'])
@@ -184,7 +186,11 @@ def scan_library_route(library_id):
         skipped = result.get('skipped', 0)
         errors = len(result.get('errors', []))
 
+        ignored = {row['path'] for row in ignored_paths()}
         for game in result.get('games', []):
+            if game['path'] in ignored:
+                skipped += 1
+                continue
             existing = conn.execute('SELECT id FROM games WHERE path=?', (game['path'],)).fetchone()
 
             if existing:
@@ -240,3 +246,9 @@ def scan_library_route(library_id):
         refresh_game_score(queued_row['id'])
         queue_game(queued_row['id'], 'library scan')
     return redirect(f'/settings?added={added}&updated={updated}&skipped={skipped}&errors={errors}')
+
+
+@settings_bp.route('/settings/ignored-games/<int:ignore_id>/restore', methods=['POST'])
+def restore_ignored_game_route(ignore_id):
+    restore_ignored_path(ignore_id)
+    return redirect('/settings?saved=ignored_restored')

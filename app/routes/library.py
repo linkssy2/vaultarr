@@ -4,6 +4,7 @@ from uuid import uuid4
 from flask import Blueprint, render_template, abort, request, redirect
 from app.database.database import get_connection
 from app.services.metadata_service import search_metadata_diagnostics, get_steam_details, get_wikipedia_details, get_rawg_details, get_igdb_details, get_steamgriddb_details, download_cover
+from app.services.game_removal_service import remove_game
 
 library_bp = Blueprint('library', __name__)
 
@@ -135,3 +136,13 @@ def manual_update(game_id):
     metadata_locked = 1 if request.form.get('metadata_locked') == 'on' else 0
     conn=get_connection(); conn.execute('''UPDATE games SET title=?,description=?,developer=?,publisher=?,release_year=?,genre=?,platform=?,category=?,tags=?,notes=?,metadata_locked=?,updated_at=CURRENT_TIMESTAMP WHERE id=?''', (*values, metadata_locked, game_id)); conn.commit(); conn.close()
     return redirect(f'/games/{game_id}')
+
+
+@library_bp.route('/games/<int:game_id>/delete', methods=['POST'])
+def delete_game(game_id):
+    ignore_path = request.form.get('ignore_path') == 'on'
+    delete_cached_assets = request.form.get('delete_cached_assets') == 'on'
+    result = remove_game(game_id, ignore_path=ignore_path, delete_cached_assets=delete_cached_assets)
+    if not result.get('removed'):
+        abort(404)
+    return redirect('/library?removed=1')

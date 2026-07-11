@@ -199,3 +199,8 @@ services:
 ```
 
 Do not replace `image:` with `build: .` unless you are intentionally developing from source.
+
+
+## Safe game removal
+
+Games can be removed from Vaultarr without deleting the original game folder. Removed scan paths may be ignored so they do not return automatically, and can be restored later from Settings.

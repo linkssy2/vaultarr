@@ -147,6 +147,35 @@
       <p class="muted">{{ game.executables or 'No executable detected.' }}</p>
       <p><strong>Last scanned:</strong> {{ game.last_scanned or 'Never' }}</p>
     </section>
+
+    <section class="panel danger-zone">
+      <div class="panel-heading"><h2>Remove Game</h2></div>
+      <p class="muted danger-zone-copy">Remove this catalog record from Vaultarr. Your original game folder and files are never deleted.</p>
+      <button type="button" class="danger danger-button" onclick="document.getElementById('delete-game-dialog').showModal()">Remove from Library</button>
+    </section>
+
+    <dialog id="delete-game-dialog" class="delete-game-dialog">
+      <div class="delete-game-dialog-inner">
+        <h2>Remove {{ game.title }}?</h2>
+        <p class="delete-warning"><strong>Your game files will remain untouched.</strong> This only removes Vaultarr's catalog record and optional cached artwork/manuals.</p>
+        <form action="/games/{{ game.id }}/delete" method="post">
+          <div class="delete-options">
+            <label class="checkbox-row">
+              <input type="checkbox" name="ignore_path" checked>
+              <span><strong>Keep this folder ignored</strong><small>Prevents the next library scan from adding it again. You can restore it later in Settings.</small></span>
+            </label>
+            <label class="checkbox-row">
+              <input type="checkbox" name="delete_cached_assets" checked>
+              <span><strong>Remove Vaultarr cached assets</strong><small>Deletes cached covers, screenshots, and downloaded manuals for this record only.</small></span>
+            </label>
+          </div>
+          <div class="delete-actions">
+            <button type="button" class="secondary" onclick="document.getElementById('delete-game-dialog').close()">Cancel</button>
+            <button type="submit" class="danger danger-button">Remove Game</button>
+          </div>
+        </form>
+      </div>
+    </dialog>
   </div>
 </div>
 {% endblock %}

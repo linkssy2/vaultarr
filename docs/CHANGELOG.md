@@ -1,3 +1,6 @@
+# 1.3.3
+- Added safe per-game removal, optional cached asset cleanup, and scan-ignore restoration.
+
 ## 1.2.3
 - Fixed Vimm searches to use the provider's all-platform endpoint (`/manual/?p=list&q=...`) before any system-specific fallback.
 - Preserved alternate-platform manual results and direct PDF downloads.

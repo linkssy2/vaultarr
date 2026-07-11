@@ -1,3 +1,6 @@
+# 1.3.3
+- Added safe per-game removal, optional cached asset cleanup, and scan-ignore restoration.
+
 # Changelog
 
 ## 1.3.2 — UI Component Polish
