@@ -179,7 +179,7 @@
       <div>
         <p class="eyebrow">Manual Catalog</p>
         <h2>Local Search Index</h2>
-        <p class="muted">Caches manual listings like a local metadata database. Searches use the entire catalog; platform only improves ranking and never hides alternate-system manuals.</p>
+        <p class="muted">Caches VideoGameManual.com like a local metadata database and searches Vimm's Manual Project live. Platform only improves ranking and never hides alternate-system manuals.</p>
       </div>
       <span class="studio-section-badge">{{ 'Refreshing' if manual_catalog.refreshing else ('Ready' if manual_catalog.entries else 'Not Built') }}</span>
     </div>
@@ -191,7 +191,7 @@
     </div>
     <div class="manual-provider-state-list">
       {% for provider in manual_catalog.providers %}
-      <div class="manual-provider-state"><span><strong>{{ provider.provider_name }}</strong><small>{{ provider.status|replace('_',' ')|title }}</small></span><strong>{{ provider.entry_count }}</strong></div>
+      <div class="manual-provider-state"><span><strong>{{ provider.provider_name }}</strong><small>{{ provider.status|replace('_',' ')|title }}</small></span><strong>{{ 'Live' if provider.status == 'live_search' else provider.entry_count }}</strong></div>
       {% else %}
       <div class="manual-provider-state"><span><strong>No provider cache yet</strong><small>Build it now or run your first manual search.</small></span><strong>0</strong></div>
       {% endfor %}

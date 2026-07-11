@@ -1492,7 +1492,7 @@
               ${isDirectPdf ? `<p class="manual-direct-url">${escapeHtml(result.url)}</p>` : ""}
             </div>
             <div class="manual-provider-actions">
-              ${result.url ? `<a class="button-link secondary small" href="${escapeHtml(result.url)}" target="_blank" rel="noopener">${escapeHtml(isDirectPdf ? "Open PDF" : (result.action || "Open"))}</a>` : `<span class="metadata-provider-pill ok"><strong>Local</strong><span>Use asset scan</span></span>`}
+              ${(result.source_page_url || result.url) ? `<a class="button-link secondary small" href="${escapeHtml(result.source_page_url || result.url)}" target="_blank" rel="noopener">${escapeHtml(result.action || (isDirectPdf ? "Open PDF" : "Open"))}</a>` : `<span class="metadata-provider-pill ok"><strong>Local</strong><span>Use asset scan</span></span>`}
               ${isDirectPdf ? `<button class="manual-download-result-button" type="button" data-url="${escapeHtml(result.url)}" data-provider="${escapeHtml(result.provider)}">Download to Vaultarr</button>` : ""}
               ${isDirectPdf ? `<button class="manual-use-link-button secondary-button" type="button" data-url="${escapeHtml(result.url)}" data-provider="${escapeHtml(result.provider)}">Use Direct PDF</button>` : ""}
               ${(!isDirectPdf && result.url) ? `<button class="manual-use-link-button secondary-button" type="button" data-url="${escapeHtml(result.url)}" data-provider="${escapeHtml(result.provider)}">Save Source Page</button>` : ""}

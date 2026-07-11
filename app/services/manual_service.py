@@ -7,6 +7,7 @@ import re
 import sqlite3
 import threading
 from pathlib import Path
+from concurrent.futures import ThreadPoolExecutor, as_completed
 import requests
 
 
@@ -23,9 +24,9 @@ MANUAL_PROVIDERS = [
     {
         "id": "vimm",
         "name": "Vimm's Lair Manual Project",
-        "kind": "manual_archive",
-        "description": "Opens Vimm's dedicated Manual Project as a fallback when the indexed primary archive has no confident match.",
-        "search_template": "https://vimm.net/?p=manual",
+        "kind": "live_search_provider",
+        "description": "Searches Vimm's Manual Project live and returns downloadable PDF records without caching the full site.",
+        "search_template": "https://vimm.net/manual/?p=list&system={platform}&q={query}",
         "homepage": "https://vimm.net/?p=manual",
         "priority": 2,
     },
@@ -91,6 +92,25 @@ _PLATFORM_FOLDER_ALIASES = {
 _COMMON_PLATFORM_FOLDERS = ['PC', 'PS2', 'Xbox', 'PS1', 'GameCube', 'Dreamcast']
 _LETTER_PAGES = ['index.html', '0.htm', '1.htm'] + [f'{chr(code)}.htm' for code in range(ord('A'), ord('Z') + 1)]
 _MANUAL_URL_CACHE = {}
+
+_VIMM_SYSTEMS = [
+    'Atari 2600', 'Atari 5200', 'Atari 7800', 'ColecoVision',
+    'NES', 'Super Nintendo', 'Nintendo 64', 'GameCube', 'Wii',
+    'Game Boy', 'Game Boy Color', 'Game Boy Advance', 'Nintendo DS',
+    'Genesis', 'Sega CD', 'Saturn', 'Dreamcast',
+    'PlayStation', 'PlayStation 2', 'PlayStation 3', 'PSP',
+    'Xbox', 'Xbox 360'
+]
+
+_VIMM_SYSTEM_ALIASES = {
+    'PC': [], 'PS1': ['PlayStation'], 'PS2': ['PlayStation 2'],
+    'PS3': ['PlayStation 3'], 'PSP': ['PSP'], 'Xbox': ['Xbox'],
+    'Xbox360': ['Xbox 360'], 'GameCube': ['GameCube'],
+    'Dreamcast': ['Dreamcast'], 'GBA': ['Game Boy Advance'],
+    'GBC': ['Game Boy Color'], 'GB': ['Game Boy'], 'NES': ['NES'],
+    'SNES': ['Super Nintendo'], 'N64': ['Nintendo 64'],
+    'Genesis': ['Genesis'], 'Saturn': ['Saturn'], 'Wii': ['Wii']
+}
 
 
 # Known platform folders are fallbacks only. The catalog builder also discovers
@@ -288,18 +308,10 @@ def sync_manual_catalog(force=False, provider_id='all'):
             _catalog_provider_state('videogamemanual', 'VideoGameManual.com', 'ready' if count else 'empty', count, pages, '; '.join(errors[-5:]))
             summary['providers']['videogamemanual'] = {'entries': count, 'pages_checked': pages, 'errors': errors[-5:]}
         if provider_id in ('all', 'vimm'):
-            try:
-                entries = _sync_vimm_catalog(force=force)
-                _catalog_upsert_entries('vimm', "Vimm's Lair Manual Project", entries)
-                conn = _catalog_connection()
-                count = conn.execute("SELECT COUNT(*) FROM manual_entries WHERE provider_id='vimm'").fetchone()[0]
-                conn.close()
-                cache = _load_json_cache(VIMM_CACHE_FILE, {})
-                _catalog_provider_state('vimm', "Vimm's Lair Manual Project", 'ready' if count else 'source_only', count, int(cache.get('pages_checked') or 0), '; '.join(cache.get('errors') or []))
-                summary['providers']['vimm'] = {'entries': count, 'pages_checked': int(cache.get('pages_checked') or 0), 'errors': cache.get('errors') or []}
-            except Exception as exc:
-                _catalog_provider_state('vimm', "Vimm's Lair Manual Project", 'error', 0, 0, str(exc))
-                summary['errors'].append(str(exc))
+            # Vimm is intentionally searched live. It does not need or expose a
+            # complete local index, so refresh only records provider readiness.
+            _catalog_provider_state('vimm', "Vimm's Lair Manual Project", 'live_search', 0, 0, '')
+            summary['providers']['vimm'] = {'entries': 0, 'pages_checked': 0, 'errors': [], 'mode': 'live_search'}
         summary.update(manual_catalog_status())
         return summary
     finally:
@@ -513,7 +525,7 @@ def _cache_is_fresh(platform_data, max_age_hours=168):
 
 def _fetch_text(url):
     headers = {
-        'User-Agent': 'Vaultarr/1.2.0 Manual Catalog (+self-hosted archive manager)',
+        'User-Agent': 'Vaultarr/1.2.1 Manual Catalog (+self-hosted archive manager)',
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
     }
     response = requests.get(url, headers=headers, timeout=15, allow_redirects=True)
@@ -745,6 +757,115 @@ def _vimm_candidates(title, platform=''):
         })
     return _dedupe_manual_results(candidates)[:8]
 
+def _vimm_system_order(platform=''):
+    preferred = []
+    for folder in _platform_folders(platform):
+        preferred.extend(_VIMM_SYSTEM_ALIASES.get(folder, []))
+    ordered = []
+    for system in preferred + _VIMM_SYSTEMS:
+        if system and system not in ordered:
+            ordered.append(system)
+    return ordered
+
+
+def _extract_vimm_search_results(html, system):
+    if not html:
+        return []
+    results = []
+    pattern = re.compile(r'<a\s+[^>]*href=["\'](?:https?://vimm\.net)?/manual/(\d+)["\'][^>]*>(.*?)</a>', re.I | re.S)
+    for manual_id, label_html in pattern.findall(html):
+        label = re.sub(r'<[^>]+>', ' ', label_html)
+        title = _clean_title(re.sub(r'\s+', ' ', label).strip())
+        if not title:
+            continue
+        detail_url = f'https://vimm.net/manual/{manual_id}'
+        pdf_url = f'https://dl.vimm.net/download/?manualId={manual_id}&category=pdf&destDPI=200'
+        results.append({
+            'manual_id': manual_id,
+            'title': title,
+            'match_title': _normalize_match_text(title),
+            'platform_folder': system,
+            'region': _region_from_text(title),
+            'url': pdf_url,
+            'source_page_url': detail_url,
+        })
+    return results
+
+
+def _search_vimm_system(title, system):
+    headers = {
+        'User-Agent': 'Vaultarr/1.2.1 Manual Search (+self-hosted archive manager)',
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Referer': 'https://vimm.net/',
+    }
+    response = requests.get(
+        'https://vimm.net/manual/',
+        params={'p': 'list', 'system': system, 'q': title},
+        headers=headers,
+        timeout=12,
+        allow_redirects=True,
+    )
+    response.raise_for_status()
+    return _extract_vimm_search_results(response.text or '', system)
+
+
+def _vimm_live_candidates(title, platform='', limit=16):
+    search_title = _clean_title(title)
+    if not search_title:
+        return []
+    systems = _vimm_system_order(platform)
+    preferred = set()
+    for folder in _platform_folders(platform):
+        preferred.update(_VIMM_SYSTEM_ALIASES.get(folder, []))
+    entries = []
+    # Keep concurrency low: this is a user-triggered search, not a crawler.
+    with ThreadPoolExecutor(max_workers=4, thread_name_prefix='vaultarr-vimm') as pool:
+        futures = {pool.submit(_search_vimm_system, search_title, system): system for system in systems}
+        for future in as_completed(futures):
+            try:
+                entries.extend(future.result())
+            except Exception:
+                continue
+    candidates = []
+    for entry in entries:
+        query_norm = _normalize_match_text(search_title)
+        entry_norm = entry.get('match_title') or _normalize_match_text(entry.get('title') or '')
+        score = _token_score(query_norm, entry_norm)
+        if query_norm == entry_norm:
+            score += 0.22
+        elif query_norm in entry_norm or entry_norm in query_norm:
+            score += 0.10
+        platform_match = entry.get('platform_folder') in preferred
+        if platform_match:
+            score += 0.07
+        confidence = max(1, min(100, int(round(score * 100))))
+        if confidence < 48:
+            continue
+        candidates.append({
+            'provider': "Vimm's Lair Manual Project",
+            'provider_id': 'vimm',
+            'kind': 'vimm_pdf',
+            'title': entry.get('title') or 'Manual',
+            'description': ('Same-platform live result.' if platform_match else 'Live result from an alternate platform or edition.'),
+            'url': entry.get('url'),
+            'source_page_url': entry.get('source_page_url'),
+            'action': 'Open Details',
+            'confidence': confidence,
+            'is_pdf_candidate': True,
+            'can_download': True,
+            'region': entry.get('region') or 'Unknown',
+            'platform_folder': entry.get('platform_folder') or 'Unknown',
+            'platform_match': platform_match,
+            'cross_platform': bool(platform and not platform_match),
+            'verified_pdf': True,
+            'indexed_provider': False,
+            'live_provider': True,
+            'manual_id': entry.get('manual_id'),
+        })
+    candidates.sort(key=lambda item: (item['confidence'], 1 if item['platform_match'] else 0), reverse=True)
+    return _dedupe_manual_results(candidates)[:max(1, min(int(limit or 16), 36))]
+
+
 def _manual_key(result):
     url = (result.get('url') or '').lower()
     url = re.sub(r'(%20|\+)+', ' ', url)
@@ -811,29 +932,28 @@ def _videogamemanual_candidates(title, platform=''):
 def manual_search_results(title, platform="", provider_id="all"):
     search_title = _clean_title(title)
     query = normalize_query(search_title, platform)
-    results = search_manual_catalog(search_title, platform, provider_id, limit=36)
+    results = []
 
-    # Keep useful source-page fallbacks when the local catalog has no direct hit.
+    if provider_id in ('', 'all', 'videogamemanual'):
+        results.extend(search_manual_catalog(search_title, platform, 'videogamemanual', limit=36))
+
+    if provider_id in ('', 'all', 'vimm'):
+        results.extend(_vimm_live_candidates(search_title, platform, limit=18))
+
+    results = _dedupe_manual_results(results)
     if not results:
         selected = MANUAL_PROVIDERS if provider_id in ('', 'all') else [p for p in MANUAL_PROVIDERS if p['id'] == provider_id]
         for provider in selected:
             if provider['id'] == 'local':
                 continue
             results.append({
-                'provider': provider['name'],
-                'provider_id': provider['id'],
-                'kind': 'source_search',
+                'provider': provider['name'], 'provider_id': provider['id'], 'kind': 'source_search',
                 'title': f"Browse {provider['name']}",
-                'description': 'No strong local-catalog match was found. Open the provider archive and try a broader title.',
-                'url': provider['homepage'],
-                'source_page_url': provider['homepage'],
-                'action': 'Open Manual Archive',
-                'confidence': 40,
-                'is_pdf_candidate': False,
-                'can_download': False,
-                'platform_folder': '',
-                'platform_match': False,
-                'cross_platform': False,
+                'description': 'No strong match was found. Open the provider archive and try a broader title.',
+                'url': provider['homepage'], 'source_page_url': provider['homepage'],
+                'action': 'Open Manual Archive', 'confidence': 40,
+                'is_pdf_candidate': False, 'can_download': False,
+                'platform_folder': '', 'platform_match': False, 'cross_platform': False,
             })
 
     return {
@@ -852,7 +972,8 @@ def _safe_filename(value):
 
 def is_probably_pdf_url(url):
     parsed = urlparse((url or '').strip())
-    return parsed.scheme in ('http', 'https') and parsed.path.lower().endswith('.pdf')
+    is_vimm_download = parsed.netloc.lower() == 'dl.vimm.net' and parsed.path.rstrip('/') == '/download'
+    return parsed.scheme in ('http', 'https') and (parsed.path.lower().endswith('.pdf') or is_vimm_download)
 
 
 def validate_pdf_file(path):
@@ -882,19 +1003,24 @@ def download_manual_pdf(game_id, manual_url, title='Manual'):
     if parsed.scheme not in ('http', 'https'):
         raise ValueError('Manual download requires a direct http/https PDF URL.')
 
-    if not parsed.path.lower().endswith('.pdf'):
-        raise ValueError('This looks like a source page, not a direct PDF. Open the source page and copy the direct PDF URL first.')
+    is_vimm_download = parsed.netloc.lower() == 'dl.vimm.net' and parsed.path.rstrip('/') == '/download'
+    if not parsed.path.lower().endswith('.pdf') and not is_vimm_download:
+        raise ValueError('This looks like a source page, not a direct PDF download.')
 
     MANUALS_DIR.mkdir(parents=True, exist_ok=True)
-    headers = {'User-Agent': 'Vaultarr/1.2.0 Manual Downloader', 'Accept': 'application/pdf,*/*;q=0.8'}
+    headers = {'User-Agent': 'Vaultarr/1.2.1 Manual Downloader', 'Accept': 'application/pdf,*/*;q=0.8'}
+    if is_vimm_download:
+        headers.update({'Referer': 'https://vimm.net/', 'Cookie': 'counted=1'})
     with requests.get(manual_url, headers=headers, timeout=35, stream=True, allow_redirects=True) as response:
         response.raise_for_status()
         content_type = response.headers.get('content-type', '').lower()
-        path_name = _safe_filename(parsed.path)
+        disposition = response.headers.get('content-disposition', '')
+        filename_match = re.search(r'filename\*?=(?:UTF-8\'\')?["\']?([^"\';]+)', disposition, flags=re.I)
+        path_name = _safe_filename(filename_match.group(1) if filename_match else parsed.path)
         if not path_name.lower().endswith('.pdf'):
             path_name += '.pdf'
 
-        if 'pdf' not in content_type and not path_name.lower().endswith('.pdf'):
+        if 'pdf' not in content_type:
             raise ValueError('The linked manual did not return a PDF response.')
 
         safe_title = re.sub(r'[^A-Za-z0-9._ -]+', '_', title or f'game-{game_id}').strip(' ._') or f'game-{game_id}'

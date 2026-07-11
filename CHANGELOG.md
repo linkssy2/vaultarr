@@ -1,3 +1,12 @@
+# Changelog
+
+## 1.2.1
+
+- Added live Vimm Manual Project search across supported systems.
+- Added direct Vimm PDF downloading with response filename and PDF validation.
+- Changed Vimm provider status from empty cache to Live Search.
+- Preserved cross-platform manual results and same-platform ranking bonuses.
+
 # Vaultarr 1.2.0 — Local Manual Catalog
 
 ## Added
