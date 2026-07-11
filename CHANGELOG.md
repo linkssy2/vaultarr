@@ -1,4 +1,12 @@
-# 1.4.7 — Live Library Synchronization
+# 1.4.8 — Navigation Motion Stability
+
+- Fixed the delayed jerk/stutter that appeared after otherwise smooth sidebar page transitions.
+- Prevented the interaction repair layer from removing active navigation animation classes mid-transition.
+- Added explicit navigation ownership tracking so stale-state recovery only runs after motion has completed.
+- Preserved page-specific interaction reinitialization without interrupting the entrance animation.
+- Left card expansion, Universal Search, Curator, manuals, and live library synchronization unchanged.
+
+# 1.4.8 — Live Library Synchronization
 
 - Added a lightweight client event system for live application updates.
 - Discover & Add now emits a game-added event instead of redirecting or requiring a refresh.

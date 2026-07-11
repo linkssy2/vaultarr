@@ -233,6 +233,7 @@
 
     const target = new URL(url, window.location.href).href;
     const id = ++navigationId;
+    document.body.dataset.vaultNavActive = String(id);
     if (activeController) activeController.abort();
     activeController = new AbortController();
 
@@ -252,6 +253,7 @@
     } finally {
       if (id === navigationId) {
         document.body.classList.remove("vault-nav-loading", "vault-view-transitioning");
+        if (document.body.dataset.vaultNavActive === String(id)) delete document.body.dataset.vaultNavActive;
         activeController = null;
       }
     }
@@ -267,6 +269,7 @@
 
     const target = new URL(url, window.location.href).href;
     const id = ++navigationId;
+    document.body.dataset.vaultNavActive = String(id);
     if (activeController) activeController.abort();
     activeController = new AbortController();
 
@@ -296,6 +299,7 @@
         window.setTimeout(() => {
           if (id === navigationId) {
             document.body.classList.remove("vault-nav-entering");
+            if (document.body.dataset.vaultNavActive === String(id)) delete document.body.dataset.vaultNavActive;
             activeController = null;
           }
         }, SIDEBAR_IN_MS);

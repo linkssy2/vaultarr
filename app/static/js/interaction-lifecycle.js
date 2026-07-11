@@ -8,10 +8,24 @@
     'vault-view-transitioning'
   ];
 
-  function repairInteractionState() {
-    // Completed smooth navigations occasionally left a transient class or an
-    // invisible dialog layer behind. Either can intercept hover/click input.
+  let staleRepairTimer = 0;
+
+  function clearStaleNavigationState() {
+    // Never interrupt a navigation that smooth-navigation.js still owns.
+    // Earlier builds cleared the enter class on the first animation frame
+    // after page replacement, which caused the visible second-stage jerk.
+    if (document.body.dataset.vaultNavActive) return;
     TRANSIENT_BODY_CLASSES.forEach((name) => document.body.classList.remove(name));
+  }
+
+  function scheduleStaleNavigationRepair() {
+    window.clearTimeout(staleRepairTimer);
+    staleRepairTimer = window.setTimeout(clearStaleNavigationState, 1100);
+  }
+
+  function repairInteractionState({ clearNavigation = false } = {}) {
+    if (clearNavigation) clearStaleNavigationState();
+    else scheduleStaleNavigationRepair();
 
     const panel = document.getElementById('globalSearchPanel');
     const backdrop = document.getElementById('globalSearchBackdrop');
@@ -38,8 +52,8 @@
     });
   }
 
-  document.addEventListener('DOMContentLoaded', repairInteractionState);
-  document.addEventListener('vaultarr:page-loaded', () => requestAnimationFrame(repairInteractionState));
-  document.addEventListener('vaultarr:focus-closed', () => requestAnimationFrame(repairInteractionState));
-  window.addEventListener('pageshow', repairInteractionState);
+  document.addEventListener('DOMContentLoaded', () => repairInteractionState({ clearNavigation: true }));
+  document.addEventListener('vaultarr:page-loaded', () => requestAnimationFrame(() => repairInteractionState()));
+  document.addEventListener('vaultarr:focus-closed', () => requestAnimationFrame(() => repairInteractionState()));
+  window.addEventListener('pageshow', () => repairInteractionState({ clearNavigation: true }));
 })();

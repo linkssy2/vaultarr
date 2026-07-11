@@ -1,12 +1,12 @@
-# Vaultarr 1.4.7
+# Vaultarr 1.4.8
 
-> Current release: **Vaultarr 1.4.7 — Live Library Synchronization**
+> Current release: **Vaultarr 1.4.8 — Navigation Motion Stability**
 
 Vaultarr is a self-hosted game preservation dashboard for cataloging, enriching, and maintaining a personal game archive.
 
 ## The Curator Experience
 
-Vaultarr 1.4.7 simplifies the day-to-day experience around one goal: add a game and let Vaultarr prepare the museum record. Standard Mode shows only the essential collection pages, while technical provider, cache, and diagnostic tools remain available through **Advanced Mode** in Settings.
+Vaultarr 1.4.8 keeps the simplified Curator experience while improving repeated sidebar navigation stability. It continues to focus on one goal: add a game and let Vaultarr prepare the museum record. Standard Mode shows only the essential collection pages, while technical provider, cache, and diagnostic tools remain available through **Advanced Mode** in Settings.
 
 Newly scanned games can be queued automatically for Curator processing. Vaultarr researches game information, chooses available artwork, looks for a manual, respects user edits and metadata locks, and surfaces only items that need review.
 
