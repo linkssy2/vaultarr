@@ -1,6 +1,11 @@
+## 1.2.2
+- Fixed Vimm live-search request compatibility and result parsing.
+- Added browser-compatible headers/cookie and reduced request concurrency.
+- Added support for both known Vimm manual detail URL formats.
+
 # Changelog
 
-## 1.2.1
+## 1.2.2
 
 - Added live Vimm Manual Project search across supported systems.
 - Added direct Vimm PDF downloading with response filename and PDF validation.

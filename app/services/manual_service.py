@@ -2,6 +2,8 @@ from urllib.parse import quote_plus, quote, urlparse, unquote, urljoin
 from datetime import datetime, timedelta
 from difflib import SequenceMatcher
 import json
+import html as html_lib
+import time
 import os
 import re
 import sqlite3
@@ -768,44 +770,68 @@ def _vimm_system_order(platform=''):
     return ordered
 
 
-def _extract_vimm_search_results(html, system):
-    if not html:
+def _extract_vimm_search_results(page_html, system):
+    """Parse both known Vimm manual-result URL formats.
+
+    Vimm has used clean links such as /manual/355 and query-string links such
+    as /manual/?p=details&id=355. Supporting both prevents an empty result set
+    when the site returns a different template.
+    """
+    if not page_html:
         return []
     results = []
-    pattern = re.compile(r'<a\s+[^>]*href=["\'](?:https?://vimm\.net)?/manual/(\d+)["\'][^>]*>(.*?)</a>', re.I | re.S)
-    for manual_id, label_html in pattern.findall(html):
-        label = re.sub(r'<[^>]+>', ' ', label_html)
-        title = _clean_title(re.sub(r'\s+', ' ', label).strip())
-        if not title:
-            continue
-        detail_url = f'https://vimm.net/manual/{manual_id}'
-        pdf_url = f'https://dl.vimm.net/download/?manualId={manual_id}&category=pdf&destDPI=200'
-        results.append({
-            'manual_id': manual_id,
-            'title': title,
-            'match_title': _normalize_match_text(title),
-            'platform_folder': system,
-            'region': _region_from_text(title),
-            'url': pdf_url,
-            'source_page_url': detail_url,
-        })
+    patterns = (
+        re.compile(r'<a\s+[^>]*href=["\'](?:https?://vimm\.net)?/manual/(\d+)/?["\'][^>]*>(.*?)</a>', re.I | re.S),
+        re.compile(r'<a\s+[^>]*href=["\'](?:https?://vimm\.net)?/manual/\?[^"\']*?(?:p=details&amp;|p=details&)[^"\']*?id=(\d+)[^"\']*["\'][^>]*>(.*?)</a>', re.I | re.S),
+    )
+    seen = set()
+    for pattern in patterns:
+        for manual_id, label_html in pattern.findall(page_html):
+            if manual_id in seen:
+                continue
+            label = html_lib.unescape(re.sub(r'<[^>]+>', ' ', label_html))
+            title = _clean_title(re.sub(r'\s+', ' ', label).strip())
+            if not title:
+                continue
+            seen.add(manual_id)
+            detail_url = f'https://vimm.net/manual/{manual_id}'
+            pdf_url = f'https://dl.vimm.net/download/?manualId={manual_id}&category=pdf&destDPI=200'
+            results.append({
+                'manual_id': manual_id,
+                'title': title,
+                'match_title': _normalize_match_text(title),
+                'platform_folder': system,
+                'region': _region_from_text(title),
+                'url': pdf_url,
+                'source_page_url': detail_url,
+            })
     return results
 
 
 def _search_vimm_system(title, system):
+    # Vimm serves different/empty responses to obvious application user agents.
+    # Match a normal browser navigation and retain the harmless visit cookie
+    # observed in the confirmed browser request.
     headers = {
-        'User-Agent': 'Vaultarr/1.2.1 Manual Search (+self-hosted archive manager)',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:152.0) Gecko/20100101 Firefox/152.0',
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.9',
         'Referer': 'https://vimm.net/',
+        'Cache-Control': 'no-cache',
     }
-    response = requests.get(
+    session = requests.Session()
+    session.cookies.set('counted', '1', domain='vimm.net', path='/')
+    response = session.get(
         'https://vimm.net/manual/',
         params={'p': 'list', 'system': system, 'q': title},
         headers=headers,
-        timeout=12,
+        timeout=20,
         allow_redirects=True,
     )
     response.raise_for_status()
+    content_type = (response.headers.get('Content-Type') or '').lower()
+    if 'html' not in content_type and response.text.lstrip().lower().startswith(('<!doctype', '<html')) is False:
+        return []
     return _extract_vimm_search_results(response.text or '', system)
 
 
@@ -819,7 +845,7 @@ def _vimm_live_candidates(title, platform='', limit=16):
         preferred.update(_VIMM_SYSTEM_ALIASES.get(folder, []))
     entries = []
     # Keep concurrency low: this is a user-triggered search, not a crawler.
-    with ThreadPoolExecutor(max_workers=4, thread_name_prefix='vaultarr-vimm') as pool:
+    with ThreadPoolExecutor(max_workers=2, thread_name_prefix='vaultarr-vimm') as pool:
         futures = {pool.submit(_search_vimm_system, search_title, system): system for system in systems}
         for future in as_completed(futures):
             try:

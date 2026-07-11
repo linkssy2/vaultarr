@@ -1,3 +1,8 @@
+## 1.2.2
+- Fixed Vimm live-search request compatibility and result parsing.
+- Added browser-compatible headers/cookie and reduced request concurrency.
+- Added support for both known Vimm manual detail URL formats.
+
 # Vaultarr 1.2.0 — Local Manual Catalog
 
 ## Added
