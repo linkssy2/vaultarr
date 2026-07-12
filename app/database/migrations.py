@@ -150,55 +150,50 @@ def migrate():
         created_at TEXT DEFAULT CURRENT_TIMESTAMP
     )
     """)
-    c.execute("""
-    CREATE TABLE IF NOT EXISTS acquisition_indexes (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
-        original_filename TEXT DEFAULT '',
-        stored_filename TEXT DEFAULT '',
-        file_type TEXT DEFAULT '',
-        entry_count INTEGER DEFAULT 0,
-        sha256 TEXT DEFAULT '',
-        enabled INTEGER DEFAULT 1,
-        imported_at TEXT DEFAULT CURRENT_TIMESTAMP,
-        updated_at TEXT DEFAULT CURRENT_TIMESTAMP
-    )
-    """)
-    c.execute("""
-    CREATE TABLE IF NOT EXISTS acquisition_entries (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        index_id INTEGER NOT NULL,
-        title TEXT NOT NULL,
-        normalized_title TEXT NOT NULL,
-        platform TEXT DEFAULT '',
-        region TEXT DEFAULT '',
-        version TEXT DEFAULT '',
-        format TEXT DEFAULT '',
-        size_bytes INTEGER DEFAULT 0,
-        source_page TEXT DEFAULT '',
-        download_url TEXT DEFAULT '',
-        checksum_sha256 TEXT DEFAULT '',
-        notes TEXT DEFAULT '',
-        FOREIGN KEY(index_id) REFERENCES acquisition_indexes(id)
-    )
-    """)
-    c.execute("CREATE INDEX IF NOT EXISTS idx_acquisition_entries_title ON acquisition_entries(normalized_title)")
-    c.execute("CREATE INDEX IF NOT EXISTS idx_acquisition_entries_index ON acquisition_entries(index_id)")
-    c.execute("""
-    CREATE TABLE IF NOT EXISTS game_acquisitions (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        game_id INTEGER NOT NULL UNIQUE,
-        entry_id INTEGER,
-        local_path TEXT DEFAULT '',
-        source_page TEXT DEFAULT '',
-        download_url TEXT DEFAULT '',
-        status TEXT DEFAULT 'missing',
-        attached_at TEXT DEFAULT '',
-        updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY(game_id) REFERENCES games(id),
-        FOREIGN KEY(entry_id) REFERENCES acquisition_entries(id)
-    )
-    """)
+    # Acquisition Assistant: live reference records only; legacy uploaded-index tables are removed.
+    existing_acq_cols = [row[1] for row in c.execute("PRAGMA table_info(game_acquisitions)").fetchall()]
+    if existing_acq_cols and "entry_id" in existing_acq_cols:
+        c.execute("""
+        CREATE TABLE IF NOT EXISTS game_acquisitions_live (
+            id INTEGER PRIMARY KEY AUTOINCREMENT, game_id INTEGER NOT NULL UNIQUE,
+            source_title TEXT DEFAULT '', source_platform TEXT DEFAULT '',
+            source_region TEXT DEFAULT '', source_version TEXT DEFAULT '',
+            source_external_id TEXT DEFAULT '', local_path TEXT DEFAULT '',
+            source_page TEXT DEFAULT '', download_url TEXT DEFAULT '',
+            status TEXT DEFAULT 'missing', attached_at TEXT DEFAULT '',
+            updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(game_id) REFERENCES games(id)
+        )
+        """)
+        c.execute("""
+        INSERT OR REPLACE INTO game_acquisitions_live
+            (game_id,local_path,source_page,download_url,status,attached_at,updated_at)
+        SELECT game_id,local_path,source_page,download_url,status,attached_at,updated_at
+        FROM game_acquisitions
+        """)
+        c.execute("DROP TABLE game_acquisitions")
+        c.execute("ALTER TABLE game_acquisitions_live RENAME TO game_acquisitions")
+    else:
+        c.execute("""
+        CREATE TABLE IF NOT EXISTS game_acquisitions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT, game_id INTEGER NOT NULL UNIQUE,
+            source_title TEXT DEFAULT '', source_platform TEXT DEFAULT '',
+            source_region TEXT DEFAULT '', source_version TEXT DEFAULT '',
+            source_external_id TEXT DEFAULT '', local_path TEXT DEFAULT '',
+            source_page TEXT DEFAULT '', download_url TEXT DEFAULT '',
+            status TEXT DEFAULT 'missing', attached_at TEXT DEFAULT '',
+            updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(game_id) REFERENCES games(id)
+        )
+        """)
+    for col, definition in {
+        "source_title": "TEXT DEFAULT ''", "source_platform": "TEXT DEFAULT ''",
+        "source_region": "TEXT DEFAULT ''", "source_version": "TEXT DEFAULT ''",
+        "source_external_id": "TEXT DEFAULT ''"
+    }.items():
+        ensure_column(c, "game_acquisitions", col, definition)
+    c.execute("DROP TABLE IF EXISTS acquisition_entries")
+    c.execute("DROP TABLE IF EXISTS acquisition_indexes")
 
     c.execute("""
     CREATE TABLE IF NOT EXISTS ignored_game_paths (

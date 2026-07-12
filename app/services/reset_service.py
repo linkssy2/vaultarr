@@ -14,7 +14,6 @@ VAULT_DATA_DIRS = [
     "cache",
     "manual_provider_cache",
     "imports",
-    "acquisition_indexes",
     "settings",
 ]
 OPTIONAL_BACKUP_DIRS = ["archives"]

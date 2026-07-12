@@ -1,17 +1,17 @@
-# Vaultarr 1.5.1
+# Vaultarr 1.5.3
 
-> Current release: **Vaultarr 1.5.1 — Advanced Navigation Layout Fix**
+> Current release: **Vaultarr 1.5.3 — Advanced Navigation Layout Fix**
 
 Vaultarr is a self-hosted game preservation dashboard for cataloging, enriching, and maintaining a personal game archive.
 
-## 1.5.1 interface fix
+## 1.5.3 interface fix
 
 - Advanced Mode now reveals its sidebar tools as properly aligned, full-width navigation rows.
 - **Milestones** is always available in Standard Mode because achievement progress is part of the core museum experience.
 
 ## The Curator Experience
 
-Vaultarr 1.5.1 keeps the stable 1.4.10 navigation and Curator experience while adding administrator-supplied acquisition catalogs. Upload a JSON or CSV index in **Advanced Settings**, search it locally from a game record, open or copy the catalog links, and attach the local file after you obtain it. Vaultarr does not scrape the source website or execute anything from an uploaded catalog.
+Vaultarr 1.5.3 keeps the stable 1.4.10 navigation and Curator experience while adding administrator-supplied acquisition catalogs. Upload a JSON or CSV index in **Advanced Settings**, search it locally from a game record, open or copy the catalog links, and attach the local file after you obtain it. Vaultarr does not scrape the source website or execute anything from an uploaded catalog.
 
 Newly scanned games can be queued automatically for Curator processing. Vaultarr researches game information, chooses available artwork, looks for a manual, respects user edits and metadata locks, and surfaces only items that need review.
 
@@ -233,32 +233,8 @@ Open **Search** in the sidebar (or press `Ctrl+K`) and choose:
 The **Add Game** button on the Library page opens the detailed manual form for prototypes, fan games, homebrew, custom ports, and unmatched titles.
 
 
-## Personal Acquisition Indexes
+## Acquisition Assistant
 
-Enable **Advanced Mode**, then open **Settings → Personal Acquisition Indexes**. Upload a `.json` or `.csv` file containing a `title` field and any of these optional fields:
+Open a game and use **Acquisition Assistant → Find Copy**. Vaultarr searches the live Vimm Vault reference catalog using the game title and platform, ranks matching releases, and opens the exact source page. Vaultarr does not download the game itself: after choosing the correct release, paste the final direct link yourself and save it to the museum record. You can later link the local file or folder and mark the game as stored locally.
 
-```text
-title, platform, region, version, format, size_bytes,
-source_page, download_url, checksum_sha256, notes
-```
-
-Example JSON:
-
-```json
-{
-  "catalog_name": "My Game Archive",
-  "entries": [
-    {
-      "title": "Example Game",
-      "platform": "Nintendo 64",
-      "region": "USA",
-      "format": "z64",
-      "source_page": "https://example.com/item/123",
-      "download_url": "https://example.com/download/123"
-    }
-  ]
-}
-```
-
-Vaultarr stores the index under the existing `/config` volume, searches it locally, and treats platform as a ranking hint rather than a hard filter. The game page can open the source page, copy the supplied download link, and attach a local file or folder path. Uploaded catalogs are data only: scripts are never executed and only HTTP/HTTPS links are accepted.
-
+No uploaded JSON or CSV index is required. If live search cannot find a result, paste the exact Vimm Vault source-page URL and use **Read Source Page**.

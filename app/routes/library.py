@@ -7,7 +7,7 @@ from app.services.metadata_service import search_metadata_diagnostics, get_steam
 from app.services.game_removal_service import remove_game
 from app.services.provider_intelligence import get_provider_details
 from app.services.curator_service import queue_game
-from app.services.acquisition_index_service import get_game_acquisition
+from app.services.acquisition_assistant_service import get_game_acquisition
 
 library_bp = Blueprint('library', __name__)
 

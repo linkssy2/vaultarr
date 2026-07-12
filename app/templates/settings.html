@@ -341,59 +341,8 @@
     <div class="studio-toast cache-toast" id="mediaCacheStatus" hidden></div>
   </section>
 
-  {% if saved == 'acquisition_index' %}
-  <section class="studio-toast success"><strong>Acquisition Index Imported</strong><span>{{ request.args.get('acquisition_entries', '0') }} searchable entries are ready.</span></section>
-  {% endif %}
-  {% if saved == 'acquisition_error' %}
-  <section class="studio-toast warning"><strong>Acquisition Index Failed</strong><span>{{ request.args.get('acquisition_error', 'The file could not be imported.') }}</span></section>
-  {% endif %}
-  {% if saved == 'acquisition_index_removed' %}
-  <section class="studio-toast success"><strong>Acquisition Index Removed</strong><span>The catalog and its searchable entries were removed.</span></section>
-  {% endif %}
-  {% if saved == 'acquisition_index_toggled' %}
-  <section class="studio-toast success"><strong>Acquisition Index Updated</strong><span>The catalog availability was changed.</span></section>
-  {% endif %}
 
-  <section class="studio-section alive-panel advanced-only" id="acquisitionIndexes">
-    <div class="studio-section-head">
-      <div>
-        <p class="eyebrow">Personal Acquisition Indexes</p>
-        <h2>Search catalogs you provide</h2>
-        <p class="muted">Upload your own JSON or CSV index. Vaultarr only indexes the data you supply and never scrapes the original site.</p>
-      </div>
-      <span class="studio-section-badge">{{ acquisition_indexes|length }} Catalog{{ '' if acquisition_indexes|length == 1 else 's' }}</span>
-    </div>
 
-    <form action="/settings/acquisition-indexes/upload" method="post" enctype="multipart/form-data" class="studio-add-library acquisition-upload-form">
-      <div><label>Catalog name</label><input name="name" placeholder="My Game Archive"></div>
-      <div><label>JSON or CSV file</label><input type="file" name="index_file" accept=".json,.csv,application/json,text/csv" required></div>
-      <button>Import Index</button>
-    </form>
-    <p class="muted acquisition-format-note">Required field: <strong>title</strong>. Optional fields: platform, region, version, format, size_bytes, source_page, download_url, checksum_sha256, notes.</p>
-
-    <div class="studio-library-list acquisition-index-list">
-      {% for index in acquisition_indexes %}
-      <article class="studio-library-card acquisition-index-card">
-        <div>
-          <h3>{{ index.name }}</h3>
-          <p class="muted">{{ index.entry_count }} entries · {{ index.file_type|upper }} · {{ index.original_filename }}</p>
-          <small>Imported {{ index.imported_at }}</small>
-        </div>
-        <div class="studio-library-actions">
-          <form action="/settings/acquisition-indexes/{{ index.id }}/toggle" method="post">
-            <label class="studio-toggle-card compact-toggle">
-              <input type="checkbox" name="enabled" {% if index.enabled %}checked{% endif %} onchange="this.form.submit()">
-              <span><strong>{{ 'Enabled' if index.enabled else 'Disabled' }}</strong></span>
-            </label>
-          </form>
-          <form action="/settings/acquisition-indexes/{{ index.id }}/delete" method="post" onsubmit="return confirm('Remove this acquisition index?');"><button class="danger">Remove</button></form>
-        </div>
-      </article>
-      {% else %}
-      <div class="studio-empty-state"><strong>No personal indexes uploaded.</strong><span>Import a JSON or CSV catalog to make acquisition search available on game pages.</span></div>
-      {% endfor %}
-    </div>
-  </section>
 
   <section id="studioArchiveTools" class="studio-section alive-panel">
     <div class="studio-section-head">

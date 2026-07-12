@@ -141,37 +141,55 @@
       </form>
     </section>
 
-    <section class="panel acquisition-panel" id="personal-acquisition" data-game-id="{{ game.id }}" data-default-title="{{ game.title|e }}" data-default-platform="{{ game.platform|e }}">
+    <section class="panel acquisition-panel" id="acquisition-assistant" data-game-id="{{ game.id }}" data-default-title="{{ game.title|e }}" data-default-platform="{{ game.platform|e }}">
       <div class="panel-heading acquisition-heading">
-        <div><h2>Personal Acquisition</h2><p class="muted">Search only the indexes you uploaded in Advanced Settings.</p></div>
-        {% if game_acquisition and game_acquisition.status == 'acquired' %}<span class="metadata-pill">Locally Attached</span>{% endif %}
+        <div><h2>Acquisition Assistant</h2><p class="muted">Vaultarr finds the matching reference page. You provide the final link yourself.</p></div>
+        {% if game_acquisition and game_acquisition.status == 'acquired' %}<span class="metadata-pill">Stored Locally</span>{% elif game_acquisition and game_acquisition.download_url %}<span class="metadata-pill">Link Ready</span>{% elif game_acquisition and game_acquisition.source_page %}<span class="metadata-pill">Source Found</span>{% endif %}
       </div>
 
       {% if request.args.get('acquisition_saved') %}<div class="acquisition-message success">Local file attached to this game record.</div>{% endif %}
       {% if request.args.get('acquisition_error') %}<div class="acquisition-message warning">{{ request.args.get('acquisition_error') }}</div>{% endif %}
 
-      {% if game_acquisition and game_acquisition.local_path %}
+      {% if game_acquisition and (game_acquisition.source_page or game_acquisition.local_path) %}
       <div class="acquisition-current">
-        <span>Local copy</span><strong>{{ game_acquisition.local_path }}</strong>
-        {% if game_acquisition.index_name %}<small>Matched from {{ game_acquisition.index_name }}</small>{% endif %}
+        {% if game_acquisition.source_title %}<span>Selected release</span><strong>{{ game_acquisition.source_title }}</strong>{% endif %}
+        {% if game_acquisition.source_page %}<a href="{{ game_acquisition.source_page }}" target="_blank" rel="noopener noreferrer">Open saved source page</a>{% endif %}
+        {% if game_acquisition.download_url %}<small>Final link saved</small>{% endif %}
+        {% if game_acquisition.local_path %}<small>Local copy: {{ game_acquisition.local_path }}</small>{% endif %}
       </div>
       {% endif %}
 
       <div class="acquisition-search-row">
-        <input id="acquisitionQuery" value="{{ game.title }}" aria-label="Search personal acquisition indexes">
+        <input id="acquisitionQuery" value="{{ game.title }}" aria-label="Search Vimm reference catalog">
         <input id="acquisitionPlatform" value="{{ game.platform }}" placeholder="Platform (optional)" aria-label="Platform hint">
-        <button type="button" id="acquisitionSearchButton">Search My Indexes</button>
+        <button type="button" id="acquisitionSearchButton">Find Copy</button>
       </div>
-      <div id="acquisitionSearchStatus" class="muted acquisition-search-status">No website is contacted during this search.</div>
+      <div id="acquisitionSearchStatus" class="muted acquisition-search-status">Searches the live Vimm Vault reference catalog; it does not download a game.</div>
       <div id="acquisitionResults" class="acquisition-results"></div>
 
+      <details class="acquisition-source-fallback">
+        <summary>Already have the exact source page?</summary>
+        <div class="acquisition-source-row">
+          <input id="acquisitionSourcePageInput" placeholder="https://vimm.net/vault/12345" value="{{ game_acquisition.source_page if game_acquisition else '' }}">
+          <button type="button" id="acquisitionReadSourceButton" class="secondary">Read Source Page</button>
+        </div>
+      </details>
+
+      <div id="acquisitionSelection" class="acquisition-selection" hidden>
+        <h3 id="acquisitionSelectionTitle">Selected release</h3>
+        <p id="acquisitionSelectionMeta" class="muted"></p>
+        <a id="acquisitionSelectionSource" class="button-link secondary" target="_blank" rel="noopener noreferrer">Open Source</a>
+        <label>Final direct download link</label>
+        <input id="acquisitionDownloadUrl" value="{{ game_acquisition.download_url if game_acquisition else '' }}" placeholder="Paste the final link here">
+        <button type="button" id="acquisitionSaveButton">Save Acquisition</button>
+      </div>
+
       <details class="acquisition-attach-details">
-        <summary>Attach a local file manually</summary>
+        <summary>Link files after acquisition</summary>
         <form action="/games/{{ game.id }}/acquisition/attach" method="post" class="acquisition-attach-form">
-          <input type="hidden" name="entry_id" id="acquisitionSelectedEntry">
           <label>Local file or folder path</label>
           <input name="local_path" value="{{ game_acquisition.local_path if game_acquisition else '' }}" placeholder="D:\ROMs\Nintendo 64\Example Game.z64" required>
-          <button>Attach Local Copy</button>
+          <button>Mark as Stored Locally</button>
         </form>
       </details>
     </section>
@@ -216,93 +234,94 @@
 
 <script>
 (() => {
-  const panel = document.getElementById('personal-acquisition');
+  const panel = document.getElementById('acquisition-assistant');
   if (!panel) return;
   const gameId = panel.dataset.gameId;
   const query = document.getElementById('acquisitionQuery');
   const platform = document.getElementById('acquisitionPlatform');
-  const button = document.getElementById('acquisitionSearchButton');
+  const searchButton = document.getElementById('acquisitionSearchButton');
   const status = document.getElementById('acquisitionSearchStatus');
   const results = document.getElementById('acquisitionResults');
-  const selectedEntry = document.getElementById('acquisitionSelectedEntry');
+  const sourceInput = document.getElementById('acquisitionSourcePageInput');
+  const readSourceButton = document.getElementById('acquisitionReadSourceButton');
+  const selection = document.getElementById('acquisitionSelection');
+  const selectionTitle = document.getElementById('acquisitionSelectionTitle');
+  const selectionMeta = document.getElementById('acquisitionSelectionMeta');
+  const selectionSource = document.getElementById('acquisitionSelectionSource');
+  const downloadUrl = document.getElementById('acquisitionDownloadUrl');
+  const saveButton = document.getElementById('acquisitionSaveButton');
+  let selected = null;
 
-  const humanSize = (bytes) => {
-    const value = Number(bytes || 0);
-    if (!value) return 'Size unknown';
-    const units = ['B','KB','MB','GB','TB'];
-    let size = value, index = 0;
-    while (size >= 1024 && index < units.length - 1) { size /= 1024; index += 1; }
-    return `${size.toFixed(index > 1 ? 1 : 0)} ${units[index]}`;
-  };
-
-  const makeButton = (label, className, handler) => {
-    const node = document.createElement('button');
-    node.type = 'button';
-    node.textContent = label;
-    if (className) node.className = className;
-    node.addEventListener('click', handler);
-    return node;
+  const choose = (item) => {
+    selected = item;
+    selection.hidden = false;
+    selectionTitle.textContent = item.title || 'Selected release';
+    selectionMeta.textContent = [item.platform, item.region, item.version, `${item.match_score || 0}% match`].filter(Boolean).join(' · ');
+    selectionSource.href = item.source_page;
+    sourceInput.value = item.source_page || '';
+    selection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    status.textContent = 'Release selected. Open the source, then paste the final link below.';
   };
 
   const render = (items) => {
     results.replaceChildren();
     if (!items.length) {
-      const empty = document.createElement('div');
-      empty.className = 'metadata-empty';
-      const title = document.createElement('h3'); title.textContent = 'No matches in your uploaded indexes';
-      const copy = document.createElement('p'); copy.className = 'muted'; copy.textContent = 'Try a shorter title, remove the platform hint, or upload another catalog in Advanced Settings.';
-      empty.append(title, copy); results.append(empty); return;
+      const empty = document.createElement('div'); empty.className = 'metadata-empty';
+      empty.innerHTML = '<h3>No reference match found</h3><p class="muted">Try a shorter title or paste the exact Vimm Vault page below.</p>';
+      results.append(empty); return;
     }
     items.forEach((item) => {
       const card = document.createElement('article'); card.className = 'acquisition-result-card';
-      const body = document.createElement('div'); body.className = 'acquisition-result-body';
       const top = document.createElement('div'); top.className = 'acquisition-result-top';
       const title = document.createElement('h3'); title.textContent = item.title;
       const score = document.createElement('span'); score.className = 'confidence-badge'; score.textContent = `${item.match_score || 0}%`;
       top.append(title, score);
-      const meta = document.createElement('p'); meta.className = 'muted';
-      meta.textContent = [item.platform, item.region, item.version, item.format, humanSize(item.size_bytes), item.index_name].filter(Boolean).join(' · ');
-      const notes = document.createElement('p'); notes.textContent = item.notes || 'No catalog notes provided.';
+      const meta = document.createElement('p'); meta.className = 'muted'; meta.textContent = [item.platform, item.region, item.version].filter(Boolean).join(' · ') || 'Release details available on source page';
       const actions = document.createElement('div'); actions.className = 'acquisition-result-actions';
-      if (item.source_page) {
-        const link = document.createElement('a'); link.className = 'button-link secondary'; link.href = item.source_page; link.target = '_blank'; link.rel = 'noopener noreferrer'; link.textContent = 'Open Source Page'; actions.append(link);
-      }
-      if (item.download_url) {
-        actions.append(makeButton('Copy Download Link', 'secondary', async () => {
-          try { await navigator.clipboard.writeText(item.download_url); status.textContent = 'Download link copied.'; }
-          catch (_) { window.prompt('Copy this download link:', item.download_url); }
-        }));
-      }
-      actions.append(makeButton('Use for Local Attachment', '', () => {
-        selectedEntry.value = item.id;
-        const details = panel.querySelector('.acquisition-attach-details');
-        details.open = true;
-        details.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        status.textContent = `Selected ${item.title}. Enter the local path after you acquire the file.`;
-      }));
-      body.append(top, meta, notes, actions); card.append(body); results.append(card);
+      const open = document.createElement('a'); open.className = 'button-link secondary'; open.href = item.source_page; open.target = '_blank'; open.rel = 'noopener noreferrer'; open.textContent = 'Open Source';
+      const use = document.createElement('button'); use.type = 'button'; use.textContent = 'Use This Release'; use.addEventListener('click', () => choose(item));
+      actions.append(open, use); card.append(top, meta, actions); results.append(card);
     });
   };
 
   const search = async () => {
-    const term = query.value.trim();
-    if (!term) { query.focus(); return; }
-    button.disabled = true; button.textContent = 'Searching…'; status.textContent = 'Searching your local acquisition indexes…';
+    const term = query.value.trim(); if (!term) { query.focus(); return; }
+    searchButton.disabled = true; searchButton.textContent = 'Searching…'; status.textContent = 'Searching the live reference catalog…';
     try {
       const params = new URLSearchParams({ q: term, platform: platform.value.trim() });
-      const response = await fetch(`/api/games/${gameId}/acquisition/search?${params.toString()}`, { headers: { 'Accept': 'application/json' } });
-      const data = await response.json();
-      if (!response.ok || !data.success) throw new Error(data.message || 'Search failed.');
-      render(data.results || []);
-      status.textContent = `${(data.results || []).length} result${(data.results || []).length === 1 ? '' : 's'} found in your uploaded indexes.`;
-    } catch (error) {
-      status.textContent = error.message; results.replaceChildren();
-    } finally {
-      button.disabled = false; button.textContent = 'Search My Indexes';
-    }
+      const response = await fetch(`/api/games/${gameId}/acquisition/search?${params}`, { headers: { Accept: 'application/json' } });
+      const data = await response.json(); if (!response.ok || !data.success) throw new Error(data.message || 'Search failed.');
+      render(data.results || []); status.textContent = `${(data.results || []).length} reference result${(data.results || []).length === 1 ? '' : 's'} found.`;
+    } catch (error) { results.replaceChildren(); status.textContent = error.message; }
+    finally { searchButton.disabled = false; searchButton.textContent = 'Find Copy'; }
   };
-  button.addEventListener('click', search);
+
+  const readSource = async () => {
+    if (!sourceInput.value.trim()) { sourceInput.focus(); return; }
+    readSourceButton.disabled = true; readSourceButton.textContent = 'Reading…';
+    try {
+      const response = await fetch(`/api/games/${gameId}/acquisition/read-source`, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify({ source_page: sourceInput.value.trim() }) });
+      const data = await response.json(); if (!response.ok || !data.success) throw new Error(data.message || 'Could not read source page.');
+      choose(data.result);
+    } catch (error) { status.textContent = error.message; }
+    finally { readSourceButton.disabled = false; readSourceButton.textContent = 'Read Source Page'; }
+  };
+
+  const save = async () => {
+    if (!selected) { status.textContent = 'Select a release or read a source page first.'; return; }
+    saveButton.disabled = true; saveButton.textContent = 'Saving…';
+    try {
+      const response = await fetch(`/api/games/${gameId}/acquisition/save`, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' }, body: JSON.stringify({ ...selected, download_url: downloadUrl.value.trim() }) });
+      const data = await response.json(); if (!response.ok || !data.success) throw new Error(data.message || 'Could not save acquisition.');
+      status.textContent = downloadUrl.value.trim() ? 'Acquisition link saved.' : 'Reference source saved.';
+    } catch (error) { status.textContent = error.message; }
+    finally { saveButton.disabled = false; saveButton.textContent = 'Save Acquisition'; }
+  };
+
+  searchButton.addEventListener('click', search);
   query.addEventListener('keydown', (event) => { if (event.key === 'Enter') { event.preventDefault(); search(); } });
+  readSourceButton.addEventListener('click', readSource);
+  saveButton.addEventListener('click', save);
 })();
 </script>
 

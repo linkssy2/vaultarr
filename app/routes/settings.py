@@ -19,7 +19,6 @@ from app.services.reset_service import reset_vault
 from app.services.auth_service import load_auth_settings, update_auth_from_form
 from app.services.game_removal_service import ignored_paths, restore_ignored_path
 from app.services.ui_settings import load_ui_settings, save_ui_settings, ui_settings_from_form
-from app.services.acquisition_index_service import list_catalogs
 from app.services.provider_settings import (
     load_provider_settings,
     save_provider_settings,
@@ -54,7 +53,6 @@ def settings():
         saved=saved,
         ignored_games=ignored_paths(),
         ui_settings=load_ui_settings(),
-        acquisition_indexes=list_catalogs(),
     )
 
 

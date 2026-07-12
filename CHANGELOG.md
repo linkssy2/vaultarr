@@ -1,4 +1,15 @@
-# 1.5.1 — Advanced Navigation Layout Fix
+# Changelog
+
+## 1.5.3 — Live Acquisition Assistant
+
+- Removed Personal Acquisition Index uploads and management.
+- Added live Vimm Vault reference searching from each game record.
+- Added automatic title/platform ranking and exact source-page discovery.
+- Added source-page URL fallback when live search is unavailable.
+- Added a user-supplied final-link field and local-file attachment workflow.
+- Preserved Curator, manuals, cards, navigation, and metadata behavior.
+
+# 1.5.3 — Advanced Navigation Layout Fix
 
 - Fixed Advanced Mode sidebar links collapsing onto the same line.
 - Restored the standard full-width flex layout for every advanced navigation item.

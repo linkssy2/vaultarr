@@ -1,4 +1,4 @@
-# 1.5.1 — Advanced Navigation Layout Fix
+# 1.5.3 — Advanced Navigation Layout Fix
 
 - Fixed Advanced Mode sidebar links collapsing onto the same line.
 - Restored the standard full-width flex layout for every advanced navigation item.
