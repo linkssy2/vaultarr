@@ -15,8 +15,6 @@ def migrate():
     if row is None:
         c.execute("INSERT INTO schema_version (version) VALUES (1)")
     migrate_to_1(c)
-
-    # ROM fields
     for col, definition in {
         "rom_url": "TEXT DEFAULT ''",
         "rom_provider": "TEXT DEFAULT ''",
@@ -27,7 +25,6 @@ def migrate():
         "rom_downloaded_at": "TEXT DEFAULT ''",
         "rom_checked_at": "TEXT DEFAULT ''",
         "rom_category": "TEXT DEFAULT ''",
-        # Existing fields...
         "executables": "TEXT DEFAULT ''",
         "preservation_score": "INTEGER DEFAULT 0",
         "added_at": "TEXT DEFAULT CURRENT_TIMESTAMP",
@@ -74,6 +71,7 @@ def migrate():
         "trailer_provider": "TEXT DEFAULT ''",
         "trailer_title": "TEXT DEFAULT ''",
         "trailer_embed_url": "TEXT DEFAULT ''",
+
         "patch_url": "TEXT DEFAULT ''",
         "patch_provider": "TEXT DEFAULT ''",
         "patch_title": "TEXT DEFAULT ''",
@@ -83,8 +81,6 @@ def migrate():
         "trailer_updated_at": "TEXT DEFAULT ''"
     }.items():
         ensure_column(c, "games", col, definition)
-
-    # (rest of your existing tables remain the same)
     c.execute("""
     CREATE TABLE IF NOT EXISTS media_assets (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -101,14 +97,81 @@ def migrate():
         UNIQUE(game_id, remote_url)
     )
     """)
-    # ... (your other tables stay the same)
 
+    c.execute("""
+    CREATE TABLE IF NOT EXISTS collection_definitions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL UNIQUE,
+        kind TEXT DEFAULT 'user',
+        description TEXT DEFAULT '',
+        rule_json TEXT DEFAULT '',
+        created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+        updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+    )
+    """)
+    c.execute("""
+    CREATE TABLE IF NOT EXISTS game_collection_attributes (
+        game_id INTEGER NOT NULL,
+        attribute TEXT NOT NULL,
+        confidence INTEGER DEFAULT 0,
+        source TEXT DEFAULT 'rules',
+        reason TEXT DEFAULT '',
+        updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(game_id, attribute)
+    )
+    """)
+    c.execute("""
+    CREATE TABLE IF NOT EXISTS game_collections (
+        game_id INTEGER NOT NULL,
+        collection_id INTEGER NOT NULL,
+        created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE(game_id, collection_id)
+    )
+    """)
+    for col, definition in {
+        "curator_status": "TEXT DEFAULT 'waiting'",
+        "curator_score": "INTEGER DEFAULT 0",
+        "curator_missing": "TEXT DEFAULT '[]'",
+        "curator_last_run": "TEXT DEFAULT ''",
+        "curator_last_error": "TEXT DEFAULT ''",
+        "curator_paused": "INTEGER DEFAULT 0",
+    }.items():
+        ensure_column(c, "games", col, definition)
+    c.execute("""
+    CREATE TABLE IF NOT EXISTS curator_jobs (
+        id INTEGER PRIMARY KEY AUTOINCREMENT, game_id INTEGER NOT NULL UNIQUE,
+        status TEXT DEFAULT 'queued', reason TEXT DEFAULT 'scan', attempts INTEGER DEFAULT 0,
+        last_error TEXT DEFAULT '', created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+        updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+    )
+    """)
+    for col, definition in {
+        "progress": "INTEGER DEFAULT 0",
+        "stage": "TEXT DEFAULT ''",
+        "result_json": "TEXT DEFAULT '{}'"
+    }.items():
+        ensure_column(c, "curator_jobs", col, definition)
+
+    c.execute("""
+    CREATE TABLE IF NOT EXISTS curator_history (
+        id INTEGER PRIMARY KEY AUTOINCREMENT, game_id INTEGER NOT NULL, action TEXT DEFAULT 'curate',
+        status TEXT DEFAULT '', message TEXT DEFAULT '', details_json TEXT DEFAULT '{}',
+        created_at TEXT DEFAULT CURRENT_TIMESTAMP
+    )
+    """)
+    c.execute("""
+    CREATE TABLE IF NOT EXISTS ignored_game_paths (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        path TEXT NOT NULL UNIQUE,
+        title TEXT DEFAULT '',
+        ignored_at TEXT DEFAULT CURRENT_TIMESTAMP
+    )
+    """)
     conn.commit()
     conn.close()
 
 
 def migrate_to_1(c):
-    # Your existing migrate_to_1 code...
     c.execute("""
     CREATE TABLE IF NOT EXISTS libraries (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -127,6 +190,15 @@ def migrate_to_1(c):
         file_count INTEGER DEFAULT 0,
         executable_count INTEGER DEFAULT 0,
         executables TEXT DEFAULT '',
+        rom_url TEXT DEFAULT '',
+        rom_provider TEXT DEFAULT '',
+        rom_title TEXT DEFAULT '',
+        rom_file_path TEXT DEFAULT '',
+        rom_file_name TEXT DEFAULT '',
+        rom_file_size INTEGER DEFAULT 0,
+        rom_downloaded_at TEXT DEFAULT '',
+        rom_checked_at TEXT DEFAULT '',
+        rom_category TEXT DEFAULT '',
         preservation_score INTEGER DEFAULT 0,
         added_at TEXT DEFAULT CURRENT_TIMESTAMP,
         updated_at TEXT DEFAULT CURRENT_TIMESTAMP,

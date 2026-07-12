@@ -226,3 +226,24 @@ Open **Search** in the sidebar (or press `Ctrl+K`) and choose:
 - **Discover & Add** to search enabled information sources, preview a release, and add it directly.
 
 The **Add Game** button on the Library page opens the detailed manual form for prototypes, fan games, homebrew, custom ports, and unmatched titles.
+
+## Archival acquisition downloads
+
+Vaultarr 1.5.0 can attach a **direct HTTP/HTTPS download URL** to a game and save the file into a mounted acquisitions folder. Vaultarr does not search ROM mirrors or abandonware sites automatically. Only use sources and files you are legally authorized to access.
+
+Production Compose should include:
+
+```yaml
+services:
+  vaultarr:
+    image: ghcr.io/linkssy2/vaultarr:latest
+    environment:
+      - LOCALAPPDATA=/config
+      - VAULTARR_ACQUISITIONS_DIR=/acquisitions
+    volumes:
+      - ./config:/config
+      - ./acquisitions:/acquisitions
+      - /path/to/games:/games
+```
+
+Downloads are grouped by the game's platform. The maximum individual download size defaults to 20 GiB and can be changed with `VAULTARR_MAX_ACQUISITION_BYTES`.

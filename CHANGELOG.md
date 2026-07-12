@@ -1,3 +1,11 @@
+# Changelog
+
+## 1.5.0
+- Added the archival acquisition foundation for user-provided direct download URLs.
+- Added secure streamed downloads to a configurable acquisitions folder.
+- Restored complete API routes, database migrations, and the original game details page removed by the prototype edit.
+- Fixed GHCR publishing to emit `latest` and the version from `VERSION`.
+
 # 1.4.10 — Navigation Load Consistency
 
 - Prepared sidebar destinations before beginning the exit animation.
