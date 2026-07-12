@@ -1,3 +1,10 @@
+# 1.5.1 — Advanced Navigation Layout Fix
+
+- Fixed Advanced Mode sidebar links collapsing onto the same line.
+- Restored the standard full-width flex layout for every advanced navigation item.
+- Moved Milestones into Standard Mode so achievement and collection progress remain visible to all users.
+- Preserved Personal Acquisition Indexes, Curator, manuals, card expansion, and navigation motion behavior.
+
 # 1.5.0 — Personal Acquisition Indexes
 
 - Added administrator-uploaded JSON and CSV acquisition catalogs.

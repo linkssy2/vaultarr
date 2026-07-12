@@ -184,9 +184,15 @@ input[type="checkbox"]:disabled {
 
 /* Vaultarr 1.4.0 — Curator Experience */
 .standard-mode .advanced-only { display: none !important; }
-.advanced-mode .advanced-only { display: initial; }
+.advanced-mode .advanced-only { display: revert; }
 .advanced-mode section.advanced-only,
 .advanced-mode div.advanced-only { display: block; }
+.advanced-mode .vault-nav a.advanced-only {
+  display: flex;
+  width: 100%;
+  align-items: center;
+}
+.advanced-mode .vault-nav .nav-section-label.advanced-only { display: block; }
 
 .experience-settings-panel {
   border-color: color-mix(in srgb, var(--accent, #38bdf8) 38%, var(--border));

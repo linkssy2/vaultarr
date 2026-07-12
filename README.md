@@ -1,12 +1,17 @@
-# Vaultarr 1.5.0
+# Vaultarr 1.5.1
 
-> Current release: **Vaultarr 1.5.0 — Personal Acquisition Indexes**
+> Current release: **Vaultarr 1.5.1 — Advanced Navigation Layout Fix**
 
 Vaultarr is a self-hosted game preservation dashboard for cataloging, enriching, and maintaining a personal game archive.
 
+## 1.5.1 interface fix
+
+- Advanced Mode now reveals its sidebar tools as properly aligned, full-width navigation rows.
+- **Milestones** is always available in Standard Mode because achievement progress is part of the core museum experience.
+
 ## The Curator Experience
 
-Vaultarr 1.5.0 keeps the stable 1.4.10 navigation and Curator experience while adding administrator-supplied acquisition catalogs. Upload a JSON or CSV index in **Advanced Settings**, search it locally from a game record, open or copy the catalog links, and attach the local file after you obtain it. Vaultarr does not scrape the source website or execute anything from an uploaded catalog.
+Vaultarr 1.5.1 keeps the stable 1.4.10 navigation and Curator experience while adding administrator-supplied acquisition catalogs. Upload a JSON or CSV index in **Advanced Settings**, search it locally from a game record, open or copy the catalog links, and attach the local file after you obtain it. Vaultarr does not scrape the source website or execute anything from an uploaded catalog.
 
 Newly scanned games can be queued automatically for Curator processing. Vaultarr researches game information, chooses available artwork, looks for a manual, respects user edits and metadata locks, and surfaces only items that need review.
 
