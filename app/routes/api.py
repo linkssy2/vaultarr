@@ -1096,3 +1096,67 @@ def api_provider_intelligence_merge_best(game_id):
     result = apply_merge_best(game_id, query, enrich=bool(enrich))
     status = 200 if result.get('success') else 400
     return jsonify(result), status
+
+# ==================== ROM / DOWNLOAD ENGINE ====================
+
+from app.services.rom_service import download_rom, search_roms
+
+@api_bp.route("/api/games/<int:game_id>/roms/search")
+def api_rom_search(game_id):
+    conn = get_connection()
+    game = conn.execute("SELECT * FROM games WHERE id=?", (game_id,)).fetchone()
+    conn.close()
+    if game is None:
+        abort(404)
+
+    query = (request.args.get("query") or game["title"] or "").strip()
+    platform = (request.args.get("platform") or game["platform"] or "").strip()
+    results = search_roms(query, platform)
+    return jsonify({"success": True, "game_id": game_id, "results": results})
+
+
+@api_bp.route("/api/games/<int:game_id>/rom-link", methods=["POST"])
+def api_rom_link(game_id):
+    payload = request.get_json(silent=True) or {}
+    rom_url = (payload.get("rom_url") or "").strip()
+    rom_provider = (payload.get("rom_provider") or "User Link").strip()
+    rom_title = (payload.get("rom_title") or "").strip()
+
+    if not rom_url:
+        return jsonify({"success": False, "message": "No ROM URL provided."}), 400
+
+    conn = get_connection()
+    conn.execute(
+        "UPDATE games SET rom_url=?, rom_provider=?, rom_title=?, rom_checked_at=CURRENT_TIMESTAMP, updated_at=CURRENT_TIMESTAMP WHERE id=?",
+        (rom_url, rom_provider, rom_title, game_id),
+    )
+    conn.commit()
+    updated = conn.execute("SELECT * FROM games WHERE id=?", (game_id,)).fetchone()
+    conn.close()
+    return jsonify({"success": True, "game": enrich_game(row_to_dict(updated))})
+
+
+@api_bp.route("/api/games/<int:game_id>/rom-download", methods=["POST"])
+def api_rom_download(game_id):
+    payload = request.get_json(silent=True) or {}
+    rom_url = (payload.get("rom_url") or "").strip()
+    rom_provider = (payload.get("rom_provider") or "Downloaded ROM").strip()
+
+    if not rom_url:
+        return jsonify({"success": False, "message": "No ROM URL provided."}), 400
+
+    try:
+        saved = download_rom(game_id, rom_url, "ROM", rom_provider)
+    except Exception as exc:
+        return jsonify({"success": False, "message": str(exc)}), 400
+
+    conn = get_connection()
+    updated = conn.execute("SELECT * FROM games WHERE id=?", (game_id,)).fetchone()
+    conn.close()
+
+    return jsonify({
+        "success": True,
+        "message": "ROM downloaded to local roms folder.",
+        "rom": saved,
+        "game": enrich_game(row_to_dict(updated)),
+    })

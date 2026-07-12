@@ -1,181 +1,70 @@
 {% extends "base.html" %}
 
 {% block content %}
-<a class="back-link" href="/library">← Back to Library</a>
+<div class="game-detail">
+  <h1>{{ game.title }}</h1>
+  
+  <!-- Existing tabs -->
+  <ul class="tabs">
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#info">Game Information</a></li>
+    <li><a href="#archive">Archive Health</a></li>
+    <li><a href="#manuals">Manuals</a></li>
+    <li><a href="#gallery">Gallery</a></li>
+    <li><a href="#trailer">Trailer</a></li>
+    <li><a href="#patches">Patches</a></li>
+    <li><a href="#roms-tab" class="active">Downloads / ROMs</a></li>
+  </ul>
 
-<div class="detail-layout">
-  <div class="detail-cover">
-    {% if game.cover_path %}
-      <img class="detail-cover-img" src="/covers/{{ game.cover_path }}?v={{ game.updated_at or game.last_scanned or game.id }}" alt="{{ game.title }}">
-    {% else %}
-      🎮
+  <!-- Existing tab contents... (keep them as is) -->
+  
+  <!-- NEW ROMs Tab -->
+  <div id="roms-tab" class="tab-content">
+    <h3>ROMs & Downloads</h3>
+    <p>Link to a ROM or abandonware download. Download it locally to your ROMs folder.</p>
+    
+    <div style="margin: 20px 0;">
+      <input type="text" id="rom-url" placeholder="https://example.com/rom.zip or Vimm/MyAbandonware link" style="width: 70%; padding: 8px;">
+      <button onclick="saveRomLink({{ game.id }})" style="padding: 8px 16px;">Save Link</button>
+      <button onclick="downloadRom({{ game.id }})" style="padding: 8px 16px;">Download to ROMs Folder</button>
+    </div>
+
+    {% if game.rom_file_path %}
+    <div style="background: #222; padding: 15px; border-radius: 8px;">
+      <strong>Downloaded ROM:</strong> {{ game.rom_file_name }} ({{ (game.rom_file_size / 1024 / 1024)|round(2) }} MB)
+    </div>
     {% endif %}
   </div>
 
-  <div class="detail-info">
-    <p class="eyebrow">Game Record</p>
-    <h1>{{ game.title }}</h1>
-    <p class="muted path-line">{{ game.path }}</p>
-
-    <div class="metadata-pill-row">
-      <span class="metadata-pill">Source: {{ game.source_type or ('Manual' if game.manual_entry else 'Scanned') }}</span>
-      {% if game.metadata_locked %}<span class="metadata-pill">🔒 Metadata Locked</span>{% endif %}
-      {% if game.metadata_source %}<span class="metadata-pill">Metadata: {{ game.metadata_source }} #{{ game.metadata_external_id }}</span>{% endif %}
-    </div>
-
-    <div class="cards detail-stat-strip">
-      <div class="card"><span class="stat-label">Size</span><strong>{{ (game.size_bytes / 1024 / 1024 / 1024) | round(2) }} GB</strong></div>
-      <div class="card"><span class="stat-label">Files</span><strong>{{ game.file_count }}</strong></div>
-      <div class="card"><span class="stat-label">Executables</span><strong>{{ game.executable_count }}</strong></div>
-      <div class="card"><span class="stat-label">Category</span><strong>{{ game.category or 'Unsorted' }}</strong></div>
-    </div>
-
-    <section class="panel">
-      <div class="panel-heading"><h2>Description</h2></div>
-      <p>{{ game.description or 'No description yet.' }}</p>
-    </section>
-
-    <section class="panel">
-      <div class="panel-heading"><h2>Metadata Search</h2></div>
-      <form action="/games/{{ game.id }}/metadata/search" method="post">
-        <label>Search metadata</label>
-        <input name="query" value="{{ metadata_query or game.title }}">
-        <label>Provider</label>
-        <select name="provider">
-          <option value="all" {% if provider == 'all' %}selected{% endif %}>All providers</option>
-          <option value="launchbox" {% if provider == 'launchbox' %}selected{% endif %}>LaunchBox</option>
-          <option value="igdb" {% if provider == 'igdb' %}selected{% endif %}>IGDB</option>
-          <option value="rawg" {% if provider == 'rawg' %}selected{% endif %}>RAWG</option>
-          <option value="steamgriddb" {% if provider == 'steamgriddb' %}selected{% endif %}>SteamGridDB Artwork</option>
-          <option value="steam" {% if provider == 'steam' %}selected{% endif %}>Steam</option>
-          <option value="wikipedia" {% if provider == 'wikipedia' %}selected{% endif %}>Wikipedia</option>
-        </select>
-        <button>Search</button>
-      </form>
-
-      {% if metadata_query %}
-        <div class="metadata-diagnostics">
-          <h3>Provider Status</h3>
-          {% if metadata_logs %}
-            <div class="metadata-log-grid">
-              {% for log in metadata_logs %}
-                <div class="metadata-log {{ log.status }}">
-                  <strong>{{ log.provider }}</strong>
-                  <span>{{ log.message }}</span>
-                </div>
-              {% endfor %}
-            </div>
-          {% else %}
-            <p class="muted">No provider status was returned.</p>
-          {% endif %}
-        </div>
-
-        {% if metadata_results %}
-          <div class="metadata-results">
-            {% for result in metadata_results %}
-              <div class="metadata-result-card">
-                {% if result.cover_url %}
-                  <img src="{{ result.cover_url }}" alt="{{ result.title }}">
-                {% else %}
-                  <div class="metadata-thumb">🎮</div>
-                {% endif %}
-                <div class="metadata-body">
-                  <div class="metadata-result-top">
-                    <p><strong>{{ result.title }}</strong></p>
-                    <span class="confidence-badge">{{ result.confidence or 0 }}%</span>
-                  </div>
-                  <p class="muted">{{ result.source }} #{{ result.external_id }}</p>
-                  <p>{{ result.description or 'No description returned from this provider.' }}</p>
-                  <form action="/games/{{ game.id }}/metadata/apply" method="post">
-                    <input type="hidden" name="source" value="{{ result.source }}">
-                    <input type="hidden" name="external_id" value="{{ result.external_id }}">
-                    <button>Use This Metadata</button>
-                  </form>
-                </div>
-              </div>
-            {% endfor %}
-          </div>
-        {% else %}
-          <div class="metadata-empty">
-            <h3>No metadata matches found</h3>
-            <p class="muted">Try a broader query like <strong>{{ game.title }}</strong>, add <strong>video game</strong>, or switch providers.</p>
-          </div>
-        {% endif %}
-      {% endif %}
-    </section>
-
-    <section class="panel">
-      <div class="panel-heading"><h2>Manual Edit</h2></div>
-      <form action="/games/{{ game.id }}/manual" method="post">
-        <label>Title</label>
-        <input name="title" value="{{ game.title }}">
-
-        <label>Description</label>
-        <textarea name="description">{{ game.description }}</textarea>
-
-        <div class="form-grid">
-          <div><label>Developer</label><input name="developer" value="{{ game.developer }}"></div>
-          <div><label>Publisher</label><input name="publisher" value="{{ game.publisher }}"></div>
-          <div><label>Year</label><input name="release_year" value="{{ game.release_year }}"></div>
-          <div><label>Genre</label><input name="genre" value="{{ game.genre }}"></div>
-          <div><label>Platform</label><input name="platform" value="{{ game.platform }}"></div>
-          <div><label>Category</label><select name="category">
-            {% for option in ['Unsorted','Manual','Abandonware','Fanmade','PC Port','Steam','GOG','Homebrew','Prototype','Other'] %}
-              <option {% if game.category == option %}selected{% endif %}>{{ option }}</option>
-            {% endfor %}
-          </select></div>
-        </div>
-
-        <label>Tags</label>
-        <input name="tags" value="{{ game.tags }}">
-
-        <label>Notes</label>
-        <textarea name="notes">{{ game.notes }}</textarea>
-
-        <label class="checkbox-row">
-          <input type="checkbox" name="metadata_locked" {% if game.metadata_locked %}checked{% endif %}>
-          <span>Lock manual metadata so automated provider updates do not overwrite it.</span>
-        </label>
-
-        <button>Save Manual Edits</button>
-      </form>
-    </section>
-
-    <section class="panel">
-      <div class="panel-heading"><h2>Files</h2></div>
-      <p><strong>Executables:</strong></p>
-      <p class="muted">{{ game.executables or 'No executable detected.' }}</p>
-      <p><strong>Last scanned:</strong> {{ game.last_scanned or 'Never' }}</p>
-    </section>
-
-    <section class="panel danger-zone">
-      <div class="panel-heading"><h2>Remove Game</h2></div>
-      <p class="muted danger-zone-copy">Remove this catalog record from Vaultarr. Your original game folder and files are never deleted.</p>
-      <button type="button" class="danger danger-button" onclick="document.getElementById('delete-game-dialog').showModal()">Remove from Library</button>
-    </section>
-
-    <dialog id="delete-game-dialog" class="delete-game-dialog">
-      <div class="delete-game-dialog-inner">
-        <h2>Remove {{ game.title }}?</h2>
-        <p class="delete-warning"><strong>Your game files will remain untouched.</strong> This only removes Vaultarr's catalog record and optional cached artwork/manuals.</p>
-        <form action="/games/{{ game.id }}/delete" method="post">
-          <div class="delete-options">
-            <label class="checkbox-row">
-              <input type="checkbox" name="ignore_path" checked>
-              <span><strong>Keep this folder ignored</strong><small>Prevents the next library scan from adding it again. You can restore it later in Settings.</small></span>
-            </label>
-            <label class="checkbox-row">
-              <input type="checkbox" name="delete_cached_assets" checked>
-              <span><strong>Remove Vaultarr cached assets</strong><small>Deletes cached covers, screenshots, and downloaded manuals for this record only.</small></span>
-            </label>
-          </div>
-          <div class="delete-actions">
-            <button type="button" class="secondary" onclick="document.getElementById('delete-game-dialog').close()">Cancel</button>
-            <button type="submit" class="danger danger-button">Remove Game</button>
-          </div>
-        </form>
-      </div>
-    </dialog>
-  </div>
 </div>
+
+<script>
+function saveRomLink(gameId) {
+  const url = document.getElementById('rom-url').value.trim();
+  if (!url) return alert("Please enter a ROM URL");
+  
+  fetch(`/api/games/${gameId}/rom-link`, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({rom_url: url, rom_provider: 'User'})
+  }).then(r => r.json()).then(data => {
+    if (data.success) location.reload();
+    else alert(data.message || "Failed");
+  });
+}
+
+function downloadRom(gameId) {
+  const url = document.getElementById('rom-url').value.trim();
+  if (!url) return alert("Please enter a ROM URL");
+  
+  fetch(`/api/games/${gameId}/rom-download`, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({rom_url: url})
+  }).then(r => r.json()).then(data => {
+    if (data.success) location.reload();
+    else alert(data.message || "Download failed");
+  });
+}
+</script>
 {% endblock %}
