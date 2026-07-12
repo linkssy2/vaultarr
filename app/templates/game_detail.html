@@ -141,41 +141,39 @@
       </form>
     </section>
 
-    <section class="panel acquisition-panel" id="acquisition-panel">
-      <div class="panel-heading">
-        <div>
-          <p class="eyebrow">Optional</p>
-          <h2>Archival Acquisition</h2>
-        </div>
+    <section class="panel acquisition-panel" id="personal-acquisition" data-game-id="{{ game.id }}" data-default-title="{{ game.title|e }}" data-default-platform="{{ game.platform|e }}">
+      <div class="panel-heading acquisition-heading">
+        <div><h2>Personal Acquisition</h2><p class="muted">Search only the indexes you uploaded in Advanced Settings.</p></div>
+        {% if game_acquisition and game_acquisition.status == 'acquired' %}<span class="metadata-pill">Locally Attached</span>{% endif %}
       </div>
-      <p class="muted">Attach a direct download URL for a copy you are authorized to obtain. Vaultarr does not search third-party mirrors automatically.</p>
-      <div class="acquisition-warning">
-        Only download software you have the legal right to access. You are responsible for the source and license of every file.
-      </div>
-      <label for="acquisition-url">Direct download URL</label>
-      <input id="acquisition-url" type="url" value="{{ game.rom_url or '' }}" placeholder="https://example.org/releases/game.zip" autocomplete="off">
-      <div class="form-grid">
-        <div>
-          <label for="acquisition-provider">Source label</label>
-          <input id="acquisition-provider" value="{{ game.rom_provider or 'User-provided URL' }}" placeholder="Official site, GitHub release, personal backup">
-        </div>
-        <div>
-          <label>Destination</label>
-          <input value="Acquisitions / {{ game.platform or 'Unsorted' }}" disabled>
-        </div>
-      </div>
-      <div class="acquisition-actions">
-        <button type="button" class="secondary" id="save-acquisition-link">Save Link</button>
-        <button type="button" id="download-acquisition">Download to Vaultarr</button>
-        <span class="muted" id="acquisition-status" aria-live="polite"></span>
-      </div>
-      <div class="acquisition-progress" id="acquisition-progress" hidden><span></span></div>
-      {% if game.rom_file_path %}
-      <div class="metadata-log success" id="acquisition-result">
-        <strong>Stored locally</strong>
-        <span>{{ game.rom_file_name }} · {{ (game.rom_file_size / 1024 / 1024) | round(2) }} MB · {{ game.rom_file_path }}</span>
+
+      {% if request.args.get('acquisition_saved') %}<div class="acquisition-message success">Local file attached to this game record.</div>{% endif %}
+      {% if request.args.get('acquisition_error') %}<div class="acquisition-message warning">{{ request.args.get('acquisition_error') }}</div>{% endif %}
+
+      {% if game_acquisition and game_acquisition.local_path %}
+      <div class="acquisition-current">
+        <span>Local copy</span><strong>{{ game_acquisition.local_path }}</strong>
+        {% if game_acquisition.index_name %}<small>Matched from {{ game_acquisition.index_name }}</small>{% endif %}
       </div>
       {% endif %}
+
+      <div class="acquisition-search-row">
+        <input id="acquisitionQuery" value="{{ game.title }}" aria-label="Search personal acquisition indexes">
+        <input id="acquisitionPlatform" value="{{ game.platform }}" placeholder="Platform (optional)" aria-label="Platform hint">
+        <button type="button" id="acquisitionSearchButton">Search My Indexes</button>
+      </div>
+      <div id="acquisitionSearchStatus" class="muted acquisition-search-status">No website is contacted during this search.</div>
+      <div id="acquisitionResults" class="acquisition-results"></div>
+
+      <details class="acquisition-attach-details">
+        <summary>Attach a local file manually</summary>
+        <form action="/games/{{ game.id }}/acquisition/attach" method="post" class="acquisition-attach-form">
+          <input type="hidden" name="entry_id" id="acquisitionSelectedEntry">
+          <label>Local file or folder path</label>
+          <input name="local_path" value="{{ game_acquisition.local_path if game_acquisition else '' }}" placeholder="D:\ROMs\Nintendo 64\Example Game.z64" required>
+          <button>Attach Local Copy</button>
+        </form>
+      </details>
     </section>
 
     <section class="panel">
@@ -216,48 +214,95 @@
   </div>
 </div>
 
-<style>
-.acquisition-warning{margin:14px 0;padding:12px 14px;border:1px solid rgba(255,190,70,.3);border-radius:12px;background:rgba(255,190,70,.08)}
-.acquisition-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px}
-.acquisition-progress{height:8px;margin-top:14px;overflow:hidden;border-radius:999px;background:rgba(255,255,255,.08)}
-.acquisition-progress span{display:block;width:36%;height:100%;border-radius:inherit;background:linear-gradient(90deg,transparent,var(--accent,#69a7ff),transparent);animation:acquisitionSweep 1.15s ease-in-out infinite}
-@keyframes acquisitionSweep{from{transform:translateX(-120%)}to{transform:translateX(300%)}}
-</style>
 <script>
 (() => {
-  const panel = document.getElementById('acquisition-panel');
-  if (!panel || panel.dataset.ready === '1') return;
-  panel.dataset.ready = '1';
-  const gameId = {{ game.id }};
-  const url = document.getElementById('acquisition-url');
-  const provider = document.getElementById('acquisition-provider');
-  const status = document.getElementById('acquisition-status');
-  const progress = document.getElementById('acquisition-progress');
-  const save = document.getElementById('save-acquisition-link');
-  const download = document.getElementById('download-acquisition');
+  const panel = document.getElementById('personal-acquisition');
+  if (!panel) return;
+  const gameId = panel.dataset.gameId;
+  const query = document.getElementById('acquisitionQuery');
+  const platform = document.getElementById('acquisitionPlatform');
+  const button = document.getElementById('acquisitionSearchButton');
+  const status = document.getElementById('acquisitionSearchStatus');
+  const results = document.getElementById('acquisitionResults');
+  const selectedEntry = document.getElementById('acquisitionSelectedEntry');
 
-  async function call(endpoint, workingText) {
-    const value = url.value.trim();
-    if (!value) { status.textContent = 'Enter a direct download URL.'; url.focus(); return; }
-    save.disabled = true; download.disabled = true; progress.hidden = false; status.textContent = workingText;
-    try {
-      const response = await fetch(`/api/games/${gameId}/acquisition/${endpoint}`, {
-        method: 'POST', headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({url: value, provider: provider.value.trim() || 'User-provided URL', title: {{ game.title|tojson }}})
-      });
-      const data = await response.json();
-      if (!response.ok || !data.success) throw new Error(data.message || 'The request failed.');
-      status.textContent = data.message || 'Done.';
-      if (endpoint === 'download' && data.download) {
-        let result = document.getElementById('acquisition-result');
-        if (!result) { result = document.createElement('div'); result.id='acquisition-result'; result.className='metadata-log success'; panel.appendChild(result); }
-        result.innerHTML = `<strong>Stored locally</strong><span>${data.download.filename} · ${(data.download.size/1048576).toFixed(2)} MB · ${data.download.relative_path}</span>`;
+  const humanSize = (bytes) => {
+    const value = Number(bytes || 0);
+    if (!value) return 'Size unknown';
+    const units = ['B','KB','MB','GB','TB'];
+    let size = value, index = 0;
+    while (size >= 1024 && index < units.length - 1) { size /= 1024; index += 1; }
+    return `${size.toFixed(index > 1 ? 1 : 0)} ${units[index]}`;
+  };
+
+  const makeButton = (label, className, handler) => {
+    const node = document.createElement('button');
+    node.type = 'button';
+    node.textContent = label;
+    if (className) node.className = className;
+    node.addEventListener('click', handler);
+    return node;
+  };
+
+  const render = (items) => {
+    results.replaceChildren();
+    if (!items.length) {
+      const empty = document.createElement('div');
+      empty.className = 'metadata-empty';
+      const title = document.createElement('h3'); title.textContent = 'No matches in your uploaded indexes';
+      const copy = document.createElement('p'); copy.className = 'muted'; copy.textContent = 'Try a shorter title, remove the platform hint, or upload another catalog in Advanced Settings.';
+      empty.append(title, copy); results.append(empty); return;
+    }
+    items.forEach((item) => {
+      const card = document.createElement('article'); card.className = 'acquisition-result-card';
+      const body = document.createElement('div'); body.className = 'acquisition-result-body';
+      const top = document.createElement('div'); top.className = 'acquisition-result-top';
+      const title = document.createElement('h3'); title.textContent = item.title;
+      const score = document.createElement('span'); score.className = 'confidence-badge'; score.textContent = `${item.match_score || 0}%`;
+      top.append(title, score);
+      const meta = document.createElement('p'); meta.className = 'muted';
+      meta.textContent = [item.platform, item.region, item.version, item.format, humanSize(item.size_bytes), item.index_name].filter(Boolean).join(' · ');
+      const notes = document.createElement('p'); notes.textContent = item.notes || 'No catalog notes provided.';
+      const actions = document.createElement('div'); actions.className = 'acquisition-result-actions';
+      if (item.source_page) {
+        const link = document.createElement('a'); link.className = 'button-link secondary'; link.href = item.source_page; link.target = '_blank'; link.rel = 'noopener noreferrer'; link.textContent = 'Open Source Page'; actions.append(link);
       }
-    } catch (error) { status.textContent = error.message; }
-    finally { save.disabled = false; download.disabled = false; progress.hidden = true; }
-  }
-  save.addEventListener('click', () => call('link', 'Saving link…'));
-  download.addEventListener('click', () => call('download', 'Downloading and validating file…'));
+      if (item.download_url) {
+        actions.append(makeButton('Copy Download Link', 'secondary', async () => {
+          try { await navigator.clipboard.writeText(item.download_url); status.textContent = 'Download link copied.'; }
+          catch (_) { window.prompt('Copy this download link:', item.download_url); }
+        }));
+      }
+      actions.append(makeButton('Use for Local Attachment', '', () => {
+        selectedEntry.value = item.id;
+        const details = panel.querySelector('.acquisition-attach-details');
+        details.open = true;
+        details.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        status.textContent = `Selected ${item.title}. Enter the local path after you acquire the file.`;
+      }));
+      body.append(top, meta, notes, actions); card.append(body); results.append(card);
+    });
+  };
+
+  const search = async () => {
+    const term = query.value.trim();
+    if (!term) { query.focus(); return; }
+    button.disabled = true; button.textContent = 'Searching…'; status.textContent = 'Searching your local acquisition indexes…';
+    try {
+      const params = new URLSearchParams({ q: term, platform: platform.value.trim() });
+      const response = await fetch(`/api/games/${gameId}/acquisition/search?${params.toString()}`, { headers: { 'Accept': 'application/json' } });
+      const data = await response.json();
+      if (!response.ok || !data.success) throw new Error(data.message || 'Search failed.');
+      render(data.results || []);
+      status.textContent = `${(data.results || []).length} result${(data.results || []).length === 1 ? '' : 's'} found in your uploaded indexes.`;
+    } catch (error) {
+      status.textContent = error.message; results.replaceChildren();
+    } finally {
+      button.disabled = false; button.textContent = 'Search My Indexes';
+    }
+  };
+  button.addEventListener('click', search);
+  query.addEventListener('keydown', (event) => { if (event.key === 'Enter') { event.preventDefault(); search(); } });
 })();
 </script>
 

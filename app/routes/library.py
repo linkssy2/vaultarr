@@ -7,6 +7,7 @@ from app.services.metadata_service import search_metadata_diagnostics, get_steam
 from app.services.game_removal_service import remove_game
 from app.services.provider_intelligence import get_provider_details
 from app.services.curator_service import queue_game
+from app.services.acquisition_index_service import get_game_acquisition
 
 library_bp = Blueprint('library', __name__)
 
@@ -103,7 +104,7 @@ def game_detail(game_id):
         search_data=search_metadata_diagnostics(query, provider)
         results=search_data.get('results', [])
         logs=search_data.get('logs', [])
-    return render_template('game_detail.html', game=game, metadata_results=results, metadata_logs=logs, metadata_query=query, provider=provider)
+    return render_template('game_detail.html', game=game, metadata_results=results, metadata_logs=logs, metadata_query=query, provider=provider, game_acquisition=get_game_acquisition(game_id))
 
 
 @library_bp.route('/games/<int:game_id>/metadata/search', methods=['POST'])

@@ -16,15 +16,6 @@ def migrate():
         c.execute("INSERT INTO schema_version (version) VALUES (1)")
     migrate_to_1(c)
     for col, definition in {
-        "rom_url": "TEXT DEFAULT ''",
-        "rom_provider": "TEXT DEFAULT ''",
-        "rom_title": "TEXT DEFAULT ''",
-        "rom_file_path": "TEXT DEFAULT ''",
-        "rom_file_name": "TEXT DEFAULT ''",
-        "rom_file_size": "INTEGER DEFAULT 0",
-        "rom_downloaded_at": "TEXT DEFAULT ''",
-        "rom_checked_at": "TEXT DEFAULT ''",
-        "rom_category": "TEXT DEFAULT ''",
         "executables": "TEXT DEFAULT ''",
         "preservation_score": "INTEGER DEFAULT 0",
         "added_at": "TEXT DEFAULT CURRENT_TIMESTAMP",
@@ -160,6 +151,56 @@ def migrate():
     )
     """)
     c.execute("""
+    CREATE TABLE IF NOT EXISTS acquisition_indexes (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        original_filename TEXT DEFAULT '',
+        stored_filename TEXT DEFAULT '',
+        file_type TEXT DEFAULT '',
+        entry_count INTEGER DEFAULT 0,
+        sha256 TEXT DEFAULT '',
+        enabled INTEGER DEFAULT 1,
+        imported_at TEXT DEFAULT CURRENT_TIMESTAMP,
+        updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+    )
+    """)
+    c.execute("""
+    CREATE TABLE IF NOT EXISTS acquisition_entries (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        index_id INTEGER NOT NULL,
+        title TEXT NOT NULL,
+        normalized_title TEXT NOT NULL,
+        platform TEXT DEFAULT '',
+        region TEXT DEFAULT '',
+        version TEXT DEFAULT '',
+        format TEXT DEFAULT '',
+        size_bytes INTEGER DEFAULT 0,
+        source_page TEXT DEFAULT '',
+        download_url TEXT DEFAULT '',
+        checksum_sha256 TEXT DEFAULT '',
+        notes TEXT DEFAULT '',
+        FOREIGN KEY(index_id) REFERENCES acquisition_indexes(id)
+    )
+    """)
+    c.execute("CREATE INDEX IF NOT EXISTS idx_acquisition_entries_title ON acquisition_entries(normalized_title)")
+    c.execute("CREATE INDEX IF NOT EXISTS idx_acquisition_entries_index ON acquisition_entries(index_id)")
+    c.execute("""
+    CREATE TABLE IF NOT EXISTS game_acquisitions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        game_id INTEGER NOT NULL UNIQUE,
+        entry_id INTEGER,
+        local_path TEXT DEFAULT '',
+        source_page TEXT DEFAULT '',
+        download_url TEXT DEFAULT '',
+        status TEXT DEFAULT 'missing',
+        attached_at TEXT DEFAULT '',
+        updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY(game_id) REFERENCES games(id),
+        FOREIGN KEY(entry_id) REFERENCES acquisition_entries(id)
+    )
+    """)
+
+    c.execute("""
     CREATE TABLE IF NOT EXISTS ignored_game_paths (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         path TEXT NOT NULL UNIQUE,
@@ -190,15 +231,6 @@ def migrate_to_1(c):
         file_count INTEGER DEFAULT 0,
         executable_count INTEGER DEFAULT 0,
         executables TEXT DEFAULT '',
-        rom_url TEXT DEFAULT '',
-        rom_provider TEXT DEFAULT '',
-        rom_title TEXT DEFAULT '',
-        rom_file_path TEXT DEFAULT '',
-        rom_file_name TEXT DEFAULT '',
-        rom_file_size INTEGER DEFAULT 0,
-        rom_downloaded_at TEXT DEFAULT '',
-        rom_checked_at TEXT DEFAULT '',
-        rom_category TEXT DEFAULT '',
         preservation_score INTEGER DEFAULT 0,
         added_at TEXT DEFAULT CURRENT_TIMESTAMP,
         updated_at TEXT DEFAULT CURRENT_TIMESTAMP,

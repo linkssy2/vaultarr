@@ -1,3 +1,11 @@
+# 1.5.0 — Personal Acquisition Indexes
+
+- Added administrator-uploaded JSON and CSV acquisition catalogs.
+- Added local catalog validation, normalization, indexing, search, and management.
+- Added game-level acquisition search, source-page handoff, link copying, and local-file attachment.
+- Preserved the stable Vaultarr 1.4.10 navigation, cards, Curator, manuals, and Universal Search behavior.
+- Updated GHCR publishing to create both `latest` and version-specific image tags.
+
 # 1.4.10 — Navigation Load Consistency
 
 - Prepared sidebar destinations before beginning the exit animation.

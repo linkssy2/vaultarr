@@ -1,12 +1,12 @@
-# Vaultarr 1.4.10
+# Vaultarr 1.5.0
 
-> Current release: **Vaultarr 1.4.10 — Navigation Load Consistency**
+> Current release: **Vaultarr 1.5.0 — Personal Acquisition Indexes**
 
 Vaultarr is a self-hosted game preservation dashboard for cataloging, enriching, and maintaining a personal game archive.
 
 ## The Curator Experience
 
-Vaultarr 1.4.10 keeps the simplified Curator experience and unified live state while making sidebar navigation consistent even when a destination must be fetched again. It continues to focus on one goal: add a game and let Vaultarr prepare the museum record. Standard Mode shows only the essential collection pages, while technical provider, cache, and diagnostic tools remain available through **Advanced Mode** in Settings.
+Vaultarr 1.5.0 keeps the stable 1.4.10 navigation and Curator experience while adding administrator-supplied acquisition catalogs. Upload a JSON or CSV index in **Advanced Settings**, search it locally from a game record, open or copy the catalog links, and attach the local file after you obtain it. Vaultarr does not scrape the source website or execute anything from an uploaded catalog.
 
 Newly scanned games can be queued automatically for Curator processing. Vaultarr researches game information, chooses available artwork, looks for a manual, respects user edits and metadata locks, and surfaces only items that need review.
 
@@ -227,23 +227,33 @@ Open **Search** in the sidebar (or press `Ctrl+K`) and choose:
 
 The **Add Game** button on the Library page opens the detailed manual form for prototypes, fan games, homebrew, custom ports, and unmatched titles.
 
-## Archival acquisition downloads
 
-Vaultarr 1.5.0 can attach a **direct HTTP/HTTPS download URL** to a game and save the file into a mounted acquisitions folder. Vaultarr does not search ROM mirrors or abandonware sites automatically. Only use sources and files you are legally authorized to access.
+## Personal Acquisition Indexes
 
-Production Compose should include:
+Enable **Advanced Mode**, then open **Settings → Personal Acquisition Indexes**. Upload a `.json` or `.csv` file containing a `title` field and any of these optional fields:
 
-```yaml
-services:
-  vaultarr:
-    image: ghcr.io/linkssy2/vaultarr:latest
-    environment:
-      - LOCALAPPDATA=/config
-      - VAULTARR_ACQUISITIONS_DIR=/acquisitions
-    volumes:
-      - ./config:/config
-      - ./acquisitions:/acquisitions
-      - /path/to/games:/games
+```text
+title, platform, region, version, format, size_bytes,
+source_page, download_url, checksum_sha256, notes
 ```
 
-Downloads are grouped by the game's platform. The maximum individual download size defaults to 20 GiB and can be changed with `VAULTARR_MAX_ACQUISITION_BYTES`.
+Example JSON:
+
+```json
+{
+  "catalog_name": "My Game Archive",
+  "entries": [
+    {
+      "title": "Example Game",
+      "platform": "Nintendo 64",
+      "region": "USA",
+      "format": "z64",
+      "source_page": "https://example.com/item/123",
+      "download_url": "https://example.com/download/123"
+    }
+  ]
+}
+```
+
+Vaultarr stores the index under the existing `/config` volume, searches it locally, and treats platform as a ranking hint rather than a hard filter. The game page can open the source page, copy the supplied download link, and attach a local file or folder path. Uploaded catalogs are data only: scripts are never executed and only HTTP/HTTPS links are accepted.
+

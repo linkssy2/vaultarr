@@ -17,6 +17,7 @@ from app.routes.onboarding import onboarding_bp
 from app.routes.health import health_bp
 from app.routes.auth import auth_bp
 from app.routes.curator import curator_bp
+from app.routes.acquisition import acquisition_bp
 from app.services.auth_service import get_secret_key, auth_is_enabled, load_auth_settings
 from app.services.theme_service import load_theme, css_variables
 from app.services.ui_settings import load_ui_settings
@@ -70,6 +71,7 @@ app.register_blueprint(onboarding_bp)
 app.register_blueprint(health_bp)
 app.register_blueprint(auth_bp)
 app.register_blueprint(curator_bp)
+app.register_blueprint(acquisition_bp)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.getenv("VAULTARR_PORT", "8787")))

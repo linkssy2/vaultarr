@@ -7,8 +7,6 @@ services:
     environment:
       - TZ=America/Los_Angeles
       - LOCALAPPDATA=/config
-      - ./acquisitions:/acquisitions
-      - VAULTARR_ACQUISITIONS_DIR=/acquisitions
       - VAULTARR_PORT=8787
     volumes:
       - ./config:/config

@@ -1,10 +1,10 @@
-# Changelog
+# 1.5.0 — Personal Acquisition Indexes
 
-## 1.5.0
-- Added the archival acquisition foundation for user-provided direct download URLs.
-- Added secure streamed downloads to a configurable acquisitions folder.
-- Restored complete API routes, database migrations, and the original game details page removed by the prototype edit.
-- Fixed GHCR publishing to emit `latest` and the version from `VERSION`.
+- Added administrator-uploaded JSON and CSV acquisition catalogs.
+- Added local catalog validation, normalization, indexing, search, and management.
+- Added game-level acquisition search, source-page handoff, link copying, and local-file attachment.
+- Preserved the stable Vaultarr 1.4.10 navigation, cards, Curator, manuals, and Universal Search behavior.
+- Updated GHCR publishing to create both `latest` and version-specific image tags.
 
 # 1.4.10 — Navigation Load Consistency
 

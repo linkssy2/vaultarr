@@ -6,8 +6,6 @@ services:
       - "8787:8787"
     environment:
       - LOCALAPPDATA=/config
-      - ./acquisitions:/acquisitions
-      - VAULTARR_ACQUISITIONS_DIR=/acquisitions
     volumes:
       - ./config:/config
       - /path/to/games:/games
