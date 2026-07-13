@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-  <title>Vaultarr 1.7.8</title>
+  <title>Vaultarr 1.7.9</title>
   {% if theme.dark_reader_compat %}<meta name="darkreader-lock">{% endif %}
   <meta name="theme-color" content="#3b82f6">
   <link rel="icon" href="/static/icons/favicon.ico?v=1.7.6" sizes="any">
@@ -36,7 +36,7 @@
   <link rel="stylesheet" href="/static/css/readiness.css">
   <link rel="stylesheet" href="/static/css/responsive.css">
   <link rel="stylesheet" href="/static/css/controls.css?v=1.7.6">
-  <link rel="stylesheet" href="/static/css/sidebar-scan-control.css?v=1.7.8-rebuilt">
+  <link rel="stylesheet" href="/static/css/sidebar-scan-control.css?v=1.7.9-morph">
   <style id="vaultarr-theme">{{ theme_css|safe }}</style>
 </head>
 <body class="vaultos {{ 'advanced-mode' if ui_settings.advanced_mode else 'standard-mode' }} {% if theme.dark_reader_compat %}dark-reader-compat{% endif %}">
@@ -64,21 +64,19 @@
 
     <div class="sidebar-utility-stack">
       <div class="sidebar-scan-shell" data-museum-scan-control data-state="idle">
-        <button class="sidebar-scan-control" type="button" data-museum-scan-start aria-expanded="false" aria-controls="museumScanDrawer" title="Scan Museum">
-          <span class="nav-glyph">↻</span>
-          <strong>Scan Museum</strong>
-        </button>
-        <div class="sidebar-scan-control-live" id="museumScanDrawer" aria-hidden="true">
-          <div class="sidebar-scan-control-live-inner">
-            <span class="sidebar-scan-pill-top">
-              <span class="sidebar-scan-pulse" aria-hidden="true"></span>
-              <strong data-museum-scan-stage>Scanning Museum</strong>
-              <span data-museum-scan-percent>0%</span>
-            </span>
+        <button class="sidebar-scan-control" type="button" data-museum-scan-start aria-label="Scan Museum" title="Scan Museum">
+          <span class="sidebar-scan-idle">
+            <span class="nav-glyph">↻</span>
+            <strong>Scan Museum</strong>
+          </span>
+          <span class="sidebar-scan-live" aria-hidden="true">
+            <span class="sidebar-scan-status-icon" data-museum-scan-icon aria-hidden="true">↻</span>
+            <strong class="sidebar-scan-stage" data-museum-scan-stage>Scanning Museum</strong>
+            <span class="sidebar-scan-percent" data-museum-scan-percent>0%</span>
+            <small class="sidebar-scan-detail" data-museum-scan-detail>Checking your collection…</small>
             <span class="museum-scan-track"><span data-museum-scan-fill></span></span>
-            <small data-museum-scan-detail></small>
-          </div>
-        </div>
+          </span>
+        </button>
       </div>
 
       <button class="sidebar-search-shell" id="globalSearchOpen" type="button">
@@ -90,7 +88,7 @@
     <div class="sidebar-footer">
       <div class="mini-stat vault-build-card">
         <span>Current build</span>
-        <strong>Vaultarr 1.7.8</strong>
+        <strong>Vaultarr 1.7.9</strong>
         <em></em>
       </div>
       {% if auth_enabled %}
@@ -607,7 +605,7 @@
   </dialog>
 
   <script src="/static/js/live-events.js?v=1.7.6"></script>
-  <script src="/static/js/museum-scan.js?v=1.7.8-rebuilt"></script>
+  <script src="/static/js/museum-scan.js?v=1.7.9-morph"></script>
   <script src="/static/js/library.js?v=1.7.6"></script>
   <script src="/static/js/focus-mode.js?v=1.7.6"></script>
   <script src="/static/js/performance-foundation.js?v=1.7.6"></script>

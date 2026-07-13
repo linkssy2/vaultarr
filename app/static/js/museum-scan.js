@@ -73,14 +73,16 @@
       if (mode !== 'idle') shell.classList.add(`is-${mode}`);
       shell.dataset.state = mode;
       const button = shell.querySelector('[data-museum-scan-start]');
-      const drawer = shell.querySelector('.sidebar-scan-control-live');
+      const live = shell.querySelector('.sidebar-scan-live');
+      const icon = shell.querySelector('[data-museum-scan-icon]');
       const open = mode !== 'idle';
       if (button) {
-        button.setAttribute('aria-expanded', String(open));
         button.setAttribute('aria-disabled', String(mode === 'active'));
+        button.setAttribute('aria-label', mode === 'active' ? 'Museum scan in progress' : mode === 'complete' ? 'Museum updated' : mode === 'failed' ? 'Museum scan failed' : 'Scan Museum');
         button.title = mode === 'active' ? 'Museum scan in progress' : 'Scan Museum';
       }
-      if (drawer) drawer.setAttribute('aria-hidden', String(!open));
+      if (live) live.setAttribute('aria-hidden', String(!open));
+      if (icon) icon.textContent = mode === 'complete' ? '✓' : mode === 'failed' ? '!' : '↻';
     });
   }
 
@@ -92,14 +94,15 @@
   function closeCalmly() {
     cancelClose();
     state.closeTimer = window.setTimeout(() => {
-      shells().forEach(shell => shell.classList.add('is-closing'));
+      setVisualMode('idle');
       state.resetTimer = window.setTimeout(() => {
-        setVisualMode('idle');
         state.displayed = 0;
         state.target = 0;
         paintProgress(0);
-      }, 980);
-    }, 1800);
+        state.stage = '';
+        state.detail = '';
+      }, 460);
+    }, 1700);
   }
 
   function render(data) {

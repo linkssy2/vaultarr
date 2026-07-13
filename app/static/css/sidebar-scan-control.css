@@ -1,5 +1,5 @@
-/* Vaultarr 1.7.8 — Rebuilt Museum Scan Control
-   One compact pill, one independent drawer, no inherited scan-control rules. */
+/* Vaultarr 1.7.9 — Morphing Museum Scan Pill
+   One fixed-size control. No drawer, no layout shift, no popup. */
 .sidebar.vaultos-sidebar .sidebar-utility-stack {
   width: 100%;
   margin-top: auto;
@@ -16,8 +16,9 @@
 }
 
 .sidebar.vaultos-sidebar .sidebar-scan-shell {
-  display: grid;
-  gap: 0;
+  position: relative;
+  height: 44px;
+  min-height: 44px;
 }
 
 .sidebar.vaultos-sidebar .sidebar-scan-control,
@@ -31,12 +32,9 @@
 
 .sidebar.vaultos-sidebar .sidebar-scan-control {
   position: relative;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 9px;
-  padding: 0 16px;
+  display: block;
+  padding: 0;
+  overflow: hidden;
   appearance: none;
   border: 1px solid rgba(125,211,252,.34);
   background: linear-gradient(135deg,#2563eb 0%,#3b82f6 58%,#1587c4 100%);
@@ -44,172 +42,198 @@
   font: inherit;
   cursor: pointer;
   box-shadow: 0 9px 24px rgba(37,99,235,.23), inset 0 1px 0 rgba(255,255,255,.13);
-  transition: transform .28s cubic-bezier(.22,.61,.36,1), box-shadow .28s ease, border-color .28s ease, background .28s ease;
+  isolation: isolate;
+  transition:
+    transform .30s cubic-bezier(.22,.61,.36,1),
+    box-shadow .30s ease,
+    border-color .30s ease,
+    background .45s ease;
 }
 
 .sidebar.vaultos-sidebar .sidebar-scan-control:hover,
 .sidebar.vaultos-sidebar .sidebar-scan-control:focus-visible {
   transform: translateY(-1px);
   border-color: rgba(186,230,253,.56);
-  background: linear-gradient(135deg,#2f70ed 0%,#4890fb 58%,#1795d8 100%);
   box-shadow: 0 13px 30px rgba(37,99,235,.31), 0 0 18px rgba(56,189,248,.10), inset 0 1px 0 rgba(255,255,255,.16);
 }
-
 .sidebar.vaultos-sidebar .sidebar-scan-control:active { transform: translateY(0) scale(.995); }
 .sidebar.vaultos-sidebar .sidebar-scan-control:focus-visible { outline: 2px solid rgba(125,211,252,.62); outline-offset: 3px; }
 .sidebar.vaultos-sidebar .sidebar-scan-control[aria-disabled="true"] { cursor: default; }
-.sidebar.vaultos-sidebar .sidebar-scan-control strong { font-size: 12.5px; line-height: 1; white-space: nowrap; letter-spacing: -.01em; }
-.sidebar.vaultos-sidebar .sidebar-scan-control .nav-glyph { width: 22px; height: 22px; border-radius: 999px; font-size: .82rem; }
 
-/* Independent drawer. It never changes the pill's height. */
-.sidebar.vaultos-sidebar .sidebar-scan-control-live {
-  display: grid;
-  grid-template-rows: 0fr;
-  margin-top: 0;
-  opacity: 0;
-  transform: translateY(-8px);
-  pointer-events: none;
-  transition:
-    grid-template-rows .78s cubic-bezier(.16,1,.3,1),
-    margin-top .78s cubic-bezier(.16,1,.3,1),
-    opacity .34s ease,
-    transform .78s cubic-bezier(.16,1,.3,1);
-}
-
-.sidebar.vaultos-sidebar .sidebar-scan-control-live-inner {
-  min-height: 0;
-  overflow: hidden;
-  box-sizing: border-box;
-  padding: 0 15px;
-  display: grid;
-  align-content: start;
-  gap: 9px;
-  border: 0 solid rgba(96,165,250,.34);
-  border-radius: 0 0 18px 18px;
-  background: linear-gradient(150deg,rgba(16,43,91,.98),rgba(8,24,53,.98));
-  box-shadow: 0 14px 30px rgba(3,14,34,.22), inset 0 1px 0 rgba(255,255,255,.05);
-  opacity: 0;
-  transform: translateY(-5px);
-  transition:
-    padding .68s cubic-bezier(.16,1,.3,1),
-    border-width .45s ease,
-    opacity .34s ease .18s,
-    transform .62s cubic-bezier(.16,1,.3,1) .10s;
-}
-
-.sidebar.vaultos-sidebar .sidebar-scan-shell.is-active .sidebar-scan-control-live,
-.sidebar.vaultos-sidebar .sidebar-scan-shell.is-complete .sidebar-scan-control-live,
-.sidebar.vaultos-sidebar .sidebar-scan-shell.is-failed .sidebar-scan-control-live {
-  grid-template-rows: 1fr;
-  margin-top: -5px;
-  opacity: 1;
-  transform: translateY(0);
-  pointer-events: auto;
-}
-
-.sidebar.vaultos-sidebar .sidebar-scan-shell.is-active .sidebar-scan-control-live-inner,
-.sidebar.vaultos-sidebar .sidebar-scan-shell.is-complete .sidebar-scan-control-live-inner,
-.sidebar.vaultos-sidebar .sidebar-scan-shell.is-failed .sidebar-scan-control-live-inner {
-  padding: 17px 15px 13px;
-  border-width: 1px;
-  opacity: 1;
-  transform: translateY(0);
-}
-
-/* Calm two-stage close: details fade, then the drawer folds away. */
-.sidebar.vaultos-sidebar .sidebar-scan-shell.is-closing .sidebar-scan-control-live-inner {
-  opacity: 0;
-  transform: translateY(-4px);
-  transition-delay: 0s;
-  transition-duration: .30s;
-}
-.sidebar.vaultos-sidebar .sidebar-scan-shell.is-closing .sidebar-scan-control-live {
-  grid-template-rows: 0fr;
-  margin-top: 0;
-  opacity: 0;
-  transform: translateY(-8px);
-  transition-delay: .22s;
-}
-.sidebar.vaultos-sidebar .sidebar-scan-shell.is-closing .sidebar-scan-control-live-inner {
-  padding-top: 0;
-  padding-bottom: 0;
-  border-width: 0;
-}
-
-.sidebar.vaultos-sidebar .sidebar-scan-pill-top {
+.sidebar.vaultos-sidebar .sidebar-scan-idle,
+.sidebar.vaultos-sidebar .sidebar-scan-live {
+  position: absolute;
+  inset: 0;
   min-width: 0;
-  display: grid;
-  grid-template-columns: 8px minmax(0,1fr) auto;
-  align-items: center;
-  gap: 8px;
-  min-height: 18px;
+  transition:
+    opacity .34s ease,
+    transform .46s cubic-bezier(.22,.61,.36,1),
+    filter .34s ease;
 }
-.sidebar.vaultos-sidebar .sidebar-scan-pill-top strong,
-.sidebar.vaultos-sidebar .sidebar-scan-control-live small {
+
+.sidebar.vaultos-sidebar .sidebar-scan-idle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 0 16px;
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+}
+.sidebar.vaultos-sidebar .sidebar-scan-idle strong {
+  font-size: 12.5px;
+  line-height: 1;
+  white-space: nowrap;
+  letter-spacing: -.01em;
+}
+.sidebar.vaultos-sidebar .sidebar-scan-idle .nav-glyph {
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  font-size: .82rem;
+}
+
+.sidebar.vaultos-sidebar .sidebar-scan-live {
+  display: grid;
+  grid-template-columns: 19px minmax(0,1fr) auto;
+  grid-template-rows: 18px 13px 3px;
+  align-content: center;
+  align-items: center;
+  column-gap: 7px;
+  padding: 4px 13px 3px;
+  opacity: 0;
+  transform: translateY(7px);
+  filter: blur(2px);
+  pointer-events: none;
+}
+
+.sidebar.vaultos-sidebar .sidebar-scan-status-icon {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  display: grid;
+  place-items: center;
+  width: 19px;
+  height: 19px;
+  border-radius: 999px;
+  font-size: .74rem;
+  color: #eaf8ff;
+  background: rgba(255,255,255,.10);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.11);
+}
+.sidebar.vaultos-sidebar .sidebar-scan-stage {
+  grid-column: 2;
+  grid-row: 1;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  font-size: .69rem;
+  line-height: 1;
+  font-weight: 800;
+  color: #f7fbff;
+  transition: opacity .18s ease, transform .18s ease;
 }
-.sidebar.vaultos-sidebar .sidebar-scan-pill-top strong { color: #f6faff; font-size: .76rem; transition: opacity .20s ease, transform .20s ease; }
-.sidebar.vaultos-sidebar .sidebar-scan-pill-top [data-museum-scan-percent] { color: rgba(219,234,254,.90); font-size: .72rem; font-weight: 800; font-variant-numeric: tabular-nums; }
-.sidebar.vaultos-sidebar .sidebar-scan-control-live small { min-height: 15px; color: rgba(191,219,254,.82); font-size: .68rem; line-height: 1.25; transition: opacity .20s ease, transform .20s ease; }
-.sidebar.vaultos-sidebar [data-museum-scan-stage].is-changing,
-.sidebar.vaultos-sidebar [data-museum-scan-detail].is-changing { opacity: 0; transform: translateY(3px); }
-
-.sidebar.vaultos-sidebar .sidebar-scan-pulse {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #67d5ff;
-  box-shadow: 0 0 8px rgba(103,213,255,.34);
-  animation: vaultarr-scan-breathe 2.4s ease-in-out infinite;
+.sidebar.vaultos-sidebar .sidebar-scan-detail {
+  grid-column: 2 / 4;
+  grid-row: 2;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: .60rem;
+  line-height: 1;
+  color: rgba(219,234,254,.78);
+  transition: opacity .18s ease, transform .18s ease;
 }
-.sidebar.vaultos-sidebar .sidebar-scan-shell.is-complete .sidebar-scan-pulse { background:#34d399; box-shadow:0 0 9px rgba(52,211,153,.40); animation:none; }
-.sidebar.vaultos-sidebar .sidebar-scan-shell.is-failed .sidebar-scan-pulse { background:#fb7185; box-shadow:0 0 9px rgba(251,113,133,.38); animation:none; }
+.sidebar.vaultos-sidebar .sidebar-scan-percent {
+  grid-column: 3;
+  grid-row: 1;
+  font-size: .66rem;
+  line-height: 1;
+  font-weight: 800;
+  color: rgba(239,246,255,.90);
+  font-variant-numeric: tabular-nums;
+}
+.sidebar.vaultos-sidebar .sidebar-scan-stage.is-changing,
+.sidebar.vaultos-sidebar .sidebar-scan-detail.is-changing {
+  opacity: 0;
+  transform: translateY(2px);
+}
 
 .sidebar.vaultos-sidebar .museum-scan-track {
-  display:block;
-  height:4px;
-  border-radius:999px;
-  overflow:hidden;
-  background:rgba(4,15,34,.56);
-  box-shadow:inset 0 1px 2px rgba(0,0,0,.30);
+  grid-column: 1 / 4;
+  grid-row: 3;
+  align-self: end;
+  display: block;
+  height: 3px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: rgba(3,13,32,.44);
+  box-shadow: inset 0 1px 2px rgba(0,0,0,.28);
 }
 .sidebar.vaultos-sidebar .museum-scan-track > span {
-  display:block;
-  width:0;
-  height:100%;
-  border-radius:inherit;
-  background:linear-gradient(90deg,#35c2f4,#4f8df7 58%,#8b5cf6);
-  box-shadow:0 0 10px rgba(96,165,250,.34);
-  transition:width .42s cubic-bezier(.22,.61,.36,1);
+  display: block;
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg,#54d4ff,#86a8ff 58%,#b59cff);
+  box-shadow: 0 0 9px rgba(125,211,252,.42);
+  transition: width .50s cubic-bezier(.22,.61,.36,1);
 }
-.sidebar.vaultos-sidebar .sidebar-scan-shell.is-active .sidebar-scan-control .nav-glyph { animation:vaultarr-scan-icon-drift 7s linear infinite; }
+
+.sidebar.vaultos-sidebar .sidebar-scan-shell.is-active .sidebar-scan-control,
+.sidebar.vaultos-sidebar .sidebar-scan-shell.is-complete .sidebar-scan-control,
+.sidebar.vaultos-sidebar .sidebar-scan-shell.is-failed .sidebar-scan-control {
+  background: linear-gradient(135deg,rgba(20,64,142,.98),rgba(37,99,235,.98) 56%,rgba(12,108,151,.98));
+}
+.sidebar.vaultos-sidebar .sidebar-scan-shell.is-active .sidebar-scan-idle,
+.sidebar.vaultos-sidebar .sidebar-scan-shell.is-complete .sidebar-scan-idle,
+.sidebar.vaultos-sidebar .sidebar-scan-shell.is-failed .sidebar-scan-idle {
+  opacity: 0;
+  transform: translateY(-7px);
+  filter: blur(2px);
+  pointer-events: none;
+}
+.sidebar.vaultos-sidebar .sidebar-scan-shell.is-active .sidebar-scan-live,
+.sidebar.vaultos-sidebar .sidebar-scan-shell.is-complete .sidebar-scan-live,
+.sidebar.vaultos-sidebar .sidebar-scan-shell.is-failed .sidebar-scan-live {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+}
+.sidebar.vaultos-sidebar .sidebar-scan-shell.is-active .sidebar-scan-status-icon {
+  animation: vaultarr-scan-turn 5.5s linear infinite;
+}
+.sidebar.vaultos-sidebar .sidebar-scan-shell.is-complete .sidebar-scan-status-icon {
+  color: #d1fae5;
+  background: rgba(52,211,153,.18);
+}
+.sidebar.vaultos-sidebar .sidebar-scan-shell.is-failed .sidebar-scan-status-icon {
+  color: #ffe4e6;
+  background: rgba(251,113,133,.18);
+}
 
 .sidebar.vaultos-sidebar .sidebar-search-shell {
   padding: 0 14px 0 16px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-  font-size:12.5px;
-  line-height:1;
-  white-space:nowrap;
-  overflow:hidden;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 12.5px;
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
 }
 .sidebar.vaultos-sidebar .sidebar-search-shell > span { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .sidebar.vaultos-sidebar .sidebar-search-shell kbd { flex:0 0 auto; margin:0; padding:4px 8px; line-height:1; border-radius:999px; }
 
-@keyframes vaultarr-scan-breathe { 0%,100%{opacity:.68;transform:scale(.94)} 50%{opacity:1;transform:scale(1.08)} }
-@keyframes vaultarr-scan-icon-drift { to{transform:rotate(360deg)} }
-
-@media(max-width:720px){.sidebar.vaultos-sidebar .sidebar-utility-stack{padding-inline:10px}}
+@keyframes vaultarr-scan-turn { to { transform: rotate(360deg); } }
+@media(max-width:720px){ .sidebar.vaultos-sidebar .sidebar-utility-stack{padding-inline:10px} }
 @media(prefers-reduced-motion:reduce){
   .sidebar.vaultos-sidebar .sidebar-scan-control,
-  .sidebar.vaultos-sidebar .sidebar-scan-control-live,
-  .sidebar.vaultos-sidebar .sidebar-scan-control-live-inner,
-  .sidebar.vaultos-sidebar .museum-scan-track>span{transition-duration:.01ms!important;transition-delay:0ms!important}
-  .sidebar.vaultos-sidebar .sidebar-scan-pulse,
-  .sidebar.vaultos-sidebar .sidebar-scan-control .nav-glyph{animation:none!important}
+  .sidebar.vaultos-sidebar .sidebar-scan-idle,
+  .sidebar.vaultos-sidebar .sidebar-scan-live,
+  .sidebar.vaultos-sidebar .museum-scan-track>span { transition-duration:.01ms!important; }
+  .sidebar.vaultos-sidebar .sidebar-scan-status-icon { animation:none!important; }
 }

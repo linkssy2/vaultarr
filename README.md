@@ -1,10 +1,10 @@
-# Vaultarr 1.7.8
+# Vaultarr 1.7.9
 
-> Current release: **Vaultarr 1.7.8 — Rebuilt Museum Scan Control**
+> Current release: **Vaultarr 1.7.9 — Rebuilt Museum Scan Control**
 
 Vaultarr is a self-hosted digital game museum. Point it at your game folders, let the background preparation system enrich the records, and spend your time browsing the collection rather than managing providers and queues.
 
-## What's new in 1.7.8
+## What's new in 1.7.9
 
 - Removed both competing scan-control stylesheets and rebuilt the sidebar scanner as one isolated component.
 - Scan Museum remains a compact pill above Search Museum while an independent drawer reveals progress beneath it.

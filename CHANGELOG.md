@@ -1,6 +1,15 @@
+# 1.7.9 — Morphing Museum Scan Pill
+
+- Replaced the scan drawer with one fixed-size sidebar pill.
+- The pill now morphs in place between idle, scanning, complete, and failed states.
+- Added calm label crossfades, live stage and game text, percentage interpolation, and a thin embedded progress line.
+- Removed all scan-control expansion, contraction, popup, and sidebar layout movement.
+- Kept scan startup manual-only; refresh and navigation only reconnect to an existing scan.
+- Preserved the protected card, Focus Mode, navigation, manuals, search, and Acquisition Assistant systems.
+
 # Changelog
 
-## 1.7.8 - Rebuilt Museum Scan Control
+## 1.7.9 - Rebuilt Museum Scan Control
 
 - Removed both competing scan-control styles and rebuilt one isolated component.
 - Replaced fragile direct/delegated mixed bindings with one click controller.
@@ -43,7 +52,7 @@
 
 # Changelog
 
-## 1.7.8 - Rebuilt Museum Scan Control
+## 1.7.9 - Rebuilt Museum Scan Control
 
 - Removed both competing scan-control styles and rebuilt one isolated component.
 - Replaced fragile direct/delegated mixed bindings with one click controller.
@@ -66,7 +75,7 @@
 - Preserved the protected 1.5.8 card, navigation, Focus Mode, search, manual, and acquisition systems.
 # Changelog
 
-## 1.7.8 - Rebuilt Museum Scan Control
+## 1.7.9 - Rebuilt Museum Scan Control
 
 - Removed both competing scan-control styles and rebuilt one isolated component.
 - Replaced fragile direct/delegated mixed bindings with one click controller.
@@ -112,7 +121,7 @@
 
 # Changelog
 
-## 1.7.8 - Rebuilt Museum Scan Control
+## 1.7.9 - Rebuilt Museum Scan Control
 
 - Removed both competing scan-control styles and rebuilt one isolated component.
 - Replaced fragile direct/delegated mixed bindings with one click controller.
@@ -135,7 +144,7 @@
 
 # Changelog
 
-## 1.7.8 - Rebuilt Museum Scan Control
+## 1.7.9 - Rebuilt Museum Scan Control
 
 - Removed both competing scan-control styles and rebuilt one isolated component.
 - Replaced fragile direct/delegated mixed bindings with one click controller.
@@ -305,7 +314,7 @@
 
 # Changelog
 
-## 1.7.8 - Rebuilt Museum Scan Control
+## 1.7.9 - Rebuilt Museum Scan Control
 
 - Removed both competing scan-control styles and rebuilt one isolated component.
 - Replaced fragile direct/delegated mixed bindings with one click controller.
@@ -343,7 +352,7 @@
 
 # Changelog
 
-## 1.7.8 - Rebuilt Museum Scan Control
+## 1.7.9 - Rebuilt Museum Scan Control
 
 - Removed both competing scan-control styles and rebuilt one isolated component.
 - Replaced fragile direct/delegated mixed bindings with one click controller.
@@ -443,7 +452,7 @@ This patch restores the sidebar navigation animation directly from the confirmed
 
 # Changelog
 
-## 1.7.8 - Rebuilt Museum Scan Control
+## 1.7.9 - Rebuilt Museum Scan Control
 
 - Removed both competing scan-control styles and rebuilt one isolated component.
 - Replaced fragile direct/delegated mixed bindings with one click controller.
