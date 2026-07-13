@@ -208,18 +208,18 @@ def get_dashboard_stats():
     recent_activity = []
     for game in recently_scanned[:3]:
         recent_activity.append({
-            "label": "Library scanned",
+            "label": "Museum scanned",
             "title": game["title"],
             "url": f"/games/{game['id']}",
             "tone": "scan",
         })
 
     if missing_metadata:
-        recent_activity.append({"label": "Metadata needed", "title": f"{missing_metadata} games need identities", "url": "/metadata-queue", "tone": "metadata"})
+        recent_activity.append({"label": "Metadata needed", "title": f"{missing_metadata} games need identities", "url": "/activity", "tone": "metadata"})
     if missing_covers:
-        recent_activity.append({"label": "Artwork needed", "title": f"{missing_covers} covers missing", "url": "/preservation", "tone": "artwork"})
+        recent_activity.append({"label": "Artwork needed", "title": f"{missing_covers} covers missing", "url": "/activity", "tone": "artwork"})
     if missing_documentation:
-        recent_activity.append({"label": "Documentation missing", "title": f"{missing_documentation} manuals can be linked", "url": "/preservation", "tone": "docs"})
+        recent_activity.append({"label": "Documentation missing", "title": f"{missing_documentation} manuals can be linked", "url": "/activity", "tone": "docs"})
 
     hero = {
         "kicker": "Vaultarr Alpha 23.7",
@@ -231,13 +231,13 @@ def get_dashboard_stats():
     if game_count <= 0:
         hero.update({
             "title": "Your vault is waiting.",
-            "message": "Add a library, scan your folders, and start building your personal game archive.",
+            "message": "Choose a game folder and start building your personal game museum.",
             "accent": "No games scanned yet",
         })
     elif open_tasks == 0:
         hero.update({
             "title": "Your vault is calm.",
-            "message": "No urgent preservation tasks are waiting. Explore your library or rediscover something old.",
+            "message": "No urgent preservation tasks are waiting. Explore your museum or rediscover something old.",
             "accent": "Everything looks good",
         })
     elif missing_metadata > 0:

@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="library-shell" id="libraryShell">
+<div class="library-shell" id="libraryShell" data-museum-view="true">
   <div class="page-header">
     <div>
-      <h1>Library</h1>
-      <p class="muted">Your complete game collection.</p>
+      <h1>Museum</h1>
+      <p class="muted">Browse, search, and care for your complete game museum.</p>
     </div>
 
     <div class="library-tools">
@@ -24,12 +24,12 @@
   </div>
 
   <div class="category-row">
-    <a class="category-chip {% if not category or category == 'All Games' %}active{% endif %}" href="/library">All Games <span>{{ total_count or games|length }}</span></a>
-    <a class="category-chip {% if category == 'Abandonware' %}active{% endif %}" href="/library?category=Abandonware">Abandonware <span>{{ category_counts.get('Abandonware', 0) if category_counts else 0 }}</span></a>
-    <a class="category-chip {% if category == 'Fanmade' %}active{% endif %}" href="/library?category=Fanmade">Fanmade <span>{{ category_counts.get('Fanmade', 0) if category_counts else 0 }}</span></a>
-    <a class="category-chip {% if category == 'PC Port' %}active{% endif %}" href="/library?category=PC Port">PC Port <span>{{ category_counts.get('PC Port', 0) if category_counts else 0 }}</span></a>
-    <a class="category-chip {% if category == 'Steam' %}active{% endif %}" href="/library?category=Steam">Steam <span>{{ category_counts.get('Steam', 0) if category_counts else 0 }}</span></a>
-    <a class="category-chip {% if category == 'Manual' %}active{% endif %}" href="/library?category=Manual">Manual <span>{{ category_counts.get('Manual', 0) if category_counts else 0 }}</span></a>
+    <a class="category-chip {% if not category or category == 'All Games' %}active{% endif %}" href="/museum">All Games <span>{{ total_count or games|length }}</span></a>
+    <a class="category-chip {% if category == 'Abandonware' %}active{% endif %}" href="/museum?category=Abandonware">Abandonware <span>{{ category_counts.get('Abandonware', 0) if category_counts else 0 }}</span></a>
+    <a class="category-chip {% if category == 'Fanmade' %}active{% endif %}" href="/museum?category=Fanmade">Fanmade <span>{{ category_counts.get('Fanmade', 0) if category_counts else 0 }}</span></a>
+    <a class="category-chip {% if category == 'PC Port' %}active{% endif %}" href="/museum?category=PC Port">PC Port <span>{{ category_counts.get('PC Port', 0) if category_counts else 0 }}</span></a>
+    <a class="category-chip {% if category == 'Steam' %}active{% endif %}" href="/museum?category=Steam">Steam <span>{{ category_counts.get('Steam', 0) if category_counts else 0 }}</span></a>
+    <a class="category-chip {% if category == 'Manual' %}active{% endif %}" href="/museum?category=Manual">Manual <span>{{ category_counts.get('Manual', 0) if category_counts else 0 }}</span></a>
   </div>
 
   <div class="library-search-status" id="librarySearchStatus">

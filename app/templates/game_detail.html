@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<a class="back-link" href="/library">← Back to Library</a>
+<a class="back-link" href="/museum">← Back to Museum</a>
 
 <div class="detail-layout">
   <div class="detail-cover">
@@ -204,7 +204,7 @@
     <section class="panel danger-zone">
       <div class="panel-heading"><h2>Remove Game</h2></div>
       <p class="muted danger-zone-copy">Remove this catalog record from Vaultarr. Your original game folder and files are never deleted.</p>
-      <button type="button" class="danger danger-button" onclick="document.getElementById('delete-game-dialog').showModal()">Remove from Library</button>
+      <button type="button" class="danger danger-button" onclick="document.getElementById('delete-game-dialog').showModal()">Remove from Museum</button>
     </section>
 
     <dialog id="delete-game-dialog" class="delete-game-dialog">

@@ -23,7 +23,7 @@
   <section class="studio-section alive-panel experience-settings-panel">
     <div class="studio-section-head">
       <div>
-        <p class="eyebrow">Curator Experience</p>
+        <p class="eyebrow">Museum Preparation</p>
         <h2>Let Vaultarr do the work</h2>
         <p class="muted">Standard Mode keeps the app focused on your collection. Advanced tools remain available whenever you need them.</p>
       </div>
@@ -37,7 +37,7 @@
     <form action="/settings/experience" method="post" class="studio-option-form">
       <label class="studio-toggle-card full">
         <input type="checkbox" name="auto_curate" {% if ui_settings.auto_curate %}checked{% endif %}>
-        <span><strong>Automatically prepare new games</strong><small>Newly scanned games are added to the Curator queue without extra steps.</small></span>
+        <span><strong>Automatically prepare new games</strong><small>Newly scanned games are added to the preparation queue without extra steps.</small></span>
       </label>
       <label class="studio-toggle-card full">
         <input type="checkbox" name="friendly_language" {% if ui_settings.friendly_language %}checked{% endif %}>
@@ -348,7 +348,7 @@
     <div class="studio-section-head">
       <div>
         <p class="eyebrow">Archive Tools</p>
-        <h2>Library Roots</h2>
+        <h2>Game Folders</h2>
         <p class="muted">Add folders, scan libraries, and maintain the vault without digging through settings.</p>
       </div>
     </div>
@@ -356,7 +356,7 @@
     <form class="studio-add-library" action="/libraries/add" method="post">
       <div><label>Name</label><input name="name" placeholder="Abandonware"></div>
       <div><label>Path</label><input name="path" placeholder="E:\Abandonware" required></div>
-      <button>Add Library</button>
+      <button>Add Game Folder</button>
     </form>
 
     <div class="studio-library-list">

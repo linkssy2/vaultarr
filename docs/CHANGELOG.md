@@ -1,3 +1,13 @@
+## 1.6.0 — The Museum Experience
+
+- Redesigned Home as a calm museum lobby while retaining the Blue V Orbital Core.
+- Renamed the standard Library experience to Museum.
+- Presented the Curator workflow as Activity and preparation.
+- Kept Time Capsule and Milestones visible in Standard Mode.
+- Added `/museum` and `/activity` compatibility routes.
+- Added `docs/UX_BASELINE.md` to protect the working 1.5.8 interaction systems.
+- Preserved Floating Card tilt, Focus Mode, Universal Search, live state, manuals, and smooth navigation.
+
 ## 1.5.8 — Floating Card Tilt Restoration
 
 - Removed the reduced-motion override that forcibly disabled the poster-card transform.

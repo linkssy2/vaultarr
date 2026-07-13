@@ -20,6 +20,7 @@ def _category_counts(conn):
 
 
 @library_bp.route('/library')
+@library_bp.route('/museum')
 def library():
     q = request.args.get('q','').strip()
     sort = request.args.get('sort','title')

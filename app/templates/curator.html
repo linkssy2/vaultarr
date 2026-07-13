@@ -2,16 +2,16 @@
 {% block content %}
 <div class="vault-page-shell vault-space curator-space" data-auto-curate="{{ 1 if ui_settings.auto_curate else 0 }}">
   <section class="vault-space-hero alive-panel">
-    <div><p class="eyebrow">Curate</p><h1>Prepare your games automatically.</h1><p class="muted hero-copy">Vaultarr researches each game, fills in available information and artwork, finds a manual when possible, and only asks for help when something is uncertain.</p></div>
+    <div><p class="eyebrow">Activity</p><h1>Your museum is being prepared.</h1><p class="muted hero-copy">Vaultarr quietly improves game information, artwork, manuals, and collection completeness. You only need to step in when something needs review.</p></div>
     <div class="space-hero-metrics"><div><span>Queued</span><strong>{{ counts.get('queued',0) }}</strong></div><div><span>Needs Review</span><strong>{{ counts.get('failed',0) }}</strong></div></div>
   </section>
   <section class="card alive-panel curator-controls">
-    <form action="/curator/queue-all" method="post"><button type="submit">Check Collection</button></form>
+    <form action="/curator/queue-all" method="post"><button type="submit">Check Museum</button></form>
     <form action="/curator/run" method="post"><input type="hidden" name="limit" value="5"><button type="submit">Prepare Next 5</button></form>
     <p class="muted">Your edits stay protected. Vaultarr chooses the best available results and leaves uncertain matches for review.</p>
   </section>
   <section class="card alive-panel">
-    <div class="home-card-head"><div><p class="eyebrow">Collection Readiness</p><h2>Collection status</h2></div></div>
+    <div class="home-card-head"><div><p class="eyebrow">Museum Progress</p><h2>Preparation status</h2></div></div>
     <div class="curator-list">
     {% for game in games %}
       <article class="curator-row" data-curator-row data-game-id="{{ game.id }}">
@@ -24,7 +24,7 @@
           <span class="curator-meter-runner" aria-hidden="true"></span>
         </div>
         <b data-curator-percent>{{ game.curator_score or 0 }}%</b>
-        <button type="button" class="curator-run-button" data-curator-run>Curate</button>
+        <button type="button" class="curator-run-button" data-curator-run>Prepare</button>
       </article>
     {% endfor %}
     </div>
@@ -32,5 +32,5 @@
   <section class="card alive-panel"><div class="home-card-head"><div><p class="eyebrow">Recent Work</p><h2>Recent activity</h2></div></div>
   {% for item in history %}<p><strong>{{ item.title or 'Removed game' }}</strong> — {{ item.message }} <span class="muted">{{ item.created_at }}</span></p>{% else %}<p class="muted">No curator activity yet.</p>{% endfor %}</section>
 </div>
-<script src="/static/js/curator.js?v=1.5.3" defer></script>
+<script src="/static/js/curator.js?v=1.6.0" defer></script>
 {% endblock %}

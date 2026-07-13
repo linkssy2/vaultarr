@@ -26,6 +26,7 @@ def _job_payload(game_id):
     return data
 
 @curator_bp.route('/curator')
+@curator_bp.route('/activity')
 def curator_page(): return render_template('curator.html', **curator_status())
 
 @curator_bp.route('/curator/queue-all', methods=['POST'])

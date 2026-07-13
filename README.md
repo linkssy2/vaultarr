@@ -1,17 +1,19 @@
-# Vaultarr 1.5.8
+# Vaultarr 1.6.0
 
-> Current release: **Vaultarr 1.5.8 — Advanced Navigation Layout Fix**
+> Current release: **Vaultarr 1.6.0 — The Museum Experience**
 
-Vaultarr is a self-hosted game preservation dashboard for cataloging, enriching, and maintaining a personal game archive.
+Vaultarr is a self-hosted digital game museum. Point it at your game folders, let the background preparation system enrich the records, and spend your time browsing the collection rather than managing providers and queues.
 
-## 1.5.8 interface fix
+## What changed in 1.6.0
 
-- Advanced Mode now reveals its sidebar tools as properly aligned, full-width navigation rows.
-- **Milestones** is always available in Standard Mode because achievement progress is part of the core museum experience.
+- **Museum** replaces Library in the standard interface.
+- **Activity** presents the Curator Engine in simple, user-facing language.
+- Home is now a museum lobby centered on the Blue V Orbital Core, collection completeness, recent exhibits, activity, and milestones.
+- Time Capsule and Milestones remain visible in Standard Mode.
+- Technical tools remain available through Advanced Mode.
+- Existing `/library` and `/curator` addresses remain compatible.
+- The protected 1.5.8 card, expansion, navigation, search, manual, and progress behavior is documented in `docs/UX_BASELINE.md`.
 
-## The Curator Experience
-
-Vaultarr 1.5.8 keeps the stable 1.4.10 navigation and Curator experience while adding administrator-supplied acquisition catalogs. Upload a JSON or CSV index in **Advanced Settings**, search it locally from a game record, open or copy the catalog links, and attach the local file after you obtain it. Vaultarr does not scrape the source website or execute anything from an uploaded catalog.
 
 Newly scanned games can be queued automatically for Curator processing. Vaultarr researches game information, chooses available artwork, looks for a manual, respects user edits and metadata locks, and surfaces only items that need review.
 
