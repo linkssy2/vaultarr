@@ -1,4 +1,4 @@
-/* Vaultarr 1.5.7 performance foundation — card-safe */
+/* Vaultarr 1.5.8 performance foundation — card-safe */
 .timeline-capsule, .discovery-card,
 .collection-card, .attention-card, .queue-card {
   contain: layout paint style;
@@ -27,6 +27,3 @@ html.vaultarr-page-hidden [class*="pulse"] {
   animation-play-state: paused !important;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .poster-card { transform: none !important; }
-}

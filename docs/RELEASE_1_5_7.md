@@ -1,4 +1,4 @@
-# Vaultarr 1.5.7 — Floating Card Interaction Restoration
+# Vaultarr 1.5.8 — Floating Card Interaction Restoration
 
 This patch restores the exact floating card hover, tilt, lift, gloss, and expanded-card startup behavior while retaining the safe performance improvements from 1.5.5.
 

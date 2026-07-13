@@ -1,6 +1,12 @@
+## 1.5.8 — Floating Card Tilt Restoration
+
+- Removed the reduced-motion override that forcibly disabled the poster-card transform.
+- Restored full floating-card lift and pointer-driven 3D tilt while preserving card expansion and cover parallax.
+- Kept the safe 1.5.5 performance optimizations that do not interfere with card motion.
+
 # Changelog
 
-## 1.5.7 — Floating Card Interaction Restoration
+## 1.5.8 — Floating Card Interaction Restoration
 
 - Restored synchronous loading of the original Focus Mode/card controller.
 - Removed the capture-phase loader that could swallow the first card interaction.

@@ -1,4 +1,10 @@
-# Vaultarr 1.5.7
+## 1.5.8 — Floating Card Tilt Restoration
+
+- Removed the reduced-motion override that forcibly disabled the poster-card transform.
+- Restored full floating-card lift and pointer-driven 3D tilt while preserving card expansion and cover parallax.
+- Kept the safe 1.5.5 performance optimizations that do not interfere with card motion.
+
+# Vaultarr 1.5.8
 
 - Restored floating card hover, tilt, and expansion startup behavior.
 - Preserved safe performance optimizations.
