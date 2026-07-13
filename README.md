@@ -1,26 +1,15 @@
-# Vaultarr 1.7.5
+# Vaultarr 1.7.6
 
-> Current release: **Vaultarr 1.7.5 — Calm Scan Drawer**
+> Current release: **Vaultarr 1.7.6 — Anchored Scan Drawer**
 
 Vaultarr is a self-hosted digital game museum. Point it at your game folders, let the background preparation system enrich the records, and spend your time browsing the collection rather than managing providers and queues.
 
-## What's new in 1.7.5
+## What's new in 1.7.6
 
-- Scan Museum now keeps its 44 px header anchored while a status drawer unfolds beneath it.
-- Scan details fade in after expansion begins and fade out before the drawer closes.
-- Completion holds briefly, then returns to the idle pill with a calm fold-away motion.
-- The progress line reveals smoothly and the scan icon rotates at a slow, restrained pace.
-
-- **Scan Museum** and **Search Museum** now match Vaultarr's compact pill controls.
-- The scan button smoothly expands vertically in place to reveal progress, stage, and current-game information.
-- Completion content fades first, then the control gently contracts back into the idle scan pill.
-- The background scan engine and protected card, navigation, search, manual, and acquisition systems are unchanged.
-
-### Standard and Advanced modes
-
-- **Standard Mode** keeps navigation focused on Home, Museum, Discover, Time Capsule, Milestones, and Settings.
-- **Advanced Mode** reveals provider configuration, metadata tools, caches, and diagnostics. Preservation status now lives with each game.
-- Switching modes changes presentation only; it does not remove data or disable existing features.
+- Museum scanning starts only after an explicit click; refreshing or navigating never starts a scan.
+- The Scan Museum pill remains fixed while a separate drawer unfolds beneath it.
+- Scan details reveal in stages and close in two calm phases after completion.
+- Interrupted/stale scan states are reset to idle instead of appearing as a new scan.
 
 ## What Vaultarr does
 

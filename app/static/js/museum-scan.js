@@ -11,12 +11,14 @@
     progressFrame: null,
     lastFrameAt: 0,
     lastStage: '',
-    lastDetail: ''
+    lastDetail: '',
+    requestInFlight: false
   };
 
   const clamp = value => Math.max(0, Math.min(100, Number(value) || 0));
   const nodes = () => ({
-    controls: [...document.querySelectorAll('[data-museum-scan-control]')],
+    shells: [...document.querySelectorAll('[data-museum-scan-control]')],
+    buttons: [...document.querySelectorAll('[data-museum-scan-start]')],
     fills: [...document.querySelectorAll('[data-museum-scan-fill]')],
     percents: [...document.querySelectorAll('[data-museum-scan-percent]')],
     stages: [...document.querySelectorAll('[data-museum-scan-stage]')],
@@ -42,7 +44,7 @@
       state.lastFrameAt = 0;
       return;
     }
-    const speed = Math.max(4.5, Math.abs(distance) * 1.9);
+    const speed = Math.max(3.25, Math.abs(distance) * 1.45);
     const step = Math.sign(distance) * Math.min(Math.abs(distance), speed * elapsed / 1000);
     state.displayedProgress += step;
     setProgressVisual(state.displayedProgress);
@@ -64,39 +66,45 @@
     state[key] = text;
     elements.forEach(element => {
       element.classList.add('is-changing');
-      setTimeout(() => {
+      window.setTimeout(() => {
         element.textContent = text;
         requestAnimationFrame(() => element.classList.remove('is-changing'));
-      }, 100);
+      }, 120);
     });
   }
 
-  function returnToIdle(control) {
-    control.classList.remove('is-active', 'is-complete', 'is-failed', 'is-expanded');
-    control.setAttribute('aria-expanded', 'false');
-    control.disabled = false;
-    control.title = 'Scan Museum';
-    const live = control.querySelector('.sidebar-scan-control-live');
+  function setShellState(shell, nextState) {
+    shell.dataset.state = nextState;
+    shell.classList.toggle('is-active', nextState === 'active');
+    shell.classList.toggle('is-complete', nextState === 'complete');
+    shell.classList.toggle('is-failed', nextState === 'failed');
+  }
+
+  function returnToIdle(shell) {
+    setShellState(shell, 'idle');
+    shell.classList.remove('is-contracting');
+    const live = shell.querySelector('.sidebar-scan-control-live');
+    const button = shell.querySelector('[data-museum-scan-start]');
     if (live) live.setAttribute('aria-hidden', 'true');
+    if (button) {
+      button.setAttribute('aria-expanded', 'false');
+      button.disabled = false;
+      button.title = 'Scan Museum';
+    }
   }
 
   function scheduleIdleReturn() {
     clearTimeout(state.completionTimer);
     clearTimeout(state.contractionTimer);
-    // Let the completion message settle, then fade the drawer contents before
-    // folding the lower row closed. The header remains anchored throughout.
-    state.completionTimer = setTimeout(() => {
-      nodes().controls.forEach(control => control.classList.add('is-contracting'));
-      state.contractionTimer = setTimeout(() => {
-        nodes().controls.forEach(control => {
-          returnToIdle(control);
-          control.classList.remove('is-contracting');
-        });
+    state.completionTimer = window.setTimeout(() => {
+      nodes().shells.forEach(shell => shell.classList.add('is-contracting'));
+      state.contractionTimer = window.setTimeout(() => {
+        nodes().shells.forEach(returnToIdle);
         state.displayedProgress = 0;
         state.targetProgress = 0;
         setProgressVisual(0);
-      }, 760);
-    }, 1750);
+      }, 1080);
+    }, 1900);
   }
 
   function render(data) {
@@ -105,16 +113,19 @@
     const progress = clamp(data.progress);
     state.active = running;
 
-    n.controls.forEach(control => {
-      control.classList.toggle('is-active', running);
-      control.classList.toggle('is-complete', data.status === 'complete');
-      control.classList.toggle('is-failed', data.status === 'failed');
-      control.disabled = running;
-      control.setAttribute('aria-expanded', running || data.status === 'complete' || data.status === 'failed' ? 'true' : 'false');
-      const live = control.querySelector('.sidebar-scan-control-live');
-      if (live) live.setAttribute('aria-hidden', running || data.status === 'complete' || data.status === 'failed' ? 'false' : 'true');
-      control.title = running ? 'Museum scan in progress' : 'Scan Museum';
-      if (running) control.classList.remove('is-contracting');
+    n.shells.forEach(shell => {
+      const nextState = running ? 'active' : data.status === 'complete' ? 'complete' : data.status === 'failed' ? 'failed' : 'idle';
+      setShellState(shell, nextState);
+      if (running) shell.classList.remove('is-contracting');
+      const live = shell.querySelector('.sidebar-scan-control-live');
+      const button = shell.querySelector('[data-museum-scan-start]');
+      const expanded = nextState !== 'idle';
+      if (live) live.setAttribute('aria-hidden', expanded ? 'false' : 'true');
+      if (button) {
+        button.disabled = running;
+        button.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+        button.title = running ? 'Museum scan in progress' : 'Scan Museum';
+      }
     });
 
     setTargetProgress(progress, running && state.displayedProgress > progress + 15);
@@ -128,50 +139,71 @@
     crossfade(n.details, detail, 'lastDetail');
     document.dispatchEvent(new CustomEvent('vaultarr:museum-scan-updated', { detail: data }));
 
-    if (running) schedule(650);
+    if (running) schedule(700);
     else {
       stop();
       if (data.status === 'complete' || data.status === 'failed') scheduleIdleReturn();
-      else n.controls.forEach(returnToIdle);
+      else n.shells.forEach(returnToIdle);
     }
   }
 
   async function poll() {
+    if (state.requestInFlight) return;
+    state.requestInFlight = true;
     try {
-      const response = await fetch(`/api/museum-scan/status?_=${Date.now()}`, { cache: 'no-store', headers: { Accept: 'application/json' } });
+      const response = await fetch(`/api/museum-scan/status?_=${Date.now()}`, {
+        cache: 'no-store',
+        headers: { Accept: 'application/json' }
+      });
       if (response.ok) render(await response.json());
     } catch (_) {
       if (state.active) schedule(1400);
+    } finally {
+      state.requestInFlight = false;
     }
   }
 
   function schedule(delay = 700) {
     clearTimeout(state.timer);
-    state.timer = setTimeout(poll, delay);
+    state.timer = window.setTimeout(poll, delay);
   }
-  function stop() { clearTimeout(state.timer); state.timer = null; }
 
-  async function start(control) {
-    if (state.active || control?.classList.contains('is-active')) return;
+  function stop() {
+    clearTimeout(state.timer);
+    state.timer = null;
+  }
+
+  async function start(button) {
+    if (state.active || button?.disabled) return;
+    const shell = button?.closest('[data-museum-scan-control]');
     clearTimeout(state.completionTimer);
     clearTimeout(state.contractionTimer);
-    if (control) {
-      control.classList.add('is-active');
-      control.disabled = true;
-      control.setAttribute('aria-expanded', 'true');
+    if (shell) {
+      shell.classList.remove('is-contracting', 'is-complete', 'is-failed');
+      setShellState(shell, 'active');
+      const live = shell.querySelector('.sidebar-scan-control-live');
+      if (live) live.setAttribute('aria-hidden', 'false');
     }
+    if (button) {
+      button.disabled = true;
+      button.setAttribute('aria-expanded', 'true');
+    }
+    state.active = true;
     setTargetProgress(1, true);
     crossfade(nodes().stages, 'Starting Museum Scan', 'lastStage');
     crossfade(nodes().details, 'Checking your collection…', 'lastDetail');
     try {
-      const response = await fetch(`/api/museum-scan/start?_=${Date.now()}`, { method: 'POST', cache: 'no-store', headers: { Accept: 'application/json' } });
-      render(await response.json());
-    } catch (_) {
-      nodes().controls.forEach(c => {
-        c.classList.add('is-failed');
-        c.classList.remove('is-active');
-        c.disabled = false;
+      const response = await fetch(`/api/museum-scan/start?_=${Date.now()}`, {
+        method: 'POST',
+        cache: 'no-store',
+        headers: { Accept: 'application/json', 'X-Vaultarr-User-Action': 'scan-museum' }
       });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload.message || 'Could not start scan');
+      render(payload);
+    } catch (_) {
+      state.active = false;
+      nodes().shells.forEach(shellNode => setShellState(shellNode, 'failed'));
       crossfade(nodes().stages, 'Could not start scan', 'lastStage');
       crossfade(nodes().details, 'Try again when the server is available.', 'lastDetail');
       scheduleIdleReturn();
@@ -179,13 +211,17 @@
   }
 
   document.addEventListener('click', event => {
-    const control = event.target.closest('[data-museum-scan-control]');
-    if (!control) return;
+    const button = event.target.closest('[data-museum-scan-start]');
+    if (!button) return;
     event.preventDefault();
-    if (!state.active && !control.classList.contains('is-complete') && !control.classList.contains('is-failed')) start(control);
+    event.stopPropagation();
+    start(button);
   });
   document.addEventListener('visibilitychange', () => document.hidden ? stop() : poll());
   document.addEventListener('vaultarr:navigation-complete', poll);
   window.VaultarrMuseumScan = { installed: true, poll, start };
+
+  // Initial load only reads and attaches to an already-running scan. It never
+  // starts a new scan. The POST endpoint is called exclusively from start().
   poll();
 })();

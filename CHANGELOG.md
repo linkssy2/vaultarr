@@ -1,3 +1,12 @@
+# Vaultarr 1.7.6 — Anchored Scan Drawer
+
+- Prevented page refreshes and navigation from starting Museum scans.
+- Added explicit user-action validation to the scan start endpoint.
+- Reconciles stale running states left by interrupted containers back to idle.
+- Rebuilt the sidebar scan interaction as a fixed pill with an independent drawer.
+- Added slower staged reveal, progress wipe, completion hold, and two-phase contraction.
+- Preserved the protected 1.5.8 card, Focus Mode, search, manual, and navigation systems.
+
 # Vaultarr 1.7.5 — Calm Scan Drawer
 
 - Reworked the sidebar scan control as a stable pill header with a lower status drawer.

@@ -33,6 +33,12 @@ def scan_status():
     if not row:
         return {'status':'idle','progress':0,'stage':'Ready','total_games':0,'checked_games':0,'queued_games':0,'completed_games':0,'failed_games':0,'current_game':'','summary':{}}
     data = dict(row)
+    # A running state can survive an interrupted container/process even though
+    # no worker exists anymore. Treat that as stale rather than making a page
+    # refresh look like it started a new scan.
+    if data.get('status') in {'scanning', 'preparing'} and not (_scan_thread and _scan_thread.is_alive()):
+        _update(status='idle', progress=0, stage='Ready', current_game='', last_error='')
+        data.update(status='idle', progress=0, stage='Ready', current_game='', last_error='')
     try:
         data['summary'] = json.loads(data.get('summary_json') or '{}')
     except Exception:

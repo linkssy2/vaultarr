@@ -34,7 +34,12 @@ def retired_activity_page():
     return redirect('/museum')
 
 @curator_bp.route('/api/museum-scan/start', methods=['POST'])
-def api_museum_scan_start(): return _json_no_cache({'success':True, **start_scan()})
+def api_museum_scan_start():
+    # Scans must originate from the explicit sidebar action. Page load and
+    # status polling are read-only and can never create a scan.
+    if request.headers.get('X-Vaultarr-User-Action') != 'scan-museum':
+        return _json_no_cache({'success':False,'message':'Museum scans require an explicit user action.'}, 400)
+    return _json_no_cache({'success':True, **start_scan()})
 
 @curator_bp.route('/api/museum-scan/status')
 def api_museum_scan_status(): return _json_no_cache({'success':True, **scan_status()})
