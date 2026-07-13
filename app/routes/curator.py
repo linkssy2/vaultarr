@@ -1,12 +1,20 @@
 import json
 import threading
-from flask import Blueprint, jsonify, render_template, request, redirect
+from flask import Blueprint, jsonify, render_template, request, redirect, Response
 from app.database.database import get_connection
 from app.services.curator_service import curator_status, queue_incomplete_games, run_game, run_queue
 
 curator_bp = Blueprint('curator', __name__)
 _worker_lock = threading.Lock()
 _running = set()
+
+def _json_no_cache(payload, status=200):
+    response = jsonify(payload)
+    response.status_code = status
+    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    return response
 
 def _worker(game_id):
     try:
@@ -39,10 +47,10 @@ def curator_run(): run_queue(request.form.get('limit',5)); return redirect('/cur
 @curator_bp.route('/api/curator/queue-all', methods=['POST'])
 def api_curator_queue_all():
     queued = queue_incomplete_games('manual')
-    return jsonify({'success': True, 'queued': queued})
+    return _json_no_cache({'success': True, 'queued': queued})
 
 @curator_bp.route('/api/curator/status')
-def api_curator_status(): return jsonify({'success':True, **curator_status()})
+def api_curator_status(): return _json_no_cache({'success':True, **curator_status()})
 
 @curator_bp.route('/api/curator/games/<int:game_id>/start', methods=['POST'])
 def api_curator_game_start(game_id):
@@ -53,13 +61,13 @@ def api_curator_game_start(game_id):
     with _worker_lock:
         if game_id not in _running:
             _running.add(game_id); threading.Thread(target=_worker,args=(game_id,),daemon=True).start()
-    return jsonify({'success':True,'game_id':game_id,'status':'queued','progress':0,'stage':'Starting'})
+    return _json_no_cache({'success':True,'game_id':game_id,'status':'queued','progress':0,'stage':'Starting'})
 
 @curator_bp.route('/api/curator/games/<int:game_id>/status')
 def api_curator_game_status(game_id):
     data=_job_payload(game_id)
-    if not data: return jsonify({'success':False,'message':'No curator job found.'}),404
-    return jsonify({'success':True, **data})
+    if not data: return _json_no_cache({'success':False,'message':'No curator job found.'}, 404)
+    return _json_no_cache({'success':True, **data})
 
 @curator_bp.route('/api/curator/games/<int:game_id>/pause', methods=['POST'])
 def api_curator_game_pause(game_id):

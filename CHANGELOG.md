@@ -1,4 +1,14 @@
-# Vaultarr 1.6.1 — Live Activity Repair
+# Changelog
+
+## 1.6.2 — Activity Dashboard Rework
+
+- Reworked Activity progress tracking so jobs remain connected after smooth page swaps.
+- Added cache-busted, no-store preparation status responses.
+- Added continuous stage-aware progress interpolation.
+- Removed the harsh white Museum Progress hover treatment.
+- Preserved the protected 1.5.8 card, navigation, search, manual, and Focus Mode systems.
+
+# Vaultarr 1.6.2 — Live Activity Repair
 
 - Fixed Activity actions not initializing after smooth sidebar navigation.
 - Preparation now starts visibly without requiring a browser refresh.
@@ -8,7 +18,7 @@
 - Changed completed buttons back to Prepare instead of the old Curate label.
 - Kept the protected 1.5.8 card, expansion, sidebar, search, and manual systems unchanged.
 
-## 1.6.1 — The Museum Experience
+## 1.6.2 — The Museum Experience
 
 - Redesigned Home as a calm museum lobby while retaining the Blue V Orbital Core.
 - Renamed the standard Library experience to Museum.
