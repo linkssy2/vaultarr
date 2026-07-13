@@ -19,8 +19,16 @@
         <option value="scanned" {% if sort == 'scanned' %}selected{% endif %}>Sort by: Last Scanned</option>
         <option value="added" {% if sort == 'added' %}selected{% endif %}>Sort by: Recently Added</option>
       </select>
+      <button class="compact museum-scan-button" type="button" data-museum-scan-start>Scan Museum</button>
       <a class="button-link compact" href="/games/add">+ Add Game</a>
     </div>
+  </div>
+
+  <div class="museum-scan-status" data-museum-scan-pill hidden>
+    <strong data-museum-scan-stage>Scanning Museum</strong>
+    <div class="museum-scan-track"><span data-museum-scan-fill></span></div>
+    <b data-museum-scan-percent>0%</b>
+    <small class="museum-scan-detail" data-museum-scan-detail></small>
   </div>
 
   <div class="category-row">

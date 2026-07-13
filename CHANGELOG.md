@@ -1,32 +1,27 @@
 # Changelog
 
+## 1.6.3 — Background Museum Scan
+
+- Replaced the per-game Activity dashboard with one Plex-style background Museum Scan.
+- Added Scan Museum controls to Home and Museum.
+- Added a persistent sidebar progress indicator that follows smooth navigation.
+- Scans configured folders, updates existing records, detects incomplete games, and prepares them serially in the background.
+- Added scan completion summaries and failure status without page reloads.
+- Removed Activity from the standard sidebar and Home page.
+- Redirected legacy `/activity` and `/curator` routes to Museum.
+- Preserved the protected 1.5.8 card, tilt, expansion, Focus Mode, Universal Search, manuals, and navigation systems.
+
 ## 1.6.2 — Activity Dashboard Rework
 
-- Reworked Activity progress tracking so jobs remain connected after smooth page swaps.
-- Added cache-busted, no-store preparation status responses.
-- Added continuous stage-aware progress interpolation.
-- Removed the harsh white Museum Progress hover treatment.
-- Preserved the protected 1.5.8 card, navigation, search, manual, and Focus Mode systems.
+- Reworked stage-based Activity status and restrained progress-panel hover styling.
 
-# Vaultarr 1.6.2 — Live Activity Repair
+## 1.6.1 — Live Activity Repair
 
-- Fixed Activity actions not initializing after smooth sidebar navigation.
-- Preparation now starts visibly without requiring a browser refresh.
-- Active queued or running jobs automatically resume live progress tracking when Activity opens.
-- Restored smooth live progress and percentage updates from the server-side job stages.
-- Replaced the legacy blocking Prepare Next 5 form with live sequential preparation.
-- Changed completed buttons back to Prepare instead of the old Curate label.
-- Kept the protected 1.5.8 card, expansion, sidebar, search, and manual systems unchanged.
+- Repaired Activity initialization after smooth navigation.
 
-## 1.6.2 — The Museum Experience
+## 1.6.0 — The Museum Experience
 
-- Redesigned Home as a calm museum lobby while retaining the Blue V Orbital Core.
-- Renamed the standard Library experience to Museum.
-- Presented the Curator workflow as Activity and preparation.
-- Kept Time Capsule and Milestones visible in Standard Mode.
-- Added `/museum` and `/activity` compatibility routes.
-- Added `docs/UX_BASELINE.md` to protect the working 1.5.8 interaction systems.
-- Preserved Floating Card tilt, Focus Mode, Universal Search, live state, manuals, and smooth navigation.
+- Introduced the Museum-focused navigation and Home lobby.
 
 ## 1.5.8 — Floating Card Tilt Restoration
 

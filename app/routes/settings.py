@@ -255,7 +255,7 @@ def scan_library_route(library_id):
         refresh_game_score(queued_row['id'])
         if auto_curate:
             queue_game(queued_row['id'], 'library scan')
-    destination = '/curator' if auto_curate and added else '/settings'
+    destination = '/museum' if auto_curate and added else '/settings'
     separator = '?' if '?' not in destination else '&'
     return redirect(f"{destination}{separator}added={added}&updated={updated}&skipped={skipped}&errors={errors}")
 

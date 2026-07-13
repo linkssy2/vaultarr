@@ -144,6 +144,18 @@ def migrate():
         ensure_column(c, "curator_jobs", col, definition)
 
     c.execute("""
+    CREATE TABLE IF NOT EXISTS museum_scan_jobs (
+        id INTEGER PRIMARY KEY CHECK (id=1),
+        status TEXT DEFAULT 'idle', progress INTEGER DEFAULT 0, stage TEXT DEFAULT 'Ready',
+        total_games INTEGER DEFAULT 0, checked_games INTEGER DEFAULT 0, queued_games INTEGER DEFAULT 0,
+        completed_games INTEGER DEFAULT 0, failed_games INTEGER DEFAULT 0, current_game TEXT DEFAULT '',
+        summary_json TEXT DEFAULT '{}', last_error TEXT DEFAULT '', started_at TEXT DEFAULT '', finished_at TEXT DEFAULT '',
+        updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+    )
+    """)
+    c.execute("INSERT OR IGNORE INTO museum_scan_jobs (id,status,progress,stage) VALUES (1,'idle',0,'Ready')")
+
+    c.execute("""
     CREATE TABLE IF NOT EXISTS curator_history (
         id INTEGER PRIMARY KEY AUTOINCREMENT, game_id INTEGER NOT NULL, action TEXT DEFAULT 'curate',
         status TEXT DEFAULT '', message TEXT DEFAULT '', details_json TEXT DEFAULT '{}',

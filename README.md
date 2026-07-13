@@ -1,33 +1,22 @@
-# Vaultarr 1.6.2
+# Vaultarr 1.6.3
 
-> Current release: **Vaultarr 1.6.2 — The Museum Experience**
+> Current release: **Vaultarr 1.6.3 — The Museum Experience**
 
 Vaultarr is a self-hosted digital game museum. Point it at your game folders, let the background preparation system enrich the records, and spend your time browsing the collection rather than managing providers and queues.
 
-## What's new in 1.6.2
+## What's new in 1.6.3
 
-- Resilient live Activity updates that survive smooth navigation.
-- Stage-aware progress that continues moving while background preparation runs.
-- Calm Museum Progress hover styling.
-- No page reload required to see jobs start or finish.
-
-## What changed in 1.6.2
-
-- **Museum** replaces Library in the standard interface.
-- **Activity** presents the Curator Engine in simple, user-facing language.
-- Home is now a museum lobby centered on the Blue V Orbital Core, collection completeness, recent exhibits, activity, and milestones.
-- Time Capsule and Milestones remain visible in Standard Mode.
-- Technical tools remain available through Advanced Mode.
-- Existing `/library` and `/curator` addresses remain compatible.
-- The protected 1.5.8 card, expansion, navigation, search, manual, and progress behavior is documented in `docs/UX_BASELINE.md`.
-
-
-Newly scanned games can be queued automatically for Curator processing. Vaultarr researches game information, chooses available artwork, looks for a manual, respects user edits and metadata locks, and surfaces only items that need review.
+- A Plex-style **Scan Museum** action now checks folders and prepares incomplete games in the background.
+- One persistent global progress indicator follows you between pages.
+- Home and Museum show the same scan state without exposing individual preparation jobs.
+- The old Activity page and sidebar entry have been removed from Standard Mode.
+- Legacy `/activity` and `/curator` links safely return to Museum.
+- The protected 1.5.8 floating-card, expansion, Focus Mode, search, and navigation behavior remains unchanged.
 
 ### Standard and Advanced modes
 
-- **Standard Mode** keeps navigation and Settings focused on Library, Collections, Discover, Curate, Time Capsule, security, appearance, and library folders.
-- **Advanced Mode** reveals provider configuration, metadata queues, manual catalogs, caches, preservation tools, and diagnostics.
+- **Standard Mode** keeps navigation focused on Home, Museum, Discover, Time Capsule, Milestones, and Settings.
+- **Advanced Mode** reveals provider configuration, metadata tools, caches, preservation controls, and diagnostics.
 - Switching modes changes presentation only; it does not remove data or disable existing features.
 
 ## What Vaultarr does
@@ -253,6 +242,6 @@ No uploaded JSON or CSV index is required. If live search cannot find a result, 
 
 Vaultarr 1.5.8 reduces initial image decoding, avoids painting long offscreen grids, throttles card hover work, pauses nonessential activity in hidden tabs, and loads Focus Mode logic only when expandable game cards are present. These optimizations are automatic and require no configuration.
 
-## 1.6.2 Activity behavior
+## 1.6.3 Background Museum Scan
 
-Activity preparation starts immediately, tracks live progress without refreshing, resumes active jobs when reopened, and consistently uses the simplified **Prepare** wording.
+Use **Scan Museum** from Home or Museum. Vaultarr scans configured folders, checks existing records, and prepares incomplete games in one background workflow. The compact progress indicator remains visible while navigating and shows a summary when the scan finishes.

@@ -59,7 +59,7 @@
     emit(name, detail = {}) {
       if (name === 'game-added' || name === 'game-updated' || name === 'game-removed') {
         if (name !== 'game-removed') recordGame(detail);
-        markDirty(['/', '/library', '/collections', '/curator', '/discovery']);
+        markDirty(['/', '/library', '/collections', '/museum', '/discovery']);
       }
       target.dispatchEvent(new CustomEvent(name, { detail }));
       document.dispatchEvent(new CustomEvent(`${EVENT_PREFIX}${name}`, { detail }));

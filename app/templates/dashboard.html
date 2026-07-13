@@ -36,7 +36,7 @@
 
   <section class="museum-summary-grid">
     <a class="museum-stat-card alive-panel" href="/museum"><span>In your museum</span><strong>{{ stats.game_count }}</strong><small>games cataloged</small></a>
-    <a class="museum-stat-card alive-panel" href="/activity"><span>Collection completeness</span><strong>{{ stats.health_score }}%</strong><small>{{ stats.open_tasks }} opportunities to improve</small></a>
+    <a class="museum-stat-card alive-panel" href="/museum"><span>Collection completeness</span><strong>{{ stats.health_score }}%</strong><small>{{ stats.open_tasks }} opportunities to improve</small></a>
     <a class="museum-stat-card alive-panel" href="/archive"><span>Time Capsule</span><strong>{{ stats.category_count }}</strong><small>collection paths to explore</small></a>
     <a class="museum-stat-card alive-panel" href="/experience"><span>Milestones</span><strong>★</strong><small>track your curator progress</small></a>
   </section>
@@ -55,10 +55,10 @@
 
   <section class="museum-two-column">
     <section class="museum-panel alive-panel">
-      <div class="museum-panel-head"><div><p class="eyebrow">Activity</p><h2>Quietly preparing</h2></div><a href="/activity">Open activity →</a></div>
-      <div class="museum-activity-list">
-        {% for item in stats.recent_activity[:4] %}<a href="{{ item.url }}"><span class="activity-dot activity-{{ item.tone }}"></span><div><strong>{{ item.label|replace('Metadata', 'Game information')|replace('Library', 'Museum') }}</strong><small>{{ item.title }}</small></div></a>{% else %}<p class="muted">Nothing needs attention right now.</p>{% endfor %}
-      </div>
+      <div class="museum-panel-head"><div><p class="eyebrow">Museum Care</p><h2>Keep your collection complete</h2></div><a href="/museum">Open museum →</a></div>
+      <p class="muted">Run a Museum Scan whenever you add or change game folders. Vaultarr checks the collection and prepares incomplete records quietly in the background.</p>
+      <div class="museum-scan-actions"><button type="button" data-museum-scan-start>Scan Museum</button></div>
+      <div class="museum-scan-status" data-museum-scan-pill hidden><strong data-museum-scan-stage>Scanning Museum</strong><div class="museum-scan-track"><span data-museum-scan-fill></span></div><b data-museum-scan-percent>0%</b><small class="museum-scan-detail" data-museum-scan-detail></small></div>
     </section>
     <section class="museum-panel alive-panel">
       <div class="museum-panel-head"><div><p class="eyebrow">Next Milestone</p><h2>Keep building your museum</h2></div><a href="/experience">View milestones →</a></div>
@@ -69,10 +69,10 @@
   <section class="museum-panel museum-health-panel alive-panel">
     <div class="museum-panel-head"><div><p class="eyebrow">Collection Completeness</p><h2>What Vaultarr is caring for</h2></div><span class="integrity-status">{% if stats.health_score >= 85 %}Excellent{% elif stats.health_score >= 70 %}Good{% else %}Improving{% endif %}</span></div>
     <div class="museum-health-bars">
-      <a href="/activity"><span>Game information</span><i><b style="width:{{ stats.metadata_score }}%"></b></i><strong>{{ stats.metadata_score }}%</strong></a>
-      <a href="/activity"><span>Artwork</span><i><b style="width:{{ stats.artwork_score }}%"></b></i><strong>{{ stats.artwork_score }}%</strong></a>
-      <a href="/activity"><span>Manuals</span><i><b style="width:{{ stats.documentation_score }}%"></b></i><strong>{{ stats.documentation_score }}%</strong></a>
-      <a href="/activity"><span>Local files</span><i><b style="width:{{ stats.preservation_score }}%"></b></i><strong>{{ stats.preservation_score }}%</strong></a>
+      <a href="/museum"><span>Game information</span><i><b style="width:{{ stats.metadata_score }}%"></b></i><strong>{{ stats.metadata_score }}%</strong></a>
+      <a href="/museum"><span>Artwork</span><i><b style="width:{{ stats.artwork_score }}%"></b></i><strong>{{ stats.artwork_score }}%</strong></a>
+      <a href="/museum"><span>Manuals</span><i><b style="width:{{ stats.documentation_score }}%"></b></i><strong>{{ stats.documentation_score }}%</strong></a>
+      <a href="/museum"><span>Local files</span><i><b style="width:{{ stats.preservation_score }}%"></b></i><strong>{{ stats.preservation_score }}%</strong></a>
     </div>
   </section>
 </section>
