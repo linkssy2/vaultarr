@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.7.8 - Rebuilt Museum Scan Control
+
+- Removed both competing scan-control styles and rebuilt one isolated component.
+- Replaced fragile direct/delegated mixed bindings with one click controller.
+- Kept page initialization status-only so refresh cannot start a scan.
+- Added a calm independent drawer with a two-stage close.
+
 ## 1.7.7 - Scan Control Click Repair
 
 - Restored the Scan Museum button after the 1.7.6 explicit-action guard blocked valid clicks in some deployments.
@@ -36,6 +43,13 @@
 
 # Changelog
 
+## 1.7.8 - Rebuilt Museum Scan Control
+
+- Removed both competing scan-control styles and rebuilt one isolated component.
+- Replaced fragile direct/delegated mixed bindings with one click controller.
+- Kept page initialization status-only so refresh cannot start a scan.
+- Added a calm independent drawer with a two-stage close.
+
 ## 1.7.4 — Primary Sidebar Scan Control
 
 - Moved Scan Museum directly above Search Museum in the sidebar.
@@ -51,6 +65,13 @@
 - Removed duplicate scan controls from Home and Museum.
 - Preserved the protected 1.5.8 card, navigation, Focus Mode, search, manual, and acquisition systems.
 # Changelog
+
+## 1.7.8 - Rebuilt Museum Scan Control
+
+- Removed both competing scan-control styles and rebuilt one isolated component.
+- Replaced fragile direct/delegated mixed bindings with one click controller.
+- Kept page initialization status-only so refresh cannot start a scan.
+- Added a calm independent drawer with a two-stage close.
 
 ## 1.7.4 — Discreet Scan Status
 
@@ -91,6 +112,13 @@
 
 # Changelog
 
+## 1.7.8 - Rebuilt Museum Scan Control
+
+- Removed both competing scan-control styles and rebuilt one isolated component.
+- Replaced fragile direct/delegated mixed bindings with one click controller.
+- Kept page initialization status-only so refresh cannot start a scan.
+- Added a calm independent drawer with a two-stage close.
+
 ## 1.5.8 — Floating Card Interaction Restoration
 
 - Restored synchronous loading of the original Focus Mode/card controller.
@@ -106,6 +134,13 @@
 - Retains lazy image loading, debounced search, hidden-tab suspension, selective Focus Mode loading, and offscreen optimizations elsewhere.
 
 # Changelog
+
+## 1.7.8 - Rebuilt Museum Scan Control
+
+- Removed both competing scan-control styles and rebuilt one isolated component.
+- Replaced fragile direct/delegated mixed bindings with one click controller.
+- Kept page initialization status-only so refresh cannot start a scan.
+- Added a calm independent drawer with a two-stage close.
 
 ## 1.5.6 - Performance Foundation
 
@@ -270,6 +305,13 @@
 
 # Changelog
 
+## 1.7.8 - Rebuilt Museum Scan Control
+
+- Removed both competing scan-control styles and rebuilt one isolated component.
+- Replaced fragile direct/delegated mixed bindings with one click controller.
+- Kept page initialization status-only so refresh cannot start a scan.
+- Added a calm independent drawer with a two-stage close.
+
 ## 1.3.2 — UI Component Polish
 
 - Replaced browser-native checkboxes with unified VaultToggle and VaultCheckbox styling.
@@ -300,6 +342,13 @@
 - Added support for both known Vimm manual detail URL formats.
 
 # Changelog
+
+## 1.7.8 - Rebuilt Museum Scan Control
+
+- Removed both competing scan-control styles and rebuilt one isolated component.
+- Replaced fragile direct/delegated mixed bindings with one click controller.
+- Kept page initialization status-only so refresh cannot start a scan.
+- Added a calm independent drawer with a two-stage close.
 
 ## 1.2.2
 
@@ -393,6 +442,13 @@ This patch restores the sidebar navigation animation directly from the confirmed
 - Left all backend, database, metadata, scanning, preservation, and archive behavior unchanged.
 
 # Changelog
+
+## 1.7.8 - Rebuilt Museum Scan Control
+
+- Removed both competing scan-control styles and rebuilt one isolated component.
+- Replaced fragile direct/delegated mixed bindings with one click controller.
+- Kept page initialization status-only so refresh cannot start a scan.
+- Added a calm independent drawer with a two-stage close.
 
 ## 1.1.3
 - Rebuilt the official app icon without the dark outer outline.

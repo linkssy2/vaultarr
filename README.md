@@ -1,15 +1,16 @@
-# Vaultarr 1.7.7
+# Vaultarr 1.7.8
 
-> Current release: **Vaultarr 1.7.7 — Anchored Scan Drawer**
+> Current release: **Vaultarr 1.7.8 — Rebuilt Museum Scan Control**
 
 Vaultarr is a self-hosted digital game museum. Point it at your game folders, let the background preparation system enrich the records, and spend your time browsing the collection rather than managing providers and queues.
 
-## What's new in 1.7.7
+## What's new in 1.7.8
 
-- Museum scanning starts only after an explicit click; refreshing or navigating never starts a scan.
-- The Scan Museum pill remains fixed while a separate drawer unfolds beneath it.
-- Scan details reveal in stages and close in two calm phases after completion.
-- Interrupted/stale scan states are reset to idle instead of appearing as a new scan.
+- Removed both competing scan-control stylesheets and rebuilt the sidebar scanner as one isolated component.
+- Scan Museum remains a compact pill above Search Museum while an independent drawer reveals progress beneath it.
+- Page load and navigation only read existing scan status; only a deliberate button click can start a scan.
+- The new two-stage close fades scan details before calmly folding the drawer away.
+- API start failures are shown directly in the drawer instead of silently disabling the control.
 
 ## What Vaultarr does
 
