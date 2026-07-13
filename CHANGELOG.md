@@ -1,4 +1,13 @@
-# 1.8.0 — Transforming Museum Scan Pill
+# Changelog
+
+## 1.8.1 — Museum Scan State Rewrite
+
+- Separated scan start actions from status attachment.
+- Prevented refreshes, navigation, and browser tab changes from starting scans.
+- Added trusted direct-click binding and backend user-action validation.
+- Increased spacing between Scan Museum and Search Museum.
+
+# 1.8.1 — Transforming Museum Scan Pill
 
 - Added 18 px of visual separation between Scan Museum and Search Museum.
 - Kept the scanner fixed at the same compact pill dimensions in every state.

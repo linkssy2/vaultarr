@@ -1,10 +1,10 @@
-# Vaultarr 1.8.0
+# Vaultarr 1.8.1
 
-> Current release: **Vaultarr 1.8.0 — Transforming Museum Scan Pill**
+> Current release: **Vaultarr 1.8.1 — Transforming Museum Scan Pill**
 
 Vaultarr is a self-hosted digital game museum. Point it at your game folders, let the background preparation system enrich the records, and spend your time browsing the collection rather than managing providers and queues.
 
-## What's new in 1.8.0
+## What's new in 1.8.1
 
 - Adds proper breathing room between **Scan Museum** and **Search Museum**.
 - Keeps the scan control at a fixed pill size in every state.

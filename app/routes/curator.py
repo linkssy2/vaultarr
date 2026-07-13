@@ -35,8 +35,10 @@ def retired_activity_page():
 
 @curator_bp.route('/api/museum-scan/start', methods=['POST'])
 def api_museum_scan_start():
-    # This endpoint is only called by the explicit Scan Museum click handler.
-    # Status polling remains read-only and never invokes start_scan().
+    # Starting a scan requires the explicit browser control action. Status,
+    # navigation, page refreshes, and visibility changes are read-only.
+    if request.headers.get('X-Vaultarr-User-Action') != 'scan-museum':
+        return _json_no_cache({'success':False,'message':'Museum scans must be started from the Scan Museum button.'}, 400)
     return _json_no_cache({'success':True, **start_scan()})
 
 @curator_bp.route('/api/museum-scan/status')

@@ -6,7 +6,7 @@
   padding: 0 16px 14px;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: 18px;
+  gap: 26px;
 }
 
 .sidebar.vaultos-sidebar .sidebar-scan-shell,
@@ -268,7 +268,7 @@
   0%, 18% { transform: translateX(-75%); }
   58%, 100% { transform: translateX(75%); }
 }
-@media(max-width:720px){ .sidebar.vaultos-sidebar .sidebar-utility-stack{padding-inline:10px;gap:16px} }
+@media(max-width:720px){ .sidebar.vaultos-sidebar .sidebar-utility-stack{padding-inline:10px;gap:22px} }
 @media(prefers-reduced-motion:reduce){
   .sidebar.vaultos-sidebar .sidebar-scan-control,
   .sidebar.vaultos-sidebar .sidebar-scan-idle,
