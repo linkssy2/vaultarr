@@ -1,4 +1,4 @@
-# Vaultarr 1.6.3 — Background Museum Scan
+# Vaultarr 1.6.4 — Background Museum Scan
 
 Vaultarr now uses a single Plex-style Museum Scan instead of exposing individual preparation jobs in Standard Mode.
 

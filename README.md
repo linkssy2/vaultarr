@@ -1,10 +1,10 @@
-# Vaultarr 1.6.3
+# Vaultarr 1.6.4
 
-> Current release: **Vaultarr 1.6.3 — The Museum Experience**
+> Current release: **Vaultarr 1.6.4 — The Museum Experience**
 
 Vaultarr is a self-hosted digital game museum. Point it at your game folders, let the background preparation system enrich the records, and spend your time browsing the collection rather than managing providers and queues.
 
-## What's new in 1.6.3
+## What's new in 1.6.4
 
 - A Plex-style **Scan Museum** action now checks folders and prepares incomplete games in the background.
 - One persistent global progress indicator follows you between pages.
@@ -242,6 +242,6 @@ No uploaded JSON or CSV index is required. If live search cannot find a result, 
 
 Vaultarr 1.5.8 reduces initial image decoding, avoids painting long offscreen grids, throttles card hover work, pauses nonessential activity in hidden tabs, and loads Focus Mode logic only when expandable game cards are present. These optimizations are automatic and require no configuration.
 
-## 1.6.3 Background Museum Scan
+## 1.6.4 Background Museum Scan
 
-Use **Scan Museum** from Home or Museum. Vaultarr scans configured folders, checks existing records, and prepares incomplete games in one background workflow. The compact progress indicator remains visible while navigating and shows a summary when the scan finishes.
+Use **Scan Museum** from Home or Museum. Vaultarr scans configured folders, checks existing records, and prepares incomplete games in one background workflow. A compact, blended sidebar indicator remains visible while navigating. Click it for details; its completion summary fades automatically.

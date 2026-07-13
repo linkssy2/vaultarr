@@ -24,12 +24,6 @@
     </div>
   </div>
 
-  <div class="museum-scan-status" data-museum-scan-pill hidden>
-    <strong data-museum-scan-stage>Scanning Museum</strong>
-    <div class="museum-scan-track"><span data-museum-scan-fill></span></div>
-    <b data-museum-scan-percent>0%</b>
-    <small class="museum-scan-detail" data-museum-scan-detail></small>
-  </div>
 
   <div class="category-row">
     <a class="category-chip {% if not category or category == 'All Games' %}active{% endif %}" href="/museum">All Games <span>{{ total_count or games|length }}</span></a>
