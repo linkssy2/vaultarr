@@ -4,6 +4,7 @@
   const state = {
     timer: null,
     completionTimer: null,
+    contractionTimer: null,
     active: false,
     displayedProgress: 0,
     targetProgress: 0,
@@ -75,22 +76,27 @@
     control.setAttribute('aria-expanded', 'false');
     control.disabled = false;
     control.title = 'Scan Museum';
+    const live = control.querySelector('.sidebar-scan-control-live');
+    if (live) live.setAttribute('aria-hidden', 'true');
   }
 
   function scheduleIdleReturn() {
     clearTimeout(state.completionTimer);
+    clearTimeout(state.contractionTimer);
+    // Let the completion message settle, then fade the drawer contents before
+    // folding the lower row closed. The header remains anchored throughout.
     state.completionTimer = setTimeout(() => {
       nodes().controls.forEach(control => control.classList.add('is-contracting'));
-      state.completionTimer = setTimeout(() => {
+      state.contractionTimer = setTimeout(() => {
         nodes().controls.forEach(control => {
-          control.classList.remove('is-contracting');
           returnToIdle(control);
+          control.classList.remove('is-contracting');
         });
         state.displayedProgress = 0;
         state.targetProgress = 0;
         setProgressVisual(0);
-      }, 620);
-    }, 1650);
+      }, 760);
+    }, 1750);
   }
 
   function render(data) {
@@ -104,6 +110,9 @@
       control.classList.toggle('is-complete', data.status === 'complete');
       control.classList.toggle('is-failed', data.status === 'failed');
       control.disabled = running;
+      control.setAttribute('aria-expanded', running || data.status === 'complete' || data.status === 'failed' ? 'true' : 'false');
+      const live = control.querySelector('.sidebar-scan-control-live');
+      if (live) live.setAttribute('aria-hidden', running || data.status === 'complete' || data.status === 'failed' ? 'false' : 'true');
       control.title = running ? 'Museum scan in progress' : 'Scan Museum';
       if (running) control.classList.remove('is-contracting');
     });
@@ -145,6 +154,7 @@
   async function start(control) {
     if (state.active || control?.classList.contains('is-active')) return;
     clearTimeout(state.completionTimer);
+    clearTimeout(state.contractionTimer);
     if (control) {
       control.classList.add('is-active');
       control.disabled = true;

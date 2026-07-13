@@ -1,3 +1,11 @@
+# Vaultarr 1.7.5 — Calm Scan Drawer
+
+- Reworked the sidebar scan control as a stable pill header with a lower status drawer.
+- The header no longer disappears or jumps while scanning.
+- Added delayed detail reveal, smooth progress-line entrance, and ordered completion collapse.
+- Slowed and softened the expand/contract easing to match Vaultarr's protected UX baseline.
+- Preserved the Museum scan engine and all protected card, Focus Mode, navigation, search, manual, and acquisition behavior.
+
 # Vaultarr 1.7.4 — Per-Game Preservation
 
 - Moved preservation status into each game record and the expanded game card.

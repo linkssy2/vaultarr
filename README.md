@@ -1,10 +1,15 @@
-# Vaultarr 1.7.4
+# Vaultarr 1.7.5
 
-> Current release: **Vaultarr 1.7.4 — Refined Pill Scan Control**
+> Current release: **Vaultarr 1.7.5 — Calm Scan Drawer**
 
 Vaultarr is a self-hosted digital game museum. Point it at your game folders, let the background preparation system enrich the records, and spend your time browsing the collection rather than managing providers and queues.
 
-## What's new in 1.7.4
+## What's new in 1.7.5
+
+- Scan Museum now keeps its 44 px header anchored while a status drawer unfolds beneath it.
+- Scan details fade in after expansion begins and fade out before the drawer closes.
+- Completion holds briefly, then returns to the idle pill with a calm fold-away motion.
+- The progress line reveals smoothly and the scan icon rotates at a slow, restrained pace.
 
 - **Scan Museum** and **Search Museum** now match Vaultarr's compact pill controls.
 - The scan button smoothly expands vertically in place to reveal progress, stage, and current-game information.
