@@ -1,12 +1,13 @@
-/* Vaultarr 1.7.3 — Compact Sidebar Scan Control
-   Keeps Scan Museum and Search Museum as matching 52px sidebar controls.
-   Scan Museum expands vertically in place while active, then contracts smoothly. */
+/* Vaultarr 1.7.4 — Refined Pill Scan Control
+   Scan Museum and Search Museum use the same compact pill geometry as the
+   rest of Vaultarr. The scan control gently expands in place, reveals status,
+   then returns to its idle pill without snapping or changing sidebar width. */
 .sidebar.vaultos-sidebar .sidebar-utility-stack {
   width: 100%;
   margin-top: auto;
-  padding: 0 14px 14px;
+  padding: 0 16px 14px;
   display: grid;
-  gap: 10px;
+  gap: 9px;
 }
 
 .sidebar.vaultos-sidebar .sidebar-scan-control,
@@ -14,22 +15,27 @@
   box-sizing: border-box;
   width: 100%;
   margin: 0 !important;
-  border-radius: 15px;
+  border-radius: 999px;
 }
 
-/* Search remains a compact single-line control instead of growing or wrapping. */
+/* Compact, single-line search pill. */
 .sidebar.vaultos-sidebar .sidebar-search-shell {
-  min-height: 52px;
-  height: 52px;
-  padding: 0 14px;
+  height: 44px;
+  min-height: 44px;
+  padding: 0 14px 0 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  font-size: 13px;
+  font-size: 12.5px;
   line-height: 1;
   white-space: nowrap;
   overflow: hidden;
+  transition: background .22s ease, border-color .22s ease, box-shadow .24s ease, transform .22s ease;
+}
+.sidebar.vaultos-sidebar .sidebar-search-shell:hover,
+.sidebar.vaultos-sidebar .sidebar-search-shell:focus-visible {
+  transform: translateY(-1px);
 }
 .sidebar.vaultos-sidebar .sidebar-search-shell > span {
   min-width: 0;
@@ -45,98 +51,114 @@
   border-radius: 999px;
 }
 
-/* Idle scan button matches the dimensions and visual weight of other sidebar controls. */
+/* Idle state is a standard Vaultarr pill. */
 .sidebar.vaultos-sidebar .sidebar-scan-control {
   position: relative;
-  height: 52px;
-  min-height: 52px;
+  display: block;
+  height: 44px;
+  min-height: 44px;
   padding: 0;
   overflow: hidden;
-  display: block;
   text-align: left;
+  transform-origin: 50% 100%;
+  will-change: height, border-radius, box-shadow;
   transition:
-    height .44s cubic-bezier(.22,.61,.36,1),
-    background .24s ease,
-    border-color .24s ease,
-    box-shadow .28s ease,
-    transform .22s ease,
-    opacity .22s ease;
+    height .52s cubic-bezier(.22,.8,.28,1),
+    min-height .52s cubic-bezier(.22,.8,.28,1),
+    border-radius .46s cubic-bezier(.22,.8,.28,1),
+    background .28s ease,
+    border-color .28s ease,
+    box-shadow .32s ease,
+    transform .24s ease,
+    opacity .24s ease;
 }
 .sidebar.vaultos-sidebar .sidebar-scan-control-idle {
   position: absolute;
   inset: 0;
-  min-height: 52px;
-  max-height: none;
-  padding: 0 15px;
+  height: 44px;
+  min-height: 44px;
+  padding: 0 16px;
   display: flex;
   align-items: center;
-  justify-content: flex-start;
-  gap: 10px;
+  justify-content: center;
+  gap: 9px;
   opacity: 1;
-  transform: translateY(0);
-  transition: opacity .2s ease, transform .32s cubic-bezier(.22,.61,.36,1);
+  transform: translateY(0) scale(1);
+  transition:
+    opacity .22s ease,
+    transform .36s cubic-bezier(.22,.8,.28,1);
 }
 .sidebar.vaultos-sidebar .sidebar-scan-control-idle strong {
-  font-size: 13px;
+  font-size: 12.5px;
   line-height: 1;
   white-space: nowrap;
+  letter-spacing: -.01em;
 }
 .sidebar.vaultos-sidebar .sidebar-scan-control-idle .nav-glyph {
   flex: 0 0 auto;
-  width: 25px;
-  height: 25px;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  font-size: .82rem;
 }
 
-/* Live details occupy the same control and reveal only through vertical expansion. */
+/* Live status is present in the same control but hidden until the pill expands. */
 .sidebar.vaultos-sidebar .sidebar-scan-control-live {
   position: absolute;
   inset: 0;
   box-sizing: border-box;
-  max-height: none;
   height: 100%;
-  padding: 13px 14px 12px;
+  padding: 13px 15px 12px;
   display: grid;
-  grid-template-rows: auto auto minmax(0,1fr);
+  grid-template-rows: auto auto auto;
   align-content: center;
-  gap: 9px;
+  gap: 8px;
   opacity: 0;
-  transform: translateY(8px);
+  transform: translateY(7px) scale(.985);
   pointer-events: none;
-  transition: opacity .24s ease .06s, transform .38s cubic-bezier(.22,.61,.36,1) .02s;
+  transition:
+    opacity .25s ease .11s,
+    transform .46s cubic-bezier(.22,.8,.28,1) .05s;
 }
 .sidebar.vaultos-sidebar .sidebar-scan-control.is-active,
 .sidebar.vaultos-sidebar .sidebar-scan-control.is-complete,
 .sidebar.vaultos-sidebar .sidebar-scan-control.is-failed {
-  height: 116px;
-  min-height: 116px;
+  height: 104px;
+  min-height: 104px;
+  border-radius: 19px;
 }
 .sidebar.vaultos-sidebar .sidebar-scan-control.is-active .sidebar-scan-control-idle,
 .sidebar.vaultos-sidebar .sidebar-scan-control.is-complete .sidebar-scan-control-idle,
 .sidebar.vaultos-sidebar .sidebar-scan-control.is-failed .sidebar-scan-control-idle {
   opacity: 0;
-  transform: translateY(-8px);
+  transform: translateY(-5px) scale(.985);
   pointer-events: none;
 }
 .sidebar.vaultos-sidebar .sidebar-scan-control.is-active .sidebar-scan-control-live,
 .sidebar.vaultos-sidebar .sidebar-scan-control.is-complete .sidebar-scan-control-live,
 .sidebar.vaultos-sidebar .sidebar-scan-control.is-failed .sidebar-scan-control-live {
   opacity: 1;
-  transform: translateY(0);
+  transform: translateY(0) scale(1);
   pointer-events: auto;
 }
+
+/* A dedicated contracting phase keeps the return animation quiet and ordered. */
 .sidebar.vaultos-sidebar .sidebar-scan-control.is-contracting {
-  height: 52px;
-  min-height: 52px;
+  height: 44px;
+  min-height: 44px;
+  border-radius: 999px;
 }
 .sidebar.vaultos-sidebar .sidebar-scan-control.is-contracting .sidebar-scan-control-live {
   opacity: 0;
-  transform: translateY(-7px);
+  transform: translateY(-5px) scale(.985);
+  transition-delay: 0s;
 }
 .sidebar.vaultos-sidebar .sidebar-scan-control.is-contracting .sidebar-scan-control-idle {
   opacity: 1;
-  transform: translateY(0);
-  transition-delay: .18s;
+  transform: translateY(0) scale(1);
+  transition-delay: .22s;
 }
+
 .sidebar.vaultos-sidebar .sidebar-scan-pill-top {
   min-width: 0;
 }
@@ -147,15 +169,19 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.sidebar.vaultos-sidebar .sidebar-scan-control-live small {
+  font-size: .68rem;
+  line-height: 1.25;
+}
 .sidebar.vaultos-sidebar .museum-scan-track {
-  height: 5px;
+  height: 4px;
 }
 
 @media (max-width: 720px) {
   .sidebar.vaultos-sidebar .sidebar-utility-stack { padding-inline: 10px; }
   .sidebar.vaultos-sidebar .sidebar-scan-control.is-active,
   .sidebar.vaultos-sidebar .sidebar-scan-control.is-complete,
-  .sidebar.vaultos-sidebar .sidebar-scan-control.is-failed { height: 102px; min-height: 102px; }
+  .sidebar.vaultos-sidebar .sidebar-scan-control.is-failed { height: 96px; min-height: 96px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

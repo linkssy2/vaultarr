@@ -1,4 +1,4 @@
-# Vaultarr 1.7.3 — Compact Sidebar Scan Control
+# Vaultarr 1.7.4 — Compact Sidebar Scan Control
 
 This patch refines the Museum scan and search controls in the sidebar.
 

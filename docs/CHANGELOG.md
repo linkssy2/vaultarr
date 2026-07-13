@@ -1,4 +1,4 @@
-# Vaultarr 1.7.3 — Compact Sidebar Scan Control
+# Vaultarr 1.7.4 — Compact Sidebar Scan Control
 
 - Standardized Scan Museum and Search Museum as compact 52 px sidebar controls.
 - Scan Museum now expands vertically in place while running and contracts smoothly when finished.

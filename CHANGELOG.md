@@ -1,4 +1,4 @@
-# Vaultarr 1.7.3 — Per-Game Preservation
+# Vaultarr 1.7.4 — Per-Game Preservation
 
 - Moved preservation status into each game record and the expanded game card.
 - Renamed the expanded-card Archive Health tab to Preservation.
@@ -9,14 +9,14 @@
 
 # Changelog
 
-## 1.7.3 — Primary Sidebar Scan Control
+## 1.7.4 — Primary Sidebar Scan Control
 
 - Moved Scan Museum directly above Search Museum in the sidebar.
 - Restyled the idle scan control to match Vaultarr's primary blue Enter Museum button.
 - Retained the smooth expanding progress state and completion contraction.
 
 
-## 1.7.3 - Sidebar Museum Scan
+## 1.7.4 - Sidebar Museum Scan
 
 - Replaced all page-level Museum scan controls with one permanent sidebar control.
 - The button expands in place to show live progress, current stage, and current game.
@@ -25,7 +25,7 @@
 - Preserved the protected 1.5.8 card, navigation, Focus Mode, search, manual, and acquisition systems.
 # Changelog
 
-## 1.7.3 — Discreet Scan Status
+## 1.7.4 — Discreet Scan Status
 
 - Removed the duplicate in-page Museum Scan progress banners from Home and Museum.
 - Kept one compact scan indicator in the sidebar while a scan runs.
@@ -33,7 +33,7 @@
 - Added click-to-expand scan details and an automatic fade after successful completion.
 - Preserved the background Museum Scan engine and protected 1.5.8 interaction systems.
 
-## 1.7.3 — Background Museum Scan
+## 1.7.4 — Background Museum Scan
 
 - Replaced the per-game Activity dashboard with one Plex-style background Museum Scan.
 - Added Scan Museum controls to Home and Museum.
@@ -403,3 +403,11 @@ Vaultarr moved through the Alpha 1–30 series before the 1.0 release. Detailed 
 
 ## 1.3.0
 - Added the Museum Curator Engine, queue, readiness score, history, safe metadata-lock behavior, and high-confidence automated enrichment.
+
+## 1.7.4 — Refined Pill Scan Control
+
+- Resized **Scan Museum** and **Search Museum** to match Vaultarr's compact pill controls.
+- Reworked the scan transition into a quieter vertical expansion with ordered content fades.
+- Reduced scan-card height, padding, and progress-track weight for a cleaner sidebar fit.
+- Added a longer, smoother completion contraction so status content fades before the pill returns.
+- Preserved the museum scan engine and protected 1.5.8 interaction baseline.

@@ -89,8 +89,8 @@
         state.displayedProgress = 0;
         state.targetProgress = 0;
         setProgressVisual(0);
-      }, 520);
-    }, 1500);
+      }, 620);
+    }, 1650);
   }
 
   function render(data) {
