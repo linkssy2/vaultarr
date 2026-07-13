@@ -1,0 +1,165 @@
+/* Vaultarr 1.7.3 — Compact Sidebar Scan Control
+   Keeps Scan Museum and Search Museum as matching 52px sidebar controls.
+   Scan Museum expands vertically in place while active, then contracts smoothly. */
+.sidebar.vaultos-sidebar .sidebar-utility-stack {
+  width: 100%;
+  margin-top: auto;
+  padding: 0 14px 14px;
+  display: grid;
+  gap: 10px;
+}
+
+.sidebar.vaultos-sidebar .sidebar-scan-control,
+.sidebar.vaultos-sidebar .sidebar-search-shell {
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0 !important;
+  border-radius: 15px;
+}
+
+/* Search remains a compact single-line control instead of growing or wrapping. */
+.sidebar.vaultos-sidebar .sidebar-search-shell {
+  min-height: 52px;
+  height: 52px;
+  padding: 0 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 13px;
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.sidebar.vaultos-sidebar .sidebar-search-shell > span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sidebar.vaultos-sidebar .sidebar-search-shell kbd {
+  flex: 0 0 auto;
+  margin: 0;
+  padding: 4px 8px;
+  line-height: 1;
+  border-radius: 999px;
+}
+
+/* Idle scan button matches the dimensions and visual weight of other sidebar controls. */
+.sidebar.vaultos-sidebar .sidebar-scan-control {
+  position: relative;
+  height: 52px;
+  min-height: 52px;
+  padding: 0;
+  overflow: hidden;
+  display: block;
+  text-align: left;
+  transition:
+    height .44s cubic-bezier(.22,.61,.36,1),
+    background .24s ease,
+    border-color .24s ease,
+    box-shadow .28s ease,
+    transform .22s ease,
+    opacity .22s ease;
+}
+.sidebar.vaultos-sidebar .sidebar-scan-control-idle {
+  position: absolute;
+  inset: 0;
+  min-height: 52px;
+  max-height: none;
+  padding: 0 15px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity .2s ease, transform .32s cubic-bezier(.22,.61,.36,1);
+}
+.sidebar.vaultos-sidebar .sidebar-scan-control-idle strong {
+  font-size: 13px;
+  line-height: 1;
+  white-space: nowrap;
+}
+.sidebar.vaultos-sidebar .sidebar-scan-control-idle .nav-glyph {
+  flex: 0 0 auto;
+  width: 25px;
+  height: 25px;
+}
+
+/* Live details occupy the same control and reveal only through vertical expansion. */
+.sidebar.vaultos-sidebar .sidebar-scan-control-live {
+  position: absolute;
+  inset: 0;
+  box-sizing: border-box;
+  max-height: none;
+  height: 100%;
+  padding: 13px 14px 12px;
+  display: grid;
+  grid-template-rows: auto auto minmax(0,1fr);
+  align-content: center;
+  gap: 9px;
+  opacity: 0;
+  transform: translateY(8px);
+  pointer-events: none;
+  transition: opacity .24s ease .06s, transform .38s cubic-bezier(.22,.61,.36,1) .02s;
+}
+.sidebar.vaultos-sidebar .sidebar-scan-control.is-active,
+.sidebar.vaultos-sidebar .sidebar-scan-control.is-complete,
+.sidebar.vaultos-sidebar .sidebar-scan-control.is-failed {
+  height: 116px;
+  min-height: 116px;
+}
+.sidebar.vaultos-sidebar .sidebar-scan-control.is-active .sidebar-scan-control-idle,
+.sidebar.vaultos-sidebar .sidebar-scan-control.is-complete .sidebar-scan-control-idle,
+.sidebar.vaultos-sidebar .sidebar-scan-control.is-failed .sidebar-scan-control-idle {
+  opacity: 0;
+  transform: translateY(-8px);
+  pointer-events: none;
+}
+.sidebar.vaultos-sidebar .sidebar-scan-control.is-active .sidebar-scan-control-live,
+.sidebar.vaultos-sidebar .sidebar-scan-control.is-complete .sidebar-scan-control-live,
+.sidebar.vaultos-sidebar .sidebar-scan-control.is-failed .sidebar-scan-control-live {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.sidebar.vaultos-sidebar .sidebar-scan-control.is-contracting {
+  height: 52px;
+  min-height: 52px;
+}
+.sidebar.vaultos-sidebar .sidebar-scan-control.is-contracting .sidebar-scan-control-live {
+  opacity: 0;
+  transform: translateY(-7px);
+}
+.sidebar.vaultos-sidebar .sidebar-scan-control.is-contracting .sidebar-scan-control-idle {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: .18s;
+}
+.sidebar.vaultos-sidebar .sidebar-scan-pill-top {
+  min-width: 0;
+}
+.sidebar.vaultos-sidebar .sidebar-scan-pill-top strong,
+.sidebar.vaultos-sidebar .sidebar-scan-control-live small {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sidebar.vaultos-sidebar .museum-scan-track {
+  height: 5px;
+}
+
+@media (max-width: 720px) {
+  .sidebar.vaultos-sidebar .sidebar-utility-stack { padding-inline: 10px; }
+  .sidebar.vaultos-sidebar .sidebar-scan-control.is-active,
+  .sidebar.vaultos-sidebar .sidebar-scan-control.is-complete,
+  .sidebar.vaultos-sidebar .sidebar-scan-control.is-failed { height: 102px; min-height: 102px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sidebar.vaultos-sidebar .sidebar-scan-control,
+  .sidebar.vaultos-sidebar .sidebar-scan-control-idle,
+  .sidebar.vaultos-sidebar .sidebar-scan-control-live { transition-duration: .01ms !important; transition-delay: 0ms !important; }
+}
