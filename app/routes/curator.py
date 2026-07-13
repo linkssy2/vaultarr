@@ -35,6 +35,12 @@ def curator_queue_all(): queue_incomplete_games('manual'); return redirect('/cur
 @curator_bp.route('/curator/run', methods=['POST'])
 def curator_run(): run_queue(request.form.get('limit',5)); return redirect('/curator')
 
+
+@curator_bp.route('/api/curator/queue-all', methods=['POST'])
+def api_curator_queue_all():
+    queued = queue_incomplete_games('manual')
+    return jsonify({'success': True, 'queued': queued})
+
 @curator_bp.route('/api/curator/status')
 def api_curator_status(): return jsonify({'success':True, **curator_status()})
 

@@ -183,7 +183,17 @@ def run_queue(limit=5):
 def curator_status():
     conn = get_connection()
     counts = {row["status"]: row["count"] for row in conn.execute("SELECT status, COUNT(*) count FROM curator_jobs GROUP BY status").fetchall()}
-    games = [dict(row) for row in conn.execute("SELECT * FROM games ORDER BY curator_score ASC, title COLLATE NOCASE LIMIT 100").fetchall()]
+    games = [dict(row) for row in conn.execute("""
+        SELECT g.*,
+               j.status AS curator_job_status,
+               COALESCE(j.progress, 0) AS curator_job_progress,
+               COALESCE(j.stage, '') AS curator_job_stage,
+               COALESCE(j.last_error, '') AS curator_job_error
+        FROM games g
+        LEFT JOIN curator_jobs j ON j.game_id = g.id
+        ORDER BY g.curator_score ASC, g.title COLLATE NOCASE
+        LIMIT 100
+    """).fetchall()]
     history = [dict(row) for row in conn.execute("SELECT h.*, g.title FROM curator_history h LEFT JOIN games g ON g.id=h.game_id ORDER BY h.id DESC LIMIT 20").fetchall()]
     conn.close()
     return {"counts": counts, "games": games, "history": history}

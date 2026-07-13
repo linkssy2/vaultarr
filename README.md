@@ -1,10 +1,10 @@
-# Vaultarr 1.6.0
+# Vaultarr 1.6.1
 
-> Current release: **Vaultarr 1.6.0 — The Museum Experience**
+> Current release: **Vaultarr 1.6.1 — The Museum Experience**
 
 Vaultarr is a self-hosted digital game museum. Point it at your game folders, let the background preparation system enrich the records, and spend your time browsing the collection rather than managing providers and queues.
 
-## What changed in 1.6.0
+## What changed in 1.6.1
 
 - **Museum** replaces Library in the standard interface.
 - **Activity** presents the Curator Engine in simple, user-facing language.
@@ -245,3 +245,7 @@ No uploaded JSON or CSV index is required. If live search cannot find a result, 
 ## Performance foundation
 
 Vaultarr 1.5.8 reduces initial image decoding, avoids painting long offscreen grids, throttles card hover work, pauses nonessential activity in hidden tabs, and loads Focus Mode logic only when expandable game cards are present. These optimizations are automatic and require no configuration.
+
+## 1.6.1 Activity behavior
+
+Activity preparation starts immediately, tracks live progress without refreshing, resumes active jobs when reopened, and consistently uses the simplified **Prepare** wording.

@@ -1,7 +1,7 @@
 # Vaultarr UX Baseline
 
 **Protected baseline:** Vaultarr 1.5.8  
-**Museum experience release:** Vaultarr 1.6.0
+**Museum experience release:** Vaultarr 1.6.1
 
 Future releases should extend around these systems instead of rewriting them.
 

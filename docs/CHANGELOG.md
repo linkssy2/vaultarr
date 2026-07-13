@@ -1,4 +1,4 @@
-## 1.6.0 — The Museum Experience
+## 1.6.1 — The Museum Experience
 
 - Redesigned Home as a calm museum lobby while retaining the Blue V Orbital Core.
 - Renamed the standard Library experience to Museum.

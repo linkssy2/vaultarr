@@ -1,4 +1,14 @@
-## 1.6.0 — The Museum Experience
+# Vaultarr 1.6.1 — Live Activity Repair
+
+- Fixed Activity actions not initializing after smooth sidebar navigation.
+- Preparation now starts visibly without requiring a browser refresh.
+- Active queued or running jobs automatically resume live progress tracking when Activity opens.
+- Restored smooth live progress and percentage updates from the server-side job stages.
+- Replaced the legacy blocking Prepare Next 5 form with live sequential preparation.
+- Changed completed buttons back to Prepare instead of the old Curate label.
+- Kept the protected 1.5.8 card, expansion, sidebar, search, and manual systems unchanged.
+
+## 1.6.1 — The Museum Experience
 
 - Redesigned Home as a calm museum lobby while retaining the Blue V Orbital Core.
 - Renamed the standard Library experience to Museum.

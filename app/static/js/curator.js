@@ -1,8 +1,11 @@
 (() => {
   "use strict";
 
+  if (window.VaultarrCuratorUI?.installed) return;
+
   const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
   const clamp = (value) => Math.max(0, Math.min(100, Number(value) || 0));
+  const activeRuns = new Map();
 
   class SmoothProgress {
     constructor(row) {
@@ -25,13 +28,14 @@
       this.target = this.current;
       this.setStage(stage);
       this.render();
-      this.running = true;
-      this.lastFrame = performance.now();
-      this.raf = requestAnimationFrame((time) => this.tick(time));
+      if (!this.running) {
+        this.running = true;
+        this.lastFrame = performance.now();
+        this.raf = requestAnimationFrame((time) => this.tick(time));
+      }
     }
 
     setTarget(value, stage) {
-      // Progress should never snap backward while a job is running.
       this.target = Math.max(this.target, clamp(value));
       if (stage) this.setStage(stage);
     }
@@ -45,22 +49,17 @@
       if (!this.running) return;
       const dt = Math.min(100, Math.max(0, now - this.lastFrame));
       this.lastFrame = now;
-
       const distance = this.target - this.current;
       if (Math.abs(distance) > 0.015) {
-        // Time-based exponential easing prevents polling jumps from being visible.
         const response = 1 - Math.exp(-dt / 520);
         const easedStep = distance * response;
         const minimumStep = Math.min(Math.abs(distance), dt * 0.0025);
         const direction = Math.sign(distance);
         this.current += direction * Math.max(Math.abs(easedStep), minimumStep);
-        if ((direction > 0 && this.current > this.target) || (direction < 0 && this.current < this.target)) {
-          this.current = this.target;
-        }
+        if ((direction > 0 && this.current > this.target) || (direction < 0 && this.current < this.target)) this.current = this.target;
       } else {
         this.current = this.target;
       }
-
       this.render();
       this.resolveWaiters();
       this.raf = requestAnimationFrame((time) => this.tick(time));
@@ -68,7 +67,10 @@
 
     render() {
       const visual = clamp(this.current);
-      if (this.fill) this.fill.style.setProperty("--curator-progress", `${visual}%`);
+      if (this.fill) {
+        this.fill.style.setProperty("--curator-progress", `${visual}%`);
+        this.fill.style.width = `${visual}%`;
+      }
       if (this.percent) this.percent.textContent = `${Math.round(visual)}%`;
       if (this.meter) this.meter.setAttribute("aria-valuenow", String(Math.round(visual)));
     }
@@ -99,6 +101,7 @@
     stop() {
       this.running = false;
       if (this.raf) cancelAnimationFrame(this.raf);
+      this.raf = 0;
       this.resolveWaiters();
     }
   }
@@ -115,110 +118,152 @@
     }, 3500);
   }
 
-  async function run(row, button) {
-    if (!row || button.disabled) return;
-
-    const id = row.dataset.gameId;
-    const progress = new SmoothProgress(row);
-    row.classList.remove("is-failed", "is-complete");
-    row.classList.add("is-curating");
-    row.setAttribute("aria-busy", "true");
-    button.disabled = true;
-    button.classList.add("is-working");
-    button.textContent = "Preparing";
-
-    // Immediate visual acknowledgement before the network request begins.
-    progress.startAt(0, "Starting curator…");
-    progress.setTarget(4, "Starting curator…");
-
-    try {
-      const start = await fetch(`/api/curator/games/${id}/start`, {
-        method: "POST",
-        headers: { Accept: "application/json" },
-      });
-      const started = await start.json();
-      if (!start.ok || !started.success) {
-        throw new Error(started.message || "Could not start cataloging.");
-      }
-
-      let finalJob = null;
-      while (!finalJob) {
-        const res = await fetch(`/api/curator/games/${id}/status`, {
-          headers: { Accept: "application/json" },
-          cache: "no-store",
-        });
-        const job = await res.json();
-        if (!res.ok || !job.success) {
-          throw new Error(job.message || "Could not read progress.");
-        }
-
-        if (job.status === "failed") {
-          throw new Error(job.last_error || "Cataloging failed.");
-        }
-
-        if (job.status === "complete") {
-          finalJob = job;
-          break;
-        }
-
-        // Hold a small amount of room for a graceful final completion pass.
-        progress.setTarget(Math.min(94, clamp(job.progress)), job.stage || "Preparing game…");
-        await sleep(300);
-      }
-
-      // Always finish the work animation smoothly, even when the server finishes quickly.
-      await progress.settle(100, "Finishing museum record…", 6000);
-      await sleep(320);
-
-      const score = clamp(finalJob.result?.score ?? finalJob.curator_score ?? 100);
-      progress.stop();
-
-      // Transition from job progress to the authoritative readiness score without a snap.
-      progress.running = true;
-      progress.lastFrame = performance.now();
-      progress.raf = requestAnimationFrame((time) => progress.tick(time));
-      progress.target = score;
-      progress.setStage(score >= 90 ? "Museum Ready" : "Needs Review");
-      await Promise.race([
-        new Promise((resolve) => {
-          const check = () => {
-            if (Math.abs(progress.current - score) < 0.5) resolve();
-            else requestAnimationFrame(check);
-          };
-          check();
-        }),
-        sleep(1800),
-      ]);
-      progress.current = score;
-      progress.target = score;
-      progress.render();
-      progress.stop();
-
-      row.classList.remove("is-curating");
-      row.classList.add("is-complete");
-      button.disabled = false;
-      button.classList.remove("is-working");
-      button.textContent = "Curate";
-      row.setAttribute("aria-busy", "false");
-      toast(score >= 90 ? "Museum Ready" : "Cataloging Finished", row.querySelector("strong")?.textContent || "Game cataloging finished.");
-    } catch (err) {
-      progress.stop();
-      row.classList.remove("is-curating");
-      row.classList.add("is-failed");
-      row.setAttribute("aria-busy", "false");
-      button.disabled = false;
-      button.classList.remove("is-working");
-      button.textContent = "Retry";
-      const status = row.querySelector("[data-curator-status]");
-      if (status) status.textContent = err.message;
-      toast("Needs Review", err.message, "warning");
-    }
+  function setWorking(row, button, working) {
+    row.classList.toggle("is-curating", working);
+    row.setAttribute("aria-busy", working ? "true" : "false");
+    button.disabled = working;
+    button.classList.toggle("is-working", working);
+    button.textContent = working ? "Preparing" : "Prepare";
   }
 
-  document.addEventListener("click", (event) => {
-    const button = event.target.closest("[data-curator-run]");
-    if (!button) return;
-    event.preventDefault();
-    run(button.closest("[data-curator-row]"), button);
+  async function monitor(row, button, startNew = false) {
+    if (!row || !button) return;
+    const id = row.dataset.gameId;
+    if (!id || activeRuns.has(id)) return activeRuns.get(id);
+
+    const task = (async () => {
+      const progress = new SmoothProgress(row);
+      row.classList.remove("is-failed", "is-complete");
+      setWorking(row, button, true);
+
+      const initial = startNew ? 0 : clamp(row.dataset.jobProgress || row.querySelector("[data-curator-percent]")?.textContent);
+      const initialStage = startNew ? "Starting preparation…" : (row.dataset.jobStage || "Preparing game…");
+      progress.startAt(initial, initialStage);
+      progress.setTarget(startNew ? 4 : Math.max(4, initial), initialStage);
+
+      try {
+        if (startNew) {
+          const start = await fetch(`/api/curator/games/${id}/start`, {
+            method: "POST",
+            headers: { Accept: "application/json" },
+            cache: "no-store",
+          });
+          const started = await start.json();
+          if (!start.ok || !started.success) throw new Error(started.message || "Could not start preparation.");
+        }
+
+        let finalJob = null;
+        while (!finalJob) {
+          const res = await fetch(`/api/curator/games/${id}/status`, {
+            headers: { Accept: "application/json" },
+            cache: "no-store",
+          });
+          const job = await res.json();
+          if (!res.ok || !job.success) throw new Error(job.message || "Could not read progress.");
+          if (job.status === "failed") throw new Error(job.last_error || "Preparation failed.");
+          if (job.status === "complete") {
+            finalJob = job;
+            break;
+          }
+          progress.setTarget(Math.min(94, clamp(job.progress)), job.stage || "Preparing game…");
+          row.dataset.jobProgress = String(job.progress || 0);
+          row.dataset.jobStage = job.stage || "";
+          await sleep(250);
+        }
+
+        await progress.settle(100, "Finishing museum record…", 6000);
+        await sleep(260);
+        const score = clamp(finalJob.result?.score ?? finalJob.curator_score ?? 100);
+        progress.stop();
+        progress.startAt(progress.current, score >= 90 ? "Museum Ready" : "Needs Review");
+        progress.target = score;
+        await Promise.race([progress.waitUntil(score), sleep(1800)]);
+        progress.current = score;
+        progress.target = score;
+        progress.render();
+        progress.stop();
+
+        row.classList.remove("is-curating", "is-failed");
+        row.classList.add("is-complete");
+        row.dataset.jobStatus = "complete";
+        setWorking(row, button, false);
+        toast(score >= 90 ? "Museum Ready" : "Preparation Finished", row.querySelector("strong")?.textContent || "Game preparation finished.");
+      } catch (err) {
+        progress.stop();
+        row.classList.remove("is-curating");
+        row.classList.add("is-failed");
+        row.dataset.jobStatus = "failed";
+        setWorking(row, button, false);
+        button.textContent = "Retry";
+        const status = row.querySelector("[data-curator-status]");
+        if (status) status.textContent = err.message;
+        toast("Needs Review", err.message, "warning");
+      }
+    })().finally(() => activeRuns.delete(id));
+
+    activeRuns.set(id, task);
+    return task;
+  }
+
+  function initialize(root = document) {
+    root.querySelectorAll?.("[data-curator-row]").forEach((row) => {
+      const status = row.dataset.jobStatus;
+      if (status !== "queued" && status !== "running") return;
+      const button = row.querySelector("[data-curator-run]");
+      monitor(row, button, false);
+    });
+  }
+
+  document.addEventListener("click", async (event) => {
+    const runButton = event.target.closest("[data-curator-run]");
+    if (runButton) {
+      event.preventDefault();
+      await monitor(runButton.closest("[data-curator-row]"), runButton, true);
+      return;
+    }
+
+    const queueAll = event.target.closest("[data-curator-queue-all]");
+    if (queueAll) {
+      event.preventDefault();
+      queueAll.disabled = true;
+      queueAll.textContent = "Checking…";
+      try {
+        const res = await fetch("/api/curator/queue-all", { method: "POST", headers: { Accept: "application/json" }, cache: "no-store" });
+        const data = await res.json();
+        if (!res.ok || !data.success) throw new Error(data.message || "Could not check the museum.");
+        toast("Museum Checked", `${data.queued} game${data.queued === 1 ? "" : "s"} ready to prepare.`);
+      } catch (err) {
+        toast("Check Failed", err.message, "warning");
+      } finally {
+        queueAll.disabled = false;
+        queueAll.textContent = "Check Museum";
+      }
+      return;
+    }
+
+    const nextButton = event.target.closest("[data-curator-prepare-next]");
+    if (nextButton) {
+      event.preventDefault();
+      const rows = Array.from(document.querySelectorAll("[data-curator-row]"))
+        .filter((row) => !row.classList.contains("is-curating"))
+        .slice(0, 5);
+      nextButton.disabled = true;
+      nextButton.textContent = "Preparing…";
+      try {
+        for (const row of rows) {
+          const button = row.querySelector("[data-curator-run]");
+          if (button) await monitor(row, button, true);
+        }
+      } finally {
+        nextButton.disabled = false;
+        nextButton.textContent = "Prepare Next 5";
+      }
+    }
   });
+
+  document.addEventListener("vaultarr:page-loaded", (event) => initialize(event.detail?.main || document));
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", () => initialize(document), { once: true });
+  else initialize(document);
+
+  window.VaultarrCuratorUI = { installed: true, initialize, monitor };
 })();

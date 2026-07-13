@@ -1,6 +1,6 @@
-# Vaultarr 1.6.0 — The Museum Experience
+# Vaultarr 1.6.1 — The Museum Experience
 
-Vaultarr 1.6.0 simplifies the standard experience around one principle: users manage their museum, not Vaultarr's internal systems.
+Vaultarr 1.6.1 simplifies the standard experience around one principle: users manage their museum, not Vaultarr's internal systems.
 
 ## Highlights
 - Library is presented as **Museum**.

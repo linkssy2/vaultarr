@@ -6,25 +6,27 @@
     <div class="space-hero-metrics"><div><span>Queued</span><strong>{{ counts.get('queued',0) }}</strong></div><div><span>Needs Review</span><strong>{{ counts.get('failed',0) }}</strong></div></div>
   </section>
   <section class="card alive-panel curator-controls">
-    <form action="/curator/queue-all" method="post"><button type="submit">Check Museum</button></form>
-    <form action="/curator/run" method="post"><input type="hidden" name="limit" value="5"><button type="submit">Prepare Next 5</button></form>
+    <button type="button" data-curator-queue-all>Check Museum</button>
+    <button type="button" data-curator-prepare-next>Prepare Next 5</button>
     <p class="muted">Your edits stay protected. Vaultarr chooses the best available results and leaves uncertain matches for review.</p>
   </section>
   <section class="card alive-panel">
     <div class="home-card-head"><div><p class="eyebrow">Museum Progress</p><h2>Preparation status</h2></div></div>
     <div class="curator-list">
     {% for game in games %}
-      <article class="curator-row" data-curator-row data-game-id="{{ game.id }}">
+      {% set active_job = game.curator_job_status in ['queued', 'running'] %}
+      {% set display_progress = game.curator_job_progress if active_job else (game.curator_score or 0) %}
+      <article class="curator-row{% if active_job %} is-curating{% endif %}" data-curator-row data-game-id="{{ game.id }}" data-job-status="{{ game.curator_job_status or '' }}" data-job-progress="{{ game.curator_job_progress or 0 }}" data-job-stage="{{ game.curator_job_stage or '' }}"{% if active_job %} aria-busy="true"{% endif %}>
         <div class="curator-game-copy">
           <a href="/games/{{ game.id }}"><strong>{{ game.title }}</strong></a>
-          <small data-curator-status>{{ game.curator_status|replace('_',' ')|title }}{% if game.curator_last_error %} · {{ game.curator_last_error }}{% endif %}</small>
+          <small data-curator-status>{% if active_job %}{{ game.curator_job_stage or 'Preparing game…' }}{% else %}{{ game.curator_status|replace('_',' ')|title }}{% if game.curator_last_error %} · {{ game.curator_last_error }}{% endif %}{% endif %}</small>
         </div>
-        <div class="curator-meter" role="progressbar" aria-label="Catalog completeness for {{ game.title }}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ game.curator_score or 0 }}">
-          <span class="curator-meter-fill" style="width:{{ game.curator_score or 0 }}%"></span>
+        <div class="curator-meter" role="progressbar" aria-label="Catalog completeness for {{ game.title }}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ display_progress }}">
+          <span class="curator-meter-fill" style="--curator-progress:{{ display_progress }}%;width:{{ display_progress }}%"></span>
           <span class="curator-meter-runner" aria-hidden="true"></span>
         </div>
-        <b data-curator-percent>{{ game.curator_score or 0 }}%</b>
-        <button type="button" class="curator-run-button" data-curator-run>Prepare</button>
+        <b data-curator-percent>{{ display_progress }}%</b>
+        <button type="button" class="curator-run-button{% if active_job %} is-working{% endif %}" data-curator-run{% if active_job %} disabled{% endif %}>{% if active_job %}Preparing{% else %}Prepare{% endif %}</button>
       </article>
     {% endfor %}
     </div>
@@ -32,5 +34,4 @@
   <section class="card alive-panel"><div class="home-card-head"><div><p class="eyebrow">Recent Work</p><h2>Recent activity</h2></div></div>
   {% for item in history %}<p><strong>{{ item.title or 'Removed game' }}</strong> — {{ item.message }} <span class="muted">{{ item.created_at }}</span></p>{% else %}<p class="muted">No curator activity yet.</p>{% endfor %}</section>
 </div>
-<script src="/static/js/curator.js?v=1.6.0" defer></script>
 {% endblock %}
