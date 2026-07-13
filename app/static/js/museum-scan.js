@@ -174,7 +174,9 @@
   }
 
   async function start(button) {
-    if (state.active || button?.disabled) return;
+    if (state.active) return;
+    if (!button) return;
+    button.disabled = false;
     const shell = button?.closest('[data-museum-scan-control]');
     clearTimeout(state.completionTimer);
     clearTimeout(state.contractionTimer);
@@ -196,32 +198,46 @@
       const response = await fetch(`/api/museum-scan/start?_=${Date.now()}`, {
         method: 'POST',
         cache: 'no-store',
-        headers: { Accept: 'application/json', 'X-Vaultarr-User-Action': 'scan-museum' }
+        headers: { Accept: 'application/json' }
       });
       const payload = await response.json();
       if (!response.ok) throw new Error(payload.message || 'Could not start scan');
       render(payload);
-    } catch (_) {
+    } catch (error) {
       state.active = false;
       nodes().shells.forEach(shellNode => setShellState(shellNode, 'failed'));
       crossfade(nodes().stages, 'Could not start scan', 'lastStage');
-      crossfade(nodes().details, 'Try again when the server is available.', 'lastDetail');
+      crossfade(nodes().details, error?.message || 'Try again when the server is available.', 'lastDetail');
       scheduleIdleReturn();
     }
   }
 
+  function bindScanButtons() {
+    document.querySelectorAll('[data-museum-scan-start]').forEach(button => {
+      if (button.dataset.scanBound === '1') return;
+      button.dataset.scanBound = '1';
+      button.addEventListener('click', event => {
+        event.preventDefault();
+        event.stopPropagation();
+        start(button);
+      });
+    });
+  }
+
+  // Keep the delegated fallback for controls introduced by smooth navigation.
   document.addEventListener('click', event => {
     const button = event.target.closest('[data-museum-scan-start]');
-    if (!button) return;
+    if (!button || button.dataset.scanBound === '1') return;
     event.preventDefault();
     event.stopPropagation();
     start(button);
   });
   document.addEventListener('visibilitychange', () => document.hidden ? stop() : poll());
-  document.addEventListener('vaultarr:navigation-complete', poll);
-  window.VaultarrMuseumScan = { installed: true, poll, start };
+  document.addEventListener('vaultarr:navigation-complete', () => { bindScanButtons(); poll(); });
+  window.VaultarrMuseumScan = { installed: true, poll, start, bindScanButtons };
 
-  // Initial load only reads and attaches to an already-running scan. It never
-  // starts a new scan. The POST endpoint is called exclusively from start().
+  // Initial load only binds the explicit control and reads current status.
+  // It never starts a new scan.
+  bindScanButtons();
   poll();
 })();

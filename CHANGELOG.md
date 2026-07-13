@@ -1,3 +1,13 @@
+# Changelog
+
+## 1.7.7 - Scan Control Click Repair
+
+- Restored the Scan Museum button after the 1.7.6 explicit-action guard blocked valid clicks in some deployments.
+- Kept page load and status polling read-only, so refreshes still cannot start a scan.
+- Added resilient direct and delegated click binding for smooth-navigation page swaps.
+- Displays the server error inside the scan drawer when a scan cannot start.
+- Preserved the anchored drawer animation and protected 1.5.8 UX baseline.
+
 # Vaultarr 1.7.6 — Anchored Scan Drawer
 
 - Prevented page refreshes and navigation from starting Museum scans.
