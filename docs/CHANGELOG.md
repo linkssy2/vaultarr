@@ -1,3 +1,8 @@
+# Vaultarr 1.5.7
+
+- Restored floating card hover, tilt, and expansion startup behavior.
+- Preserved safe performance optimizations.
+
 # 1.5.6 — Advanced Navigation Layout Fix
 
 - Fixed Advanced Mode sidebar links collapsing onto the same line.

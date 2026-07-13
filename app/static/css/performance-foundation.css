@@ -1,4 +1,4 @@
-/* Vaultarr 1.5.6 performance foundation */
+/* Vaultarr 1.5.7 performance foundation — card-safe */
 .timeline-capsule, .discovery-card,
 .collection-card, .attention-card, .queue-card {
   contain: layout paint style;
@@ -10,7 +10,6 @@
   contain: none;
 }
 
-#libraryGrid > .focus-card-trigger,
 .discovery-grid > *, .timeline-grid > *, .collection-grid > * {
   content-visibility: auto;
   contain-intrinsic-size: 320px 460px;

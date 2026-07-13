@@ -1,3 +1,13 @@
+# Changelog
+
+## 1.5.7 — Floating Card Interaction Restoration
+
+- Restored synchronous loading of the original Focus Mode/card controller.
+- Removed the capture-phase loader that could swallow the first card interaction.
+- Removed `content-visibility` from Library card wrappers because it implicitly contains paint and can clip floating tilt, lift, gloss, and shadows.
+- Preserved lazy cover loading, async image decoding, debounced Library search, hidden-tab activity suspension, and offscreen optimization for non-card sections.
+- Kept the Acquisition Assistant tab and all 1.5.4+ functionality.
+
 # Vaultarr 1.5.6 — Floating Card Motion Restoration
 
 - Restores the exact floating-card hover and tilt controller from 1.5.4.

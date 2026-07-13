@@ -1,17 +1,17 @@
-# Vaultarr 1.5.6
+# Vaultarr 1.5.7
 
-> Current release: **Vaultarr 1.5.6 — Advanced Navigation Layout Fix**
+> Current release: **Vaultarr 1.5.7 — Advanced Navigation Layout Fix**
 
 Vaultarr is a self-hosted game preservation dashboard for cataloging, enriching, and maintaining a personal game archive.
 
-## 1.5.6 interface fix
+## 1.5.7 interface fix
 
 - Advanced Mode now reveals its sidebar tools as properly aligned, full-width navigation rows.
 - **Milestones** is always available in Standard Mode because achievement progress is part of the core museum experience.
 
 ## The Curator Experience
 
-Vaultarr 1.5.6 keeps the stable 1.4.10 navigation and Curator experience while adding administrator-supplied acquisition catalogs. Upload a JSON or CSV index in **Advanced Settings**, search it locally from a game record, open or copy the catalog links, and attach the local file after you obtain it. Vaultarr does not scrape the source website or execute anything from an uploaded catalog.
+Vaultarr 1.5.7 keeps the stable 1.4.10 navigation and Curator experience while adding administrator-supplied acquisition catalogs. Upload a JSON or CSV index in **Advanced Settings**, search it locally from a game record, open or copy the catalog links, and attach the local file after you obtain it. Vaultarr does not scrape the source website or execute anything from an uploaded catalog.
 
 Newly scanned games can be queued automatically for Curator processing. Vaultarr researches game information, chooses available artwork, looks for a manual, respects user edits and metadata locks, and surfaces only items that need review.
 
@@ -242,4 +242,4 @@ No uploaded JSON or CSV index is required. If live search cannot find a result, 
 
 ## Performance foundation
 
-Vaultarr 1.5.6 reduces initial image decoding, avoids painting long offscreen grids, throttles card hover work, pauses nonessential activity in hidden tabs, and loads Focus Mode logic only when expandable game cards are present. These optimizations are automatic and require no configuration.
+Vaultarr 1.5.7 reduces initial image decoding, avoids painting long offscreen grids, throttles card hover work, pauses nonessential activity in hidden tabs, and loads Focus Mode logic only when expandable game cards are present. These optimizations are automatic and require no configuration.
