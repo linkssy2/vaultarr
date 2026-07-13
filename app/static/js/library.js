@@ -1,100 +1,159 @@
 (() => {
   function initCardHover() {
-    if (window.__vaultarrCardHoverControllerBound) return;
-    window.__vaultarrCardHoverControllerBound = true;
+    const cards = document.querySelectorAll(".poster-card");
 
-    const states = new WeakMap();
-    let activeCard = null;
-    let pointerFrame = 0;
-    let lastPointerEvent = null;
+    cards.forEach((card) => {
+      if (card.dataset.vaultarrHoverBound === "1") return;
+      card.dataset.vaultarrHoverBound = "1";
 
-    function stateFor(card) {
-      let state = states.get(card);
-      if (state) return state;
-      state = {
-        targetRotateX: 0, targetRotateY: 0, currentRotateX: 0, currentRotateY: 0,
-        targetScale: 1, currentScale: 1, targetLift: 0, currentLift: 0,
-        targetCoverX: 0, targetCoverY: 0, currentCoverX: 0, currentCoverY: 0,
-        targetInfoY: 0, currentInfoY: 0, rafId: 0, hovering: false
-      };
-      states.set(card, state);
-      return state;
-    }
+      let targetRotateX = 0;
+      let targetRotateY = 0;
+      let currentRotateX = 0;
+      let currentRotateY = 0;
 
-    function coverFor(card) { return card.querySelector('.poster-cover, .poster-placeholder'); }
-    function infoFor(card) { return card.querySelector('.poster-info'); }
+      let targetScale = 1;
+      let currentScale = 1;
 
-    function apply(card, state) {
-      card.style.transform = `translate3d(0, ${state.currentLift}px, 0) scale(${state.currentScale}) rotateX(${state.currentRotateX}deg) rotateY(${state.currentRotateY}deg)`;
-      const cover = coverFor(card);
-      if (cover) cover.style.transform = `translate3d(${state.currentCoverX}px, ${state.currentCoverY}px, 34px) scale(${state.hovering ? 1.035 : 1.01})`;
-      const info = infoFor(card);
-      if (info) info.style.transform = `translate3d(0, ${state.currentInfoY}px, 24px)`;
-    }
+      let targetLift = 0;
+      let currentLift = 0;
 
-    function animate(card) {
-      const state = stateFor(card);
-      state.currentRotateX += (state.targetRotateX - state.currentRotateX) * 0.26;
-      state.currentRotateY += (state.targetRotateY - state.currentRotateY) * 0.26;
-      state.currentScale += (state.targetScale - state.currentScale) * 0.20;
-      state.currentLift += (state.targetLift - state.currentLift) * 0.20;
-      state.currentCoverX += (state.targetCoverX - state.currentCoverX) * 0.18;
-      state.currentCoverY += (state.targetCoverY - state.currentCoverY) * 0.18;
-      state.currentInfoY += (state.targetInfoY - state.currentInfoY) * 0.18;
-      apply(card, state);
+      let targetCoverX = 0;
+      let targetCoverY = 0;
+      let currentCoverX = 0;
+      let currentCoverY = 0;
 
-      const moving = Math.abs(state.targetRotateX-state.currentRotateX)>.01 || Math.abs(state.targetRotateY-state.currentRotateY)>.01 ||
-        Math.abs(state.targetScale-state.currentScale)>.001 || Math.abs(state.targetLift-state.currentLift)>.1 ||
-        Math.abs(state.targetCoverX-state.currentCoverX)>.05 || Math.abs(state.targetCoverY-state.currentCoverY)>.05 || Math.abs(state.targetInfoY-state.currentInfoY)>.05;
-      state.rafId = moving && !document.hidden ? requestAnimationFrame(() => animate(card)) : 0;
-    }
+      let targetInfoY = 0;
+      let currentInfoY = 0;
 
-    function start(card) {
-      const state = stateFor(card);
-      if (!state.rafId && !document.hidden) state.rafId = requestAnimationFrame(() => animate(card));
-    }
+      let rafId = null;
+      let isHovering = false;
 
-    function reset(card) {
-      if (!card) return;
-      const state = stateFor(card);
-      state.hovering = false;
-      card.classList.remove('is-hovering');
-      Object.assign(state, {targetRotateX:0,targetRotateY:0,targetScale:1,targetLift:0,targetCoverX:0,targetCoverY:0,targetInfoY:0});
-      card.style.removeProperty('--gloss-x'); card.style.removeProperty('--gloss-y');
-      card.style.removeProperty('--shadow-x'); card.style.removeProperty('--shadow-y');
-      start(card);
-    }
+      function getCoverElement() {
+        return card.querySelector(".poster-cover, .poster-placeholder");
+      }
 
-    function processPointer() {
-      pointerFrame = 0;
-      const event = lastPointerEvent;
-      const card = event?.target?.closest?.('.poster-card');
-      if (!card || document.body.classList.contains('focus-active') || document.hidden) return;
-      if (activeCard && activeCard !== card) reset(activeCard);
-      activeCard = card;
-      const rect = card.getBoundingClientRect();
-      if (!rect.width || !rect.height) return;
-      const x=event.clientX-rect.left, y=event.clientY-rect.top;
-      const nx=(x-rect.width/2)/(rect.width/2), ny=(y-rect.height/2)/(rect.height/2);
-      const state=stateFor(card);
-      state.hovering=true; card.classList.add('is-hovering');
-      Object.assign(state,{targetRotateY:nx*8.5,targetRotateX:-ny*8.5,targetScale:1.043,targetLift:-11,targetCoverX:nx*5,targetCoverY:ny*4,targetInfoY:-1.5});
-      card.style.setProperty('--gloss-x',`${(x/rect.width)*100}%`); card.style.setProperty('--gloss-y',`${(y/rect.height)*100}%`);
-      card.style.setProperty('--shadow-x',`${nx*-14}px`); card.style.setProperty('--shadow-y',`${28+Math.abs(ny)*10}px`);
-      start(card);
-    }
+      function getInfoElement() {
+        return card.querySelector(".poster-info");
+      }
 
-    document.addEventListener('pointermove', (event) => {
-      if (!event.target.closest?.('.poster-card')) return;
-      lastPointerEvent=event;
-      if (!pointerFrame) pointerFrame=requestAnimationFrame(processPointer);
-    }, {passive:true});
-    document.addEventListener('pointerout', (event) => {
-      const card=event.target.closest?.('.poster-card');
-      if (card && !card.contains(event.relatedTarget)) { reset(card); if(activeCard===card) activeCard=null; }
-    }, {passive:true});
-    document.addEventListener('vaultarr:focus-closed', () => { reset(activeCard); activeCard=null; });
-    document.addEventListener('visibilitychange', () => { if(document.hidden) reset(activeCard); });
+      function applyTransform() {
+        card.style.transform = `
+          translate3d(0, ${currentLift}px, 0)
+          scale(${currentScale})
+          rotateX(${currentRotateX}deg)
+          rotateY(${currentRotateY}deg)
+        `;
+
+        const cover = getCoverElement();
+        if (cover) {
+          cover.style.transform = `translate3d(${currentCoverX}px, ${currentCoverY}px, 34px) scale(${isHovering ? 1.035 : 1.01})`;
+        }
+
+        const info = getInfoElement();
+        if (info) {
+          info.style.transform = `translate3d(0, ${currentInfoY}px, 24px)`;
+        }
+      }
+
+      function animate() {
+        currentRotateX += (targetRotateX - currentRotateX) * 0.26;
+        currentRotateY += (targetRotateY - currentRotateY) * 0.26;
+        currentScale += (targetScale - currentScale) * 0.20;
+        currentLift += (targetLift - currentLift) * 0.20;
+        currentCoverX += (targetCoverX - currentCoverX) * 0.18;
+        currentCoverY += (targetCoverY - currentCoverY) * 0.18;
+        currentInfoY += (targetInfoY - currentInfoY) * 0.18;
+
+        applyTransform();
+
+        const stillMoving =
+          Math.abs(targetRotateX - currentRotateX) > 0.01 ||
+          Math.abs(targetRotateY - currentRotateY) > 0.01 ||
+          Math.abs(targetScale - currentScale) > 0.001 ||
+          Math.abs(targetLift - currentLift) > 0.1 ||
+          Math.abs(targetCoverX - currentCoverX) > 0.05 ||
+          Math.abs(targetCoverY - currentCoverY) > 0.05 ||
+          Math.abs(targetInfoY - currentInfoY) > 0.05;
+
+        if (stillMoving) {
+          rafId = requestAnimationFrame(animate);
+        } else {
+          rafId = null;
+        }
+      }
+
+      function startAnimation() {
+        if (!rafId) rafId = requestAnimationFrame(animate);
+      }
+
+      function resetHoverState() {
+        isHovering = false;
+        card.classList.remove("is-hovering");
+
+        targetRotateX = 0;
+        targetRotateY = 0;
+        targetScale = 1;
+        targetLift = 0;
+        targetCoverX = 0;
+        targetCoverY = 0;
+        targetInfoY = 0;
+
+        card.style.removeProperty("--gloss-x");
+        card.style.removeProperty("--gloss-y");
+        card.style.removeProperty("--shadow-x");
+        card.style.removeProperty("--shadow-y");
+
+        startAnimation();
+      }
+
+      card.addEventListener("mousemove", (event) => {
+        if (document.body.classList.contains("focus-active")) return;
+
+        const rect = card.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        const normalizedX = (x - centerX) / centerX;
+        const normalizedY = (y - centerY) / centerY;
+
+        isHovering = true;
+        card.classList.add("is-hovering");
+
+        targetRotateY = normalizedX * 8.5;
+        targetRotateX = -normalizedY * 8.5;
+        targetScale = 1.043;
+        targetLift = -11;
+        targetCoverX = normalizedX * 5;
+        targetCoverY = normalizedY * 4;
+        targetInfoY = -1.5;
+
+        const glossX = (x / rect.width) * 100;
+        const glossY = (y / rect.height) * 100;
+        const shadowX = normalizedX * -14;
+        const shadowY = 28 + Math.abs(normalizedY) * 10;
+
+        card.style.setProperty("--gloss-x", `${glossX}%`);
+        card.style.setProperty("--gloss-y", `${glossY}%`);
+        card.style.setProperty("--shadow-x", `${shadowX}px`);
+        card.style.setProperty("--shadow-y", `${shadowY}px`);
+
+        startAnimation();
+      });
+
+      card.addEventListener("mouseleave", resetHoverState);
+
+      document.addEventListener("vaultarr:focus-closed", () => {
+        resetHoverState();
+        window.requestAnimationFrame(() => {
+          const cover = getCoverElement();
+          const info = getInfoElement();
+          if (cover) cover.style.transform = "translate3d(0, 0, 18px) scale(1.01)";
+          if (info) info.style.transform = "translate3d(0, 0, 22px)";
+        });
+      });
+    });
   }
 
   function initLibraryTools() {

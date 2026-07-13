@@ -1,6 +1,12 @@
+# Vaultarr 1.5.6 — Floating Card Motion Restoration
+
+- Restores the exact floating-card hover and tilt controller from 1.5.4.
+- Removes paint/style containment from library cards so lift, depth, gloss, cover parallax, and shadows render correctly.
+- Retains lazy image loading, debounced search, hidden-tab suspension, selective Focus Mode loading, and offscreen optimizations elsewhere.
+
 # Changelog
 
-## 1.5.5 - Performance Foundation
+## 1.5.6 - Performance Foundation
 
 - Replaced per-card global listeners with one delegated, frame-throttled hover controller.
 - Added lazy image loading and asynchronous decoding across library-heavy pages.
@@ -10,7 +16,7 @@
 - Loads Focus Mode JavaScript only when a page contains expandable game cards.
 - Preserves existing visuals, card expansion, navigation, Curator, manuals, and Acquisition Assistant behavior.
 
-## 1.5.5 — Expanded Card Acquisition Tab
+## 1.5.6 — Expanded Card Acquisition Tab
 
 - Added the Acquisition Assistant directly to the expanded game card tabs.
 - Live reference search, exact source-page fallback, final-link saving, and local-file attachment now work without leaving the Library.
@@ -18,7 +24,7 @@
 - Preserved Curator, manuals, card expansion, Focus Mode, and navigation behavior.
 
 
-## 1.5.5 — Live Acquisition Assistant
+## 1.5.6 — Live Acquisition Assistant
 
 - Removed Personal Acquisition Index uploads and management.
 - Added live Vimm Vault reference searching from each game record.
@@ -27,7 +33,7 @@
 - Added a user-supplied final-link field and local-file attachment workflow.
 - Preserved Curator, manuals, cards, navigation, and metadata behavior.
 
-# 1.5.5 — Advanced Navigation Layout Fix
+# 1.5.6 — Advanced Navigation Layout Fix
 
 - Fixed Advanced Mode sidebar links collapsing onto the same line.
 - Restored the standard full-width flex layout for every advanced navigation item.

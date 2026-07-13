@@ -1,7 +1,13 @@
-/* Vaultarr 1.5.5 performance foundation */
-.poster-card, .focus-card-trigger, .timeline-capsule, .discovery-card,
+/* Vaultarr 1.5.6 performance foundation */
+.timeline-capsule, .discovery-card,
 .collection-card, .attention-card, .queue-card {
   contain: layout paint style;
+}
+
+/* Keep library cards outside paint/style containment so their 3D lift,
+   shadows, gloss and cover parallax can render beyond the card bounds. */
+.poster-card, .focus-card-trigger {
+  contain: none;
 }
 
 #libraryGrid > .focus-card-trigger,

@@ -5,7 +5,7 @@
     if (focusPromise) return focusPromise;
     focusPromise = new Promise((resolve, reject) => {
       const script = document.createElement('script');
-      script.src = '/static/js/focus-mode.js?v=1.5.5';
+      script.src = '/static/js/focus-mode.js?v=1.5.6';
       script.async = true;
       script.onload = () => { window.__vaultarrFocusModeLoaded = true; resolve(); };
       script.onerror = reject;
