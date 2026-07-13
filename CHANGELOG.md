@@ -1,5 +1,22 @@
+# Vaultarr 1.7.2 — Per-Game Preservation
 
-## 1.7.0 - Sidebar Museum Scan
+- Moved preservation status into each game record and the expanded game card.
+- Renamed the expanded-card Archive Health tab to Preservation.
+- Retired the standalone Preservation navigation page and redirected legacy links to Museum.
+- Replaced Milestones' Preserve More action with Improve Your Museum.
+- Added a Museum Needs Attention view for incomplete preservation records.
+- Preserved the protected 1.5.8 floating-card, expansion, Focus Mode, search, and navigation baseline.
+
+# Changelog
+
+## 1.7.2 — Primary Sidebar Scan Control
+
+- Moved Scan Museum directly above Search Museum in the sidebar.
+- Restyled the idle scan control to match Vaultarr's primary blue Enter Museum button.
+- Retained the smooth expanding progress state and completion contraction.
+
+
+## 1.7.2 - Sidebar Museum Scan
 
 - Replaced all page-level Museum scan controls with one permanent sidebar control.
 - The button expands in place to show live progress, current stage, and current game.
@@ -8,7 +25,7 @@
 - Preserved the protected 1.5.8 card, navigation, Focus Mode, search, manual, and acquisition systems.
 # Changelog
 
-## 1.7.0 — Discreet Scan Status
+## 1.7.2 — Discreet Scan Status
 
 - Removed the duplicate in-page Museum Scan progress banners from Home and Museum.
 - Kept one compact scan indicator in the sidebar while a scan runs.
@@ -16,7 +33,7 @@
 - Added click-to-expand scan details and an automatic fade after successful completion.
 - Preserved the background Museum Scan engine and protected 1.5.8 interaction systems.
 
-## 1.7.0 — Background Museum Scan
+## 1.7.2 — Background Museum Scan
 
 - Replaced the per-game Activity dashboard with one Plex-style background Museum Scan.
 - Added Scan Museum controls to Home and Museum.

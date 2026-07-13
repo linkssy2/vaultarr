@@ -194,6 +194,42 @@
       </details>
     </section>
 
+
+    <section class="panel game-preservation-panel" id="preservation">
+      <div class="panel-heading">
+        <div>
+          <h2>Preservation</h2>
+          <p class="muted">A game-by-game view of what Vaultarr has preserved and what still needs attention.</p>
+        </div>
+        <span class="metadata-pill">{{ game.preservation_badge }}</span>
+      </div>
+      <div class="game-preservation-overview">
+        <div class="game-preservation-score">
+          <strong>{{ game.preservation_score }}%</strong>
+          <span>Museum preservation</span>
+        </div>
+        <div class="game-preservation-copy">
+          {% if game.preservation_issues %}
+            <h3>Needs attention</h3>
+            <div class="game-preservation-issues">
+              {% for issue in game.preservation_issues %}<span>{{ issue }}</span>{% endfor %}
+            </div>
+          {% else %}
+            <h3>Museum Ready</h3>
+            <p class="muted">Vaultarr found the core information and assets expected for this game.</p>
+          {% endif %}
+        </div>
+      </div>
+      {% if game.preservation_assets %}
+      <div class="game-preservation-assets">
+        {% for asset in game.preservation_assets %}
+          <span><strong>{{ asset.count }}</strong>{{ asset.label }}</span>
+        {% endfor %}
+      </div>
+      {% endif %}
+      <p class="muted preservation-help">Use the expanded game card tabs to update Game Information, Artwork, Manuals, Acquisition, and Files. Scan Museum rechecks local assets in the background.</p>
+    </section>
+
     <section class="panel">
       <div class="panel-heading"><h2>Files</h2></div>
       <p><strong>Executables:</strong></p>

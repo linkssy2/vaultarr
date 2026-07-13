@@ -1,22 +1,20 @@
-# Vaultarr 1.7.0
+# Vaultarr 1.7.2
 
-> Current release: **Vaultarr 1.7.0 — The Museum Experience**
+> Current release: **Vaultarr 1.7.2 — Per-Game Preservation**
 
 Vaultarr is a self-hosted digital game museum. Point it at your game folders, let the background preparation system enrich the records, and spend your time browsing the collection rather than managing providers and queues.
 
-## What's new in 1.7.0
+## What's new in 1.7.2
 
-- A Plex-style **Scan Museum** action now checks folders and prepares incomplete games in the background.
-- One persistent global progress indicator follows you between pages.
-- Home and Museum show the same scan state without exposing individual preparation jobs.
-- The old Activity page and sidebar entry have been removed from Standard Mode.
-- Legacy `/activity` and `/curator` links safely return to Museum.
-- The protected 1.5.8 floating-card, expansion, Focus Mode, search, and navigation behavior remains unchanged.
+- Preservation is now part of every game record and expanded game card.
+- The standalone Preservation page has been retired.
+- Milestones now uses **Improve Your Museum**, opening a focused list of games that need attention.
+- Legacy `/preservation` links safely redirect to the Museum attention view.
 
 ### Standard and Advanced modes
 
 - **Standard Mode** keeps navigation focused on Home, Museum, Discover, Time Capsule, Milestones, and Settings.
-- **Advanced Mode** reveals provider configuration, metadata tools, caches, preservation controls, and diagnostics.
+- **Advanced Mode** reveals provider configuration, metadata tools, caches, and diagnostics. Preservation status now lives with each game.
 - Switching modes changes presentation only; it does not remove data or disable existing features.
 
 ## What Vaultarr does
@@ -28,7 +26,7 @@ Vaultarr is a self-hosted digital game museum. Point it at your game folders, le
 - Media Library for covers, screenshots, hero art, logos, and trailer assets
 - Trailer Finder and cinematic Trailer tab
 - Patch Engine for community fixes and compatibility references
-- Preservation Mission Control
+- Per-game Preservation status, issues, and archived-asset summaries
 - Smart Collections and collection milestones
 - Time Capsule backups
 - Simplified Settings with optional Advanced Mode
@@ -242,6 +240,6 @@ No uploaded JSON or CSV index is required. If live search cannot find a result, 
 
 Vaultarr 1.5.8 reduces initial image decoding, avoids painting long offscreen grids, throttles card hover work, pauses nonessential activity in hidden tabs, and loads Focus Mode logic only when expandable game cards are present. These optimizations are automatic and require no configuration.
 
-## 1.7.0 Background Museum Scan
+## 1.7.2 Background Museum Scan
 
 Use **Scan Museum** from Home or Museum. Vaultarr scans configured folders, checks existing records, and prepares incomplete games in one background workflow. A compact, blended sidebar indicator remains visible while navigating. Click it for details; its completion summary fades automatically.

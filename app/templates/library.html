@@ -4,8 +4,8 @@
 <div class="library-shell" id="libraryShell" data-museum-view="true">
   <div class="page-header">
     <div>
-      <h1>Museum</h1>
-      <p class="muted">Browse, search, and care for your complete game museum.</p>
+      <h1>{% if attention %}Improve Your Museum{% else %}Museum{% endif %}</h1>
+      <p class="muted">{% if attention %}Review games missing information, artwork, manuals, or archival assets.{% else %}Browse, search, and care for your complete game museum.{% endif %}</p>
     </div>
 
     <div class="library-tools">
@@ -23,9 +23,20 @@
     </div>
   </div>
 
+  {% if attention %}
+  <section class="museum-attention-banner">
+    <div>
+      <span class="eyebrow">Museum Care</span>
+      <h2>{{ games|length }} game{% if games|length != 1 %}s{% endif %} need attention</h2>
+      <p class="muted">Open a game and use its Preservation tab to see exactly what is missing.</p>
+    </div>
+    <a class="button-link secondary compact" href="/museum">Show Complete Museum</a>
+  </section>
+  {% endif %}
 
   <div class="category-row">
-    <a class="category-chip {% if not category or category == 'All Games' %}active{% endif %}" href="/museum">All Games <span>{{ total_count or games|length }}</span></a>
+    <a class="category-chip {% if not attention and (not category or category == 'All Games') %}active{% endif %}" href="/museum">All Games <span>{{ total_count or games|length }}</span></a>
+    <a class="category-chip attention-chip {% if attention %}active{% endif %}" href="/museum?attention=1">Needs Attention <span>{{ attention_count or 0 }}</span></a>
     <a class="category-chip {% if category == 'Abandonware' %}active{% endif %}" href="/museum?category=Abandonware">Abandonware <span>{{ category_counts.get('Abandonware', 0) if category_counts else 0 }}</span></a>
     <a class="category-chip {% if category == 'Fanmade' %}active{% endif %}" href="/museum?category=Fanmade">Fanmade <span>{{ category_counts.get('Fanmade', 0) if category_counts else 0 }}</span></a>
     <a class="category-chip {% if category == 'PC Port' %}active{% endif %}" href="/museum?category=PC Port">PC Port <span>{{ category_counts.get('PC Port', 0) if category_counts else 0 }}</span></a>
@@ -42,7 +53,7 @@
     <section class="vault-shelf single-grid-shelf">
       <div class="shelf-header">
         <div>
-          <h2>{% if category and category != 'All Games' %}{{ category }}{% else %}All Games{% endif %}</h2>
+          <h2>{% if attention %}Games Needing Attention{% elif category and category != 'All Games' %}{{ category }}{% else %}All Games{% endif %}</h2>
           <p class="muted">Click a game box to pull it from the shelf.</p>
         </div>
       </div>

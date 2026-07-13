@@ -8,6 +8,7 @@ from app.services.game_removal_service import remove_game
 from app.services.provider_intelligence import get_provider_details
 from app.services.curator_service import queue_game
 from app.services.acquisition_assistant_service import get_game_acquisition
+from app.services.preservation_engine import enrich_preservation
 
 library_bp = Blueprint('library', __name__)
 
@@ -25,6 +26,7 @@ def library():
     q = request.args.get('q','').strip()
     sort = request.args.get('sort','title')
     category = request.args.get('category','All Games')
+    attention = request.args.get('attention','').strip().lower() in ('1','true','yes','on')
     where=[]; params=[]
     if q:
         like=f'%{q}%'
@@ -32,6 +34,8 @@ def library():
         params += [like] * len(SEARCH_FIELDS)
     if category and category != 'All Games':
         where.append('category = ?'); params.append(category)
+    if attention:
+        where.append("(COALESCE(preservation_score, 0) < 80 OR COALESCE(preservation_badge, '') NOT IN ('Archive Ready', 'Complete'))")
     order = 'title COLLATE NOCASE ASC'
     if sort == 'size': order = 'size_bytes DESC'
     if sort == 'scanned': order = 'last_scanned DESC'
@@ -42,8 +46,9 @@ def library():
     conn=get_connection(); games=conn.execute(sql, params).fetchall()
     cats, category_counts = _category_counts(conn)
     total_count=conn.execute("SELECT COUNT(*) count FROM games").fetchone()['count']
+    attention_count=conn.execute("SELECT COUNT(*) count FROM games WHERE COALESCE(preservation_score, 0) < 80 OR COALESCE(preservation_badge, '') NOT IN ('Archive Ready', 'Complete')").fetchone()['count']
     conn.close()
-    return render_template('library.html', games=games, q=q, sort=sort, active_category=category, category=category, categories=cats, category_counts=category_counts, total_count=total_count)
+    return render_template('library.html', games=games, q=q, sort=sort, active_category=category, category=category, categories=cats, category_counts=category_counts, total_count=total_count, attention=attention, attention_count=attention_count)
 
 
 @library_bp.route('/games/add', methods=['GET','POST'])
@@ -100,6 +105,7 @@ def add_game():
 def game_detail(game_id):
     conn=get_connection(); game=conn.execute('SELECT * FROM games WHERE id=?',(game_id,)).fetchone(); conn.close()
     if game is None: abort(404)
+    game = enrich_preservation(dict(game))
     results=[]; logs=[]; query=request.args.get('metadata_query','').strip(); provider=request.args.get('provider','all')
     if query:
         search_data=search_metadata_diagnostics(query, provider)

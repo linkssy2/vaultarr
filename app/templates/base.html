@@ -1,30 +1,30 @@
 <!doctype html>
 <html>
 <head>
-  <title>Vaultarr 1.7.0</title>
+  <title>Vaultarr 1.7.2</title>
   {% if theme.dark_reader_compat %}<meta name="darkreader-lock">{% endif %}
   <meta name="theme-color" content="#3b82f6">
-  <link rel="icon" href="/static/icons/favicon.ico?v=1.7.0" sizes="any">
-  <link rel="icon" type="image/svg+xml" href="/static/icons/vaultarr.svg?v=1.7.0">
-  <link rel="icon" type="image/png" sizes="32x32" href="/static/icons/favicon-32x32.png?v=1.7.0">
-  <link rel="icon" type="image/png" sizes="16x16" href="/static/icons/favicon-16x16.png?v=1.7.0">
-  <link rel="apple-touch-icon" href="/static/icons/apple-touch-icon.png?v=1.7.0">
-  <link rel="manifest" href="/static/site.webmanifest?v=1.7.0">
+  <link rel="icon" href="/static/icons/favicon.ico?v=1.7.2" sizes="any">
+  <link rel="icon" type="image/svg+xml" href="/static/icons/vaultarr.svg?v=1.7.2">
+  <link rel="icon" type="image/png" sizes="32x32" href="/static/icons/favicon-32x32.png?v=1.7.2">
+  <link rel="icon" type="image/png" sizes="16x16" href="/static/icons/favicon-16x16.png?v=1.7.2">
+  <link rel="apple-touch-icon" href="/static/icons/apple-touch-icon.png?v=1.7.2">
+  <link rel="manifest" href="/static/site.webmanifest?v=1.7.2">
 
   <link rel="stylesheet" href="/static/css/base.css">
   <link rel="stylesheet" href="/static/css/sidebar.css">
   <link rel="stylesheet" href="/static/css/layout.css">
   <link rel="stylesheet" href="/static/css/forms.css">
   <link rel="stylesheet" href="/static/css/dashboard.css">
-  <link rel="stylesheet" href="/static/css/museum-experience.css?v=1.7.0">
+  <link rel="stylesheet" href="/static/css/museum-experience.css?v=1.7.2">
   <link rel="stylesheet" href="/static/css/library.css">
   <link rel="stylesheet" href="/static/css/cards.css">
   <link rel="stylesheet" href="/static/css/game-detail.css">
   <link rel="stylesheet" href="/static/css/focus-mode.css">
-  <link rel="stylesheet" href="/static/css/performance-foundation.css?v=1.7.0">
+  <link rel="stylesheet" href="/static/css/performance-foundation.css?v=1.7.2">
   <link rel="stylesheet" href="/static/css/preservation.css">
   <link rel="stylesheet" href="/static/css/vaultos.css">
-  <link rel="stylesheet" href="/static/css/navigation.css?v=1.7.0">
+  <link rel="stylesheet" href="/static/css/navigation.css?v=1.7.2">
   <link rel="stylesheet" href="/static/css/global-search.css">
   <link rel="stylesheet" href="/static/css/discovery.css">
   <link rel="stylesheet" href="/static/css/scrollbars.css">
@@ -35,7 +35,7 @@
   <link rel="stylesheet" href="/static/css/experience.css">
   <link rel="stylesheet" href="/static/css/readiness.css">
   <link rel="stylesheet" href="/static/css/responsive.css">
-  <link rel="stylesheet" href="/static/css/controls.css?v=1.7.0">
+  <link rel="stylesheet" href="/static/css/controls.css?v=1.7.2">
   <style id="vaultarr-theme">{{ theme_css|safe }}</style>
 </head>
 <body class="vaultos {{ 'advanced-mode' if ui_settings.advanced_mode else 'standard-mode' }} {% if theme.dark_reader_compat %}dark-reader-compat{% endif %}">
@@ -43,7 +43,7 @@
 
   <aside class="sidebar vaultos-sidebar">
     <a class="brand" href="/">
-      <img class="brand-mark" src="/static/icons/vaultarr.svg?v=1.7.0" alt="" width="38" height="38">
+      <img class="brand-mark" src="/static/icons/vaultarr.svg?v=1.7.2" alt="" width="38" height="38">
       <span>Vaultarr</span>
     </a>
 
@@ -57,36 +57,37 @@
 
       <span class="nav-section-label advanced-only">Advanced</span>
       <a class="advanced-only" href="/collections"><span class="nav-glyph">▤</span><span>Collections</span></a>
-      <a class="advanced-only" href="/preservation"><span class="nav-glyph">🛡</span><span>Preservation</span></a>
       <a href="/settings"><span class="nav-glyph">⚙</span><span>Settings</span></a>
     </nav>
 
 
-    <button class="sidebar-scan-control" type="button" data-museum-scan-control data-museum-scan-start aria-expanded="false" title="Scan Museum">
-      <span class="sidebar-scan-control-idle">
-        <span class="nav-glyph">↻</span>
-        <strong>Scan Museum</strong>
-      </span>
-      <span class="sidebar-scan-control-live" aria-hidden="true">
-        <span class="sidebar-scan-pill-top">
-          <span class="sidebar-scan-pulse" aria-hidden="true"></span>
-          <strong data-museum-scan-stage>Scanning Museum</strong>
-          <span data-museum-scan-percent>0%</span>
+    <div class="sidebar-utility-stack">
+      <button class="sidebar-scan-control" type="button" data-museum-scan-control data-museum-scan-start aria-expanded="false" title="Scan Museum">
+        <span class="sidebar-scan-control-idle">
+          <span class="nav-glyph">↻</span>
+          <strong>Scan Museum</strong>
         </span>
-        <span class="museum-scan-track"><span data-museum-scan-fill></span></span>
-        <small data-museum-scan-detail></small>
-      </span>
-    </button>
+        <span class="sidebar-scan-control-live" aria-hidden="true">
+          <span class="sidebar-scan-pill-top">
+            <span class="sidebar-scan-pulse" aria-hidden="true"></span>
+            <strong data-museum-scan-stage>Scanning Museum</strong>
+            <span data-museum-scan-percent>0%</span>
+          </span>
+          <span class="museum-scan-track"><span data-museum-scan-fill></span></span>
+          <small data-museum-scan-detail></small>
+        </span>
+      </button>
 
-    <button class="sidebar-search-shell" id="globalSearchOpen" type="button">
-      <span>Search museum</span>
-      <kbd>Ctrl K</kbd>
-    </button>
+      <button class="sidebar-search-shell" id="globalSearchOpen" type="button">
+        <span>Search museum</span>
+        <kbd>Ctrl K</kbd>
+      </button>
+    </div>
 
     <div class="sidebar-footer">
       <div class="mini-stat vault-build-card">
         <span>Current build</span>
-        <strong>Vaultarr 1.7.0</strong>
+        <strong>Vaultarr 1.7.2</strong>
         <em></em>
       </div>
       {% if auth_enabled %}
@@ -140,7 +141,7 @@
       <div class="focus-tabs">
         <button class="focus-tab active" data-tab="overview" type="button">Overview</button>
         <button class="focus-tab" data-tab="metadata" type="button">Game Information</button>
-        <button class="focus-tab" data-tab="preservation" type="button">Archive Health</button>
+        <button class="focus-tab" data-tab="preservation" type="button">Preservation</button>
         <button class="focus-tab" data-tab="manuals" type="button">Manuals</button>
         <button class="focus-tab" data-tab="acquisition" type="button">Acquisition</button>
         <button class="focus-tab" data-tab="gallery" type="button">Gallery</button>
@@ -220,7 +221,7 @@
 
       <div class="focus-tab-panel" id="focusTab-preservation">
         <div class="focus-preservation-summary">
-          <div class="focus-preservation-score"><span id="focusPreservationScore">—</span><small>Preservation Score</small></div>
+          <div class="focus-preservation-score"><span id="focusPreservationScore">—</span><small>Museum Preservation</small></div>
           <div class="focus-preservation-badge" id="focusPreservationBadge">—</div>
         </div>
         <div class="preservation-list">
@@ -602,11 +603,11 @@
     </div>
   </dialog>
 
-  <script src="/static/js/live-events.js?v=1.7.0"></script>
-  <script src="/static/js/museum-scan.js?v=1.7.0"></script>
-  <script src="/static/js/library.js?v=1.7.0"></script>
-  <script src="/static/js/focus-mode.js?v=1.7.0"></script>
-  <script src="/static/js/performance-foundation.js?v=1.7.0"></script>
+  <script src="/static/js/live-events.js?v=1.7.2"></script>
+  <script src="/static/js/museum-scan.js?v=1.7.2"></script>
+  <script src="/static/js/library.js?v=1.7.2"></script>
+  <script src="/static/js/focus-mode.js?v=1.7.2"></script>
+  <script src="/static/js/performance-foundation.js?v=1.7.2"></script>
   <script src="/static/js/theme-compat.js"></script>
   <script src="/static/js/studio-navigation.js"></script>
   <script src="/static/js/orbital-vault.js"></script>
@@ -661,8 +662,8 @@
     </div>
   </section>
 
-  <script src="/static/js/smooth-navigation.js?v=1.7.0"></script>
-  <script src="/static/js/global-search.js?v=1.7.0"></script>
-  <script src="/static/js/interaction-lifecycle.js?v=1.7.0"></script>
+  <script src="/static/js/smooth-navigation.js?v=1.7.2"></script>
+  <script src="/static/js/global-search.js?v=1.7.2"></script>
+  <script src="/static/js/interaction-lifecycle.js?v=1.7.2"></script>
 </body>
 </html>

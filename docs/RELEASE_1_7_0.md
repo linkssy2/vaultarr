@@ -1,4 +1,4 @@
-# Vaultarr 1.7.0 — Sidebar Museum Scan
+# Vaultarr 1.7.1 — Sidebar Museum Scan
 
 Vaultarr now has one obvious place to scan the museum: a permanent **Scan Museum** control directly above **Search Museum** in the sidebar.
 

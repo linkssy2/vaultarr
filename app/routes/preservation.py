@@ -10,15 +10,14 @@ preservation_bp = Blueprint('preservation', __name__)
 
 @preservation_bp.route('/preservation')
 def preservation():
-    stats = preservation_report()
-    saved = request.args.get('saved', '')
-    return render_template('preservation.html', stats=stats, saved=saved, intel=get_vault_intelligence())
+    # Preservation is now shown per game. Keep the legacy route as a safe redirect.
+    return redirect('/museum?attention=1')
 
 
 @preservation_bp.route('/preservation/refresh', methods=['POST'])
 def refresh_preservation():
     updated = update_all_preservation_scores()
-    return redirect(f'/preservation?saved=refreshed-{updated}')
+    return redirect(f'/museum?attention=1&saved=refreshed-{updated}')
 
 
 @preservation_bp.route('/preservation/scan-assets', methods=['POST'])
@@ -66,4 +65,4 @@ def scan_assets():
     conn.commit()
     conn.close()
     update_all_preservation_scores()
-    return redirect(f'/preservation?saved=asset-scan-{updated}-{skipped}-{errors}')
+    return redirect(f'/museum?attention=1&saved=asset-scan-{updated}-{skipped}-{errors}')
