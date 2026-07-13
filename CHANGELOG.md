@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.6.4 — Discreet Scan Status
+## 1.6.5 — Discreet Scan Status
 
 - Removed the duplicate in-page Museum Scan progress banners from Home and Museum.
 - Kept one compact scan indicator in the sidebar while a scan runs.
@@ -8,7 +8,7 @@
 - Added click-to-expand scan details and an automatic fade after successful completion.
 - Preserved the background Museum Scan engine and protected 1.5.8 interaction systems.
 
-## 1.6.4 — Background Museum Scan
+## 1.6.5 — Background Museum Scan
 
 - Replaced the per-game Activity dashboard with one Plex-style background Museum Scan.
 - Added Scan Museum controls to Home and Museum.

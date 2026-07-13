@@ -1,3 +1,10 @@
+## 1.6.5 — Living Sidebar
+
+- Added smooth entrance, expansion, completion, collapse, and exit motion to the sidebar Museum Scan indicator.
+- Added interpolated percentage motion and crossfading status text.
+- Added a restrained breathing status dot and completion animation.
+- Preserved the background scan engine and protected UX baseline.
+
 ## 1.6.1 — The Museum Experience
 
 - Redesigned Home as a calm museum lobby while retaining the Blue V Orbital Core.
