@@ -1,3 +1,12 @@
+# 1.8.0 — Transforming Museum Scan Pill
+
+- Added 18 px of visual separation between Scan Museum and Search Museum.
+- Kept the scanner fixed at the same compact pill dimensions in every state.
+- Changed the scan control from a primary action into a calmer live-status surface while working.
+- Added distinct scanning, completed, and failed visual identities.
+- Preserved smooth stage crossfades, percentage interpolation, and the embedded progress line.
+- Left the scan backend and protected 1.5.8 UX systems unchanged.
+
 # 1.7.9 — Morphing Museum Scan Pill
 
 - Replaced the scan drawer with one fixed-size sidebar pill.
