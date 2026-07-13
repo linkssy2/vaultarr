@@ -4,9 +4,7 @@
   const state = {
     timer: null,
     completionTimer: null,
-    removalTimer: null,
     active: false,
-    lastStatus: '',
     displayedProgress: 0,
     targetProgress: 0,
     progressFrame: null,
@@ -17,8 +15,7 @@
 
   const clamp = value => Math.max(0, Math.min(100, Number(value) || 0));
   const nodes = () => ({
-    buttons: [...document.querySelectorAll('[data-museum-scan-start]')],
-    pills: [...document.querySelectorAll('[data-museum-scan-pill]')],
+    controls: [...document.querySelectorAll('[data-museum-scan-control]')],
     fills: [...document.querySelectorAll('[data-museum-scan-fill]')],
     percents: [...document.querySelectorAll('[data-museum-scan-percent]')],
     stages: [...document.querySelectorAll('[data-museum-scan-stage]')],
@@ -37,7 +34,6 @@
     const elapsed = Math.min(48, now - state.lastFrameAt);
     state.lastFrameAt = now;
     const distance = state.targetProgress - state.displayedProgress;
-
     if (Math.abs(distance) < 0.08) {
       state.displayedProgress = state.targetProgress;
       setProgressVisual(state.displayedProgress);
@@ -45,7 +41,6 @@
       state.lastFrameAt = 0;
       return;
     }
-
     const speed = Math.max(4.5, Math.abs(distance) * 1.9);
     const step = Math.sign(distance) * Math.min(Math.abs(distance), speed * elapsed / 1000);
     state.displayedProgress += step;
@@ -63,31 +58,6 @@
     if (!state.progressFrame) state.progressFrame = requestAnimationFrame(animateProgress);
   }
 
-  function revealPill(pill) {
-    clearTimeout(state.removalTimer);
-    if (!pill.hidden && pill.classList.contains('is-visible')) return;
-    pill.hidden = false;
-    pill.classList.remove('is-leaving', 'is-collapsing');
-    pill.classList.add('is-entering');
-    requestAnimationFrame(() => requestAnimationFrame(() => {
-      pill.classList.add('is-visible');
-      pill.classList.remove('is-entering');
-    }));
-  }
-
-  function hidePill(pill) {
-    pill.classList.remove('is-visible', 'is-expanded');
-    pill.classList.add('is-leaving');
-    pill.setAttribute('aria-expanded', 'false');
-    const finish = () => {
-      pill.hidden = true;
-      pill.classList.remove('is-leaving', 'is-collapsing', 'is-complete', 'is-failed');
-      pill.removeEventListener('transitionend', finish);
-    };
-    pill.addEventListener('transitionend', finish);
-    state.removalTimer = setTimeout(finish, 520);
-  }
-
   function crossfade(elements, text, key) {
     if (state[key] === text) return;
     state[key] = text;
@@ -96,76 +66,70 @@
       setTimeout(() => {
         element.textContent = text;
         requestAnimationFrame(() => element.classList.remove('is-changing'));
-      }, 110);
+      }, 100);
     });
   }
 
-  function scheduleCompletionHide() {
+  function returnToIdle(control) {
+    control.classList.remove('is-active', 'is-complete', 'is-failed', 'is-expanded');
+    control.setAttribute('aria-expanded', 'false');
+    control.disabled = false;
+    control.title = 'Scan Museum';
+  }
+
+  function scheduleIdleReturn() {
     clearTimeout(state.completionTimer);
     state.completionTimer = setTimeout(() => {
-      nodes().pills.forEach(pill => {
-        pill.classList.remove('is-expanded');
-        pill.setAttribute('aria-expanded', 'false');
-        pill.classList.add('is-collapsing');
-      });
+      nodes().controls.forEach(control => control.classList.add('is-contracting'));
       state.completionTimer = setTimeout(() => {
-        nodes().pills.forEach(hidePill);
-      }, 780);
-    }, 1800);
+        nodes().controls.forEach(control => {
+          control.classList.remove('is-contracting');
+          returnToIdle(control);
+        });
+        state.displayedProgress = 0;
+        state.targetProgress = 0;
+        setProgressVisual(0);
+      }, 520);
+    }, 1500);
   }
 
   function render(data) {
     const n = nodes();
     const running = ['scanning', 'preparing'].includes(data.status);
-    const visible = running || data.status === 'complete' || data.status === 'failed';
     const progress = clamp(data.progress);
-
     state.active = running;
-    state.lastStatus = data.status;
-    if (running) clearTimeout(state.completionTimer);
 
-    n.buttons.forEach(button => {
-      button.disabled = running;
-      button.textContent = running ? `Scanning… ${Math.round(progress)}%` : 'Scan Museum';
-      button.classList.toggle('is-scanning', running);
+    n.controls.forEach(control => {
+      control.classList.toggle('is-active', running);
+      control.classList.toggle('is-complete', data.status === 'complete');
+      control.classList.toggle('is-failed', data.status === 'failed');
+      control.disabled = running;
+      control.title = running ? 'Museum scan in progress' : 'Scan Museum';
+      if (running) control.classList.remove('is-contracting');
     });
 
-    n.pills.forEach(pill => {
-      if (visible) revealPill(pill);
-      else if (!pill.hidden) hidePill(pill);
-      pill.classList.toggle('is-active', running);
-      pill.classList.toggle('is-complete', data.status === 'complete');
-      pill.classList.toggle('is-failed', data.status === 'failed');
-      if (running) pill.classList.remove('is-collapsing', 'is-leaving');
-    });
-
-    setTargetProgress(progress, state.lastStatus === '' || (running && state.displayedProgress > progress + 15));
-
-    const stage = data.stage || (running ? 'Scanning Museum' : data.status === 'complete' ? 'Museum synced' : data.status === 'failed' ? 'Scan needs attention' : 'Ready');
+    setTargetProgress(progress, running && state.displayedProgress > progress + 15);
+    const stage = data.stage || (running ? 'Scanning Museum' : data.status === 'complete' ? 'Museum Updated' : data.status === 'failed' ? 'Scan needs attention' : 'Ready');
     const detail = running
       ? [data.current_game, data.checked_games && data.total_games ? `${data.checked_games} / ${data.total_games} checked` : ''].filter(Boolean).join(' · ')
       : data.status === 'complete'
         ? `${data.summary?.checked || data.total_games || 0} games checked · ${data.summary?.prepared || data.completed_games || 0} prepared`
         : (data.last_error || '');
-
     crossfade(n.stages, stage, 'lastStage');
     crossfade(n.details, detail, 'lastDetail');
-
     document.dispatchEvent(new CustomEvent('vaultarr:museum-scan-updated', { detail: data }));
 
     if (running) schedule(650);
     else {
       stop();
-      if (data.status === 'complete') scheduleCompletionHide();
+      if (data.status === 'complete' || data.status === 'failed') scheduleIdleReturn();
+      else n.controls.forEach(returnToIdle);
     }
   }
 
   async function poll() {
     try {
-      const response = await fetch(`/api/museum-scan/status?_=${Date.now()}`, {
-        cache: 'no-store',
-        headers: { Accept: 'application/json' }
-      });
+      const response = await fetch(`/api/museum-scan/status?_=${Date.now()}`, { cache: 'no-store', headers: { Accept: 'application/json' } });
       if (response.ok) render(await response.json());
     } catch (_) {
       if (state.active) schedule(1400);
@@ -176,52 +140,42 @@
     clearTimeout(state.timer);
     state.timer = setTimeout(poll, delay);
   }
+  function stop() { clearTimeout(state.timer); state.timer = null; }
 
-  function stop() {
-    clearTimeout(state.timer);
-    state.timer = null;
-  }
-
-  async function start(button) {
-    if (button) button.disabled = true;
+  async function start(control) {
+    if (state.active || control?.classList.contains('is-active')) return;
+    clearTimeout(state.completionTimer);
+    if (control) {
+      control.classList.add('is-active');
+      control.disabled = true;
+      control.setAttribute('aria-expanded', 'true');
+    }
+    setTargetProgress(1, true);
+    crossfade(nodes().stages, 'Starting Museum Scan', 'lastStage');
+    crossfade(nodes().details, 'Checking your collection…', 'lastDetail');
     try {
-      const response = await fetch(`/api/museum-scan/start?_=${Date.now()}`, {
-        method: 'POST',
-        cache: 'no-store',
-        headers: { Accept: 'application/json' }
-      });
+      const response = await fetch(`/api/museum-scan/start?_=${Date.now()}`, { method: 'POST', cache: 'no-store', headers: { Accept: 'application/json' } });
       render(await response.json());
     } catch (_) {
-      if (button) {
-        button.disabled = false;
-        button.textContent = 'Scan Museum';
-      }
+      nodes().controls.forEach(c => {
+        c.classList.add('is-failed');
+        c.classList.remove('is-active');
+        c.disabled = false;
+      });
+      crossfade(nodes().stages, 'Could not start scan', 'lastStage');
+      crossfade(nodes().details, 'Try again when the server is available.', 'lastDetail');
+      scheduleIdleReturn();
     }
   }
 
   document.addEventListener('click', event => {
-    const startButton = event.target.closest('[data-museum-scan-start]');
-    if (startButton) {
-      event.preventDefault();
-      start(startButton);
-      return;
-    }
-
-    const pill = event.target.closest('.sidebar-scan-pill[data-museum-scan-pill]');
-    if (pill) {
-      event.preventDefault();
-      const expanded = !pill.classList.contains('is-expanded');
-      pill.classList.toggle('is-expanded', expanded);
-      pill.setAttribute('aria-expanded', String(expanded));
-    }
+    const control = event.target.closest('[data-museum-scan-control]');
+    if (!control) return;
+    event.preventDefault();
+    if (!state.active && !control.classList.contains('is-complete') && !control.classList.contains('is-failed')) start(control);
   });
-
-  document.addEventListener('visibilitychange', () => {
-    if (document.hidden) stop();
-    else poll();
-  });
+  document.addEventListener('visibilitychange', () => document.hidden ? stop() : poll());
   document.addEventListener('vaultarr:navigation-complete', poll);
-
   window.VaultarrMuseumScan = { installed: true, poll, start };
   poll();
 })();

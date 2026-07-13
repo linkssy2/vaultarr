@@ -1,6 +1,14 @@
+
+## 1.7.0 - Sidebar Museum Scan
+
+- Replaced all page-level Museum scan controls with one permanent sidebar control.
+- The button expands in place to show live progress, current stage, and current game.
+- On completion, the control briefly shows the result and smoothly contracts back into the Scan Museum button.
+- Removed duplicate scan controls from Home and Museum.
+- Preserved the protected 1.5.8 card, navigation, Focus Mode, search, manual, and acquisition systems.
 # Changelog
 
-## 1.6.5 — Discreet Scan Status
+## 1.7.0 — Discreet Scan Status
 
 - Removed the duplicate in-page Museum Scan progress banners from Home and Museum.
 - Kept one compact scan indicator in the sidebar while a scan runs.
@@ -8,7 +16,7 @@
 - Added click-to-expand scan details and an automatic fade after successful completion.
 - Preserved the background Museum Scan engine and protected 1.5.8 interaction systems.
 
-## 1.6.5 — Background Museum Scan
+## 1.7.0 — Background Museum Scan
 
 - Replaced the per-game Activity dashboard with one Plex-style background Museum Scan.
 - Added Scan Museum controls to Home and Museum.
