@@ -70,7 +70,7 @@
     <div class="discovery-game-row">
       {% for game in rediscover %}
         <a class="discovery-game-card" href="/games/{{ game.id }}">
-          <div>{% if game.cover_path %}<img src="/covers/{{ game.cover_path }}?v={{ game.updated_at or game.last_scanned or game.id }}" alt="{{ game.title }}">{% else %}<span>🎮</span>{% endif %}</div>
+          <div>{% if game.cover_path %}<img loading="lazy" decoding="async" src="/covers/{{ game.cover_path }}?v={{ game.updated_at or game.last_scanned or game.id }}" alt="{{ game.title }}">{% else %}<span>🎮</span>{% endif %}</div>
           <strong>{{ game.title }}</strong>
           <small>{{ game.release_year or game.genre or game.category or 'Rediscover' }}</small>
         </a>
@@ -87,7 +87,7 @@
       <a href="/library?q={{ top_genre }}">View →</a>
     </div>
     <div class="mini-discovery-list">
-      {% for game in genre_games[:5] %}<a href="/games/{{ game.id }}"><span>{% if game.cover_path %}<img src="/covers/{{ game.cover_path }}?v={{ game.updated_at or game.last_scanned or game.id }}" alt="{{ game.title }}">{% else %}🎮{% endif %}</span><strong>{{ game.title }}</strong></a>{% endfor %}
+      {% for game in genre_games[:5] %}<a href="/games/{{ game.id }}"><span>{% if game.cover_path %}<img loading="lazy" decoding="async" src="/covers/{{ game.cover_path }}?v={{ game.updated_at or game.last_scanned or game.id }}" alt="{{ game.title }}">{% else %}🎮{% endif %}</span><strong>{{ game.title }}</strong></a>{% endfor %}
     </div>
   </section>
   {% endif %}
@@ -99,7 +99,7 @@
       <a href="/library?q={{ top_publisher }}">View →</a>
     </div>
     <div class="mini-discovery-list">
-      {% for game in publisher_games[:5] %}<a href="/games/{{ game.id }}"><span>{% if game.cover_path %}<img src="/covers/{{ game.cover_path }}?v={{ game.updated_at or game.last_scanned or game.id }}" alt="{{ game.title }}">{% else %}🎮{% endif %}</span><strong>{{ game.title }}</strong></a>{% endfor %}
+      {% for game in publisher_games[:5] %}<a href="/games/{{ game.id }}"><span>{% if game.cover_path %}<img loading="lazy" decoding="async" src="/covers/{{ game.cover_path }}?v={{ game.updated_at or game.last_scanned or game.id }}" alt="{{ game.title }}">{% else %}🎮{% endif %}</span><strong>{{ game.title }}</strong></a>{% endfor %}
     </div>
   </section>
   {% endif %}
@@ -110,7 +110,7 @@
       <a href="/metadata-queue">Queue →</a>
     </div>
     <div class="mini-discovery-list">
-      {% for game in needs_identity[:5] %}<a href="/games/{{ game.id }}"><span>{% if game.cover_path %}<img src="/covers/{{ game.cover_path }}?v={{ game.updated_at or game.last_scanned or game.id }}" alt="{{ game.title }}">{% else %}🎮{% endif %}</span><strong>{{ game.title }}</strong></a>{% else %}<p class="muted">Metadata looks clean.</p>{% endfor %}
+      {% for game in needs_identity[:5] %}<a href="/games/{{ game.id }}"><span>{% if game.cover_path %}<img loading="lazy" decoding="async" src="/covers/{{ game.cover_path }}?v={{ game.updated_at or game.last_scanned or game.id }}" alt="{{ game.title }}">{% else %}🎮{% endif %}</span><strong>{{ game.title }}</strong></a>{% else %}<p class="muted">Metadata looks clean.</p>{% endfor %}
     </div>
   </section>
 
@@ -120,7 +120,7 @@
       <a href="/library?sort=size">View →</a>
     </div>
     <div class="mini-discovery-list">
-      {% for game in biggest[:5] %}<a href="/games/{{ game.id }}"><span>{% if game.cover_path %}<img src="/covers/{{ game.cover_path }}?v={{ game.updated_at or game.last_scanned or game.id }}" alt="{{ game.title }}">{% else %}🎮{% endif %}</span><strong>{{ game.title }}</strong></a>{% else %}<p class="muted">No games scanned yet.</p>{% endfor %}
+      {% for game in biggest[:5] %}<a href="/games/{{ game.id }}"><span>{% if game.cover_path %}<img loading="lazy" decoding="async" src="/covers/{{ game.cover_path }}?v={{ game.updated_at or game.last_scanned or game.id }}" alt="{{ game.title }}">{% else %}🎮{% endif %}</span><strong>{{ game.title }}</strong></a>{% else %}<p class="muted">No games scanned yet.</p>{% endfor %}
     </div>
   </section>
 </div>

@@ -1,17 +1,17 @@
-# Vaultarr 1.5.3
+# Vaultarr 1.5.5
 
-> Current release: **Vaultarr 1.5.3 — Advanced Navigation Layout Fix**
+> Current release: **Vaultarr 1.5.5 — Advanced Navigation Layout Fix**
 
 Vaultarr is a self-hosted game preservation dashboard for cataloging, enriching, and maintaining a personal game archive.
 
-## 1.5.3 interface fix
+## 1.5.5 interface fix
 
 - Advanced Mode now reveals its sidebar tools as properly aligned, full-width navigation rows.
 - **Milestones** is always available in Standard Mode because achievement progress is part of the core museum experience.
 
 ## The Curator Experience
 
-Vaultarr 1.5.3 keeps the stable 1.4.10 navigation and Curator experience while adding administrator-supplied acquisition catalogs. Upload a JSON or CSV index in **Advanced Settings**, search it locally from a game record, open or copy the catalog links, and attach the local file after you obtain it. Vaultarr does not scrape the source website or execute anything from an uploaded catalog.
+Vaultarr 1.5.5 keeps the stable 1.4.10 navigation and Curator experience while adding administrator-supplied acquisition catalogs. Upload a JSON or CSV index in **Advanced Settings**, search it locally from a game record, open or copy the catalog links, and attach the local file after you obtain it. Vaultarr does not scrape the source website or execute anything from an uploaded catalog.
 
 Newly scanned games can be queued automatically for Curator processing. Vaultarr researches game information, chooses available artwork, looks for a manual, respects user edits and metadata locks, and surfaces only items that need review.
 
@@ -238,3 +238,8 @@ The **Add Game** button on the Library page opens the detailed manual form for p
 Open a game and use **Acquisition Assistant → Find Copy**. Vaultarr searches the live Vimm Vault reference catalog using the game title and platform, ranks matching releases, and opens the exact source page. Vaultarr does not download the game itself: after choosing the correct release, paste the final direct link yourself and save it to the museum record. You can later link the local file or folder and mark the game as stored locally.
 
 No uploaded JSON or CSV index is required. If live search cannot find a result, paste the exact Vimm Vault source-page URL and use **Read Source Page**.
+
+
+## Performance foundation
+
+Vaultarr 1.5.5 reduces initial image decoding, avoids painting long offscreen grids, throttles card hover work, pauses nonessential activity in hidden tabs, and loads Focus Mode logic only when expandable game cards are present. These optimizations are automatic and require no configuration.

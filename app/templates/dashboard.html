@@ -87,7 +87,7 @@
     {% if stats.next_task %}
       <div class="mission-compact">
         <a class="mission-cover-mini" href="{{ stats.next_task.url }}">
-          {% if stats.next_task.cover_path %}<img src="/covers/{{ stats.next_task.cover_path }}?v={{ stats.next_task.updated_at or stats.next_task.id }}" alt="{{ stats.next_task.title }}">{% else %}<span>🎮</span>{% endif %}
+          {% if stats.next_task.cover_path %}<img loading="lazy" decoding="async" src="/covers/{{ stats.next_task.cover_path }}?v={{ stats.next_task.updated_at or stats.next_task.id }}" alt="{{ stats.next_task.title }}">{% else %}<span>🎮</span>{% endif %}
         </a>
         <div>
           <p class="mission-label">Primary objective: {{ stats.next_task.primary_issue }}</p>

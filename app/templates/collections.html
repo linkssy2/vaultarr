@@ -6,7 +6,7 @@
       <div class="poster-art">
         <div class="poster-gloss"></div>
         {% if game.cover_path %}
-          <img class="poster-cover" src="/covers/{{ game.cover_path }}?v={{ game.updated_at or game.last_scanned or game.id }}" alt="{{ game.title }}">
+          <img loading="lazy" decoding="async" class="poster-cover" src="/covers/{{ game.cover_path }}?v={{ game.updated_at or game.last_scanned or game.id }}" alt="{{ game.title }}">
         {% else %}
           <div class="poster-placeholder">🎮</div>
         {% endif %}

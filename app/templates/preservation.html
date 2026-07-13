@@ -32,7 +32,7 @@
       {% if stats.needs_attention %}
         {% set target = stats.needs_attention[0] %}
         <a class="next-fix-game alpha242-target" href="/games/{{ target.id }}">
-          {% if target.cover_path %}<img src="/covers/{{ target.cover_path }}?v={{ target.updated_at or target.last_scanned or target.id }}" alt="{{ target.title }}">{% else %}<div class="attention-placeholder">🎮</div>{% endif %}
+          {% if target.cover_path %}<img loading="lazy" decoding="async" src="/covers/{{ target.cover_path }}?v={{ target.updated_at or target.last_scanned or target.id }}" alt="{{ target.title }}">{% else %}<div class="attention-placeholder">🎮</div>{% endif %}
           <div>
             <span class="preserve-badge-pill">{{ target.preservation_badge }}</span>
             <h3>{{ target.title }}</h3>
@@ -76,7 +76,7 @@
       <div class="alpha242-queue-list">
         {% for game in stats.needs_attention[:12] %}
           <a class="alpha242-queue-row" href="/games/{{ game.id }}">
-            {% if game.cover_path %}<img src="/covers/{{ game.cover_path }}?v={{ game.updated_at or game.last_scanned or game.id }}" alt="{{ game.title }}">{% else %}<div class="attention-placeholder">🎮</div>{% endif %}
+            {% if game.cover_path %}<img loading="lazy" decoding="async" src="/covers/{{ game.cover_path }}?v={{ game.updated_at or game.last_scanned or game.id }}" alt="{{ game.title }}">{% else %}<div class="attention-placeholder">🎮</div>{% endif %}
             <div class="alpha242-queue-main">
               <div class="alpha242-row-top"><strong>{{ game.title }}</strong><span>{{ game.preservation_score }}%</span></div>
               <small>{{ game.category or 'Unsorted' }} · {{ game.preservation_badge }}</small>

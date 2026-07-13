@@ -1,15 +1,15 @@
 <!doctype html>
 <html>
 <head>
-  <title>Vaultarr 1.5.3</title>
+  <title>Vaultarr 1.5.5</title>
   {% if theme.dark_reader_compat %}<meta name="darkreader-lock">{% endif %}
   <meta name="theme-color" content="#3b82f6">
-  <link rel="icon" href="/static/icons/favicon.ico?v=1.5.3" sizes="any">
-  <link rel="icon" type="image/svg+xml" href="/static/icons/vaultarr.svg?v=1.5.3">
-  <link rel="icon" type="image/png" sizes="32x32" href="/static/icons/favicon-32x32.png?v=1.5.3">
-  <link rel="icon" type="image/png" sizes="16x16" href="/static/icons/favicon-16x16.png?v=1.5.3">
-  <link rel="apple-touch-icon" href="/static/icons/apple-touch-icon.png?v=1.5.3">
-  <link rel="manifest" href="/static/site.webmanifest?v=1.5.3">
+  <link rel="icon" href="/static/icons/favicon.ico?v=1.5.5" sizes="any">
+  <link rel="icon" type="image/svg+xml" href="/static/icons/vaultarr.svg?v=1.5.5">
+  <link rel="icon" type="image/png" sizes="32x32" href="/static/icons/favicon-32x32.png?v=1.5.5">
+  <link rel="icon" type="image/png" sizes="16x16" href="/static/icons/favicon-16x16.png?v=1.5.5">
+  <link rel="apple-touch-icon" href="/static/icons/apple-touch-icon.png?v=1.5.5">
+  <link rel="manifest" href="/static/site.webmanifest?v=1.5.5">
 
   <link rel="stylesheet" href="/static/css/base.css">
   <link rel="stylesheet" href="/static/css/sidebar.css">
@@ -20,9 +20,10 @@
   <link rel="stylesheet" href="/static/css/cards.css">
   <link rel="stylesheet" href="/static/css/game-detail.css">
   <link rel="stylesheet" href="/static/css/focus-mode.css">
+  <link rel="stylesheet" href="/static/css/performance-foundation.css?v=1.5.5">
   <link rel="stylesheet" href="/static/css/preservation.css">
   <link rel="stylesheet" href="/static/css/vaultos.css">
-  <link rel="stylesheet" href="/static/css/navigation.css?v=1.5.3">
+  <link rel="stylesheet" href="/static/css/navigation.css?v=1.5.5">
   <link rel="stylesheet" href="/static/css/global-search.css">
   <link rel="stylesheet" href="/static/css/discovery.css">
   <link rel="stylesheet" href="/static/css/scrollbars.css">
@@ -33,7 +34,7 @@
   <link rel="stylesheet" href="/static/css/experience.css">
   <link rel="stylesheet" href="/static/css/readiness.css">
   <link rel="stylesheet" href="/static/css/responsive.css">
-  <link rel="stylesheet" href="/static/css/controls.css?v=1.5.3">
+  <link rel="stylesheet" href="/static/css/controls.css?v=1.5.5">
   <style id="vaultarr-theme">{{ theme_css|safe }}</style>
 </head>
 <body class="vaultos {{ 'advanced-mode' if ui_settings.advanced_mode else 'standard-mode' }} {% if theme.dark_reader_compat %}dark-reader-compat{% endif %}">
@@ -41,7 +42,7 @@
 
   <aside class="sidebar vaultos-sidebar">
     <a class="brand" href="/">
-      <img class="brand-mark" src="/static/icons/vaultarr.svg?v=1.5.3" alt="" width="38" height="38">
+      <img class="brand-mark" src="/static/icons/vaultarr.svg?v=1.5.5" alt="" width="38" height="38">
       <span>Vaultarr</span>
     </a>
 
@@ -68,7 +69,7 @@
     <div class="sidebar-footer">
       <div class="mini-stat vault-build-card">
         <span>Current build</span>
-        <strong>Vaultarr 1.5.3</strong>
+        <strong>Vaultarr 1.5.5</strong>
         <em></em>
       </div>
       {% if auth_enabled %}
@@ -124,6 +125,7 @@
         <button class="focus-tab" data-tab="metadata" type="button">Game Information</button>
         <button class="focus-tab" data-tab="preservation" type="button">Archive Health</button>
         <button class="focus-tab" data-tab="manuals" type="button">Manuals</button>
+        <button class="focus-tab" data-tab="acquisition" type="button">Acquisition</button>
         <button class="focus-tab" data-tab="gallery" type="button">Gallery</button>
         <button class="focus-tab" data-tab="trailer" type="button">Trailer</button>
         <button class="focus-tab" data-tab="patches" type="button">Patches</button>
@@ -272,6 +274,60 @@
         </div>
       </div>
 
+
+      <div class="focus-tab-panel" id="focusTab-acquisition">
+        <div class="focus-acquisition-workspace" id="focusAcquisitionPanel">
+          <div class="focus-acquisition-header">
+            <div>
+              <p class="eyebrow">Acquisition Assistant</p>
+              <h2>Find a reference copy</h2>
+              <p class="muted">Vaultarr finds the matching Vimm reference page. You paste the final link yourself.</p>
+            </div>
+            <span class="metadata-pill" id="focusAcquisitionBadge">Not Configured</span>
+          </div>
+
+          <div class="acquisition-current" id="focusAcquisitionCurrent" hidden>
+            <span>Selected release</span>
+            <strong id="focusAcquisitionCurrentTitle">—</strong>
+            <a id="focusAcquisitionCurrentSource" href="#" target="_blank" rel="noopener noreferrer">Open saved source page</a>
+            <small id="focusAcquisitionCurrentStatus"></small>
+          </div>
+
+          <div class="acquisition-search-row">
+            <input id="focusAcquisitionQuery" aria-label="Search Vimm reference catalog" placeholder="Game title">
+            <input id="focusAcquisitionPlatform" aria-label="Platform hint" placeholder="Platform (optional)">
+            <button type="button" id="focusAcquisitionSearchButton">Find Copy</button>
+          </div>
+          <div id="focusAcquisitionSearchStatus" class="muted acquisition-search-status">Choose Find Copy to search the live reference catalog.</div>
+          <div id="focusAcquisitionResults" class="acquisition-results"></div>
+
+          <details class="acquisition-source-fallback">
+            <summary>Already know the exact source page?</summary>
+            <div class="acquisition-source-row">
+              <input id="focusAcquisitionSourcePageInput" placeholder="https://vimm.net/vault/12345">
+              <button type="button" id="focusAcquisitionReadSourceButton" class="secondary">Read Source Page</button>
+            </div>
+          </details>
+
+          <div id="focusAcquisitionSelection" class="acquisition-selection" hidden>
+            <h3 id="focusAcquisitionSelectionTitle">Selected release</h3>
+            <p id="focusAcquisitionSelectionMeta" class="muted"></p>
+            <a id="focusAcquisitionSelectionSource" class="button-link secondary" target="_blank" rel="noopener noreferrer">Open Source</a>
+            <label for="focusAcquisitionDownloadUrl">Final download link</label>
+            <input id="focusAcquisitionDownloadUrl" placeholder="Paste the final link here">
+            <button type="button" id="focusAcquisitionSaveButton">Save Acquisition</button>
+          </div>
+
+          <details class="acquisition-attach-details">
+            <summary>Link files after acquisition</summary>
+            <form id="focusAcquisitionAttachForm" class="acquisition-attach-form">
+              <label for="focusAcquisitionLocalPath">Local file or folder</label>
+              <input id="focusAcquisitionLocalPath" placeholder="D:\ROMs\Nintendo 64\Example Game.z64" required>
+              <button type="submit">Mark Stored Locally</button>
+            </form>
+          </details>
+        </div>
+      </div>
 
       <div class="focus-tab-panel" id="focusTab-gallery">
         <div class="gallery-workspace gallery-workspace-saved-first">
@@ -529,9 +585,9 @@
     </div>
   </dialog>
 
-  <script src="/static/js/live-events.js?v=1.5.3"></script>
-  <script src="/static/js/library.js?v=1.5.3"></script>
-  <script src="/static/js/focus-mode.js?v=1.5.3"></script>
+  <script src="/static/js/live-events.js?v=1.5.5"></script>
+  <script src="/static/js/library.js?v=1.5.5"></script>
+  <script src="/static/js/performance-foundation.js?v=1.5.5"></script>
   <script src="/static/js/theme-compat.js"></script>
   <script src="/static/js/studio-navigation.js"></script>
   <script src="/static/js/orbital-vault.js"></script>
@@ -586,8 +642,8 @@
     </div>
   </section>
 
-  <script src="/static/js/smooth-navigation.js?v=1.5.3"></script>
-  <script src="/static/js/global-search.js?v=1.5.3"></script>
-  <script src="/static/js/interaction-lifecycle.js?v=1.5.3"></script>
+  <script src="/static/js/smooth-navigation.js?v=1.5.5"></script>
+  <script src="/static/js/global-search.js?v=1.5.5"></script>
+  <script src="/static/js/interaction-lifecycle.js?v=1.5.5"></script>
 </body>
 </html>

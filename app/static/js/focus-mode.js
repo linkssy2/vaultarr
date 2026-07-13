@@ -13,6 +13,7 @@
     let isAnimating = false;
     let activeGameId = null;
     let activeGame = null;
+    let selectedAcquisition = null;
 
     const fields = {
       cover: document.getElementById("focusCover"),
@@ -128,6 +129,26 @@
       removeCancelButton: document.getElementById("focusRemoveCancelButton"),
       removeConfirmButton: document.getElementById("focusRemoveConfirmButton"),
       removeStatus: document.getElementById("focusRemoveGameStatus"),
+      acquisitionBadge: document.getElementById("focusAcquisitionBadge"),
+      acquisitionCurrent: document.getElementById("focusAcquisitionCurrent"),
+      acquisitionCurrentTitle: document.getElementById("focusAcquisitionCurrentTitle"),
+      acquisitionCurrentSource: document.getElementById("focusAcquisitionCurrentSource"),
+      acquisitionCurrentStatus: document.getElementById("focusAcquisitionCurrentStatus"),
+      acquisitionQuery: document.getElementById("focusAcquisitionQuery"),
+      acquisitionPlatform: document.getElementById("focusAcquisitionPlatform"),
+      acquisitionSearchButton: document.getElementById("focusAcquisitionSearchButton"),
+      acquisitionSearchStatus: document.getElementById("focusAcquisitionSearchStatus"),
+      acquisitionResults: document.getElementById("focusAcquisitionResults"),
+      acquisitionSourceInput: document.getElementById("focusAcquisitionSourcePageInput"),
+      acquisitionReadSourceButton: document.getElementById("focusAcquisitionReadSourceButton"),
+      acquisitionSelection: document.getElementById("focusAcquisitionSelection"),
+      acquisitionSelectionTitle: document.getElementById("focusAcquisitionSelectionTitle"),
+      acquisitionSelectionMeta: document.getElementById("focusAcquisitionSelectionMeta"),
+      acquisitionSelectionSource: document.getElementById("focusAcquisitionSelectionSource"),
+      acquisitionDownloadUrl: document.getElementById("focusAcquisitionDownloadUrl"),
+      acquisitionSaveButton: document.getElementById("focusAcquisitionSaveButton"),
+      acquisitionAttachForm: document.getElementById("focusAcquisitionAttachForm"),
+      acquisitionLocalPath: document.getElementById("focusAcquisitionLocalPath"),
     };
 
     function getTriggers() {
@@ -272,9 +293,133 @@
       });
     }
 
+
+    function setAcquisitionStatus(message) {
+      if (fields.acquisitionSearchStatus) fields.acquisitionSearchStatus.textContent = message || "";
+    }
+
+    function chooseAcquisition(item) {
+      selectedAcquisition = item || null;
+      if (!item || !fields.acquisitionSelection) return;
+      fields.acquisitionSelection.hidden = false;
+      if (fields.acquisitionSelectionTitle) fields.acquisitionSelectionTitle.textContent = item.title || "Selected release";
+      if (fields.acquisitionSelectionMeta) fields.acquisitionSelectionMeta.textContent = [item.platform, item.region, item.version, `${item.match_score || 0}% match`].filter(Boolean).join(" · ");
+      if (fields.acquisitionSelectionSource) { fields.acquisitionSelectionSource.href = item.source_page || "#"; }
+      if (fields.acquisitionSourceInput) fields.acquisitionSourceInput.value = item.source_page || "";
+      setAcquisitionStatus("Release selected. Open the source, then paste the final link below.");
+    }
+
+    function renderAcquisitionResults(items = []) {
+      if (!fields.acquisitionResults) return;
+      fields.acquisitionResults.replaceChildren();
+      if (!items.length) {
+        fields.acquisitionResults.innerHTML = `<div class="metadata-empty"><h3>No reference match found</h3><p class="muted">Try a shorter title or paste the exact Vimm Vault page below.</p></div>`;
+        return;
+      }
+      items.forEach((item) => {
+        const card = document.createElement("article");
+        card.className = "acquisition-result-card";
+        card.innerHTML = `<div class="acquisition-result-top"><h3>${escapeHtml(item.title || "Unknown release")}</h3><span class="confidence-badge">${Number(item.match_score || 0)}%</span></div><p class="muted">${escapeHtml([item.platform, item.region, item.version].filter(Boolean).join(" · ") || "Release details available on source page")}</p><div class="acquisition-result-actions"><a class="button-link secondary" href="${escapeHtml(item.source_page || "#")}" target="_blank" rel="noopener noreferrer">Open Source</a><button type="button" class="focus-acquisition-use">Use This Release</button></div>`;
+        card.querySelector(".focus-acquisition-use")?.addEventListener("click", () => chooseAcquisition(item));
+        fields.acquisitionResults.append(card);
+      });
+    }
+
+    async function loadAcquisition(game) {
+      selectedAcquisition = null;
+      if (fields.acquisitionQuery) fields.acquisitionQuery.value = game?.title || "";
+      if (fields.acquisitionPlatform) fields.acquisitionPlatform.value = game?.platform || "";
+      if (fields.acquisitionResults) fields.acquisitionResults.replaceChildren();
+      if (fields.acquisitionSelection) fields.acquisitionSelection.hidden = true;
+      if (fields.acquisitionCurrent) fields.acquisitionCurrent.hidden = true;
+      if (fields.acquisitionBadge) fields.acquisitionBadge.textContent = "Not Configured";
+      setAcquisitionStatus("Choose Find Copy to search the live reference catalog.");
+      if (!game?.id) return;
+      try {
+        const response = await fetch(`/api/games/${game.id}/acquisition`, { headers: { Accept: "application/json" } });
+        const data = await response.json();
+        if (!response.ok || !data.success) return;
+        const acquisition = data.acquisition;
+        if (!acquisition) return;
+        if (fields.acquisitionCurrent) fields.acquisitionCurrent.hidden = false;
+        if (fields.acquisitionCurrentTitle) fields.acquisitionCurrentTitle.textContent = acquisition.source_title || game.title || "Saved acquisition";
+        if (fields.acquisitionCurrentSource) { fields.acquisitionCurrentSource.href = acquisition.source_page || "#"; fields.acquisitionCurrentSource.hidden = !acquisition.source_page; }
+        if (fields.acquisitionDownloadUrl) fields.acquisitionDownloadUrl.value = acquisition.download_url || "";
+        if (fields.acquisitionSourceInput) fields.acquisitionSourceInput.value = acquisition.source_page || "";
+        if (fields.acquisitionLocalPath) fields.acquisitionLocalPath.value = acquisition.local_path || "";
+        const status = acquisition.local_path ? "Stored Locally" : acquisition.download_url ? "Link Ready" : acquisition.source_page ? "Source Found" : "Not Configured";
+        if (fields.acquisitionBadge) fields.acquisitionBadge.textContent = status;
+        if (fields.acquisitionCurrentStatus) fields.acquisitionCurrentStatus.textContent = acquisition.local_path ? `Local copy: ${acquisition.local_path}` : acquisition.download_url ? "Final link saved" : "Reference source saved";
+        selectedAcquisition = { title: acquisition.source_title || game.title, platform: acquisition.platform || game.platform, region: acquisition.region || "", version: acquisition.version || "", source_page: acquisition.source_page || "", match_score: 100 };
+      } catch (_) {}
+    }
+
+    async function searchAcquisition() {
+      if (!activeGameId || !fields.acquisitionQuery) return;
+      const term = fields.acquisitionQuery.value.trim();
+      if (!term) { fields.acquisitionQuery.focus(); return; }
+      const button = fields.acquisitionSearchButton;
+      if (button) { button.disabled = true; button.textContent = "Searching…"; }
+      setAcquisitionStatus("Searching the live reference catalog…");
+      try {
+        const params = new URLSearchParams({ q: term, platform: fields.acquisitionPlatform?.value.trim() || "" });
+        const response = await fetch(`/api/games/${activeGameId}/acquisition/search?${params}`, { headers: { Accept: "application/json" } });
+        const data = await response.json();
+        if (!response.ok || !data.success) throw new Error(data.message || "Search failed.");
+        renderAcquisitionResults(data.results || []);
+        setAcquisitionStatus(`${(data.results || []).length} reference result${(data.results || []).length === 1 ? "" : "s"} found.`);
+      } catch (error) { renderAcquisitionResults([]); setAcquisitionStatus(error.message); }
+      finally { if (button) { button.disabled = false; button.textContent = "Find Copy"; } }
+    }
+
+    async function readAcquisitionSource() {
+      if (!activeGameId || !fields.acquisitionSourceInput?.value.trim()) { fields.acquisitionSourceInput?.focus(); return; }
+      const button = fields.acquisitionReadSourceButton;
+      if (button) { button.disabled = true; button.textContent = "Reading…"; }
+      try {
+        const response = await fetch(`/api/games/${activeGameId}/acquisition/read-source`, { method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify({ source_page: fields.acquisitionSourceInput.value.trim() }) });
+        const data = await response.json();
+        if (!response.ok || !data.success) throw new Error(data.message || "Could not read source page.");
+        chooseAcquisition(data.result);
+      } catch (error) { setAcquisitionStatus(error.message); }
+      finally { if (button) { button.disabled = false; button.textContent = "Read Source Page"; } }
+    }
+
+    async function saveAcquisition() {
+      if (!activeGameId || !selectedAcquisition) { setAcquisitionStatus("Select a release or read a source page first."); return; }
+      const button = fields.acquisitionSaveButton;
+      if (button) { button.disabled = true; button.textContent = "Saving…"; }
+      try {
+        const response = await fetch(`/api/games/${activeGameId}/acquisition/save`, { method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify({ ...selectedAcquisition, download_url: fields.acquisitionDownloadUrl?.value.trim() || "" }) });
+        const data = await response.json();
+        if (!response.ok || !data.success) throw new Error(data.message || "Could not save acquisition.");
+        setAcquisitionStatus(fields.acquisitionDownloadUrl?.value.trim() ? "Acquisition link saved." : "Reference source saved.");
+        if (fields.acquisitionBadge) fields.acquisitionBadge.textContent = fields.acquisitionDownloadUrl?.value.trim() ? "Link Ready" : "Source Found";
+        await loadAcquisition(activeGame);
+      } catch (error) { setAcquisitionStatus(error.message); }
+      finally { if (button) { button.disabled = false; button.textContent = "Save Acquisition"; } }
+    }
+
+    async function attachAcquisition(event) {
+      event.preventDefault();
+      if (!activeGameId || !fields.acquisitionLocalPath?.value.trim()) return;
+      const button = fields.acquisitionAttachForm?.querySelector("button[type=submit]");
+      if (button) { button.disabled = true; button.textContent = "Saving…"; }
+      try {
+        const body = new URLSearchParams({ local_path: fields.acquisitionLocalPath.value.trim() });
+        const response = await fetch(`/games/${activeGameId}/acquisition/attach`, { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body, redirect: "follow" });
+        if (!response.ok) throw new Error("Could not attach local files.");
+        if (fields.acquisitionBadge) fields.acquisitionBadge.textContent = "Stored Locally";
+        setAcquisitionStatus("Local file or folder attached.");
+        await loadAcquisition(activeGame);
+      } catch (error) { setAcquisitionStatus(error.message); }
+      finally { if (button) { button.disabled = false; button.textContent = "Mark Stored Locally"; } }
+    }
+
     function populate(game) {
       if (activeGameId && String(game.id) !== String(activeGameId)) return;
       activeGame = game;
+      loadAcquisition(game);
 
       if (fields.cover) {
         if (game.cover_src) setFocusCover(cacheBust(game.cover_src), game.title);
@@ -2032,6 +2177,13 @@
         if (applyButton) applyMetadata(applyButton);
       });
     }
+
+
+    fields.acquisitionSearchButton?.addEventListener("click", searchAcquisition);
+    fields.acquisitionQuery?.addEventListener("keydown", (event) => { if (event.key === "Enter") { event.preventDefault(); searchAcquisition(); } });
+    fields.acquisitionReadSourceButton?.addEventListener("click", readAcquisitionSource);
+    fields.acquisitionSaveButton?.addEventListener("click", saveAcquisition);
+    fields.acquisitionAttachForm?.addEventListener("submit", attachAcquisition);
 
     document.addEventListener("keydown", (event) => {
       if (event.key === "Escape" && body.classList.contains("focus-active")) closeFocus();

@@ -1,0 +1,27 @@
+/* Vaultarr 1.5.5 performance foundation */
+.poster-card, .focus-card-trigger, .timeline-capsule, .discovery-card,
+.collection-card, .attention-card, .queue-card {
+  contain: layout paint style;
+}
+
+#libraryGrid > .focus-card-trigger,
+.discovery-grid > *, .timeline-grid > *, .collection-grid > * {
+  content-visibility: auto;
+  contain-intrinsic-size: 320px 460px;
+}
+
+.poster-cover, .detail-cover-img, .discovery-card img, .mini-list img {
+  image-rendering: auto;
+}
+
+html.vaultarr-page-hidden .vault-ambient,
+html.vaultarr-page-hidden .orbital-vault-core,
+html.vaultarr-page-hidden .timeline-capsule,
+html.vaultarr-page-hidden [class*="shimmer"],
+html.vaultarr-page-hidden [class*="pulse"] {
+  animation-play-state: paused !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .poster-card { transform: none !important; }
+}

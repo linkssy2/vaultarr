@@ -4,10 +4,20 @@ from urllib.parse import quote_plus
 from app.database.database import get_connection
 from app.services.acquisition_assistant_service import (
     search_vimm_reference, read_vimm_source_page, save_acquisition_source,
-    attach_local_file,
+    attach_local_file, get_game_acquisition,
 )
 
 acquisition_bp = Blueprint("acquisition", __name__)
+
+
+@acquisition_bp.route("/api/games/<int:game_id>/acquisition")
+def acquisition_status(game_id):
+    conn = get_connection()
+    game = conn.execute("SELECT id FROM games WHERE id=?", (game_id,)).fetchone()
+    conn.close()
+    if not game:
+        abort(404)
+    return jsonify({"success": True, "acquisition": get_game_acquisition(game_id)})
 
 
 @acquisition_bp.route("/api/games/<int:game_id>/acquisition/search")
