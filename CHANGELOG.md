@@ -1,3 +1,12 @@
+# Changelog
+
+## 2.0.0 Alpha 7 — Museum Grid Restoration
+
+- Removed the retired Museum list-view behavior and its saved browser preference.
+- Restored the canonical floating-card grid for every Museum load and smooth navigation swap.
+- Clears stale `vaultarrMuseumView=list` values left by earlier Alpha builds.
+- Keeps Collections inside Museum and leaves search, filters, cards, hover, tilt, expansion, and scan behavior unchanged.
+
 # Vaultarr Changelog
 
 ## 2.0.0 Alpha 6 — Museum Collections Merge

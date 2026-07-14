@@ -1,6 +1,6 @@
-# Vaultarr 2.0.0 Alpha 6
+# Vaultarr 2.0.0 Alpha 7
 
-> Experimental release: **Vaultarr 2.0.0 Alpha 6 — Museum Filter Stability**
+> Experimental release: **Vaultarr 2.0.0 Alpha 7 — Museum Grid Restoration**
 
 
 ## Alpha 2 interface refinement

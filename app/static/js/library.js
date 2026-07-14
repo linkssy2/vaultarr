@@ -163,8 +163,6 @@
     const grid = document.getElementById("libraryGrid");
     const noResults = document.getElementById("libraryNoResults");
     const searchCount = document.getElementById("librarySearchCount");
-    const gridViewButton = document.getElementById("museumGridView");
-    const listViewButton = document.getElementById("museumListView");
     const filterForm = document.getElementById("museumFilterForm");
 
     if (!grid || grid.dataset.vaultarrSearchBound === "1") return;
@@ -172,16 +170,6 @@
 
     const getTriggers = () => Array.from(grid.querySelectorAll(".focus-card-trigger"));
 
-
-    function setMuseumView(mode) {
-      const listMode = mode === "list";
-      grid.classList.toggle("is-list-view", listMode);
-      gridViewButton?.classList.toggle("is-active", !listMode);
-      listViewButton?.classList.toggle("is-active", listMode);
-      gridViewButton?.setAttribute("aria-pressed", String(!listMode));
-      listViewButton?.setAttribute("aria-pressed", String(listMode));
-      try { localStorage.setItem("vaultarrMuseumView", listMode ? "list" : "grid"); } catch (_error) {}
-    }
     function normalize(value) {
       return String(value || "").toLowerCase().trim();
     }
@@ -230,8 +218,6 @@
       applySort();
       applySearch();
     });
-    gridViewButton?.addEventListener("click", () => setMuseumView("grid"));
-    listViewButton?.addEventListener("click", () => setMuseumView("list"));
 
     if (filterForm && filterForm.dataset.vaultarrFilterBound !== "1") {
       filterForm.dataset.vaultarrFilterBound = "1";
@@ -257,9 +243,11 @@
         select.addEventListener("change", navigateToFilters);
       });
     }
-    let savedMuseumView = "grid";
-    try { savedMuseumView = localStorage.getItem("vaultarrMuseumView") || "grid"; } catch (_error) {}
-    setMuseumView(savedMuseumView);
+    // Alpha 7 removes the retired list view entirely. Clear any saved list
+    // preference from Alpha 3–5 so returning users always get the canonical
+    // floating-card grid.
+    grid.classList.remove("is-list-view");
+    try { localStorage.removeItem("vaultarrMuseumView"); } catch (_error) {}
 
     applySort();
     applySearch();
