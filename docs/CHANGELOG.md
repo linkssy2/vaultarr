@@ -1,4 +1,4 @@
-## 2.0.0 Alpha 4
+## 2.0.0 Alpha 5
 
 - Compact Plex-style Museum header sizing.
 - Added functional Platform, Genre, Category, and Sort dropdown filters.

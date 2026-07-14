@@ -15,10 +15,12 @@
       </div>
 
       <div class="museum-library-primary-tools">
-        <span class="museum-game-count">{{ total_count or games|length }} games</span>
-        <div class="museum-view-toggle" role="group" aria-label="Museum layout">
+        <div class="museum-view-summary" aria-label="Museum result count and layout">
+          <span class="museum-game-count">{{ total_count or games|length }} games</span>
+          <div class="museum-view-toggle" role="group" aria-label="Museum layout">
           <button class="museum-view-button is-active" id="museumGridView" type="button" aria-label="Grid view" aria-pressed="true">▦</button>
-          <button class="museum-view-button" id="museumListView" type="button" aria-label="List view" aria-pressed="false">☷</button>
+            <button class="museum-view-button" id="museumListView" type="button" aria-label="List view" aria-pressed="false">☷</button>
+          </div>
         </div>
         <div class="search-wrap museum-header-search">
           <input id="librarySearch" class="search-input" type="text" placeholder="Search your museum…" value="{{ q or '' }}" autocomplete="off">
@@ -28,25 +30,25 @@
       </div>
     </div>
 
-    <form class="museum-library-filter-row" method="get" action="/museum" aria-label="Museum filters">
+    <form class="museum-library-filter-row" id="museumFilterForm" method="get" action="/museum" aria-label="Museum filters">
       {% if attention %}<input type="hidden" name="attention" value="1">{% endif %}
       <label class="museum-filter-select-wrap">
         <span>Platform</span>
-        <select class="select-input museum-filter-select" name="platform" onchange="this.form.submit()">
+        <select class="select-input museum-filter-select" name="platform">
           <option value="All Platforms">All Platforms</option>
           {% for item in platforms %}<option value="{{ item }}" {% if platform == item %}selected{% endif %}>{{ item }}</option>{% endfor %}
         </select>
       </label>
       <label class="museum-filter-select-wrap">
         <span>Genre</span>
-        <select class="select-input museum-filter-select" name="genre" onchange="this.form.submit()">
+        <select class="select-input museum-filter-select" name="genre">
           <option value="All Genres">All Genres</option>
           {% for item in genres %}<option value="{{ item }}" {% if genre == item %}selected{% endif %}>{{ item }}</option>{% endfor %}
         </select>
       </label>
       <label class="museum-filter-select-wrap">
         <span>Category</span>
-        <select class="select-input museum-filter-select" name="category" onchange="this.form.submit()">
+        <select class="select-input museum-filter-select" name="category">
           <option value="All Games">All Categories</option>
           {% for item in categories %}<option value="{{ item }}" {% if category == item %}selected{% endif %}>{{ item }}</option>{% endfor %}
         </select>

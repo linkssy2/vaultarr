@@ -165,6 +165,7 @@
     const searchCount = document.getElementById("librarySearchCount");
     const gridViewButton = document.getElementById("museumGridView");
     const listViewButton = document.getElementById("museumListView");
+    const filterForm = document.getElementById("museumFilterForm");
 
     if (!grid || grid.dataset.vaultarrSearchBound === "1") return;
     grid.dataset.vaultarrSearchBound = "1";
@@ -231,6 +232,31 @@
     });
     gridViewButton?.addEventListener("click", () => setMuseumView("grid"));
     listViewButton?.addEventListener("click", () => setMuseumView("list"));
+
+    if (filterForm && filterForm.dataset.vaultarrFilterBound !== "1") {
+      filterForm.dataset.vaultarrFilterBound = "1";
+      const navigateToFilters = () => {
+        const url = new URL(filterForm.action || "/museum", window.location.origin);
+        const params = new URLSearchParams(new FormData(filterForm));
+        for (const [key, value] of Array.from(params.entries())) {
+          if (!value || value === "All Platforms" || value === "All Genres" || value === "All Games") params.delete(key);
+        }
+        url.search = params.toString();
+        filterForm.classList.add("is-navigating");
+        const navigation = typeof window.VaultarrSmoothNavigate === "function"
+          ? window.VaultarrSmoothNavigate(url.href, true, { source: "museum-filter" })
+          : Promise.resolve().then(() => { window.location.href = url.href; });
+        Promise.resolve(navigation).catch(() => { window.location.href = url.href; });
+      };
+      filterForm.addEventListener("submit", (event) => {
+        event.preventDefault();
+        navigateToFilters();
+      });
+      filterForm.querySelectorAll("select").forEach((select) => {
+        if (select.id === "librarySort") return;
+        select.addEventListener("change", navigateToFilters);
+      });
+    }
     let savedMuseumView = "grid";
     try { savedMuseumView = localStorage.getItem("vaultarrMuseumView") || "grid"; } catch (_error) {}
     setMuseumView(savedMuseumView);
