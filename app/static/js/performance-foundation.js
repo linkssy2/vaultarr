@@ -8,7 +8,6 @@
 
   function syncVisibilityState() {
     document.documentElement.classList.toggle('vaultarr-page-hidden', document.hidden);
-    document.dispatchEvent(new CustomEvent(document.hidden ? 'vaultarr:activity-pause' : 'vaultarr:activity-resume'));
   }
 
   document.addEventListener('visibilitychange', syncVisibilityState);

@@ -154,6 +154,12 @@ def migrate():
     )
     """)
     c.execute("INSERT OR IGNORE INTO museum_scan_jobs (id,status,progress,stage) VALUES (1,'idle',0,'Ready')")
+    for col, definition in {
+        "session_id": "TEXT DEFAULT ''",
+        "started_by": "TEXT DEFAULT ''",
+        "heartbeat_at": "TEXT DEFAULT ''",
+    }.items():
+        ensure_column(c, "museum_scan_jobs", col, definition)
 
     c.execute("""
     CREATE TABLE IF NOT EXISTS curator_history (

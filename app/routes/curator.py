@@ -39,7 +39,7 @@ def api_museum_scan_start():
     # navigation, page refreshes, and visibility changes are read-only.
     if request.headers.get('X-Vaultarr-User-Action') != 'scan-museum':
         return _json_no_cache({'success':False,'message':'Museum scans must be started from the Scan Museum button.'}, 400)
-    return _json_no_cache({'success':True, **start_scan()})
+    return _json_no_cache({'success':True, **start_scan(started_by='user_click')})
 
 @curator_bp.route('/api/museum-scan/status')
 def api_museum_scan_status(): return _json_no_cache({'success':True, **scan_status()})

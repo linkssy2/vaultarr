@@ -1,0 +1,13 @@
+{
+  "rawg_api_key": "",
+  "igdb_client_id": "",
+  "igdb_client_secret": "",
+  "steamgriddb_api_key": "",
+  "enable_steam": true,
+  "enable_wikipedia": true,
+  "enable_rawg": true,
+  "enable_igdb": true,
+  "enable_steamgriddb": true,
+  "enable_launchbox": true,
+  "launchbox_metadata_url": "https://gamesdb.launchbox-app.com/Metadata.zip"
+}

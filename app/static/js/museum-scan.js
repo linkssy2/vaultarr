@@ -4,7 +4,7 @@
 
   const state = {
     pollTimer: 0,
-    resetTimer: 0,
+    phaseTimer: 0,
     request: null,
     running: false,
     starting: false,
@@ -14,7 +14,8 @@
     lastFrame: 0,
     stage: '',
     detail: '',
-    boundButton: null
+    boundButton: null,
+    destroyed: false
   };
 
   const clamp = value => Math.max(0, Math.min(100, Number(value) || 0));
@@ -29,26 +30,27 @@
     if (!node) return;
     node.classList.add('is-changing');
     window.setTimeout(() => {
+      if (state.destroyed || !node.isConnected) return;
       node.textContent = text;
       requestAnimationFrame(() => node.classList.remove('is-changing'));
-    }, 110);
+    }, 120);
   }
 
   function paintProgress(value) {
     const progress = clamp(value);
     const fill = document.querySelector('[data-museum-scan-fill]');
     const percent = document.querySelector('[data-museum-scan-percent]');
-    if (fill) fill.style.width = `${progress.toFixed(1)}%`;
+    if (fill) fill.style.transform = `scaleX(${progress / 100})`;
     if (percent) percent.textContent = `${Math.round(progress)}%`;
   }
 
   function animateProgress(now) {
     if (!state.lastFrame) state.lastFrame = now;
-    const elapsed = Math.min(50, now - state.lastFrame);
+    const elapsed = Math.min(48, now - state.lastFrame);
     state.lastFrame = now;
     const remaining = state.target - state.displayed;
 
-    if (Math.abs(remaining) < 0.06) {
+    if (Math.abs(remaining) < 0.05) {
       state.displayed = state.target;
       paintProgress(state.displayed);
       state.raf = 0;
@@ -56,7 +58,9 @@
       return;
     }
 
-    const speed = Math.max(4, Math.abs(remaining) * 1.35);
+    const reversing = remaining < 0;
+    const durationFactor = reversing ? 2.35 : 1.25;
+    const speed = Math.max(reversing ? 16 : 4, Math.abs(remaining) * durationFactor);
     state.displayed += Math.sign(remaining) * Math.min(Math.abs(remaining), speed * elapsed / 1000);
     paintProgress(state.displayed);
     state.raf = requestAnimationFrame(animateProgress);
@@ -80,14 +84,16 @@
     root.dataset.state = mode;
     root.classList.toggle('is-active', mode === 'active');
     root.classList.toggle('is-complete', mode === 'complete');
+    root.classList.toggle('is-reversing', mode === 'reversing');
     root.classList.toggle('is-failed', mode === 'failed');
 
-    const disabled = mode === 'active';
+    const disabled = mode === 'active' || mode === 'complete' || mode === 'reversing';
     control.disabled = disabled;
-    control.setAttribute('aria-busy', String(disabled));
+    control.setAttribute('aria-busy', String(mode === 'active'));
     control.setAttribute('aria-label',
       mode === 'active' ? 'Museum scan in progress' :
       mode === 'complete' ? 'Museum updated' :
+      mode === 'reversing' ? 'Museum scan resetting' :
       mode === 'failed' ? 'Museum scan failed' : 'Scan Museum'
     );
 
@@ -99,23 +105,31 @@
 
   function clearTimers() {
     clearTimeout(state.pollTimer);
-    clearTimeout(state.resetTimer);
+    clearTimeout(state.phaseTimer);
     state.pollTimer = 0;
-    state.resetTimer = 0;
+    state.phaseTimer = 0;
   }
 
-  function returnToIdle(delay = 1750) {
-    clearTimeout(state.resetTimer);
-    state.resetTimer = window.setTimeout(() => {
+  function finishReverse() {
+    setMode('reversing');
+    setProgress(0, false);
+    setText('[data-museum-scan-stage]', '', 'stage');
+    setText('[data-museum-scan-detail]', '', 'detail');
+
+    state.phaseTimer = window.setTimeout(() => {
       setMode('idle');
-      window.setTimeout(() => {
-        state.displayed = 0;
-        state.target = 0;
-        state.stage = '';
-        state.detail = '';
-        paintProgress(0);
-      }, 420);
-    }, delay);
+      state.displayed = 0;
+      state.target = 0;
+      state.stage = '';
+      state.detail = '';
+      paintProgress(0);
+    }, 620);
+  }
+
+  function scheduleReturnToIdle(mode) {
+    clearTimeout(state.phaseTimer);
+    const hold = mode === 'failed' ? 1500 : 1100;
+    state.phaseTimer = window.setTimeout(finishReverse, hold);
   }
 
   function render(data) {
@@ -124,31 +138,48 @@
     state.running = running;
     state.starting = false;
 
-    const mode = running ? 'active' : status === 'complete' ? 'complete' : status === 'failed' ? 'failed' : 'idle';
-    setMode(mode);
-    setProgress(data?.progress || 0, false);
-
-    const stage = data?.stage || (running ? 'Scanning Museum' : mode === 'complete' ? 'Museum Updated' : mode === 'failed' ? 'Scan needs attention' : 'Ready');
-    const detail = running
-      ? [data?.current_game, data?.checked_games && data?.total_games ? `${data.checked_games} / ${data.total_games} checked` : ''].filter(Boolean).join(' · ')
-      : mode === 'complete'
-        ? `${data?.summary?.checked || data?.total_games || 0} games checked · ${data?.summary?.prepared || data?.completed_games || 0} prepared`
-        : (data?.last_error || '');
-
-    setText('[data-museum-scan-stage]', stage, 'stage');
-    setText('[data-museum-scan-detail]', detail, 'detail');
-    document.dispatchEvent(new CustomEvent('vaultarr:museum-scan-updated', { detail: data }));
-
-    clearTimeout(state.pollTimer);
     if (running) {
+      setMode('active');
+      setProgress(data?.progress || 0, false);
+      const stage = data?.stage || 'Scanning Museum';
+      const detail = [
+        data?.current_game,
+        data?.checked_games && data?.total_games ? `${data.checked_games} / ${data.total_games} checked` : ''
+      ].filter(Boolean).join(' · ');
+      setText('[data-museum-scan-stage]', stage, 'stage');
+      setText('[data-museum-scan-detail]', detail, 'detail');
+      clearTimeout(state.pollTimer);
       state.pollTimer = window.setTimeout(readStatus, 800);
-    } else if (mode === 'complete' || mode === 'failed') {
-      returnToIdle();
+      return;
     }
+
+    if (status === 'complete') {
+      setMode('complete');
+      setProgress(100, false);
+      setText('[data-museum-scan-stage]', 'Museum Updated', 'stage');
+      setText(
+        '[data-museum-scan-detail]',
+        `${data?.summary?.checked || data?.total_games || 0} games checked · ${data?.summary?.prepared || data?.completed_games || 0} prepared`,
+        'detail'
+      );
+      scheduleReturnToIdle('complete');
+      return;
+    }
+
+    if (status === 'failed') {
+      setMode('failed');
+      setText('[data-museum-scan-stage]', 'Scan needs attention', 'stage');
+      setText('[data-museum-scan-detail]', data?.last_error || 'Try again when the server is available.', 'detail');
+      scheduleReturnToIdle('failed');
+      return;
+    }
+
+    setMode('idle');
+    setProgress(0, true);
   }
 
   async function readStatus() {
-    if (state.request || document.hidden) return;
+    if (state.request || document.hidden || state.destroyed) return;
     const controller = new AbortController();
     state.request = controller;
     try {
@@ -159,8 +190,7 @@
         headers: { Accept: 'application/json' },
         signal: controller.signal
       });
-      if (!response.ok) return;
-      render(await response.json());
+      if (response.ok) render(await response.json());
     } catch (error) {
       if (error.name !== 'AbortError' && state.running) {
         state.pollTimer = window.setTimeout(readStatus, 1500);
@@ -171,12 +201,11 @@
   }
 
   async function startFromUserClick(event) {
-    // A museum scan may only start from a real user click on this exact button.
-    if (!event?.isTrusted || state.running || state.starting) return;
+    if (!event?.isTrusted || state.running || state.starting || state.destroyed) return;
     state.starting = true;
     clearTimers();
     setMode('active');
-    setProgress(1, true);
+    setProgress(2, true);
     setText('[data-museum-scan-stage]', 'Starting Museum Scan', 'stage');
     setText('[data-museum-scan-detail]', 'Checking your collection…', 'detail');
 
@@ -201,7 +230,7 @@
       setMode('failed');
       setText('[data-museum-scan-stage]', 'Could not start scan', 'stage');
       setText('[data-museum-scan-detail]', error.message || 'Try again when the server is available.', 'detail');
-      returnToIdle(2100);
+      scheduleReturnToIdle('failed');
     }
   }
 
@@ -213,36 +242,17 @@
     state.boundButton = next;
   }
 
-  function onNavigationComplete() {
-    bindButton();
-    // Navigation is status-only. It never starts a scan.
-    readStatus();
-  }
-
-  function onVisibilityChange() {
-    if (document.hidden) {
-      clearTimeout(state.pollTimer);
-      if (state.request) state.request.abort();
-      return;
-    }
-    // Returning to the tab only reads server state. It never starts a scan.
-    readStatus();
-  }
-
   function destroy() {
+    state.destroyed = true;
     if (state.boundButton) state.boundButton.removeEventListener('click', startFromUserClick);
-    document.removeEventListener('vaultarr:navigation-complete', onNavigationComplete);
-    document.removeEventListener('visibilitychange', onVisibilityChange);
     clearTimers();
     if (state.request) state.request.abort();
     if (state.raf) cancelAnimationFrame(state.raf);
   }
 
   bindButton();
-  document.addEventListener('vaultarr:navigation-complete', onNavigationComplete);
-  document.addEventListener('visibilitychange', onVisibilityChange);
   window.VaultarrMuseumScan = { installed: true, readStatus, destroy };
 
-  // Initial load is intentionally read-only.
+  // Initial load is deliberately status-only. Only the trusted click handler can start a scan.
   readStatus();
 })();

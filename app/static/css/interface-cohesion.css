@@ -1,0 +1,194 @@
+/* Vaultarr 1.8.4 — Interface Cohesion Audit
+   Final, low-specificity component rules for consistent controls and page rhythm.
+   Protected systems (poster cards, Focus Mode motion, navigation motion, and
+   Museum Scan) are intentionally excluded from structural overrides. */
+
+:root {
+  --vault-control-height: 44px;
+  --vault-control-height-compact: 36px;
+  --vault-control-radius: 13px;
+  --vault-control-gap: 12px;
+  --vault-field-height: 46px;
+}
+
+/* Standard action controls inside page content. */
+.content :where(button, .button-link, .secondary-button, .capsule-link)
+:not(.game-card-link)
+:not(.focus-tab)
+:not(.focus-close)
+:not(.global-search-close)
+:not(.global-search-mode)
+:not(.global-add-close)
+:not(.clear-search)
+:not(.theme-pack-button)
+:not(.studio-theme-card button)
+:not(.audio-chip) {
+  min-height: var(--vault-control-height);
+  padding: 0 18px;
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: var(--vault-control-radius);
+  line-height: 1.15;
+  font-size: .94rem;
+  font-weight: 800;
+  text-align: center;
+  white-space: nowrap;
+  box-sizing: border-box;
+}
+
+.content :where(.small, .compact, button.small, .button-link.small, .secondary-button.small) {
+  min-height: var(--vault-control-height-compact);
+  padding-inline: 14px;
+  border-radius: 11px;
+  font-size: .84rem;
+}
+
+.content :where(button, .button-link, .secondary-button, .capsule-link):disabled,
+.content :where(.button-link, .secondary-button).disabled,
+.content :where(.button-link, .secondary-button)[aria-disabled="true"] {
+  opacity: .48;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+  pointer-events: none;
+}
+
+.content :where(button, .button-link, .secondary-button, .capsule-link):focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--accent) 72%, white 8%);
+  outline-offset: 3px;
+}
+
+/* Fields use one visual height and focus treatment across pages. */
+.content :where(input:not([type="checkbox"]):not([type="radio"]):not([type="color"]):not([type="file"]), select) {
+  min-height: var(--vault-field-height);
+  padding: 10px 13px;
+  border-radius: 12px;
+  box-sizing: border-box;
+}
+
+.content textarea {
+  min-height: 122px;
+  padding: 12px 13px;
+  border-radius: 12px;
+  box-sizing: border-box;
+}
+
+.content :where(input, select, textarea):disabled {
+  opacity: .62;
+  cursor: not-allowed;
+}
+
+/* All action rows share spacing and alignment. */
+.content :where(
+  .row-actions,
+  .studio-actions,
+  .archive-button-row,
+  .capsule-button-row,
+  .preservation-actions,
+  .preserve-hero-actions,
+  .global-add-actions,
+  .add-game-preview-actions,
+  .focus-action-buttons,
+  .manual-download-actions,
+  .metadata-card-actions,
+  .cover-manager-heading-actions
+) {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--vault-control-gap);
+}
+
+.content :where(.row-actions, .studio-actions, .archive-button-row, .capsule-button-row) form {
+  margin: 0;
+}
+
+/* Submit actions following fields retain deliberate separation. */
+.content form > :where(button, .button-link):last-child,
+.content form > .studio-actions:last-child,
+.content form > .row-actions:last-child {
+  margin-top: 16px;
+}
+
+.content :where(.studio-actions, .row-actions, .global-add-actions, .add-game-preview-actions) > :where(button, .button-link, form) {
+  flex: 0 0 auto;
+}
+
+/* Page header and panel rhythm. */
+.content :where(.panel-heading, .studio-section-head, .capsule-heading, .metadata-live-header, .acquisition-heading) {
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.content :where(.panel, .alive-panel, .studio-card-panel, .studio-section) > :last-child {
+  margin-bottom: 0;
+}
+
+.content .back-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  margin-bottom: 18px;
+  color: var(--text-muted);
+  font-weight: 700;
+  text-decoration: none;
+}
+.content .back-link:hover { color: var(--accent); }
+
+/* Modal/overlay close controls stay square and predictable. */
+.content :where(.add-game-preview-close),
+.global-search-close,
+.global-add-close,
+.focus-close {
+  width: 42px;
+  min-width: 42px;
+  height: 42px;
+  min-height: 42px;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+}
+
+/* Search and form grids should not produce mismatched button heights. */
+.content :where(.metadata-inline-form, .acquisition-search-row, .acquisition-source-row, .add-game-search-grid) {
+  align-items: end;
+}
+.content :where(.metadata-inline-form, .acquisition-search-row, .acquisition-source-row) > button {
+  align-self: end;
+}
+
+/* Cards that act like controls should not inherit primary-button chrome. */
+.content :where(.game-card-link, .shelf-card, .theme-pack-button, .studio-theme-card button, .audio-chip) {
+  margin: 0;
+}
+
+/* Clear semantic status colors without changing the default blue theme. */
+.content .danger-button,
+.content button.danger {
+  border: 1px solid rgba(248,113,113,.36);
+}
+.content :where(.secondary-button, .button-link.secondary, button.secondary) {
+  color: var(--text);
+}
+
+/* Responsive action behavior: full width only where a stacked layout is clearer. */
+@media (max-width: 720px) {
+  .content :where(.studio-actions, .row-actions, .global-add-actions, .add-game-preview-actions) {
+    align-items: stretch;
+  }
+  .content :where(.studio-actions, .row-actions, .global-add-actions, .add-game-preview-actions) > :where(button, .button-link, form),
+  .content :where(.studio-actions, .row-actions, .global-add-actions, .add-game-preview-actions) > form > button {
+    width: 100%;
+  }
+  .content :where(.metadata-inline-form, .acquisition-search-row, .acquisition-source-row) {
+    grid-template-columns: 1fr;
+  }
+  .content :where(.metadata-inline-form, .acquisition-search-row, .acquisition-source-row) > button {
+    width: 100%;
+  }
+}

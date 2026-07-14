@@ -215,11 +215,11 @@ def get_dashboard_stats():
         })
 
     if missing_metadata:
-        recent_activity.append({"label": "Metadata needed", "title": f"{missing_metadata} games need identities", "url": "/activity", "tone": "metadata"})
+        recent_activity.append({"label": "Metadata needed", "title": f"{missing_metadata} games need identities", "url": "/museum?attention=1", "tone": "metadata"})
     if missing_covers:
-        recent_activity.append({"label": "Artwork needed", "title": f"{missing_covers} covers missing", "url": "/activity", "tone": "artwork"})
+        recent_activity.append({"label": "Artwork needed", "title": f"{missing_covers} covers missing", "url": "/museum?attention=1", "tone": "artwork"})
     if missing_documentation:
-        recent_activity.append({"label": "Documentation missing", "title": f"{missing_documentation} manuals can be linked", "url": "/activity", "tone": "docs"})
+        recent_activity.append({"label": "Documentation missing", "title": f"{missing_documentation} manuals can be linked", "url": "/museum?attention=1", "tone": "docs"})
 
     hero = {
         "kicker": "Vaultarr Alpha 23.7",

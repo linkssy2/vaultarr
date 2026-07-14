@@ -1,16 +1,18 @@
-# Vaultarr 1.8.1
+# Vaultarr 1.8.4
 
-> Current release: **Vaultarr 1.8.1 — Transforming Museum Scan Pill**
+> Current release: **Vaultarr 1.8.4 — Interface Cohesion Audit**
 
 Vaultarr is a self-hosted digital game museum. Point it at your game folders, let the background preparation system enrich the records, and spend your time browsing the collection rather than managing providers and queues.
 
-## What's new in 1.8.1
+## What's new in 1.8.4
 
-- Adds proper breathing room between **Scan Museum** and **Search Museum**.
-- Keeps the scan control at a fixed pill size in every state.
-- Changes the blue action button into a calmer dark live-status surface while scanning.
-- Crossfades back to the primary **Scan Museum** action after completion.
-- Keeps the progress line, percentage, stage, and current game inside the same control without sidebar movement.
+- Completed a page-by-page interface consistency audit.
+- Standardized action-button heights, compact controls, fields, action groups, disabled states, and keyboard focus.
+- Added explicit submit behavior to previously implicit form buttons.
+- Added consistent disabled-link handling without changing form submission behavior.
+- Verified active page rendering, internal links, form routes, Python, JavaScript, and Jinja templates.
+- Preserved the protected floating-card, Focus Mode, navigation, Museum Scan, manual, and Acquisition systems.
+- Production Docker continues to pull `ghcr.io/linkssy2/vaultarr:latest`.
 
 ## What Vaultarr does
 
@@ -83,7 +85,7 @@ Paste the production Compose example into a new Dockge stack, replace the host g
 
 Vaultarr searches **VideoGameManual.com** as its primary indexed manual archive. Platform index pages are cached for seven days, so repeated searches are fast and respectful of the source. Results are matched using the game title and platform, ranked by confidence, and validated as real PDF files before Vaultarr saves them.
 
-**Vimm's Lair Manual Project** is included as a manuals-only fallback. Vaultarr restricts this integration to manual-related pages and does not crawl or expose Vimm's game-download areas. Because Vimm does not publish a documented public API, results that cannot be verified as direct PDFs open the Manual Project source page for manual selection.
+**Vimm's Lair Manual Project** is included as a manuals-only fallback. Vaultarr restricts this integration to manual-related pages and does not crawl or expose Vimm's game-download areas. Vaultarr performs live manual searches, opens the selected detail page, reads its supported scan resolution, and validates the generated PDF before saving it.
 
 Downloaded manuals are stored under the configured `/config/manuals` location. The existing Docker volume mapping `./config:/config` preserves them across container updates.
 
@@ -91,7 +93,7 @@ Manual search behavior:
 
 1. Search the cached VideoGameManual.com platform catalog.
 2. Rank direct PDF matches using title, platform, and region hints.
-3. Check the conservative Vimm manuals-only catalog/fallback.
+3. Search Vimm's Manual Project live when the indexed provider has no suitable result.
 4. Validate the PDF header and enforce a 250 MB safety limit before saving.
 5. Leave uncertain results for manual review rather than downloading a likely-wrong file.
 

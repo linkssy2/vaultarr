@@ -1,0 +1,20 @@
+{
+  "name": "Vault Blue",
+  "description": "The default Vaultarr blue-black library look.",
+  "primary": "#3b82f6",
+  "accent": "#38bdf8",
+  "background": "#080b12",
+  "background_soft": "#0d1220",
+  "sidebar": "#111622",
+  "panel": "#1b2230",
+  "panel_hover": "#242c3d",
+  "card": "#141a26",
+  "card_deep": "#0d121c",
+  "border": "#2c3548",
+  "text": "#f3f4f6",
+  "text_muted": "#9fb0ca",
+  "glow_strength": "0.45",
+  "preset": "vault_blue",
+  "is_custom": false,
+  "dark_reader_compat": false
+}

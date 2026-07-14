@@ -50,7 +50,7 @@
           <option value="steam" {% if provider == 'steam' %}selected{% endif %}>Steam</option>
           <option value="wikipedia" {% if provider == 'wikipedia' %}selected{% endif %}>Wikipedia</option>
         </select>
-        <button>Search</button>
+        <button type="submit">Search</button>
       </form>
 
       {% if metadata_query %}
@@ -89,7 +89,7 @@
                   <form action="/games/{{ game.id }}/metadata/apply" method="post">
                     <input type="hidden" name="source" value="{{ result.source }}">
                     <input type="hidden" name="external_id" value="{{ result.external_id }}">
-                    <button>Use This Metadata</button>
+                    <button type="submit">Use This Metadata</button>
                   </form>
                 </div>
               </div>
@@ -137,7 +137,7 @@
           <span>Lock manual metadata so automated provider updates do not overwrite it.</span>
         </label>
 
-        <button>Save Manual Edits</button>
+        <button type="submit">Save Manual Edits</button>
       </form>
     </section>
 
@@ -189,7 +189,7 @@
         <form action="/games/{{ game.id }}/acquisition/attach" method="post" class="acquisition-attach-form">
           <label>Local file or folder path</label>
           <input name="local_path" value="{{ game_acquisition.local_path if game_acquisition else '' }}" placeholder="D:\ROMs\Nintendo 64\Example Game.z64" required>
-          <button>Mark as Stored Locally</button>
+          <button type="submit">Mark as Stored Locally</button>
         </form>
       </details>
     </section>

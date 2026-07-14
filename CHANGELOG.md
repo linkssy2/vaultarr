@@ -1,5 +1,34 @@
 # Changelog
 
+## 1.8.4 — Interface Cohesion Audit
+
+- Audited every active page for consistent visual language and control sizing.
+- Standardized primary, secondary, danger, compact, and disabled button states.
+- Standardized form fields, action-row spacing, responsive stacking, and keyboard focus.
+- Added explicit submit intent to previously implicit form buttons.
+- Added a disabled-link interaction guard without changing form submission behavior.
+- Verified active pages, links, forms, Python, JavaScript, Jinja templates, and ZIP integrity.
+- Preserved the protected card, Focus Mode, navigation, Museum Scan, manuals, and Acquisition systems.
+
+## 1.8.3 — Reversible Scan Motion & Callback Cleanup
+
+- Reworked the fixed-size Scan Museum pill so completion plays the progress motion smoothly in reverse before returning to idle.
+- Removed the old disappear/retract reset behavior and consolidated scan reset into one reversible animation path.
+- Removed unused Museum Scan, Activity, and navigation callbacks left behind by retired UI flows.
+- Repointed legacy Activity and Preservation destinations to Museum Needs Attention.
+- Kept backward-compatible route redirects for old bookmarks.
+- Preserved the protected 1.5.8 interaction baseline.
+
+## 1.8.2 — Scan Session Integrity
+
+- Added unique Museum scan session IDs and explicit `user_click` provenance.
+- Added worker heartbeat validation before the sidebar reconnects to a running scan.
+- Removed browser visibility-change handling from the scan control.
+- Automatically resets stale or interrupted scan records to idle.
+- Replaced green completion styling with the default Vaultarr blue palette.
+- Preserved the 1.5.8 protected interaction baseline.
+
+
 ## 1.8.1 — Museum Scan State Rewrite
 
 - Separated scan start actions from status attachment.
