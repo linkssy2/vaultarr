@@ -1,3 +1,9 @@
+## 2.0.0 Alpha 4
+
+- Compact Plex-style Museum header sizing.
+- Added functional Platform, Genre, Category, and Sort dropdown filters.
+- Improved responsive alignment for Museum tools.
+
 ## 2.0.0 Alpha 3
 - Plex-inspired Museum header and reliable sidebar route highlighting.
 

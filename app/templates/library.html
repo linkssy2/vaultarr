@@ -3,7 +3,7 @@
 {% block content %}
 <div class="library-shell" id="libraryShell" data-museum-view="true">
   <header class="museum-library-header" aria-label="Museum controls">
-    <div class="museum-library-title-row">
+    <div class="museum-library-heading-row">
       <div class="museum-library-title">
         <h1>{% if attention %}Improve Your Museum{% else %}Museum{% endif %}</h1>
         <nav class="museum-library-tabs" aria-label="Museum views">
@@ -28,22 +28,39 @@
       </div>
     </div>
 
-    <div class="museum-library-filter-row">
-      <div class="museum-filter-chips" aria-label="Museum categories">
-        <a class="museum-filter-chip {% if not category or category == 'All Games' %}is-active{% endif %}" href="/museum{% if sort == 'added' %}?sort=added{% endif %}">All Categories</a>
-        <a class="museum-filter-chip {% if category == 'Abandonware' %}is-active{% endif %}" href="/museum?category=Abandonware">Abandonware</a>
-        <a class="museum-filter-chip {% if category == 'Fanmade' %}is-active{% endif %}" href="/museum?category=Fanmade">Fanmade</a>
-        <a class="museum-filter-chip {% if category == 'PC Port' %}is-active{% endif %}" href="/museum?category=PC%20Port">PC Port</a>
-        <a class="museum-filter-chip {% if category == 'Steam' %}is-active{% endif %}" href="/museum?category=Steam">Steam</a>
-        <a class="museum-filter-chip {% if category == 'Manual' %}is-active{% endif %}" href="/museum?category=Manual">Manual</a>
-      </div>
-      <select id="librarySort" class="select-input museum-sort-select" aria-label="Sort museum">
-        <option value="title" {% if sort == 'title' %}selected{% endif %}>Title A–Z</option>
-        <option value="size" {% if sort == 'size' %}selected{% endif %}>File Size</option>
-        <option value="scanned" {% if sort == 'scanned' %}selected{% endif %}>Last Scanned</option>
-        <option value="added" {% if sort == 'added' %}selected{% endif %}>Recently Added</option>
-      </select>
-    </div>
+    <form class="museum-library-filter-row" method="get" action="/museum" aria-label="Museum filters">
+      {% if attention %}<input type="hidden" name="attention" value="1">{% endif %}
+      <label class="museum-filter-select-wrap">
+        <span>Platform</span>
+        <select class="select-input museum-filter-select" name="platform" onchange="this.form.submit()">
+          <option value="All Platforms">All Platforms</option>
+          {% for item in platforms %}<option value="{{ item }}" {% if platform == item %}selected{% endif %}>{{ item }}</option>{% endfor %}
+        </select>
+      </label>
+      <label class="museum-filter-select-wrap">
+        <span>Genre</span>
+        <select class="select-input museum-filter-select" name="genre" onchange="this.form.submit()">
+          <option value="All Genres">All Genres</option>
+          {% for item in genres %}<option value="{{ item }}" {% if genre == item %}selected{% endif %}>{{ item }}</option>{% endfor %}
+        </select>
+      </label>
+      <label class="museum-filter-select-wrap">
+        <span>Category</span>
+        <select class="select-input museum-filter-select" name="category" onchange="this.form.submit()">
+          <option value="All Games">All Categories</option>
+          {% for item in categories %}<option value="{{ item }}" {% if category == item %}selected{% endif %}>{{ item }}</option>{% endfor %}
+        </select>
+      </label>
+      <label class="museum-filter-select-wrap museum-sort-wrap">
+        <span>Sort</span>
+        <select id="librarySort" class="select-input museum-sort-select" name="sort" aria-label="Sort museum">
+          <option value="title" {% if sort == 'title' %}selected{% endif %}>Title A–Z</option>
+          <option value="size" {% if sort == 'size' %}selected{% endif %}>File Size</option>
+          <option value="scanned" {% if sort == 'scanned' %}selected{% endif %}>Last Scanned</option>
+          <option value="added" {% if sort == 'added' %}selected{% endif %}>Recently Added</option>
+        </select>
+      </label>
+    </form>
   </header>
 
   {% if attention %}

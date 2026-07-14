@@ -26,6 +26,8 @@ def library():
     q = request.args.get('q','').strip()
     sort = request.args.get('sort','title')
     category = request.args.get('category','All Games')
+    platform = request.args.get('platform','All Platforms').strip() or 'All Platforms'
+    genre = request.args.get('genre','All Genres').strip() or 'All Genres'
     attention = request.args.get('attention','').strip().lower() in ('1','true','yes','on')
     where=[]; params=[]
     if q:
@@ -34,6 +36,10 @@ def library():
         params += [like] * len(SEARCH_FIELDS)
     if category and category != 'All Games':
         where.append('category = ?'); params.append(category)
+    if platform and platform != 'All Platforms':
+        where.append('platform = ?'); params.append(platform)
+    if genre and genre != 'All Genres':
+        where.append('genre LIKE ?'); params.append(f'%{genre}%')
     if attention:
         where.append("(COALESCE(preservation_score, 0) < 80 OR COALESCE(preservation_badge, '') NOT IN ('Archive Ready', 'Complete'))")
     order = 'title COLLATE NOCASE ASC'
@@ -45,10 +51,21 @@ def library():
     sql += f' ORDER BY {order}'
     conn=get_connection(); games=conn.execute(sql, params).fetchall()
     cats, category_counts = _category_counts(conn)
+    platform_rows = conn.execute("SELECT DISTINCT TRIM(platform) platform FROM games WHERE TRIM(COALESCE(platform,'')) != '' ORDER BY platform COLLATE NOCASE").fetchall()
+    genre_rows = conn.execute("SELECT DISTINCT TRIM(genre) genre FROM games WHERE TRIM(COALESCE(genre,'')) != '' ORDER BY genre COLLATE NOCASE").fetchall()
+    platforms = [row['platform'] for row in platform_rows if row['platform']]
+    genre_values = set()
+    for row in genre_rows:
+        for item in str(row['genre'] or '').replace(';', ',').replace('|', ',').split(','):
+            item = item.strip()
+            if item:
+                genre_values.add(item)
+    genres = sorted(genre_values, key=str.casefold)
+    categories = sorted({(row['category'] or 'Unsorted').strip() for row in cats if (row['category'] or '').strip()}, key=str.casefold)
     total_count=conn.execute("SELECT COUNT(*) count FROM games").fetchone()['count']
     attention_count=conn.execute("SELECT COUNT(*) count FROM games WHERE COALESCE(preservation_score, 0) < 80 OR COALESCE(preservation_badge, '') NOT IN ('Archive Ready', 'Complete')").fetchone()['count']
     conn.close()
-    return render_template('library.html', games=games, q=q, sort=sort, active_category=category, category=category, categories=cats, category_counts=category_counts, total_count=total_count, attention=attention, attention_count=attention_count)
+    return render_template('library.html', games=games, q=q, sort=sort, active_category=category, category=category, platform=platform, genre=genre, categories=categories, platforms=platforms, genres=genres, category_counts=category_counts, total_count=total_count, attention=attention, attention_count=attention_count)
 
 
 @library_bp.route('/games/add', methods=['GET','POST'])

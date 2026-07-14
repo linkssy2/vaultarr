@@ -1,6 +1,6 @@
-# Vaultarr 2.0.0 Alpha 3
+# Vaultarr 2.0.0 Alpha 4
 
-> Experimental release: **Vaultarr 2.0.0 Alpha 3 — Home Action Clarity**
+> Experimental release: **Vaultarr 2.0.0 Alpha 4 — Museum Filter Clarity**
 
 
 ## Alpha 2 interface refinement

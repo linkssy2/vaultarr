@@ -69,3 +69,21 @@
 .poster-grid.is-list-view{grid-template-columns:1fr!important;gap:10px!important}.poster-grid.is-list-view .focus-card-trigger{width:100%}.poster-grid.is-list-view .poster-card{display:grid;grid-template-columns:92px minmax(0,1fr);min-height:112px;height:auto;transform:none!important}.poster-grid.is-list-view .poster-cover,.poster-grid.is-list-view .poster-placeholder{width:92px;height:112px;aspect-ratio:auto;border-radius:12px 0 0 12px}.poster-grid.is-list-view .poster-info{position:relative;display:flex;flex-direction:column;justify-content:center;min-height:112px;transform:none!important}
 @media(max-width:1080px){.museum-library-title-row{align-items:flex-start;flex-direction:column}.museum-library-primary-tools{width:100%;justify-content:flex-start}.museum-header-search{width:min(420px,100%);flex:1}.museum-game-count{margin-left:auto}}
 @media(max-width:720px){.museum-library-primary-tools{flex-wrap:wrap}.museum-game-count{order:3;margin:0}.museum-header-search{order:1;flex-basis:100%}.museum-view-toggle{order:2}.museum-add-game{order:2}.museum-library-filter-row{align-items:stretch;flex-direction:column}.museum-sort-select{width:100%}}
+
+/* Alpha 4: compact Plex-style Museum header and dropdown filters */
+.museum-library-header{gap:12px;margin-bottom:18px;padding-bottom:14px}
+.museum-library-heading-row{display:flex;align-items:flex-end;justify-content:space-between;gap:22px;min-width:0}
+.museum-library-title{gap:7px}.museum-library-title h1{font-size:clamp(28px,2.25vw,36px)}
+.museum-library-primary-tools{align-items:center;gap:9px}
+.museum-game-count{font-size:12px}
+.museum-header-search{width:clamp(230px,25vw,340px)}
+.museum-header-search .search-input,.museum-add-game{height:38px;min-height:38px}
+.museum-view-toggle{height:38px;padding:3px}.museum-view-button{height:30px;min-height:30px;width:32px}
+.museum-library-filter-row{display:flex;align-items:flex-end;justify-content:flex-start;gap:10px}
+.museum-filter-select-wrap{display:grid;gap:5px;min-width:150px}
+.museum-filter-select-wrap>span{color:#7183a0;font-size:10px;font-weight:750;letter-spacing:.08em;text-transform:uppercase}
+.museum-filter-select,.museum-sort-select{width:100%;height:36px;min-height:36px;padding-top:0;padding-bottom:0;font-size:12px}
+.museum-sort-wrap{margin-left:auto;min-width:150px}
+@media(max-width:1180px){.museum-library-heading-row{align-items:flex-start;flex-direction:column}.museum-library-primary-tools{width:100%;justify-content:flex-start}.museum-header-search{flex:1;width:auto}.museum-game-count{margin-left:auto}}
+@media(max-width:760px){.museum-library-primary-tools{flex-wrap:wrap}.museum-header-search{order:1;flex-basis:100%}.museum-game-count{order:2;margin:0}.museum-view-toggle,.museum-add-game{order:3}.museum-library-filter-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:end}.museum-filter-select-wrap,.museum-sort-wrap{min-width:0;margin-left:0}}
+@media(max-width:480px){.museum-library-filter-row{grid-template-columns:1fr}}
