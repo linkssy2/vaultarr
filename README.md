@@ -1,6 +1,6 @@
-# Vaultarr 2.0.0 Alpha 5
+# Vaultarr 2.0.0 Alpha 6
 
-> Experimental release: **Vaultarr 2.0.0 Alpha 5 — Museum Filter Stability**
+> Experimental release: **Vaultarr 2.0.0 Alpha 6 — Museum Filter Stability**
 
 
 ## Alpha 2 interface refinement

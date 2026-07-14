@@ -5,14 +5,12 @@ collections_bp = Blueprint('collections', __name__)
 
 @collections_bp.route('/collections')
 def collections():
-    groups = build_collections(limit=12)
-    total = sum(len(groups[key]) for key in groups)
-    return render_template('collections.html', groups=groups, total_collections=total)
+    return redirect('/museum?view=collections')
 
 @collections_bp.route('/collections/create', methods=['POST'])
 def create_collection():
     create_custom_collection(request.form.get('name', ''), request.form.get('description', ''))
-    return redirect(url_for('collections.collections'))
+    return redirect('/museum?view=collections')
 
 @collections_bp.route('/api/collections/auto-classify', methods=['POST'])
 def api_auto_classify():

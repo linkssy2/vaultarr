@@ -6,22 +6,16 @@
     <div class="museum-library-heading-row">
       <div class="museum-library-title">
         <h1>{% if attention %}Improve Your Museum{% else %}Museum{% endif %}</h1>
+        <span class="museum-title-count">{{ total_count or games|length }} game{% if (total_count or games|length) != 1 %}s{% endif %}</span>
         <nav class="museum-library-tabs" aria-label="Museum views">
-          <a class="{% if not attention and sort != 'added' %}is-active{% endif %}" href="/museum">All Games</a>
+          <a class="{% if museum_view == 'games' and not attention and sort != 'added' %}is-active{% endif %}" href="/museum">All Games</a>
+          <a class="{% if museum_view == 'collections' %}is-active{% endif %}" href="/museum?view=collections">Collections</a>
           <a class="{% if attention %}is-active{% endif %}" href="/museum?attention=1">Needs Attention</a>
-          <a class="{% if not attention and sort == 'added' %}is-active{% endif %}" href="/museum?sort=added">Recently Added</a>
-          <a href="/collections">Collections</a>
+          <a class="{% if museum_view == 'games' and not attention and sort == 'added' %}is-active{% endif %}" href="/museum?sort=added">Recently Added</a>
         </nav>
       </div>
 
       <div class="museum-library-primary-tools">
-        <div class="museum-view-summary" aria-label="Museum result count and layout">
-          <span class="museum-game-count">{{ total_count or games|length }} games</span>
-          <div class="museum-view-toggle" role="group" aria-label="Museum layout">
-          <button class="museum-view-button is-active" id="museumGridView" type="button" aria-label="Grid view" aria-pressed="true">▦</button>
-            <button class="museum-view-button" id="museumListView" type="button" aria-label="List view" aria-pressed="false">☷</button>
-          </div>
-        </div>
         <div class="search-wrap museum-header-search">
           <input id="librarySearch" class="search-input" type="text" placeholder="Search your museum…" value="{{ q or '' }}" autocomplete="off">
           <button id="clearLibrarySearch" class="clear-search" type="button" aria-label="Clear search">×</button>
@@ -30,6 +24,7 @@
       </div>
     </div>
 
+    {% if museum_view == 'games' %}
     <form class="museum-library-filter-row" id="museumFilterForm" method="get" action="/museum" aria-label="Museum filters">
       {% if attention %}<input type="hidden" name="attention" value="1">{% endif %}
       <label class="museum-filter-select-wrap">
@@ -63,54 +58,55 @@
         </select>
       </label>
     </form>
+    {% endif %}
   </header>
 
-  {% if attention %}
-  <section class="museum-attention-banner">
-    <div>
-      <span class="eyebrow">Museum Care</span>
-      <h2>{{ games|length }} game{% if games|length != 1 %}s{% endif %} need attention</h2>
-      <p class="muted">Open a game and use its Preservation tab to see exactly what is missing.</p>
-    </div>
-    <a class="button-link secondary compact" href="/museum">Show Complete Museum</a>
-  </section>
-  {% endif %}
-
-
-
-  <div class="library-search-status" id="librarySearchStatus">
-    <span id="librarySearchCount">{{ games|length }} game{% if games|length != 1 %}s{% endif %}</span>
-    <span class="muted" id="librarySearchHint">Search title, developer, publisher, genre, tags, category, path, notes, and descriptions.</span>
-  </div>
-
-  {% if games %}
-    <section class="vault-shelf single-grid-shelf">
-      <div class="shelf-header">
-        <div>
-          <h2>{% if attention %}Games Needing Attention{% elif category and category != 'All Games' %}{{ category }}{% else %}All Games{% endif %}</h2>
-          <p class="muted">Click a game box to pull it from the shelf.</p>
-        </div>
-      </div>
-
-      <div class="game-grid poster-grid focus-grid" id="libraryGrid">
-        {% for game in games %}
-          {% include "_game_card.html" %}
-        {% endfor %}
-      </div>
-
-      <div class="empty-state hidden" id="libraryNoResults">
-        <h2>No games match that search.</h2>
-        <p>Try searching by title, developer, publisher, genre, category, tag, notes, path, or metadata description.</p>
-        <a class="button-link" href="/games/add">Add Game Manually</a>
-      </div>
-    </section>
+  {% if museum_view == 'collections' %}
+    {% include "_museum_collections.html" %}
   {% else %}
-    <div class="empty-state">
-      <h2>No games found.</h2>
-      <p>Add a library in Settings, scan it, or add a game manually.</p>
-      <a class="button-link" href="/settings">Go to Settings</a>
-      <a class="button-link secondary" href="/games/add">Add Game Manually</a>
+    {% if attention %}
+    <section class="museum-attention-banner">
+      <div>
+        <span class="eyebrow">Museum Care</span>
+        <h2>{{ games|length }} game{% if games|length != 1 %}s{% endif %} need attention</h2>
+        <p class="muted">Open a game and use its Preservation tab to see exactly what is missing.</p>
+      </div>
+      <a class="button-link secondary compact" href="/museum">Show Complete Museum</a>
+    </section>
+    {% endif %}
+
+    <div class="library-search-status" id="librarySearchStatus">
+      <span id="librarySearchCount">{{ games|length }} game{% if games|length != 1 %}s{% endif %}</span>
+      <span class="muted" id="librarySearchHint">Search title, developer, publisher, genre, tags, category, path, notes, and descriptions.</span>
     </div>
+
+    {% if games %}
+      <section class="vault-shelf single-grid-shelf">
+        <div class="shelf-header">
+          <div>
+            <h2>{% if attention %}Games Needing Attention{% elif category and category != 'All Games' %}{{ category }}{% else %}All Games{% endif %}</h2>
+            <p class="muted">Click a game box to pull it from the shelf.</p>
+          </div>
+        </div>
+
+        <div class="game-grid poster-grid focus-grid" id="libraryGrid">
+          {% for game in games %}{% include "_game_card.html" %}{% endfor %}
+        </div>
+
+        <div class="empty-state hidden" id="libraryNoResults">
+          <h2>No games match that search.</h2>
+          <p>Try searching by title, developer, publisher, genre, category, tag, notes, path, or game information.</p>
+          <a class="button-link" href="/games/add">Add Game Manually</a>
+        </div>
+      </section>
+    {% else %}
+      <div class="empty-state">
+        <h2>No games found.</h2>
+        <p>Add a game folder in Settings, scan it, or add a game manually.</p>
+        <a class="button-link" href="/settings">Go to Settings</a>
+        <a class="button-link secondary" href="/games/add">Add Game Manually</a>
+      </div>
+    {% endif %}
   {% endif %}
 </div>
 {% endblock %}

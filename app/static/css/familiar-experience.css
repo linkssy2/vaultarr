@@ -140,3 +140,22 @@
 @media(max-width:760px){
   .museum-view-summary{order:2;margin-left:0}
 }
+
+
+/* Alpha 6 — focused Museum cleanup and embedded Collections */
+.museum-library-title{position:relative}
+.museum-title-count{display:block;color:#7487a5;font-size:12px;line-height:1;margin-top:-1px}
+.museum-library-primary-tools{margin-left:auto}
+.museum-library-heading-row{align-items:flex-end}
+.museum-library-header .museum-view-summary,
+.museum-library-header .museum-view-toggle,
+.museum-library-header .museum-view-button{display:none!important}
+.museum-collections-view{display:grid;gap:22px}
+.museum-collections-actions{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:18px 20px;border-radius:16px}
+.museum-collections-actions h2{margin:3px 0 4px;font-size:20px}
+.museum-collections-actions p{margin:0}
+@media(max-width:760px){
+  .museum-library-heading-row{align-items:stretch}
+  .museum-library-primary-tools{margin-left:0}
+  .museum-collections-actions{align-items:flex-start;flex-direction:column}
+}

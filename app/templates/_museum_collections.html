@@ -1,0 +1,115 @@
+{% macro shelf_card(game) -%}
+  <button class="game-card-link shelf-card focus-card-trigger" type="button" data-game-id="{{ game.id }}">
+    <article class="poster-card compact">
+      <div class="poster-art">
+        <div class="poster-gloss"></div>
+        {% if game.cover_path %}
+          <img loading="lazy" decoding="async" class="poster-cover" src="/covers/{{ game.cover_path }}?v={{ game.updated_at or game.last_scanned or game.id }}" alt="{{ game.title }}">
+        {% else %}
+          <div class="poster-placeholder">🎮</div>
+        {% endif %}
+      </div>
+      <div class="poster-info title-only glass-label"><h3>{{ game.title }}</h3></div>
+    </article>
+  </button>
+{%- endmacro %}
+
+{% macro collection_section(title, subtitle, shelves, type_class) -%}
+  <section class="collection-group {{ type_class }}">
+    <div class="collection-group-head">
+      <div>
+        <p class="eyebrow">{{ title }}</p>
+        <h2>{{ subtitle }}</h2>
+      </div>
+      <span>{{ shelves|length }} shelf{% if shelves|length != 1 %}s{% endif %}</span>
+    </div>
+
+    {% for shelf in shelves %}
+      <section class="shelf vault-shelf vaultos-shelf smart-shelf alive-panel">
+        <div class="shelf-header">
+          <div>
+            <p class="eyebrow">{{ shelf.label }}</p>
+            <h2>{{ shelf.name }}</h2>
+            <p class="muted">{{ shelf.description }} · {{ shelf.count }} game{% if shelf.count != 1 %}s{% endif %}</p>
+          </div>
+          <a class="shelf-link" href="/museum?category={{ shelf.name|urlencode }}">View all →</a>
+        </div>
+        <div class="shelf-row focus-grid">
+          {% for game in shelf.games %}
+            {{ shelf_card(game) }}
+          {% else %}
+            <div class="empty-mini">No games matched yet.</div>
+          {% endfor %}
+        </div>
+      </section>
+    {% else %}
+      <section class="empty-state alive-panel compact-empty">
+        <h3>No {{ title|lower }} yet.</h3>
+        <p>Scan game information or create a collection to populate this area.</p>
+      </section>
+    {% endfor %}
+  </section>
+{%- endmacro %}
+
+<div class="museum-collections-view" id="museumCollectionsView">
+  <section class="museum-collections-actions alive-panel">
+    <div>
+      <p class="eyebrow">Collections</p>
+      <h2>Organized shelves inside your Museum</h2>
+      <p class="muted">Smart and personal collections stay within the same Museum view.</p>
+    </div>
+    <div class="hero-actions slim-actions">
+      <button class="button-link secondary compact" id="autoClassifyCollections" type="button">Auto Categorize</button>
+      <button class="button-link compact" type="button" data-toggle-target="createCollectionPanel">Create Collection</button>
+    </div>
+  </section>
+
+  <section class="alive-panel create-collection-panel" id="createCollectionPanel" hidden>
+    <div class="panel-heading flush-heading"><div><p class="eyebrow">Personal Collection</p><h2>Create a shelf</h2></div></div>
+    <form action="/collections/create" method="post" class="collection-create-form">
+      <label>Collection Name <input name="name" placeholder="LAN Party, Childhood Favorites, To Replay..." required></label>
+      <label>Description <input name="description" placeholder="Optional note about this collection"></label>
+      <button class="button-link" type="submit">Create Collection</button>
+    </form>
+  </section>
+
+  {{ collection_section('Smart Collections', 'Automatically organized by Museum intelligence', collection_groups.smart, 'smart-group') }}
+  {{ collection_section('Personal Collections', 'Shelves you control', collection_groups.user, 'user-group') }}
+  {{ collection_section('Milestone Collections', 'Progress signals across your museum', collection_groups.milestone, 'milestone-group') }}
+</div>
+
+<script>
+(() => {
+  document.querySelectorAll('[data-toggle-target]').forEach((button) => {
+    if (button.dataset.collectionToggleBound === '1') return;
+    button.dataset.collectionToggleBound = '1';
+    button.addEventListener('click', () => {
+      const panel = document.getElementById(button.dataset.toggleTarget);
+      if (panel) panel.hidden = !panel.hidden;
+    });
+  });
+
+  const autoButton = document.getElementById('autoClassifyCollections');
+  if (autoButton && autoButton.dataset.collectionAutoBound !== '1') {
+    autoButton.dataset.collectionAutoBound = '1';
+    autoButton.addEventListener('click', async () => {
+      const original = autoButton.textContent;
+      autoButton.textContent = 'Classifying…';
+      autoButton.disabled = true;
+      try {
+        const response = await fetch('/api/collections/auto-classify', { method: 'POST' });
+        const data = await response.json();
+        if (!response.ok || !data.success) throw new Error(data.message || 'Classification failed');
+        autoButton.textContent = `Classified ${data.classified} games`;
+        setTimeout(() => {
+          if (window.VaultarrSmoothNavigate) window.VaultarrSmoothNavigate('/museum?view=collections', true, { source: 'collections-refresh' });
+          else location.assign('/museum?view=collections');
+        }, 500);
+      } catch (error) {
+        autoButton.textContent = 'Classification failed';
+        setTimeout(() => { autoButton.textContent = original; autoButton.disabled = false; }, 1300);
+      }
+    });
+  }
+})();
+</script>

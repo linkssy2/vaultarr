@@ -1,4 +1,16 @@
-## 2.0.0 Alpha 5
+# Vaultarr Changelog
+
+## 2.0.0 Alpha 6 — Museum Collections Merge
+
+- Built from the working Alpha 5 baseline supplied by the user.
+- Removed the Museum game-count/grid-list control block.
+- Moved the game count beneath the Museum title.
+- Added Collections as an in-Museum tab.
+- Removed the standalone Collections sidebar entry.
+- Kept search, filters, Add Game, floating cards, hover, expansion, scan, Home, Discover, Time Capsule, and Milestones unchanged.
+- Kept `/collections` as a compatibility redirect to `/museum?view=collections`.
+
+## 2.0.0 Alpha 6
 
 - Compact Plex-style Museum header sizing.
 - Added functional Platform, Genre, Category, and Sort dropdown filters.
