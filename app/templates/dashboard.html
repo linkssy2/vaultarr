@@ -1,77 +1,73 @@
 {% extends "base.html" %}
 {% block content %}
-<section class="museum-home">
-  <section class="museum-hero alive-panel">
-    <div class="museum-hero-copy">
-      <p class="eyebrow">Vaultarr 1.6.1 · Museum Experience</p>
-      <p class="greeting">{{ stats.hero.accent }}</p>
-      <h1>{{ stats.hero.title|replace('vault', 'museum')|replace('Vault', 'Museum') }}</h1>
-      <p class="muted hero-copy">Your collection is organized, enriched, and preserved in one calm place.</p>
-      <div class="hero-actions slim-actions">
-        <a class="button-link" href="/museum">Enter Museum →</a>
-        <a class="button-link secondary" href="/discovery">Discover Games</a>
-      </div>
+<section class="familiar-home">
+  <header class="familiar-welcome">
+    <div>
+      <p class="eyebrow">Your digital game museum</p>
+      <h1>Welcome back.</h1>
+      <p class="muted">Browse your collection while Vaultarr quietly keeps each exhibit organized and complete.</p>
     </div>
+    <a class="button-link familiar-primary" href="/museum">Open Museum</a>
+  </header>
 
-    <div class="hero-vault-window home-vault-window orbital-vault vault-cosmos" aria-hidden="true">
-      <div class="cosmos-nebula"></div>
-      <div class="cosmos-comet"></div>
+  <section class="curator-spotlight">
+    <div class="curator-core orbital-vault vault-cosmos" aria-label="Museum Curator status">
+      <div class="cosmos-nebula"></div><div class="cosmos-comet"></div>
       <div class="orbital-stars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
       <div class="orbital-field">
         <div class="orbit orbit-one"><span class="node node-metadata">◇</span></div>
         <div class="orbit orbit-two"><span class="node node-gallery">▣</span></div>
         <div class="orbit orbit-three"><span class="node node-manuals">▤</span></div>
         <div class="orbit orbit-four"><span class="node node-preservation">⌁</span></div>
-        <div class="orbit orbit-five"><span class="node node-discovery">✦</span></div>
         <div class="vault-door orbital-core"><span>V</span></div>
       </div>
-      <div class="orbital-status">
-        <span>Museum completeness</span>
-        <strong>{{ stats.health_score }}%</strong>
-        <small>{{ stats.open_tasks }} item{% if stats.open_tasks != 1 %}s{% endif %} can still be improved</small>
-        <div class="orbital-progress"><i style="width: {{ stats.health_score }}%;"></i></div>
+    </div>
+    <div class="curator-message">
+      <p class="eyebrow">Museum Curator</p>
+      {% if stats.open_tasks == 0 %}
+      <h2>Your museum is ready to explore.</h2>
+      <p>Everything currently available has been prepared. Enjoy the collection or discover something new.</p>
+      {% else %}
+      <h2>Your Curator found {{ stats.open_tasks }} way{% if stats.open_tasks != 1 %}s{% endif %} to improve the museum.</h2>
+      <p>Missing artwork, information, manuals, and local-file checks are grouped into one simple review.</p>
+      {% endif %}
+      <div class="curator-actions">
+        <a class="button-link" href="/museum?attention=1">Continue Curating</a>
+        <a class="button-link secondary" href="/discovery">Discover Games</a>
       </div>
+    </div>
+    <div class="museum-health-ring" style="--health: {{ stats.health_score }}">
+      <strong>{{ stats.health_score }}%</strong><span>Museum health</span>
     </div>
   </section>
 
-  <section class="museum-summary-grid">
-    <a class="museum-stat-card alive-panel" href="/museum"><span>In your museum</span><strong>{{ stats.game_count }}</strong><small>games cataloged</small></a>
-    <a class="museum-stat-card alive-panel" href="/museum"><span>Collection completeness</span><strong>{{ stats.health_score }}%</strong><small>{{ stats.open_tasks }} opportunities to improve</small></a>
-    <a class="museum-stat-card alive-panel" href="/archive"><span>Time Capsule</span><strong>{{ stats.category_count }}</strong><small>collection paths to explore</small></a>
-    <a class="museum-stat-card alive-panel" href="/experience"><span>Milestones</span><strong>★</strong><small>track your curator progress</small></a>
+  {% if stats.continue_browsing %}
+  <section class="familiar-shelf">
+    <div class="familiar-shelf-head"><div><p class="eyebrow">Pick up where you left off</p><h2>Continue Browsing</h2></div><a href="/museum">View museum</a></div>
+    <a class="continue-card" href="{{ stats.continue_browsing.url }}">
+      <div class="continue-art">{% if stats.continue_browsing.cover_path %}<img loading="lazy" decoding="async" src="/covers/{{ stats.continue_browsing.cover_path }}" alt="{{ stats.continue_browsing.title }}">{% else %}<span>V</span>{% endif %}</div>
+      <div><strong>{{ stats.continue_browsing.title }}</strong><small>{{ stats.continue_browsing.year or stats.continue_browsing.label }}</small><p>Open the museum record and continue exploring.</p></div>
+      <span class="continue-arrow">›</span>
+    </a>
   </section>
+  {% endif %}
 
-  <section class="museum-panel alive-panel">
-    <div class="museum-panel-head"><div><p class="eyebrow">Recently Added</p><h2>New exhibits</h2></div><a href="/museum?sort=added">View all →</a></div>
-    <div class="museum-recent-grid">
-      {% for game in stats.recently_added[:6] %}
-      <a class="museum-mini-exhibit" href="/games/{{ game.id }}">
-        {% if game.cover_path %}<img loading="lazy" decoding="async" src="/covers/{{ game.cover_path }}?v={{ game.updated_at or game.id }}" alt="{{ game.title }}">{% else %}<span class="museum-mini-placeholder">V</span>{% endif %}
-        <strong>{{ game.title }}</strong><small>{{ game.release_year or game.category or 'Museum record' }}</small>
+  <section class="familiar-shelf">
+    <div class="familiar-shelf-head"><div><p class="eyebrow">Freshly cataloged</p><h2>Recently Added</h2></div><a href="/museum?sort=added">View all</a></div>
+    <div class="familiar-poster-row">
+      {% for game in stats.recently_added[:8] %}
+      <a class="familiar-poster" href="/games/{{ game.id }}">
+        <div>{% if game.cover_path %}<img loading="lazy" decoding="async" src="/covers/{{ game.cover_path }}?v={{ game.updated_at or game.id }}" alt="{{ game.title }}">{% else %}<span>V</span>{% endif %}</div>
+        <strong>{{ game.title }}</strong><small>{{ game.release_year or game.category or 'Museum exhibit' }}</small>
       </a>
       {% else %}<div class="museum-empty-copy"><strong>Your first exhibit is waiting.</strong><span>Add a game folder or discover a title to begin.</span></div>{% endfor %}
     </div>
   </section>
 
-  <section class="museum-two-column">
-    <section class="museum-panel alive-panel">
-      <div class="museum-panel-head"><div><p class="eyebrow">Museum Care</p><h2>Keep your collection complete</h2></div><a href="/museum">Open museum →</a></div>
-      <p class="muted">Run a Museum Scan whenever you add or change game folders. Vaultarr checks the collection and prepares incomplete records quietly in the background.</p>
-    </section>
-    <section class="museum-panel alive-panel">
-      <div class="museum-panel-head"><div><p class="eyebrow">Next Milestone</p><h2>Keep building your museum</h2></div><a href="/experience">View milestones →</a></div>
-      <div class="museum-milestone-preview"><span class="milestone-star">★</span><div><strong>{{ stats.game_count }} games preserved</strong><small>Your achievements remain visible in Standard Mode.</small></div></div>
-    </section>
-  </section>
-
-  <section class="museum-panel museum-health-panel alive-panel">
-    <div class="museum-panel-head"><div><p class="eyebrow">Collection Completeness</p><h2>What Vaultarr is caring for</h2></div><span class="integrity-status">{% if stats.health_score >= 85 %}Excellent{% elif stats.health_score >= 70 %}Good{% else %}Improving{% endif %}</span></div>
-    <div class="museum-health-bars">
-      <a href="/museum"><span>Game information</span><i><b style="width:{{ stats.metadata_score }}%"></b></i><strong>{{ stats.metadata_score }}%</strong></a>
-      <a href="/museum"><span>Artwork</span><i><b style="width:{{ stats.artwork_score }}%"></b></i><strong>{{ stats.artwork_score }}%</strong></a>
-      <a href="/museum"><span>Manuals</span><i><b style="width:{{ stats.documentation_score }}%"></b></i><strong>{{ stats.documentation_score }}%</strong></a>
-      <a href="/museum"><span>Local files</span><i><b style="width:{{ stats.preservation_score }}%"></b></i><strong>{{ stats.preservation_score }}%</strong></a>
-    </div>
+  <section class="home-lower-grid">
+    <a class="home-story-card" href="/museum?attention=1"><span>Continue curating</span><strong>{{ stats.open_tasks }} item{% if stats.open_tasks != 1 %}s{% endif %} need attention</strong><small>Review everything in one focused view.</small></a>
+    <a class="home-story-card" href="/archive"><span>Time Capsule</span><strong>Look back through your museum</strong><small>Rediscover eras, years, and old favorites.</small></a>
+    <a class="home-story-card" href="/experience"><span>Next milestone</span><strong>{{ stats.game_count }} games in your museum</strong><small>See what achievement is closest.</small></a>
   </section>
 </section>
 {% endblock %}

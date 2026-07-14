@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-  <title>Vaultarr 1.8.4</title>
+  <title>Vaultarr 2.0 Experimental</title>
   {% if theme.dark_reader_compat %}<meta name="darkreader-lock">{% endif %}
   <meta name="theme-color" content="#3b82f6">
   <link rel="icon" href="/static/icons/favicon.ico?v=1.7.6" sizes="any">
@@ -36,8 +36,9 @@
   <link rel="stylesheet" href="/static/css/readiness.css">
   <link rel="stylesheet" href="/static/css/responsive.css">
   <link rel="stylesheet" href="/static/css/controls.css?v=1.7.6">
-  <link rel="stylesheet" href="/static/css/sidebar-scan-control.css?v=1.8.4-reversible-motion">
-  <link rel="stylesheet" href="/static/css/interface-cohesion.css?v=1.8.4">
+  <link rel="stylesheet" href="/static/css/sidebar-scan-control.css?v=2.0.0-alpha.1">
+  <link rel="stylesheet" href="/static/css/interface-cohesion.css?v=2.0.0-alpha.1">
+  <link rel="stylesheet" href="/static/css/familiar-experience.css?v=2.0.0-alpha.1">
   <style id="vaultarr-theme">{{ theme_css|safe }}</style>
 </head>
 <body class="vaultos {{ 'advanced-mode' if ui_settings.advanced_mode else 'standard-mode' }} {% if theme.dark_reader_compat %}dark-reader-compat{% endif %}">
@@ -51,15 +52,15 @@
 
     <nav class="nav vault-nav vault-nav-cohesive">
       <span class="nav-section-label">Museum</span>
-      <a href="/"><span class="nav-glyph">⌂</span><span>Home</span></a>
-      <a href="/museum"><span class="nav-glyph">▣</span><span>Museum</span></a>
-      <a href="/discovery"><span class="nav-glyph">✦</span><span>Discover</span></a>
-      <a href="/archive"><span class="nav-glyph">◈</span><span>Time Capsule</span></a>
-      <a href="/experience"><span class="nav-glyph">★</span><span>Milestones</span></a>
+      <a class="{% if request.path == '/' %}is-active{% endif %}" href="/"><span class="nav-glyph">⌂</span><span>Home</span></a>
+      <a class="{% if request.path.startswith('/museum') or request.path.startswith('/library') %}is-active{% endif %}" href="/museum"><span class="nav-glyph">▣</span><span>Museum</span></a>
+      <a class="{% if request.path.startswith('/discovery') %}is-active{% endif %}" href="/discovery"><span class="nav-glyph">✦</span><span>Discover</span></a>
+      <a class="{% if request.path.startswith('/archive') %}is-active{% endif %}" href="/archive"><span class="nav-glyph">◈</span><span>Time Capsule</span></a>
+      <a class="{% if request.path.startswith('/experience') %}is-active{% endif %}" href="/experience"><span class="nav-glyph">★</span><span>Milestones</span></a>
 
       <span class="nav-section-label advanced-only">Advanced</span>
       <a class="advanced-only" href="/collections"><span class="nav-glyph">▤</span><span>Collections</span></a>
-      <a href="/settings"><span class="nav-glyph">⚙</span><span>Settings</span></a>
+      <a class="{% if request.path.startswith('/settings') %}is-active{% endif %}" href="/settings"><span class="nav-glyph">⚙</span><span>Settings</span></a>
     </nav>
 
 
@@ -89,7 +90,7 @@
     <div class="sidebar-footer">
       <div class="mini-stat vault-build-card">
         <span>Current build</span>
-        <strong>Vaultarr 1.8.4</strong>
+        <strong>Vaultarr 2.0 Alpha</strong>
         <em></em>
       </div>
       {% if auth_enabled %}
@@ -606,7 +607,7 @@
   </dialog>
 
   <script src="/static/js/live-events.js?v=1.7.6"></script>
-  <script src="/static/js/museum-scan.js?v=1.8.4-reversible-motion"></script>
+  <script src="/static/js/museum-scan.js?v=2.0.0-alpha.1"></script>
   <script src="/static/js/library.js?v=1.7.6"></script>
   <script src="/static/js/focus-mode.js?v=1.7.6"></script>
   <script src="/static/js/performance-foundation.js?v=1.7.6"></script>
@@ -667,6 +668,6 @@
   <script src="/static/js/smooth-navigation.js?v=1.7.6"></script>
   <script src="/static/js/global-search.js?v=1.7.6"></script>
   <script src="/static/js/interaction-lifecycle.js?v=1.7.6"></script>
-  <script src="/static/js/interface-cohesion.js?v=1.8.4"></script>
+  <script src="/static/js/interface-cohesion.js?v=2.0.0-alpha.1"></script>
 </body>
 </html>

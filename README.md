@@ -1,6 +1,11 @@
-# Vaultarr 1.8.4
+# Vaultarr 2.0.0 Alpha 1
 
-> Current release: **Vaultarr 1.8.4 — Interface Cohesion Audit**
+> Experimental release: **Vaultarr 2.0.0 Alpha 1 — Familiar Museum Experience**
+
+
+## Experimental interface
+
+This branch tests a simpler, Plex-like museum experience while retaining Vaultarr’s identity. Home is now a calm museum lobby centered on the animated Blue V Orbital Core, familiar content shelves, and plain-language Curator updates. The stable 1.8.4 interaction baseline remains protected.
 
 Vaultarr is a self-hosted digital game museum. Point it at your game folders, let the background preparation system enrich the records, and spend your time browsing the collection rather than managing providers and queues.
 

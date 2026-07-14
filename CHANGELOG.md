@@ -1,5 +1,15 @@
 # Changelog
 
+## 2.0.0-alpha.1 — Familiar Museum Experience
+
+- Redesigned Home as a familiar media-style museum lobby.
+- Preserved the animated Blue V Orbital Core as the Curator centerpiece.
+- Added Continue Browsing and Recently Added shelves.
+- Simplified Home language around stories rather than technical statistics.
+- Added clear active sidebar navigation.
+- Simplified Discover copy and museum-care links.
+- Kept the 1.8.4 protected interaction baseline intact.
+
 ## 1.8.4 — Interface Cohesion Audit
 
 - Audited every active page for consistent visual language and control sizing.
