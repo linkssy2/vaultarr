@@ -1,6 +1,15 @@
-# Vaultarr 2.0.0 Alpha 1
+# Vaultarr 2.0.0 Alpha 2
 
-> Experimental release: **Vaultarr 2.0.0 Alpha 1 — Familiar Museum Experience**
+> Experimental release: **Vaultarr 2.0.0 Alpha 2 — Home Action Clarity**
+
+
+## Alpha 2 interface refinement
+
+- Removes redundant Home links that all opened the Museum.
+- **Continue Curating** opens the Museum's Needs Attention view.
+- **Discover Games** remains the separate online-discovery action.
+- The Continue Browsing exhibit itself opens the selected game record.
+- Corrects Search Museum pill sizing, spacing, truncation, and shortcut alignment.
 
 
 ## Experimental interface

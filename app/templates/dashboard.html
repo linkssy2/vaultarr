@@ -7,7 +7,6 @@
       <h1>Welcome back.</h1>
       <p class="muted">Browse your collection while Vaultarr quietly keeps each exhibit organized and complete.</p>
     </div>
-    <a class="button-link familiar-primary" href="/museum">Open Museum</a>
   </header>
 
   <section class="curator-spotlight">
@@ -43,7 +42,7 @@
 
   {% if stats.continue_browsing %}
   <section class="familiar-shelf">
-    <div class="familiar-shelf-head"><div><p class="eyebrow">Pick up where you left off</p><h2>Continue Browsing</h2></div><a href="/museum">View museum</a></div>
+    <div class="familiar-shelf-head"><div><p class="eyebrow">Pick up where you left off</p><h2>Continue Browsing</h2></div></div>
     <a class="continue-card" href="{{ stats.continue_browsing.url }}">
       <div class="continue-art">{% if stats.continue_browsing.cover_path %}<img loading="lazy" decoding="async" src="/covers/{{ stats.continue_browsing.cover_path }}" alt="{{ stats.continue_browsing.title }}">{% else %}<span>V</span>{% endif %}</div>
       <div><strong>{{ stats.continue_browsing.title }}</strong><small>{{ stats.continue_browsing.year or stats.continue_browsing.label }}</small><p>Open the museum record and continue exploring.</p></div>

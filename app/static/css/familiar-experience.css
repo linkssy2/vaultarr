@@ -18,3 +18,34 @@
 .discovery-space .discovery-hero{min-height:245px}.discovery-space .discovery-hero h1{font-size:clamp(34px,4vw,52px)}.discovery-game-row{grid-auto-columns:minmax(145px,185px)}
 @media(max-width:1050px){.curator-spotlight{grid-template-columns:230px 1fr}.museum-health-ring{display:none}.home-lower-grid{grid-template-columns:1fr}.curator-core{min-height:220px}}
 @media(max-width:760px){.familiar-welcome{align-items:start;flex-direction:column}.curator-spotlight{grid-template-columns:1fr;padding:26px}.curator-core{min-height:190px}.curator-message{text-align:center}.curator-actions{justify-content:center}.continue-card{grid-template-columns:80px 1fr}.continue-art{width:80px}.continue-arrow{display:none}}
+
+
+/* Alpha 2 — clearer home actions and lower-sidebar utility cohesion */
+.familiar-welcome{align-items:flex-start}
+.familiar-welcome>div{max-width:860px}
+.sidebar.vaultos-sidebar .sidebar-utility-stack{gap:18px!important}
+.sidebar.vaultos-sidebar .sidebar-search-shell{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  align-items:center!important;
+  column-gap:10px!important;
+  min-width:0!important;
+  padding:0 14px 0 17px!important;
+  white-space:nowrap!important;
+}
+.sidebar.vaultos-sidebar .sidebar-search-label{
+  display:block;
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  text-align:left;
+}
+.sidebar.vaultos-sidebar .sidebar-search-shell kbd{
+  flex:0 0 auto;
+  min-width:54px;
+  margin:0!important;
+  white-space:nowrap;
+}
+.sidebar.vaultos-sidebar .sidebar-footer{padding-top:2px}
+@media(max-width:760px){.familiar-welcome{align-items:flex-start}}

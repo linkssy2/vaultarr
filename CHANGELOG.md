@@ -1,5 +1,16 @@
 # Changelog
 
+## 2.0.0-alpha.2 — Home Action Clarity
+
+- Removed the redundant **Open Museum** action from Home.
+- Removed the redundant **View Museum** link from Continue Browsing.
+- Kept **Continue Curating** focused on the Needs Attention Museum view.
+- Kept **Discover Games** as the separate discovery action.
+- Made the Continue Browsing exhibit card the direct route to its game record.
+- Standardized the Search Museum pill to a single-line, correctly spaced sidebar control.
+- Updated cache-busting asset versions and experimental build labels.
+
+
 ## 2.0.0-alpha.1 — Familiar Museum Experience
 
 - Redesigned Home as a familiar media-style museum lobby.
