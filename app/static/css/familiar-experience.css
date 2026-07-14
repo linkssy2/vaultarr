@@ -49,3 +49,23 @@
 }
 .sidebar.vaultos-sidebar .sidebar-footer{padding-top:2px}
 @media(max-width:760px){.familiar-welcome{align-items:flex-start}}
+
+
+/* Alpha 3 — Plex-inspired Museum header */
+.museum-library-header{display:grid;gap:15px;margin-bottom:20px;padding:0 0 14px;border-bottom:1px solid rgba(116,151,204,.13)}
+.museum-library-title-row{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;min-width:0}
+.museum-library-title{display:grid;gap:8px;min-width:0}.museum-library-title h1{margin:0;font-size:clamp(27px,2.5vw,38px);line-height:1}
+.museum-library-tabs{display:flex;align-items:center;gap:27px;min-height:34px;overflow-x:auto;scrollbar-width:none}.museum-library-tabs::-webkit-scrollbar{display:none}
+.museum-library-tabs a{position:relative;display:inline-flex;align-items:center;min-height:34px;color:#8495b1;font-size:13px;font-weight:650;white-space:nowrap;text-decoration:none;transition:color .2s ease}
+.museum-library-tabs a:hover,.museum-library-tabs a.is-active{color:#dce9ff}.museum-library-tabs a.is-active:after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;border-radius:99px;background:#4594ff;box-shadow:0 0 12px rgba(69,148,255,.5)}
+.museum-library-primary-tools{display:flex;align-items:center;justify-content:flex-end;gap:10px;min-width:0}.museum-game-count{color:#8495b1;font-size:12px;white-space:nowrap}
+.museum-view-toggle{display:flex;gap:3px;padding:3px;border:1px solid rgba(119,157,216,.14);border-radius:10px;background:rgba(8,16,31,.7)}
+.museum-view-button{display:grid;place-items:center;width:34px;height:32px;min-height:32px;padding:0;border:0;border-radius:7px;background:transparent;color:#7588a8;box-shadow:none;font-size:15px;transition:background .18s ease,color .18s ease}
+.museum-view-button:hover,.museum-view-button.is-active{background:rgba(50,119,236,.22);color:#79b3ff;transform:none;box-shadow:none}
+.museum-header-search{min-width:0;width:min(300px,27vw)}.museum-header-search .search-input{height:40px;min-height:40px;font-size:13px}.museum-add-game{height:40px;min-height:40px;white-space:nowrap}
+.museum-library-filter-row{display:flex;align-items:center;justify-content:space-between;gap:16px}.museum-filter-chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}.museum-filter-chips::-webkit-scrollbar{display:none}
+.museum-filter-chip{display:inline-flex;align-items:center;min-height:34px;padding:0 12px;border:1px solid rgba(119,157,216,.12);border-radius:9px;background:rgba(8,16,31,.58);color:#8495b1;font-size:12px;font-weight:600;white-space:nowrap;text-decoration:none;transition:border-color .18s ease,background .18s ease,color .18s ease}
+.museum-filter-chip:hover,.museum-filter-chip.is-active{border-color:rgba(76,145,255,.34);background:rgba(41,99,193,.16);color:#d7e6ff}.museum-sort-select{width:160px;height:36px;min-height:36px;font-size:12px}
+.poster-grid.is-list-view{grid-template-columns:1fr!important;gap:10px!important}.poster-grid.is-list-view .focus-card-trigger{width:100%}.poster-grid.is-list-view .poster-card{display:grid;grid-template-columns:92px minmax(0,1fr);min-height:112px;height:auto;transform:none!important}.poster-grid.is-list-view .poster-cover,.poster-grid.is-list-view .poster-placeholder{width:92px;height:112px;aspect-ratio:auto;border-radius:12px 0 0 12px}.poster-grid.is-list-view .poster-info{position:relative;display:flex;flex-direction:column;justify-content:center;min-height:112px;transform:none!important}
+@media(max-width:1080px){.museum-library-title-row{align-items:flex-start;flex-direction:column}.museum-library-primary-tools{width:100%;justify-content:flex-start}.museum-header-search{width:min(420px,100%);flex:1}.museum-game-count{margin-left:auto}}
+@media(max-width:720px){.museum-library-primary-tools{flex-wrap:wrap}.museum-game-count{order:3;margin:0}.museum-header-search{order:1;flex-basis:100%}.museum-view-toggle{order:2}.museum-add-game{order:2}.museum-library-filter-row{align-items:stretch;flex-direction:column}.museum-sort-select{width:100%}}

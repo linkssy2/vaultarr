@@ -2,26 +2,49 @@
 
 {% block content %}
 <div class="library-shell" id="libraryShell" data-museum-view="true">
-  <div class="page-header">
-    <div>
-      <h1>{% if attention %}Improve Your Museum{% else %}Museum{% endif %}</h1>
-      <p class="muted">{% if attention %}Review games missing information, artwork, manuals, or archival assets.{% else %}Browse, search, and care for your complete game museum.{% endif %}</p>
+  <header class="museum-library-header" aria-label="Museum controls">
+    <div class="museum-library-title-row">
+      <div class="museum-library-title">
+        <h1>{% if attention %}Improve Your Museum{% else %}Museum{% endif %}</h1>
+        <nav class="museum-library-tabs" aria-label="Museum views">
+          <a class="{% if not attention and sort != 'added' %}is-active{% endif %}" href="/museum">All Games</a>
+          <a class="{% if attention %}is-active{% endif %}" href="/museum?attention=1">Needs Attention</a>
+          <a class="{% if not attention and sort == 'added' %}is-active{% endif %}" href="/museum?sort=added">Recently Added</a>
+          <a href="/collections">Collections</a>
+        </nav>
+      </div>
+
+      <div class="museum-library-primary-tools">
+        <span class="museum-game-count">{{ total_count or games|length }} games</span>
+        <div class="museum-view-toggle" role="group" aria-label="Museum layout">
+          <button class="museum-view-button is-active" id="museumGridView" type="button" aria-label="Grid view" aria-pressed="true">▦</button>
+          <button class="museum-view-button" id="museumListView" type="button" aria-label="List view" aria-pressed="false">☷</button>
+        </div>
+        <div class="search-wrap museum-header-search">
+          <input id="librarySearch" class="search-input" type="text" placeholder="Search your museum…" value="{{ q or '' }}" autocomplete="off">
+          <button id="clearLibrarySearch" class="clear-search" type="button" aria-label="Clear search">×</button>
+        </div>
+        <a class="button-link compact museum-add-game" href="/games/add">+ Add Game</a>
+      </div>
     </div>
 
-    <div class="library-tools">
-      <div class="search-wrap">
-        <input id="librarySearch" class="search-input" type="text" placeholder="Search games..." value="{{ q or '' }}" autocomplete="off">
-        <button id="clearLibrarySearch" class="clear-search" type="button" aria-label="Clear search">×</button>
+    <div class="museum-library-filter-row">
+      <div class="museum-filter-chips" aria-label="Museum categories">
+        <a class="museum-filter-chip {% if not category or category == 'All Games' %}is-active{% endif %}" href="/museum{% if sort == 'added' %}?sort=added{% endif %}">All Categories</a>
+        <a class="museum-filter-chip {% if category == 'Abandonware' %}is-active{% endif %}" href="/museum?category=Abandonware">Abandonware</a>
+        <a class="museum-filter-chip {% if category == 'Fanmade' %}is-active{% endif %}" href="/museum?category=Fanmade">Fanmade</a>
+        <a class="museum-filter-chip {% if category == 'PC Port' %}is-active{% endif %}" href="/museum?category=PC%20Port">PC Port</a>
+        <a class="museum-filter-chip {% if category == 'Steam' %}is-active{% endif %}" href="/museum?category=Steam">Steam</a>
+        <a class="museum-filter-chip {% if category == 'Manual' %}is-active{% endif %}" href="/museum?category=Manual">Manual</a>
       </div>
-      <select id="librarySort" class="select-input">
-        <option value="title" {% if sort == 'title' %}selected{% endif %}>Sort by: Title A-Z</option>
-        <option value="size" {% if sort == 'size' %}selected{% endif %}>Sort by: Size</option>
-        <option value="scanned" {% if sort == 'scanned' %}selected{% endif %}>Sort by: Last Scanned</option>
-        <option value="added" {% if sort == 'added' %}selected{% endif %}>Sort by: Recently Added</option>
+      <select id="librarySort" class="select-input museum-sort-select" aria-label="Sort museum">
+        <option value="title" {% if sort == 'title' %}selected{% endif %}>Title A–Z</option>
+        <option value="size" {% if sort == 'size' %}selected{% endif %}>File Size</option>
+        <option value="scanned" {% if sort == 'scanned' %}selected{% endif %}>Last Scanned</option>
+        <option value="added" {% if sort == 'added' %}selected{% endif %}>Recently Added</option>
       </select>
-      <a class="button-link compact" href="/games/add">+ Add Game</a>
     </div>
-  </div>
+  </header>
 
   {% if attention %}
   <section class="museum-attention-banner">
@@ -34,15 +57,7 @@
   </section>
   {% endif %}
 
-  <div class="category-row">
-    <a class="category-chip {% if not attention and (not category or category == 'All Games') %}active{% endif %}" href="/museum">All Games <span>{{ total_count or games|length }}</span></a>
-    <a class="category-chip attention-chip {% if attention %}active{% endif %}" href="/museum?attention=1">Needs Attention <span>{{ attention_count or 0 }}</span></a>
-    <a class="category-chip {% if category == 'Abandonware' %}active{% endif %}" href="/museum?category=Abandonware">Abandonware <span>{{ category_counts.get('Abandonware', 0) if category_counts else 0 }}</span></a>
-    <a class="category-chip {% if category == 'Fanmade' %}active{% endif %}" href="/museum?category=Fanmade">Fanmade <span>{{ category_counts.get('Fanmade', 0) if category_counts else 0 }}</span></a>
-    <a class="category-chip {% if category == 'PC Port' %}active{% endif %}" href="/museum?category=PC Port">PC Port <span>{{ category_counts.get('PC Port', 0) if category_counts else 0 }}</span></a>
-    <a class="category-chip {% if category == 'Steam' %}active{% endif %}" href="/museum?category=Steam">Steam <span>{{ category_counts.get('Steam', 0) if category_counts else 0 }}</span></a>
-    <a class="category-chip {% if category == 'Manual' %}active{% endif %}" href="/museum?category=Manual">Manual <span>{{ category_counts.get('Manual', 0) if category_counts else 0 }}</span></a>
-  </div>
+
 
   <div class="library-search-status" id="librarySearchStatus">
     <span id="librarySearchCount">{{ games|length }} game{% if games|length != 1 %}s{% endif %}</span>

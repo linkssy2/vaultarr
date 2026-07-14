@@ -1,6 +1,6 @@
-# Vaultarr 2.0.0 Alpha 2
+# Vaultarr 2.0.0 Alpha 3
 
-> Experimental release: **Vaultarr 2.0.0 Alpha 2 — Home Action Clarity**
+> Experimental release: **Vaultarr 2.0.0 Alpha 3 — Home Action Clarity**
 
 
 ## Alpha 2 interface refinement

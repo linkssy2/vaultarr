@@ -163,12 +163,24 @@
     const grid = document.getElementById("libraryGrid");
     const noResults = document.getElementById("libraryNoResults");
     const searchCount = document.getElementById("librarySearchCount");
+    const gridViewButton = document.getElementById("museumGridView");
+    const listViewButton = document.getElementById("museumListView");
 
     if (!grid || grid.dataset.vaultarrSearchBound === "1") return;
     grid.dataset.vaultarrSearchBound = "1";
 
     const getTriggers = () => Array.from(grid.querySelectorAll(".focus-card-trigger"));
 
+
+    function setMuseumView(mode) {
+      const listMode = mode === "list";
+      grid.classList.toggle("is-list-view", listMode);
+      gridViewButton?.classList.toggle("is-active", !listMode);
+      listViewButton?.classList.toggle("is-active", listMode);
+      gridViewButton?.setAttribute("aria-pressed", String(!listMode));
+      listViewButton?.setAttribute("aria-pressed", String(listMode));
+      try { localStorage.setItem("vaultarrMuseumView", listMode ? "list" : "grid"); } catch (_error) {}
+    }
     function normalize(value) {
       return String(value || "").toLowerCase().trim();
     }
@@ -217,6 +229,11 @@
       applySort();
       applySearch();
     });
+    gridViewButton?.addEventListener("click", () => setMuseumView("grid"));
+    listViewButton?.addEventListener("click", () => setMuseumView("list"));
+    let savedMuseumView = "grid";
+    try { savedMuseumView = localStorage.getItem("vaultarrMuseumView") || "grid"; } catch (_error) {}
+    setMuseumView(savedMuseumView);
 
     applySort();
     applySearch();

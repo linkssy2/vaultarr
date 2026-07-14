@@ -66,11 +66,23 @@
   }
 
   function updateActiveNav(url) {
-    const path = new URL(url, window.location.href).pathname;
+    const path = new URL(url, window.location.href).pathname.replace(/\/$/, "") || "/";
+    const routeGroup = (value) => {
+      if (value === "/" || value === "/home") return "home";
+      if (value === "/museum" || value === "/library" || value.startsWith("/museum/") || value.startsWith("/library/")) return "museum";
+      if (value === "/discovery" || value.startsWith("/discovery/")) return "discovery";
+      if (value === "/archive" || value.startsWith("/archive/")) return "archive";
+      if (value === "/experience" || value.startsWith("/experience/")) return "experience";
+      if (value === "/settings" || value.startsWith("/settings/")) return "settings";
+      if (value === "/collections" || value.startsWith("/collections/")) return "collections";
+      return value;
+    };
+    const currentGroup = routeGroup(path);
     document.querySelectorAll(".vault-nav a").forEach((link) => {
-      const linkPath = new URL(link.href, window.location.href).pathname;
-      const active = path === linkPath || (linkPath !== "/" && path.startsWith(linkPath));
-      link.classList.toggle("active", active);
+      const linkPath = new URL(link.href, window.location.href).pathname.replace(/\/$/, "") || "/";
+      const active = routeGroup(linkPath) === currentGroup;
+      link.classList.toggle("is-active", active);
+      link.classList.remove("active");
       if (active) link.setAttribute("aria-current", "page");
       else link.removeAttribute("aria-current");
     });

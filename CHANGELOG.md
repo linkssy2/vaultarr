@@ -1,3 +1,6 @@
+## 2.0.0 Alpha 3
+- Plex-inspired Museum header and reliable sidebar route highlighting.
+
 # Changelog
 
 ## 2.0.0-alpha.2 — Home Action Clarity

@@ -1,3 +1,6 @@
+## 2.0.0 Alpha 3
+- Plex-inspired Museum header and reliable sidebar route highlighting.
+
 # Vaultarr 1.7.4 — Compact Sidebar Scan Control
 
 - Standardized Scan Museum and Search Museum as compact 52 px sidebar controls.
