@@ -1,3 +1,9 @@
+# 2.0.0 Alpha 8 — Sidebar Utility Alignment
+
+- Matched Scan Museum and Search Museum to the Current build card width.
+- Removed extra nested sidebar utility padding.
+- Left scan behavior and all protected interactions unchanged.
+
 # Changelog
 
 ## 2.0.0 Alpha 7 — Museum Grid Restoration

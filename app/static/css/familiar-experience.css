@@ -158,3 +158,25 @@
   .museum-library-primary-tools{margin-left:0}
   .museum-collections-actions{align-items:flex-start;flex-direction:column}
 }
+
+/* Alpha 8 — align lower sidebar utilities with the build card */
+.sidebar.vaultos-sidebar .sidebar-utility-stack {
+  width: 100% !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  box-sizing: border-box !important;
+}
+.sidebar.vaultos-sidebar .sidebar-scan-shell,
+.sidebar.vaultos-sidebar .sidebar-scan-control,
+.sidebar.vaultos-sidebar .sidebar-search-shell,
+.sidebar.vaultos-sidebar .sidebar-footer,
+.sidebar.vaultos-sidebar .vault-build-card {
+  width: 100% !important;
+  max-width: none !important;
+  box-sizing: border-box !important;
+}
+.sidebar.vaultos-sidebar .sidebar-scan-shell,
+.sidebar.vaultos-sidebar .sidebar-search-shell {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
