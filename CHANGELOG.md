@@ -1,3 +1,15 @@
+# Changelog
+
+## 2.0.0 Alpha 14 — Museum Backup & Timeline
+
+- Moved all backup controls into Settings under Museum Backup.
+- Removed the backup page from primary navigation.
+- Added a dedicated Timeline experience for release-year browsing.
+- Renamed release-history references from Time Capsule to Timeline.
+- Redirected the retired /archive page to Settings → Museum Backup.
+- Fixed Discover Improve Museum links to open Museum → Needs Attention.
+- Removed visible links to the retired Metadata Queue.
+
 # 2.0.0 Alpha 12 — Visible Scan Shimmer
 
 - Strengthened the active Museum Scan shimmer so it is clearly visible while work is running.

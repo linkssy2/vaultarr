@@ -19,6 +19,8 @@ from app.services.reset_service import reset_vault
 from app.services.auth_service import load_auth_settings, update_auth_from_form
 from app.services.game_removal_service import ignored_paths, restore_ignored_path
 from app.services.ui_settings import load_ui_settings, save_ui_settings, ui_settings_from_form
+
+from app.services.archive_service import archive_status, run_due_backup_if_needed
 from app.services.provider_settings import (
     load_provider_settings,
     save_provider_settings,
@@ -30,6 +32,7 @@ settings_bp = Blueprint('settings', __name__)
 
 @settings_bp.route('/settings')
 def settings():
+    run_due_backup_if_needed()
     conn = get_connection()
     libraries = conn.execute('SELECT * FROM libraries ORDER BY name').fetchall()
     conn.close()
@@ -53,6 +56,9 @@ def settings():
         saved=saved,
         ignored_games=ignored_paths(),
         ui_settings=load_ui_settings(),
+        status=archive_status(),
+        archive_status_message=request.args.get('archive_status', ''),
+        archive_message=request.args.get('archive_message', ''),
     )
 
 

@@ -9,7 +9,7 @@
       <p class="muted hero-copy">Browse familiar shelves, rediscover hidden corners of your collection, and find the next game to add.</p>
       <div class="hero-actions slim-actions">
         <a class="button-link" href="/museum">Browse Museum →</a>
-        <a class="button-link secondary" href="/metadata-queue">Improve Museum</a>
+        <a class="button-link secondary" href="/museum?attention=1">Improve Museum</a>
       </div>
     </div>
     <div class="discovery-core" style="--score: {{ discovery_score }}%;">
@@ -22,7 +22,7 @@
   <section class="discovery-panel alive-panel timeline-panel">
     <div class="panel-heading flush-heading">
       <div>
-        <p class="eyebrow">Time Capsule</p>
+        <p class="eyebrow">Timeline</p>
         <h2>Release Timeline</h2>
       </div>
     </div>
@@ -107,7 +107,7 @@
   <section class="discovery-panel alive-panel smart-shelf">
     <div class="panel-heading flush-heading">
       <div><p class="eyebrow">Museum care</p><h2>Games that need attention</h2></div>
-      <a href="/metadata-queue">Queue →</a>
+      <a href="/museum?attention=1">Review →</a>
     </div>
     <div class="mini-discovery-list">
       {% for game in needs_identity[:5] %}<a href="/games/{{ game.id }}"><span>{% if game.cover_path %}<img loading="lazy" decoding="async" src="/covers/{{ game.cover_path }}?v={{ game.updated_at or game.last_scanned or game.id }}" alt="{{ game.title }}">{% else %}🎮{% endif %}</span><strong>{{ game.title }}</strong></a>{% else %}<p class="muted">Metadata looks clean.</p>{% endfor %}

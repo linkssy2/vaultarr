@@ -115,7 +115,7 @@
 
   <section class="studio-intro-strip alive-panel advanced-only">
     <span>Studio is organized as a flowing workshop: providers first, visual tuning second, archive maintenance last.</span>
-    <a href="/metadata-queue">Open Metadata Queue →</a>
+    <a href="/museum?attention=1">Review Museum Needs →</a>
   </section>
 
   <section class="studio-section alive-panel security-workshop" id="studioSecurity">
@@ -389,8 +389,8 @@
 
     <div class="reset-vault-grid">
       <div class="reset-vault-warning">
-        <strong>Make a Time Capsule first.</strong>
-        <span>This reset is meant for starting fresh before a new scan, a new Docker volume, or a clean GitHub-ready test. Time Capsule backups are kept unless you explicitly delete them below.</span>
+        <strong>Make a Museum Backup first.</strong>
+        <span>This reset is meant for starting fresh before a new scan, a new Docker volume, or a clean GitHub-ready test. Museum backups are kept unless you explicitly delete them below.</span>
       </div>
       <form action="/settings/reset-vault" method="post" class="reset-vault-form" onsubmit="return confirm('Reset Vaultarr and return to first-run setup?');">
         <label class="studio-toggle-card full">
@@ -399,19 +399,21 @@
         </label>
         <label class="studio-toggle-card full">
           <input type="checkbox" name="delete_time_capsules">
-          <span><strong>Also delete Time Capsules</strong><small>Usually leave this off so you can restore from previous exports.</small></span>
+          <span><strong>Also delete Museum Backups</strong><small>Usually leave this off so you can restore from previous exports.</small></span>
         </label>
         <div class="reset-confirm-row">
           <label>Type <strong>RESET VAULT</strong> to confirm</label>
           <input name="confirmation" placeholder="RESET VAULT" autocomplete="off" required>
         </div>
         <div class="studio-actions split">
-          <a class="button-link secondary" href="/archive">Make Time Capsule First</a>
+          <a class="button-link secondary" href="#museum-backup">Make Museum Backup First</a>
           <button class="danger" type="submit">Reset Vault</button>
         </div>
       </form>
     </div>
   </section>
+
+  {% include "_museum_backup_settings.html" %}
 
 </section>
 

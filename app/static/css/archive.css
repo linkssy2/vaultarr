@@ -258,3 +258,10 @@
     .archive-row-actions { grid-column: 2; justify-content: flex-start; }
     .retention-card { display: grid; }
 }
+
+
+/* Alpha 14: Museum Backup now lives inside Settings. */
+.settings-museum-backup { display: grid; gap: 18px; margin-top: 28px; }
+.settings-museum-backup .museum-backup-page { display: grid; gap: 18px; }
+.museum-backup-settings-head { margin-bottom: 0; }
+.timeline-page { max-width: 1600px; margin: 0 auto; }

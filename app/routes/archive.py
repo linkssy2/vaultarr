@@ -17,18 +17,12 @@ archive_bp = Blueprint('archive', __name__)
 
 
 def _redirect_with(message, status='ok'):
-    return redirect(f'/archive?archive_status={status}&archive_message={message[:180]}')
+    return redirect(f'/settings?archive_status={status}&archive_message={message[:180]}#museum-backup')
 
 
 @archive_bp.route('/archive')
 def archive_home():
-    run_due_backup_if_needed()
-    return render_template(
-        'archive.html',
-        status=archive_status(),
-        archive_status_message=request.args.get('archive_status', ''),
-        archive_message=request.args.get('archive_message', ''),
-    )
+    return redirect('/settings#museum-backup')
 
 
 @archive_bp.route('/archive/export', methods=['POST'])
@@ -38,7 +32,7 @@ def archive_export():
 
     try:
         info = create_archive(name=name, include_cache=include_cache)
-        return redirect(f"/archive?archive_status=ok&archive_message=Exported local archive: {info['name']}")
+        return redirect(f"/settings?archive_status=ok&archive_message=Exported local archive: {info['name']}#museum-backup")
     except Exception as exc:
         return _redirect_with(f'Export failed: {exc}', 'error')
 

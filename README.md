@@ -1,6 +1,6 @@
-# Vaultarr 2.0.0 Alpha 12
+# Vaultarr 2.0.0 Alpha 14
 
-> Experimental release: **Vaultarr 2.0.0 Alpha 12 — Visible Scan Shimmer**
+> Experimental release: **Vaultarr 2.0.0 Alpha 14 — Visible Scan Shimmer**
 
 
 ## Alpha 12 scan shimmer
@@ -270,3 +270,8 @@ Use the permanent **Scan Museum** pill directly above **Search Museum** in the s
 ### Scan control behavior
 
 The **Scan Museum** button starts a scan only from an explicit click. Loading, refreshing, or navigating through Vaultarr only checks the current scan status and never starts a new scan. The control is bound directly with a smooth-navigation fallback for reliable operation.
+
+
+## Museum Backup and Timeline
+
+Backup configuration, restore, retention, and archive size now live in **Settings → Museum Backup**. The sidebar **Timeline** page is reserved for browsing release history.
