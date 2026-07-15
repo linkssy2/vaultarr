@@ -1,7 +1,13 @@
-# Vaultarr 2.0.0 Alpha 7
+# Vaultarr 2.0.0 Alpha 10
 
-> Experimental release: **Vaultarr 2.0.0 Alpha 7 — Museum Grid Restoration**
+> Experimental release: **Vaultarr 2.0.0 Alpha 10 — Museum Scan Shimmer**
 
+
+## Alpha 10 scan refinement
+
+- Uses a restrained Vault-blue shimmer to show that Museum Scan is active.
+- Plays one final brighter sweep at completion, then lets the light dissipate as the pill returns to idle.
+- Retains Alpha 9 heartbeat and interrupted-scan recovery behavior.
 
 ## Alpha 2 interface refinement
 

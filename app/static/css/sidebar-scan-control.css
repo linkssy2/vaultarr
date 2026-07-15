@@ -1,5 +1,5 @@
-/* Vaultarr 2.0 Alpha 9 — truthful Museum Scan status
-   Fixed-size control, no rotating icon, subtle pulse, and automatic recovery from interrupted scans. */
+/* Vaultarr 2.0 Alpha 10 — Museum Scan shimmer microinteraction
+   Fixed-size control, calm blue light sweep, and truthful interrupted-scan recovery. */
 .sidebar.vaultos-sidebar .sidebar-utility-stack {
   width: 100%;
   margin-top: auto;
@@ -42,6 +42,32 @@
   box-shadow: 0 9px 24px rgba(37,99,235,.23), inset 0 1px 0 rgba(255,255,255,.14);
   transition: transform .28s cubic-bezier(.22,.61,.36,1), box-shadow .34s ease,
               border-color .34s ease, background .42s cubic-bezier(.22,.61,.36,1);
+}
+
+.sidebar.vaultos-sidebar .sidebar-scan-control::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  top: -34%;
+  bottom: -34%;
+  left: -42%;
+  width: 24%;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate3d(-240%,0,0) skewX(-18deg);
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(125,211,252,.04) 18%,
+    rgba(186,230,253,.24) 49%,
+    rgba(96,165,250,.10) 72%,
+    transparent 100%);
+  filter: blur(.2px);
+  mix-blend-mode: screen;
+  will-change: transform, opacity;
+}
+
+.sidebar.vaultos-sidebar .sidebar-scan-control > span {
+  z-index: 1;
 }
 
 .sidebar.vaultos-sidebar .sidebar-scan-control:hover,
@@ -87,20 +113,6 @@
   opacity: 0;
   transform: translateY(5px);
   filter: blur(2px);
-}
-.sidebar.vaultos-sidebar .sidebar-scan-live::before {
-  content: "";
-  position: absolute;
-  left: 8px;
-  top: 6px;
-  width: 54%;
-  height: 28px;
-  border-radius: 999px;
-  background: radial-gradient(ellipse at center, rgba(56,189,248,.20), rgba(59,130,246,.05) 58%, transparent 74%);
-  opacity: 0;
-  transform: scale(.88);
-  pointer-events: none;
-  z-index: -1;
 }
 .sidebar.vaultos-sidebar .sidebar-scan-stage {
   min-width: 0;
@@ -193,13 +205,32 @@
   transform: translateY(4px);
   filter: blur(1.5px);
 }
-.sidebar.vaultos-sidebar .sidebar-scan-shell.is-active .sidebar-scan-live::before {
-  animation: vaultarrScanPulse 2.4s ease-in-out infinite;
+.sidebar.vaultos-sidebar .sidebar-scan-shell.is-active .sidebar-scan-control::after {
+  animation: vaultarrScanShimmer 2.75s cubic-bezier(.22,.61,.36,1) .28s infinite;
+}
+.sidebar.vaultos-sidebar .sidebar-scan-shell.is-complete .sidebar-scan-control::after {
+  animation: vaultarrScanFinalShimmer .92s cubic-bezier(.16,1,.3,1) 1 forwards;
+}
+.sidebar.vaultos-sidebar .sidebar-scan-shell.is-reversing .sidebar-scan-control::after,
+.sidebar.vaultos-sidebar .sidebar-scan-shell.is-failed .sidebar-scan-control::after,
+.sidebar.vaultos-sidebar .sidebar-scan-shell[data-state="idle"] .sidebar-scan-control::after {
+  animation: none;
+  opacity: 0;
 }
 
-@keyframes vaultarrScanPulse {
-  0%,100% { opacity: .20; transform: scale(.90); }
-  50% { opacity: .82; transform: scale(1.06); }
+@keyframes vaultarrScanShimmer {
+  0%, 15% { opacity: 0; transform: translate3d(-240%,0,0) skewX(-18deg); }
+  24% { opacity: .20; }
+  49% { opacity: .82; }
+  74% { opacity: .16; }
+  84%, 100% { opacity: 0; transform: translate3d(710%,0,0) skewX(-18deg); }
+}
+
+@keyframes vaultarrScanFinalShimmer {
+  0% { opacity: 0; transform: translate3d(-240%,0,0) skewX(-18deg); }
+  26% { opacity: .42; }
+  55% { opacity: 1; }
+  100% { opacity: 0; transform: translate3d(710%,0,0) skewX(-18deg); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -207,5 +238,5 @@
   .sidebar.vaultos-sidebar .sidebar-scan-idle,
   .sidebar.vaultos-sidebar .sidebar-scan-live,
   .sidebar.vaultos-sidebar .museum-scan-track > span { transition-duration: .01ms !important; }
-  .sidebar.vaultos-sidebar .sidebar-scan-live::before { animation: none !important; opacity: .35; }
+  .sidebar.vaultos-sidebar .sidebar-scan-control::after { animation: none !important; opacity: 0 !important; }
 }

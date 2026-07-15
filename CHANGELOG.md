@@ -1,3 +1,9 @@
+# 2.0.0 Alpha 10 — Museum Scan Shimmer
+
+- Replaced the subtle pulse with a calm Vault-blue light shimmer that sweeps across the scan pill while work is active.
+- Added one brighter final shimmer at completion, followed by a clean dissipation before the control returns to idle.
+- Kept the pill dimensions, scan truthfulness/heartbeat recovery, progress line, sidebar layout, Museum page, and protected card systems unchanged.
+
 # 2.0.0 Alpha 9 — Truthful Scan Status
 
 - Removed the rotating refresh icon from the Museum Scan control.
