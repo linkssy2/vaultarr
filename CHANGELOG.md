@@ -1,3 +1,10 @@
+# 2.0.0 Alpha 12 — Visible Scan Shimmer
+
+- Strengthened the active Museum Scan shimmer so it is clearly visible while work is running.
+- Removed `mix-blend-mode`, which could make the sweep disappear on some browsers and GPU paths.
+- Kept the blue sweep enabled in a slower form when the operating system reports reduced-motion preferences.
+- Preserved the fixed pill size, scan state controller, Museum layout, and protected interaction systems.
+
 # 2.0.0 Alpha 11 — Museum Scan Component Rewrite
 
 - Removed every previous sidebar scan UI implementation and rebuilt one component from scratch.

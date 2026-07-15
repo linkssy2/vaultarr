@@ -1,4 +1,4 @@
-/* Vaultarr 2.0 Alpha 11 — single Museum Scan component.
+/* Vaultarr 2.0 Alpha 12 — visible Museum Scan shimmer.
    One fixed-size pill, one working state, one completion state. */
 .sidebar.vaultos-sidebar .sidebar-utility-stack {
   width: 100%;
@@ -140,20 +140,28 @@
   will-change: transform;
 }
 
-/* Narrow light ribbon: deliberately visible, never white, never green. */
+/* Visible blue energy ribbon. It sits above the pill background and below the text. */
 .sidebar.vaultos-sidebar .museum-scan-pill__light {
   position: absolute;
   z-index: 1;
-  top: -35%;
-  bottom: -35%;
-  left: -36%;
-  width: 22%;
+  top: -55%;
+  bottom: -55%;
+  left: 0;
+  width: 34%;
   opacity: 0;
   pointer-events: none;
-  transform: translate3d(-220%, 0, 0) skewX(-17deg);
-  background: linear-gradient(90deg, transparent, rgba(56, 189, 248, .08) 20%, rgba(125, 211, 252, .64) 50%, rgba(96, 165, 250, .16) 76%, transparent);
-  filter: blur(.35px);
-  mix-blend-mode: screen;
+  transform: translate3d(-155%, 0, 0) skewX(-18deg);
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(14, 165, 233, .10) 18%,
+    rgba(56, 189, 248, .55) 42%,
+    rgba(147, 197, 253, .88) 52%,
+    rgba(59, 130, 246, .42) 67%,
+    transparent 100%
+  );
+  filter: blur(1.2px);
+  box-shadow: 0 0 18px rgba(56, 189, 248, .32);
   will-change: transform, opacity;
 }
 
@@ -181,29 +189,35 @@
 .sidebar.vaultos-sidebar .museum-scan-pill[data-state="scanning"] .museum-scan-pill__progress,
 .sidebar.vaultos-sidebar .museum-scan-pill[data-state="complete"] .museum-scan-pill__progress { opacity: 1; }
 .sidebar.vaultos-sidebar .museum-scan-pill[data-state="scanning"] .museum-scan-pill__light {
-  animation: vaultarrMuseumScanLight 2.65s cubic-bezier(.22, .61, .36, 1) .22s infinite;
+  animation: vaultarrMuseumScanLight 2.35s cubic-bezier(.22, .61, .36, 1) .10s infinite;
 }
 .sidebar.vaultos-sidebar .museum-scan-pill[data-state="complete"] .museum-scan-pill__light {
-  animation: vaultarrMuseumScanFinish .95s cubic-bezier(.16, 1, .3, 1) 1 forwards;
+  animation: vaultarrMuseumScanFinish 1.05s cubic-bezier(.16, 1, .3, 1) 1 forwards;
 }
 
 @keyframes vaultarrMuseumScanLight {
-  0%, 17% { opacity: 0; transform: translate3d(-220%, 0, 0) skewX(-17deg); }
-  27% { opacity: .22; }
-  50% { opacity: .86; }
-  73% { opacity: .18; }
-  84%, 100% { opacity: 0; transform: translate3d(700%, 0, 0) skewX(-17deg); }
+  0%, 12% { opacity: 0; transform: translate3d(-155%, 0, 0) skewX(-18deg); }
+  20% { opacity: .22; }
+  43% { opacity: .88; }
+  63% { opacity: .42; }
+  79%, 100% { opacity: 0; transform: translate3d(385%, 0, 0) skewX(-18deg); }
 }
 @keyframes vaultarrMuseumScanFinish {
-  0% { opacity: 0; transform: translate3d(-220%, 0, 0) skewX(-17deg); }
-  32% { opacity: .42; }
-  58% { opacity: 1; }
-  100% { opacity: 0; transform: translate3d(700%, 0, 0) skewX(-17deg); }
+  0% { opacity: 0; transform: translate3d(-155%, 0, 0) skewX(-18deg); }
+  24% { opacity: .40; }
+  50% { opacity: 1; }
+  100% { opacity: 0; transform: translate3d(385%, 0, 0) skewX(-18deg); }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .sidebar.vaultos-sidebar .museum-scan-pill__button,
   .sidebar.vaultos-sidebar .museum-scan-pill__idle,
   .sidebar.vaultos-sidebar .museum-scan-pill__working { transition-duration: .01ms !important; }
-  .sidebar.vaultos-sidebar .museum-scan-pill__light { animation: none !important; opacity: 0 !important; }
+  .sidebar.vaultos-sidebar .museum-scan-pill[data-state="scanning"] .museum-scan-pill__light {
+    animation-duration: 4.8s !important;
+    filter: blur(1.6px);
+  }
+  .sidebar.vaultos-sidebar .museum-scan-pill[data-state="complete"] .museum-scan-pill__light {
+    animation-duration: 1.4s !important;
+  }
 }
