@@ -55,7 +55,6 @@
       <a class="{% if request.path == '/' %}is-active{% endif %}" href="/"><span class="nav-glyph">⌂</span><span>Home</span></a>
       <a class="{% if request.path.startswith('/museum') or request.path.startswith('/library') %}is-active{% endif %}" href="/museum"><span class="nav-glyph">▣</span><span>Museum</span></a>
       <a class="{% if request.path.startswith('/discovery') %}is-active{% endif %}" href="/discovery"><span class="nav-glyph">✦</span><span>Discover</span></a>
-      <a class="{% if request.path.startswith('/timeline') %}is-active{% endif %}" href="/timeline"><span class="nav-glyph">◈</span><span>Timeline</span></a>
       <a class="{% if request.path.startswith('/experience') %}is-active{% endif %}" href="/experience"><span class="nav-glyph">★</span><span>Milestones</span></a>
 
       <span class="nav-section-label advanced-only">Advanced</span>
@@ -75,7 +74,7 @@
     <div class="sidebar-footer">
       <div class="mini-stat vault-build-card">
         <span>Current build</span>
-        <strong>Vaultarr 2.0 Alpha 14</strong>
+        <strong>Vaultarr 2.0 Alpha 15</strong>
         <em></em>
       </div>
       {% if auth_enabled %}

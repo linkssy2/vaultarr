@@ -50,7 +50,7 @@ Vaultarr is a self-hosted digital game museum. Point it at your game folders, le
 - Patch Engine for community fixes and compatibility references
 - Per-game Preservation status, issues, and archived-asset summaries
 - Smart Collections and collection milestones
-- Time Capsule backups
+- Museum Backup in Settings
 - Simplified Settings with optional Advanced Mode
 
 ## Quick start: Docker Compose
@@ -272,6 +272,10 @@ Use the permanent **Scan Museum** pill directly above **Search Museum** in the s
 The **Scan Museum** button starts a scan only from an explicit click. Loading, refreshing, or navigating through Vaultarr only checks the current scan status and never starts a new scan. The control is bound directly with a smooth-navigation fallback for reliable operation.
 
 
-## Museum Backup and Timeline
+## Museum Backup and Discover Timeline
 
-Backup configuration, restore, retention, and archive size now live in **Settings → Museum Backup**. The sidebar **Timeline** page is reserved for browsing release history.
+Backup configuration, restore, retention, and archive size live in **Settings → Museum Backup**. Release **Timeline** remains a section inside Discover and is not a separate sidebar page.
+
+## Alpha 15 — Discover Timeline Correction
+
+Timeline remains inside Discover, Museum Backup remains in Settings, and retired Timeline/Metadata Queue routes redirect to their current destinations.

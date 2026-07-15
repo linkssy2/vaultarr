@@ -1,3 +1,12 @@
+## 2.0.0 Alpha 15 — Discover Timeline Correction
+
+- Removed Timeline from the sidebar.
+- Kept release Timeline inside Discover and added a stable in-page anchor.
+- Redirected legacy `/timeline` links to Discover → Timeline.
+- Kept Museum Backup inside Settings.
+- Redirected the retired Metadata Queue to Museum → Needs Attention.
+- Updated Home and Milestone links to the current destinations.
+
 # Changelog
 
 ## 2.0.0 Alpha 14 — Museum Backup & Timeline

@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, redirect
 from app.database.database import get_connection
 
 
@@ -126,19 +126,5 @@ def discovery():
 
 @discovery_bp.route('/timeline')
 def timeline_page():
-    conn = get_connection()
-    timeline = _rows(conn, """
-        SELECT release_year AS year, COUNT(*) AS count
-        FROM games
-        WHERE release_year IS NOT NULL AND release_year != '' AND release_year != 'Unknown'
-        GROUP BY release_year
-        ORDER BY release_year ASC
-    """)
-    recent = _rows(conn, """
-        SELECT * FROM games
-        WHERE release_year IS NOT NULL AND release_year != '' AND release_year != 'Unknown'
-        ORDER BY CAST(release_year AS INTEGER) DESC, title COLLATE NOCASE ASC
-        LIMIT 12
-    """)
-    conn.close()
-    return render_template('timeline.html', timeline=timeline, recent=recent)
+    # Compatibility redirect: Timeline now lives inside Discover.
+    return redirect('/discovery#timeline')

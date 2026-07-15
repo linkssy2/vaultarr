@@ -74,7 +74,7 @@ def get_collection_experience():
         _badge('museum_curator', 'Museum Curator', 'Preserve 100 games.', '🛡', complete_games, 100, 'gold', '/museum?attention=1'),
         _badge('manual_hunter', 'Manual Hunter', 'Attach or download 25 manuals.', '📖', manual_games, 25, 'silver', '/museum?attention=1'),
         _badge('media_archivist', 'Media Archivist', 'Cache 100 gallery assets.', '✦', cached_media, 100, 'silver', '/discovery'),
-        _badge('identity_engineer', 'Identity Engineer', 'Apply metadata to 50 games.', '◇', metadata_games, 50, 'silver', '/metadata-queue'),
+        _badge('identity_engineer', 'Identity Engineer', 'Apply metadata to 50 games.', '◇', metadata_games, 50, 'silver', '/museum?attention=1'),
         _badge('cover_collector', 'Cover Collector', 'Give 50 games cover art.', '▣', cover_games, 50, 'silver', '/library'),
         _badge('launchbox_sync', 'LaunchBox Linked', 'Sync at least 1,000 LaunchBox records.', 'L', launchbox_games, 1000, 'gold', '/settings'),
     ]
