@@ -1,0 +1,209 @@
+/* Vaultarr 2.0 Alpha 11 — single Museum Scan component.
+   One fixed-size pill, one working state, one completion state. */
+.sidebar.vaultos-sidebar .sidebar-utility-stack {
+  width: 100%;
+  margin-top: auto;
+  padding: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 22px;
+  box-sizing: border-box;
+}
+
+.sidebar.vaultos-sidebar .museum-scan-pill,
+.sidebar.vaultos-sidebar .sidebar-search-shell {
+  width: 100%;
+  height: 44px;
+  min-height: 44px;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.sidebar.vaultos-sidebar .museum-scan-pill__button {
+  position: relative;
+  width: 100%;
+  height: 44px;
+  min-height: 44px;
+  padding: 0 15px;
+  overflow: hidden;
+  border: 1px solid rgba(125, 211, 252, .40);
+  border-radius: 999px;
+  appearance: none;
+  color: #fff;
+  background: linear-gradient(135deg, #2563eb 0%, #3b82f6 58%, #168dca 100%);
+  box-shadow: 0 9px 24px rgba(37, 99, 235, .22), inset 0 1px 0 rgba(255, 255, 255, .14);
+  font: inherit;
+  cursor: pointer;
+  isolation: isolate;
+  transition:
+    background .42s cubic-bezier(.22, .61, .36, 1),
+    border-color .32s ease,
+    box-shadow .34s ease,
+    transform .26s cubic-bezier(.22, .61, .36, 1);
+}
+
+.sidebar.vaultos-sidebar .museum-scan-pill__button:hover,
+.sidebar.vaultos-sidebar .museum-scan-pill__button:focus-visible {
+  transform: translateY(-1px);
+  border-color: rgba(186, 230, 253, .62);
+  box-shadow: 0 12px 28px rgba(37, 99, 235, .29), inset 0 1px 0 rgba(255, 255, 255, .18);
+}
+.sidebar.vaultos-sidebar .museum-scan-pill__button:active { transform: translateY(0) scale(.995); }
+.sidebar.vaultos-sidebar .museum-scan-pill__button:focus-visible { outline: 2px solid rgba(125, 211, 252, .62); outline-offset: 3px; }
+.sidebar.vaultos-sidebar .museum-scan-pill__button:disabled { cursor: default; transform: none; }
+
+.sidebar.vaultos-sidebar .museum-scan-pill__idle,
+.sidebar.vaultos-sidebar .museum-scan-pill__working {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  transition: opacity .34s cubic-bezier(.22, .61, .36, 1), transform .38s cubic-bezier(.22, .61, .36, 1), filter .30s ease;
+}
+
+.sidebar.vaultos-sidebar .museum-scan-pill__idle {
+  display: grid;
+  place-items: center;
+  padding: 0 18px;
+  font-size: .91rem;
+  font-weight: 800;
+  white-space: nowrap;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.sidebar.vaultos-sidebar .museum-scan-pill__working {
+  display: grid;
+  grid-template-rows: 21px 14px;
+  align-content: center;
+  gap: 0;
+  padding: 3px 14px 4px;
+  opacity: 0;
+  transform: translateY(5px);
+  filter: blur(2px);
+  pointer-events: none;
+}
+
+.sidebar.vaultos-sidebar .museum-scan-pill__topline {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: end;
+  min-width: 0;
+}
+.sidebar.vaultos-sidebar .museum-scan-pill__topline strong {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: .78rem;
+  line-height: 1;
+  font-weight: 800;
+}
+.sidebar.vaultos-sidebar .museum-scan-pill__topline span {
+  color: #dff4ff;
+  font-size: .74rem;
+  line-height: 1;
+  font-weight: 800;
+}
+.sidebar.vaultos-sidebar .museum-scan-pill__working small {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: rgba(214, 232, 255, .72);
+  font-size: .65rem;
+  line-height: 1;
+}
+
+.sidebar.vaultos-sidebar .museum-scan-pill__progress {
+  position: absolute;
+  z-index: 3;
+  left: 12px;
+  right: 12px;
+  bottom: 3px;
+  height: 2px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgba(2, 12, 28, .48);
+  opacity: 0;
+  transition: opacity .28s ease;
+}
+.sidebar.vaultos-sidebar .museum-scan-pill__progress i {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  transform: scaleX(0);
+  transform-origin: left center;
+  background: linear-gradient(90deg, #38bdf8, #60a5fa 56%, #8b5cf6);
+  box-shadow: 0 0 9px rgba(96, 165, 250, .48);
+  will-change: transform;
+}
+
+/* Narrow light ribbon: deliberately visible, never white, never green. */
+.sidebar.vaultos-sidebar .museum-scan-pill__light {
+  position: absolute;
+  z-index: 1;
+  top: -35%;
+  bottom: -35%;
+  left: -36%;
+  width: 22%;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate3d(-220%, 0, 0) skewX(-17deg);
+  background: linear-gradient(90deg, transparent, rgba(56, 189, 248, .08) 20%, rgba(125, 211, 252, .64) 50%, rgba(96, 165, 250, .16) 76%, transparent);
+  filter: blur(.35px);
+  mix-blend-mode: screen;
+  will-change: transform, opacity;
+}
+
+.sidebar.vaultos-sidebar .museum-scan-pill[data-state="scanning"] .museum-scan-pill__button,
+.sidebar.vaultos-sidebar .museum-scan-pill[data-state="complete"] .museum-scan-pill__button,
+.sidebar.vaultos-sidebar .museum-scan-pill[data-state="error"] .museum-scan-pill__button {
+  background: linear-gradient(135deg, rgba(7, 35, 75, .99), rgba(8, 68, 108, .99));
+  border-color: rgba(56, 189, 248, .53);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08), 0 8px 22px rgba(3, 19, 43, .29);
+}
+.sidebar.vaultos-sidebar .museum-scan-pill[data-state="scanning"] .museum-scan-pill__idle,
+.sidebar.vaultos-sidebar .museum-scan-pill[data-state="complete"] .museum-scan-pill__idle,
+.sidebar.vaultos-sidebar .museum-scan-pill[data-state="error"] .museum-scan-pill__idle {
+  opacity: 0;
+  transform: translateY(-5px);
+  filter: blur(2px);
+}
+.sidebar.vaultos-sidebar .museum-scan-pill[data-state="scanning"] .museum-scan-pill__working,
+.sidebar.vaultos-sidebar .museum-scan-pill[data-state="complete"] .museum-scan-pill__working,
+.sidebar.vaultos-sidebar .museum-scan-pill[data-state="error"] .museum-scan-pill__working {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+}
+.sidebar.vaultos-sidebar .museum-scan-pill[data-state="scanning"] .museum-scan-pill__progress,
+.sidebar.vaultos-sidebar .museum-scan-pill[data-state="complete"] .museum-scan-pill__progress { opacity: 1; }
+.sidebar.vaultos-sidebar .museum-scan-pill[data-state="scanning"] .museum-scan-pill__light {
+  animation: vaultarrMuseumScanLight 2.65s cubic-bezier(.22, .61, .36, 1) .22s infinite;
+}
+.sidebar.vaultos-sidebar .museum-scan-pill[data-state="complete"] .museum-scan-pill__light {
+  animation: vaultarrMuseumScanFinish .95s cubic-bezier(.16, 1, .3, 1) 1 forwards;
+}
+
+@keyframes vaultarrMuseumScanLight {
+  0%, 17% { opacity: 0; transform: translate3d(-220%, 0, 0) skewX(-17deg); }
+  27% { opacity: .22; }
+  50% { opacity: .86; }
+  73% { opacity: .18; }
+  84%, 100% { opacity: 0; transform: translate3d(700%, 0, 0) skewX(-17deg); }
+}
+@keyframes vaultarrMuseumScanFinish {
+  0% { opacity: 0; transform: translate3d(-220%, 0, 0) skewX(-17deg); }
+  32% { opacity: .42; }
+  58% { opacity: 1; }
+  100% { opacity: 0; transform: translate3d(700%, 0, 0) skewX(-17deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sidebar.vaultos-sidebar .museum-scan-pill__button,
+  .sidebar.vaultos-sidebar .museum-scan-pill__idle,
+  .sidebar.vaultos-sidebar .museum-scan-pill__working { transition-duration: .01ms !important; }
+  .sidebar.vaultos-sidebar .museum-scan-pill__light { animation: none !important; opacity: 0 !important; }
+}

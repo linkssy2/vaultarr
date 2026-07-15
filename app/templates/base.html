@@ -36,7 +36,7 @@
   <link rel="stylesheet" href="/static/css/readiness.css">
   <link rel="stylesheet" href="/static/css/responsive.css">
   <link rel="stylesheet" href="/static/css/controls.css?v=1.7.6">
-  <link rel="stylesheet" href="/static/css/sidebar-scan-control.css?v=2.0.0-alpha.10">
+  <link rel="stylesheet" href="/static/css/museum-scan-pill.css?v=2.0.0-alpha.11">
   <link rel="stylesheet" href="/static/css/interface-cohesion.css?v=2.0.0-alpha.2">
   <link rel="stylesheet" href="/static/css/familiar-experience.css?v=2.0.0-alpha.7">
   <style id="vaultarr-theme">{{ theme_css|safe }}</style>
@@ -64,19 +64,7 @@
 
 
     <div class="sidebar-utility-stack">
-      <div class="sidebar-scan-shell" data-museum-scan-control data-state="idle">
-        <button class="sidebar-scan-control" type="button" data-museum-scan-start aria-label="Scan Museum" title="Scan Museum">
-          <span class="sidebar-scan-idle">
-            <strong>Scan Museum</strong>
-          </span>
-          <span class="sidebar-scan-live" aria-hidden="true">
-            <strong class="sidebar-scan-stage" data-museum-scan-stage>Scanning Museum</strong>
-            <span class="sidebar-scan-percent" data-museum-scan-percent>0%</span>
-            <small class="sidebar-scan-detail" data-museum-scan-detail>Checking your collection…</small>
-            <span class="museum-scan-track"><span data-museum-scan-fill></span></span>
-          </span>
-        </button>
-      </div>
+      {% include "_museum_scan_pill.html" %}
 
       <button class="sidebar-search-shell" id="globalSearchOpen" type="button">
         <span class="sidebar-search-label">Search museum…</span>
@@ -87,7 +75,7 @@
     <div class="sidebar-footer">
       <div class="mini-stat vault-build-card">
         <span>Current build</span>
-        <strong>Vaultarr 2.0 Alpha 10</strong>
+        <strong>Vaultarr 2.0 Alpha 11</strong>
         <em></em>
       </div>
       {% if auth_enabled %}
@@ -604,7 +592,7 @@
   </dialog>
 
   <script src="/static/js/live-events.js?v=1.7.6"></script>
-  <script src="/static/js/museum-scan.js?v=2.0.0-alpha.10"></script>
+  <script src="/static/js/museum-scan-pill.js?v=2.0.0-alpha.11"></script>
   <script src="/static/js/library.js?v=2.0.0-alpha.7"></script>
   <script src="/static/js/focus-mode.js?v=1.7.6"></script>
   <script src="/static/js/performance-foundation.js?v=1.7.6"></script>

@@ -1,6 +1,11 @@
-# Vaultarr 2.0.0 Alpha 10
+# Vaultarr 2.0.0 Alpha 11
 
-> Experimental release: **Vaultarr 2.0.0 Alpha 10 — Museum Scan Shimmer**
+> Experimental release: **Vaultarr 2.0.0 Alpha 11 — Museum Scan Component Rewrite**
+
+
+## Alpha 11 scan rewrite
+
+Museum Scan now uses one isolated component: one template partial, one stylesheet, and one JavaScript controller. The fixed-size pill shows a Vault-blue light sweep while working, reports completion in place, and returns to idle without popup or drawer code. Loading or navigating only reads current status; a scan can start only from the button click.
 
 
 ## Alpha 10 scan refinement

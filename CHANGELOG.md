@@ -1,3 +1,12 @@
+# 2.0.0 Alpha 11 — Museum Scan Component Rewrite
+
+- Removed every previous sidebar scan UI implementation and rebuilt one component from scratch.
+- Added a single HTML partial, stylesheet, and JavaScript controller for Museum Scan.
+- Reduced scan presentation to four states: Idle, Scanning, Complete, and Error.
+- Added a visible Vault-blue light sweep during work and a final completion sweep.
+- Kept page load and navigation status-only; only the pill click can start a scan.
+- Audited and removed legacy scan callbacks and selector overrides.
+
 # 2.0.0 Alpha 10 — Museum Scan Shimmer
 
 - Replaced the subtle pulse with a calm Vault-blue light shimmer that sweeps across the scan pill while work is active.

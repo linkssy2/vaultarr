@@ -166,8 +166,6 @@
   padding-right: 0 !important;
   box-sizing: border-box !important;
 }
-.sidebar.vaultos-sidebar .sidebar-scan-shell,
-.sidebar.vaultos-sidebar .sidebar-scan-control,
 .sidebar.vaultos-sidebar .sidebar-search-shell,
 .sidebar.vaultos-sidebar .sidebar-footer,
 .sidebar.vaultos-sidebar .vault-build-card {
@@ -175,7 +173,6 @@
   max-width: none !important;
   box-sizing: border-box !important;
 }
-.sidebar.vaultos-sidebar .sidebar-scan-shell,
 .sidebar.vaultos-sidebar .sidebar-search-shell {
   margin-left: 0 !important;
   margin-right: 0 !important;
