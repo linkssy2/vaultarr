@@ -287,3 +287,6 @@ Timeline remains inside Discover, Museum Backup remains in Settings, and retired
 
 The login form is layered directly over the animated Orbital Core. The orbital panel is the login container; there is no separate opaque form card.
 
+## Alpha 18 — Settings Danger Zone
+
+**Reset Vault Settings** now lives at the absolute bottom of the Settings page, after Museum Backup. The action remains protected by its confirmation phrase and is visually isolated from ordinary configuration controls.

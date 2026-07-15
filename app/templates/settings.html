@@ -377,12 +377,16 @@
     </div>
   </section>
 
+
+
+  {% include "_museum_backup_settings.html" %}
+
   <section id="studioDangerZone" class="studio-section alive-panel danger-zone-panel">
     <div class="studio-section-head">
       <div>
         <p class="eyebrow danger-eyebrow">Danger Zone</p>
-        <h2>Reset Vault</h2>
-        <p class="muted">Clear the active database, library roots, provider settings, themes, and return Vaultarr to the first-run setup screen.</p>
+        <h2>Reset Vault Settings</h2>
+        <p class="muted">Reset Vaultarr preferences, active database, library roots, provider settings, and themes, then return to first-run setup.</p>
       </div>
       <span class="studio-section-badge danger-badge">Irreversible</span>
     </div>
@@ -407,13 +411,12 @@
         </div>
         <div class="studio-actions split">
           <a class="button-link secondary" href="#museum-backup">Make Museum Backup First</a>
-          <button class="danger" type="submit">Reset Vault</button>
+          <button class="danger" type="submit">Reset Vault Settings</button>
         </div>
       </form>
     </div>
   </section>
 
-  {% include "_museum_backup_settings.html" %}
 
 </section>
 

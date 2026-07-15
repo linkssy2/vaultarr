@@ -1,3 +1,10 @@
+## 2.0.0 Alpha 18 — Settings Danger Zone
+
+- Moved Reset Vault Settings to the absolute bottom of Settings, after Museum Backup.
+- Isolated the destructive reset flow in a clearly separated Danger Zone.
+- Preserved the existing confirmation phrase, backup protection options, and reset behavior.
+- Added responsive spacing so the section remains visually separated on laptops and mobile.
+
 ## 2.0.0 Alpha 17 — Unified Vault Login
 
 - Combined the login form and animated Orbital Core into one unified Vault panel.

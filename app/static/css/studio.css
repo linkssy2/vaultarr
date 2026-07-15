@@ -316,3 +316,25 @@ button.danger:hover {
 /* Vaultarr 1.2.0 manual catalog */
 .manual-catalog-panel{min-width:0}.manual-provider-state-list{display:grid;gap:10px;margin:16px 0}.manual-provider-state{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:12px 14px;border:1px solid var(--border);border-radius:12px;background:rgba(255,255,255,.025)}.manual-provider-state span{display:grid;gap:3px}.manual-provider-state small{color:var(--muted);font-size:.78rem}.manual-provider-state>strong{font-size:1.05rem}
 
+
+
+/* Vaultarr 2.0.0 Alpha 18 — Settings Danger Zone placement */
+#studioDangerZone {
+    margin-top: clamp(36px, 6vw, 72px);
+    margin-bottom: 0;
+    scroll-margin-top: 28px;
+}
+
+#studioDangerZone::before {
+    content: "";
+    display: block;
+    height: 1px;
+    margin: -24px 0 28px;
+    background: linear-gradient(90deg, transparent, rgba(248, 113, 113, 0.28), transparent);
+}
+
+@media (max-width: 760px) {
+    #studioDangerZone {
+        margin-top: 36px;
+    }
+}
