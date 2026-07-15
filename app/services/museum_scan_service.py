@@ -13,6 +13,7 @@ from app.services.curator_service import refresh_game_score, run_game
 _scan_lock = threading.Lock()
 _scan_thread = None
 _scan_session_id = ''
+_scan_heartbeat_stop = None
 
 
 def _now():
@@ -35,13 +36,33 @@ def _update(**fields):
     conn.close()
 
 
-def _recent_heartbeat(value: str, seconds: int = 120) -> bool:
+def _recent_heartbeat(value: str, seconds: int = 15) -> bool:
     if not value:
         return False
     try:
         return datetime.fromisoformat(value) >= datetime.now() - timedelta(seconds=seconds)
     except Exception:
         return False
+
+
+def _touch_heartbeat(session_id: str):
+    conn = get_connection()
+    conn.execute(
+        "UPDATE museum_scan_jobs SET heartbeat_at=?, updated_at=CURRENT_TIMESTAMP WHERE id=1 AND session_id=? AND status IN ('scanning','preparing')",
+        (_now(), session_id),
+    )
+    conn.commit()
+    conn.close()
+
+
+def _heartbeat_loop(session_id: str, stop_event: threading.Event):
+    while not stop_event.wait(3):
+        try:
+            _touch_heartbeat(session_id)
+        except Exception:
+            # The main worker remains authoritative; a later status request will
+            # identify a genuinely stale session if heartbeat writes keep failing.
+            pass
 
 
 def _reset_idle():
@@ -105,7 +126,15 @@ def _upsert_scanned_game(conn, game):
 
 
 def _run_scan(session_id: str):
+    global _scan_thread, _scan_session_id, _scan_heartbeat_stop
     added = updated = skipped = errors = completed = failed = 0
+    heartbeat_stop = threading.Event()
+    _scan_heartbeat_stop = heartbeat_stop
+    heartbeat_thread = threading.Thread(
+        target=_heartbeat_loop, args=(session_id, heartbeat_stop),
+        name=f'vaultarr-museum-heartbeat-{session_id[:8]}', daemon=True,
+    )
+    heartbeat_thread.start()
     try:
         _update(
             status='scanning', progress=1, stage='Scanning game folders',
@@ -169,10 +198,12 @@ def _run_scan(session_id: str):
     except Exception as exc:
         _update(status='failed', stage='Scan needs attention', last_error=str(exc), finished_at=_now())
     finally:
-        global _scan_thread, _scan_session_id
+        heartbeat_stop.set()
         with _scan_lock:
             _scan_thread = None
             _scan_session_id = ''
+            _scan_heartbeat_stop = None
+_scan_heartbeat_stop = None
 
 
 def start_scan(started_by: str = 'user_click'):

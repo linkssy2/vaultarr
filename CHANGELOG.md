@@ -1,3 +1,12 @@
+# 2.0.0 Alpha 9 — Truthful Scan Status
+
+- Removed the rotating refresh icon from the Museum Scan control.
+- Replaced it with a subtle blue activity pulse that matches the default theme.
+- Added a dedicated server heartbeat while long preparation stages are running.
+- Added a 15-second stalled-worker timeout so the scan pill cannot remain frozen indefinitely.
+- Interrupted scans now briefly report the interruption and return to the idle Scan Museum button.
+- Kept the existing fixed pill dimensions, progress line, sidebar alignment, Museum layout, and protected card interactions.
+
 # 2.0.0 Alpha 8 — Sidebar Utility Alignment
 
 - Matched Scan Museum and Search Museum to the Current build card width.

@@ -15,7 +15,9 @@
     stage: '',
     detail: '',
     boundButton: null,
-    destroyed: false
+    destroyed: false,
+    lastHeartbeatAt: 0,
+    lastServerAt: 0
   };
 
   const clamp = value => Math.max(0, Math.min(100, Number(value) || 0));
@@ -99,8 +101,6 @@
 
     const live = root.querySelector('.sidebar-scan-live');
     if (live) live.setAttribute('aria-hidden', String(mode === 'idle'));
-    const icon = root.querySelector('[data-museum-scan-icon]');
-    if (icon) icon.textContent = mode === 'complete' ? '✓' : mode === 'failed' ? '!' : '↻';
   }
 
   function clearTimers() {
@@ -132,6 +132,21 @@
     state.phaseTimer = window.setTimeout(finishReverse, hold);
   }
 
+  function parseHeartbeat(value) {
+    if (!value) return 0;
+    const parsed = Date.parse(value);
+    return Number.isFinite(parsed) ? parsed : 0;
+  }
+
+  function interruptStalledScan(message = 'Scan interrupted') {
+    state.running = false;
+    state.starting = false;
+    setMode('failed');
+    setText('[data-museum-scan-stage]', message, 'stage');
+    setText('[data-museum-scan-detail]', 'The scanner stopped responding. You can start it again.', 'detail');
+    scheduleReturnToIdle('failed');
+  }
+
   function render(data) {
     const status = data?.status || 'idle';
     const running = status === 'scanning' || status === 'preparing';
@@ -139,6 +154,12 @@
     state.starting = false;
 
     if (running) {
+      state.lastHeartbeatAt = parseHeartbeat(data?.heartbeat_at);
+      state.lastServerAt = Date.now();
+      if (!state.lastHeartbeatAt || Date.now() - state.lastHeartbeatAt > 15000) {
+        interruptStalledScan();
+        return;
+      }
       setMode('active');
       setProgress(data?.progress || 0, false);
       const stage = data?.stage || 'Scanning Museum';
@@ -179,7 +200,7 @@
   }
 
   async function readStatus() {
-    if (state.request || document.hidden || state.destroyed) return;
+    if (state.request || state.destroyed) return;
     const controller = new AbortController();
     state.request = controller;
     try {
@@ -193,7 +214,11 @@
       if (response.ok) render(await response.json());
     } catch (error) {
       if (error.name !== 'AbortError' && state.running) {
-        state.pollTimer = window.setTimeout(readStatus, 1500);
+        if (state.lastServerAt && Date.now() - state.lastServerAt > 15000) {
+          interruptStalledScan('Scan interrupted');
+        } else {
+          state.pollTimer = window.setTimeout(readStatus, 1500);
+        }
       }
     } finally {
       if (state.request === controller) state.request = null;
