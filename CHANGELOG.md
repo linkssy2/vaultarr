@@ -1,3 +1,10 @@
+## 2.0.0 Alpha 16 — Unified Vault Login
+
+- Combined the login form and animated Orbital Core into one unified Vault panel.
+- Moved the orbital scene behind the form with a dark glass overlay for readability.
+- Preserved authentication behavior, sessions, and password handling.
+- Added responsive scaling for laptop and mobile displays.
+
 ## 2.0.0 Alpha 15 — Discover Timeline Correction
 
 - Removed Timeline from the sidebar.

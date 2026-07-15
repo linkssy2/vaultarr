@@ -276,6 +276,10 @@ The **Scan Museum** button starts a scan only from an explicit click. Loading, r
 
 Backup configuration, restore, retention, and archive size live in **Settings → Museum Backup**. Release **Timeline** remains a section inside Discover and is not a separate sidebar page.
 
+## Alpha 16 — Unified Vault Login
+
+The login experience now uses one unified panel with the animated Blue V Orbital Core behind a centered glass login form. Authentication behavior is unchanged.
+
 ## Alpha 15 — Discover Timeline Correction
 
 Timeline remains inside Discover, Museum Backup remains in Settings, and retired Timeline/Metadata Queue routes redirect to their current destinations.
