@@ -283,3 +283,7 @@ The login experience now uses one unified panel with the animated Blue V Orbital
 ## Alpha 15 — Discover Timeline Correction
 
 Timeline remains inside Discover, Museum Backup remains in Settings, and retired Timeline/Metadata Queue routes redirect to their current destinations.
+## Alpha 17 — Orbital Login Overlay
+
+The login form is layered directly over the animated Orbital Core. The orbital panel is the login container; there is no separate opaque form card.
+

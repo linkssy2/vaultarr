@@ -1,4 +1,4 @@
-## 2.0.0 Alpha 16 — Unified Vault Login
+## 2.0.0 Alpha 17 — Unified Vault Login
 
 - Combined the login form and animated Orbital Core into one unified Vault panel.
 - Moved the orbital scene behind the form with a dark glass overlay for readability.
