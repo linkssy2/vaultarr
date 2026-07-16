@@ -30,28 +30,13 @@
       <h2>Your Curator found {{ stats.open_tasks }} way{% if stats.open_tasks != 1 %}s{% endif %} to improve the museum.</h2>
       <p>Missing artwork, information, manuals, and local-file checks are grouped into one simple review.</p>
       {% endif %}
-      <div class="curator-actions">
-        <a class="button-link" href="/museum?attention=1">Continue Curating</a>
-        <a class="button-link secondary" href="/discovery">Discover Games</a>
-      </div>
     </div>
     <div class="museum-health-ring" style="--health: {{ stats.health_score }}">
       <strong>{{ stats.health_score }}%</strong><span>Museum health</span>
     </div>
   </section>
 
-  {% if stats.continue_browsing %}
-  <section class="familiar-shelf">
-    <div class="familiar-shelf-head"><div><p class="eyebrow">Pick up where you left off</p><h2>Continue Browsing</h2></div></div>
-    <a class="continue-card" href="{{ stats.continue_browsing.url }}">
-      <div class="continue-art">{% if stats.continue_browsing.cover_path %}<img loading="lazy" decoding="async" src="/covers/{{ stats.continue_browsing.cover_path }}" alt="{{ stats.continue_browsing.title }}">{% else %}<span>V</span>{% endif %}</div>
-      <div><strong>{{ stats.continue_browsing.title }}</strong><small>{{ stats.continue_browsing.year or stats.continue_browsing.label }}</small><p>Open the museum record and continue exploring.</p></div>
-      <span class="continue-arrow">›</span>
-    </a>
-  </section>
-  {% endif %}
-
-  <section class="familiar-shelf">
+<section class="familiar-shelf">
     <div class="familiar-shelf-head"><div><p class="eyebrow">Freshly cataloged</p><h2>Recently Added</h2></div><a href="/museum?sort=added">View all</a></div>
     <div class="familiar-poster-row">
       {% for game in stats.recently_added[:8] %}

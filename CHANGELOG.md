@@ -1,3 +1,10 @@
+## 2.0.0 Alpha 24 — Home Simplification
+
+- Removed Continue Curating and Discover Games from the Home Curator spotlight.
+- Removed the Pick Up Where You Left Off / Continue Browsing section.
+- Recently Added now follows the Curator spotlight directly.
+- Left the Orbital Core, Curator status, Museum Health, Recently Added, and lower story cards unchanged.
+
 ## 2.0.0 Alpha 23 — Milestones Naming Cleanup
 
 - Renamed Collection Experience to Milestones.

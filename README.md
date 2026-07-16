@@ -311,3 +311,7 @@ The Milestones hero no longer repeats navigation actions available elsewhere. Ba
 
 The Milestones page now uses direct naming: **Milestones** for the page title and **Museum Progress** for the score gauge.
 
+## Alpha 24 — Home Simplification
+
+Home no longer duplicates Museum and Discover navigation in the Curator spotlight. The Continue Browsing shelf was also removed, allowing Recently Added to follow the museum status overview directly.
+
