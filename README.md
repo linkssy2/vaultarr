@@ -307,3 +307,7 @@ The Discover hero no longer repeats Museum navigation actions already available 
 
 The Milestones hero no longer repeats navigation actions available elsewhere. Badge and achievement content now starts closer to the page introduction, while all milestone functionality remains unchanged.
 
+## Alpha 23 — Milestones Naming Cleanup
+
+The Milestones page now uses direct naming: **Milestones** for the page title and **Museum Progress** for the score gauge.
+

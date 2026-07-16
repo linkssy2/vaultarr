@@ -1,3 +1,10 @@
+## 2.0.0 Alpha 23 — Milestones Naming Cleanup
+
+- Renamed Collection Experience to Milestones.
+- Renamed Vault Legacy to Museum Progress.
+- Simplified the hero description.
+- Reduced the hero height so milestone content appears sooner.
+
 ## 2.0.0 Alpha 22 — Milestones Simplification
 
 - Removed the redundant Improve Your Museum and Rediscover buttons from the Milestones hero.
