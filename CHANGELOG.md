@@ -1,3 +1,10 @@
+## 2.0.0 Alpha 26 — Milestone Meter Layout Fix
+
+- Fixed the Milestones hero text being rendered as a second circular power meter.
+- Restricted all liquid-energy meter styling to the actual progress ring.
+- Restored the heading and description to their normal text layout.
+- Preserved the aggregate Milestone Progress calculation and animation.
+
 ## 2.0.0 Alpha 25 — Living Milestone Meter
 
 - Changed the Milestones percentage to aggregate progress across every achievement target.

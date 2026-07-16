@@ -28,7 +28,28 @@
   animation: experienceNebula 28s ease-in-out infinite alternate;
 }
 
-.experience-hero-copy,
+
+.experience-hero-copy {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+  width: auto;
+  height: auto;
+  border-radius: 0;
+  display: block;
+  place-self: auto;
+  background: none;
+  box-shadow: none;
+  animation: none;
+  isolation: auto;
+  overflow: visible;
+}
+
+.experience-hero-copy::before,
+.experience-hero-copy::after {
+  content: none;
+}
+
 .experience-score-core {
   --meter-glow: color-mix(in srgb, var(--accent) 72%, #67e8f9);
   place-self: center;

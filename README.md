@@ -319,3 +319,7 @@ Home no longer duplicates Museum and Discover navigation in the Curator spotligh
 
 The Milestones ring now represents aggregate achievement progress. Partial progress toward every badge contributes to the percentage, while the gauge uses a living, liquid-energy blue animation with a breathing glow.
 
+## Alpha 26 — Milestone Meter Layout Fix
+
+Corrected a selector collision that applied the circular Milestone Progress styling to the hero text. The animated power meter remains unchanged.
+
