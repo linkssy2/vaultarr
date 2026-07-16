@@ -342,3 +342,7 @@ The Milestone Progress liquid is now clipped inside a dedicated inner glass cham
 ## Alpha 31 — Liquid Vessel Polish
 
 The Milestone Progress vessel now uses thicker inner and outer walls, darker Vaultarr-blue liquid, a brighter cyan surface, stronger glass depth, more natural slosh motion, and a bolder progress label.
+
+## Alpha 32 — SVG Liquid Core
+
+The Milestone vessel now uses two animated SVG wave layers, darker Vaultarr-blue liquid, visible internal currents, and a top-mounted progress label that stays inside the inner glass chamber.

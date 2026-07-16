@@ -1,3 +1,12 @@
+## 2.0.0 Alpha 32 — SVG Liquid Core
+
+- Rebuilt only the inner Milestone vessel using two animated SVG wave masks.
+- Darkened the liquid to a richer Vaultarr blue while keeping a bright cyan surface edge.
+- Added more visible slosh with independent foreground and background wave motion.
+- Added internal current movement and subtle rising particles.
+- Moved Milestone Progress above the percentage to prevent overflow outside the inner circle.
+- Kept the hero layout, vessel size, glass rings, milestone percentage, badges, and achievements unchanged.
+
 ## 2.0.0 Alpha 31 — Liquid Vessel Polish
 
 - Thickened both the outer shell and inner glass chamber.
