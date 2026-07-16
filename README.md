@@ -327,3 +327,7 @@ Corrected a selector collision that applied the circular Milestone Progress styl
 
 The Milestone Progress ring now animates under all motion settings. Reduced-motion mode keeps the breathing glow, liquid movement, and orbiting energy bead active at a slower pace.
 
+## Alpha 28 — Liquid Milestone Vessel
+
+Milestone Progress now fills the circle from the bottom upward according to the actual percentage. The liquid uses a brighter Vaultarr-blue glow with a softly animated surface and no outer orbit line.
+

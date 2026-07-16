@@ -51,7 +51,7 @@
 }
 
 .experience-score-core {
-  --meter-glow: color-mix(in srgb, var(--accent) 72%, #67e8f9);
+  --liquid-level: var(--score);
   place-self: center;
   width: 220px;
   height: 220px;
@@ -60,99 +60,107 @@
   place-items: center;
   position: relative;
   isolation: isolate;
+  overflow: hidden;
   background:
-    radial-gradient(circle, rgba(7, 15, 30, .99) 0 53%, transparent 54%),
-    conic-gradient(
-      from -90deg,
-      var(--meter-glow) 0 var(--score),
-      rgba(52, 72, 102, .28) var(--score) 100%
-    );
+    radial-gradient(circle at 50% 36%, rgba(26, 52, 92, .30), transparent 44%),
+    linear-gradient(180deg, rgba(8, 17, 34, .98), rgba(4, 10, 24, .99));
+  border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
   box-shadow:
-    0 0 28px color-mix(in srgb, var(--accent) 30%, transparent),
-    0 0 78px color-mix(in srgb, var(--accent) 22%, transparent),
+    0 0 34px color-mix(in srgb, var(--accent) 28%, transparent),
+    0 0 86px color-mix(in srgb, var(--accent) 18%, transparent),
     inset 0 0 42px rgba(0, 0, 0, .62);
-  animation: milestoneBreath 4.8s ease-in-out infinite;
+  animation: milestoneVesselBreath 5.4s ease-in-out infinite;
 }
 
 .experience-score-core::before {
   content: "";
   position: absolute;
-  inset: 15px;
-  z-index: -1;
-  border-radius: inherit;
-  padding: 14px;
-  background:
-    conic-gradient(
-      from var(--liquid-angle, -90deg),
-      rgba(255,255,255,.04),
-      color-mix(in srgb, var(--accent) 88%, white) 11%,
-      rgba(125, 211, 252, .18) 22%,
-      transparent 34% 76%,
-      rgba(255,255,255,.06)
-    );
-  -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  opacity: .72;
-  filter: blur(1.2px);
-  animation: milestoneLiquidOrbit 7s linear infinite;
+  inset: 12px;
+  z-index: 0;
+  border-radius: 50%;
+  border: 1px solid rgba(125, 211, 252, .14);
+  box-shadow:
+    inset 0 0 24px rgba(56, 189, 248, .10),
+    0 0 20px rgba(56, 189, 248, .08);
+  pointer-events: none;
 }
 
 .experience-score-core::after {
   content: "";
   position: absolute;
-  inset: -20px;
-  z-index: -2;
-  border-radius: inherit;
+  inset: -18px;
+  z-index: -1;
+  border-radius: 50%;
   background: radial-gradient(
     circle,
-    transparent 52%,
-    color-mix(in srgb, var(--accent) 20%, transparent) 64%,
-    transparent 76%
+    color-mix(in srgb, var(--accent) 18%, transparent) 0 44%,
+    transparent 70%
   );
-  filter: blur(10px);
-  animation: milestoneHalo 4.8s ease-in-out infinite;
+  filter: blur(14px);
+  opacity: .72;
+  animation: milestoneVesselHalo 5.4s ease-in-out infinite;
 }
 
 .experience-score-core .milestone-liquid {
   position: absolute;
-  inset: 22px;
-  z-index: -1;
-  border-radius: 50%;
-  overflow: hidden;
-  pointer-events: none;
+  z-index: 1;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: var(--liquid-level);
+  min-height: 0;
+  overflow: visible;
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--accent) 88%, white) 0%,
+      var(--accent) 18%,
+      color-mix(in srgb, var(--primary) 88%, #0ea5e9) 100%
+    );
+  box-shadow:
+    0 -10px 26px color-mix(in srgb, var(--accent) 62%, transparent),
+    0 0 34px color-mix(in srgb, var(--accent) 36%, transparent),
+    inset 0 14px 22px rgba(255,255,255,.16);
+  transition: height 700ms cubic-bezier(.2,.8,.2,1);
 }
 
 .experience-score-core .milestone-liquid::before,
 .experience-score-core .milestone-liquid::after {
   content: "";
   position: absolute;
-  left: -22%;
-  width: 144%;
-  height: 48%;
-  border-radius: 42%;
-  background:
-    radial-gradient(circle at 35% 35%, rgba(255,255,255,.34), transparent 16%),
-    linear-gradient(90deg,
-      color-mix(in srgb, var(--primary) 72%, transparent),
-      color-mix(in srgb, var(--accent) 78%, white),
-      color-mix(in srgb, var(--primary) 72%, transparent));
-  opacity: .28;
-  filter: blur(4px);
-  transform-origin: 50% 52%;
+  left: -12%;
+  width: 124%;
+  height: 26px;
+  top: -12px;
+  border-radius: 46%;
+  transform-origin: 50% 50%;
+  pointer-events: none;
 }
 
 .experience-score-core .milestone-liquid::before {
-  bottom: -14%;
-  animation: milestoneWave 8s ease-in-out infinite;
+  background:
+    radial-gradient(circle at 40% 40%, rgba(255,255,255,.64), transparent 18%),
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--accent) 80%, #38bdf8),
+      color-mix(in srgb, var(--accent) 94%, white),
+      color-mix(in srgb, var(--accent) 80%, #38bdf8)
+    );
+  filter: blur(.4px);
+  opacity: .96;
+  box-shadow:
+    0 0 16px color-mix(in srgb, var(--accent) 90%, white),
+    0 0 30px color-mix(in srgb, var(--accent) 68%, transparent);
+  animation: milestoneSurfaceWave 5.8s ease-in-out infinite;
 }
 
 .experience-score-core .milestone-liquid::after {
-  bottom: -19%;
-  opacity: .17;
-  animation: milestoneWaveReverse 11s ease-in-out infinite;
+  top: -8px;
+  height: 18px;
+  background: rgba(125, 211, 252, .44);
+  filter: blur(5px);
+  opacity: .76;
+  animation: milestoneSurfaceWaveReverse 8s ease-in-out infinite;
 }
 
 .experience-score-core span {
@@ -161,44 +169,26 @@
   font-size: 48px;
   font-weight: 900;
   letter-spacing: -.07em;
+  color: white;
   text-shadow:
-    0 0 12px rgba(255,255,255,.16),
-    0 0 26px color-mix(in srgb, var(--accent) 35%, transparent);
+    0 0 12px rgba(255,255,255,.18),
+    0 0 28px color-mix(in srgb, var(--accent) 45%, transparent);
 }
 
 .experience-score-core small {
   position: absolute;
   z-index: 3;
   bottom: 52px;
-  color: var(--text-muted);
+  color: rgba(219, 234, 254, .76);
   letter-spacing: .13em;
   text-transform: uppercase;
   font-size: 10px;
   white-space: nowrap;
+  text-shadow: 0 0 10px rgba(2, 8, 23, .76);
 }
 
 .experience-score-core i {
-  position: absolute;
-  inset: -14px;
-  z-index: 2;
-  border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
-  border-radius: inherit;
-  animation: milestoneEnergyOrbit 10s linear infinite;
-}
-
-.experience-score-core i::before {
-  content: "";
-  position: absolute;
-  top: 17px;
-  left: 50%;
-  width: 8px;
-  height: 8px;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--accent) 82%, white);
-  box-shadow:
-    0 0 10px color-mix(in srgb, var(--accent) 92%, white),
-    0 0 26px var(--accent),
-    0 0 44px color-mix(in srgb, var(--accent) 62%, transparent);
+  display: none;
 }
 
 .experience-panel {
@@ -463,44 +453,30 @@
   to { transform: translate3d(18px, 14px, 0) rotate(1deg); }
 }
 
-@keyframes milestoneBreath {
+@keyframes milestoneVesselBreath {
   0%, 100% {
     transform: scale(1);
     filter: brightness(1) saturate(1);
   }
   50% {
-    transform: scale(1.028);
-    filter: brightness(1.22) saturate(1.18);
+    transform: scale(1.018);
+    filter: brightness(1.13) saturate(1.10);
   }
 }
 
-@keyframes milestoneHalo {
-  0%, 100% { opacity: .42; transform: scale(.97); }
-  50% { opacity: .95; transform: scale(1.075); }
+@keyframes milestoneVesselHalo {
+  0%, 100% { opacity: .52; transform: scale(.98); }
+  50% { opacity: .88; transform: scale(1.055); }
 }
 
-@keyframes milestoneEnergyOrbit {
-  to { transform: rotate(360deg); }
+@keyframes milestoneSurfaceWave {
+  0%, 100% { transform: translateX(-2%) rotate(-2deg) scaleX(1.02); }
+  50% { transform: translateX(3%) rotate(2deg) scaleX(1.08); }
 }
 
-@keyframes milestoneLiquidOrbit {
-  to { transform: rotate(360deg); }
-}
-
-@keyframes milestoneWave {
-  0%, 100% { transform: translate3d(-2%, 4%, 0) rotate(-5deg) scale(1.04); }
-  50% { transform: translate3d(3%, -4%, 0) rotate(7deg) scale(1.12); }
-}
-
-@keyframes milestoneWaveReverse {
-  0%, 100% { transform: translate3d(4%, -2%, 0) rotate(8deg) scale(1.08); }
-  50% { transform: translate3d(-4%, 5%, 0) rotate(-8deg) scale(1.16); }
-}
-
-@property --liquid-angle {
-  syntax: "<angle>";
-  initial-value: -90deg;
-  inherits: false;
+@keyframes milestoneSurfaceWaveReverse {
+  0%, 100% { transform: translateX(3%) rotate(2deg) scaleX(1.04); }
+  50% { transform: translateX(-3%) rotate(-2deg) scaleX(1.10); }
 }
 
 @media (max-width: 1200px) {
@@ -529,27 +505,18 @@
 
 @media (prefers-reduced-motion: reduce) {
   .experience-score-core {
-    animation-duration: 8s !important;
-    filter: brightness(1.08);
-  }
-
-  .experience-score-core::before {
-    animation-duration: 14s !important;
+    animation-duration: 9s !important;
   }
 
   .experience-score-core::after {
-    animation-duration: 8s !important;
+    animation-duration: 9s !important;
   }
 
   .experience-score-core .milestone-liquid::before {
-    animation-duration: 14s !important;
+    animation-duration: 12s !important;
   }
 
   .experience-score-core .milestone-liquid::after {
-    animation-duration: 18s !important;
-  }
-
-  .experience-score-core i {
-    animation-duration: 18s !important;
+    animation-duration: 16s !important;
   }
 }

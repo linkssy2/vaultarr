@@ -1,3 +1,12 @@
+## 2.0.0 Alpha 28 — Liquid Milestone Vessel
+
+- Replaced the circular bar meter with a true liquid-filled progress vessel.
+- Liquid height now directly matches the Milestone Progress percentage.
+- Removed the thin outer orbit line and moving bead.
+- Removed the independent center liquid effect.
+- Added brighter Vaultarr-blue liquid, a glowing surface edge, and calm breathing bloom.
+- Kept milestone calculations, badges, achievements, and page layout unchanged.
+
 ## 2.0.0 Alpha 27 — Milestone Animation Restore
 
 - Restored the Milestone Progress breathing, liquid movement, halo, and orbiting energy bead.
