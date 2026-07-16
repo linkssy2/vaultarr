@@ -323,3 +323,7 @@ The Milestones ring now represents aggregate achievement progress. Partial progr
 
 Corrected a selector collision that applied the circular Milestone Progress styling to the hero text. The animated power meter remains unchanged.
 
+## Alpha 27 — Milestone Animation Restore
+
+The Milestone Progress ring now animates under all motion settings. Reduced-motion mode keeps the breathing glow, liquid movement, and orbiting energy bead active at a slower pace.
+

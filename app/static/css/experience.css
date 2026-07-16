@@ -139,8 +139,8 @@
       color-mix(in srgb, var(--primary) 72%, transparent),
       color-mix(in srgb, var(--accent) 78%, white),
       color-mix(in srgb, var(--primary) 72%, transparent));
-  opacity: .18;
-  filter: blur(5px);
+  opacity: .28;
+  filter: blur(4px);
   transform-origin: 50% 52%;
 }
 
@@ -151,7 +151,7 @@
 
 .experience-score-core .milestone-liquid::after {
   bottom: -19%;
-  opacity: .11;
+  opacity: .17;
   animation: milestoneWaveReverse 11s ease-in-out infinite;
 }
 
@@ -469,14 +469,14 @@
     filter: brightness(1) saturate(1);
   }
   50% {
-    transform: scale(1.018);
-    filter: brightness(1.15) saturate(1.12);
+    transform: scale(1.028);
+    filter: brightness(1.22) saturate(1.18);
   }
 }
 
 @keyframes milestoneHalo {
-  0%, 100% { opacity: .46; transform: scale(.98); }
-  50% { opacity: .86; transform: scale(1.05); }
+  0%, 100% { opacity: .42; transform: scale(.97); }
+  50% { opacity: .95; transform: scale(1.075); }
 }
 
 @keyframes milestoneEnergyOrbit {
@@ -528,16 +528,28 @@
 
 
 @media (prefers-reduced-motion: reduce) {
-  .experience-score-core,
-  .experience-score-core::before,
-  .experience-score-core::after,
-  .experience-score-core .milestone-liquid::before,
-  .experience-score-core .milestone-liquid::after,
-  .experience-score-core i {
-    animation: none !important;
+  .experience-score-core {
+    animation-duration: 8s !important;
+    filter: brightness(1.08);
   }
 
-  .experience-score-core {
-    filter: brightness(1.08);
+  .experience-score-core::before {
+    animation-duration: 14s !important;
+  }
+
+  .experience-score-core::after {
+    animation-duration: 8s !important;
+  }
+
+  .experience-score-core .milestone-liquid::before {
+    animation-duration: 14s !important;
+  }
+
+  .experience-score-core .milestone-liquid::after {
+    animation-duration: 18s !important;
+  }
+
+  .experience-score-core i {
+    animation-duration: 18s !important;
   }
 }

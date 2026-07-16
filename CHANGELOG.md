@@ -1,3 +1,10 @@
+## 2.0.0 Alpha 27 — Milestone Animation Restore
+
+- Restored the Milestone Progress breathing, liquid movement, halo, and orbiting energy bead.
+- Reduced-motion mode now uses slower, calmer animation instead of disabling it.
+- Increased liquid visibility slightly so the power-meter movement is easier to perceive.
+- Kept the corrected Milestones layout and milestone-based percentage calculation unchanged.
+
 ## 2.0.0 Alpha 26 — Milestone Meter Layout Fix
 
 - Fixed the Milestones hero text being rendered as a second circular power meter.
