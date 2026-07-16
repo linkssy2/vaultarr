@@ -1,3 +1,16 @@
+## 2.0.0 Alpha 35 — Fluid Simulation Lifecycle
+
+- Refined the canvas liquid surface into a coherent spring-point simulation with damping, tension, inertia, and direct neighbor propagation.
+- Kept motion calm and visibly fluid while preserving the percentage-based fill level and inner-vessel clipping.
+- Mapped fill depth to the vessel's visible interior so low percentages remain visible above the glass border.
+- Strengthened the canvas surface crest so very low progress remains legible without inflating the liquid body.
+- Deepened the existing two-layer enclosure with refracted highlights, a sealed contact rim, and embedded mounting shadows while preserving its dimensions and structure.
+- Removed continuous forcing and timer-driven disturbances so the surface reacts only to simulated bubble pops.
+- Made each bubble pop inject a strong localized impulse across nearby spring points, producing pronounced waves that spread and settle naturally.
+- Corrected smooth-navigation mounting to use Vaultarr's actual page-loaded lifecycle event.
+- Removed the obsolete navigation callback and now dispose detached liquid engines, observers, and visibility listeners.
+- Kept the protected two-layer container, vessel dimensions, curved label alignment, hero layout, badges, achievements, routes, and sidebar unchanged.
+
 ## 2.0.0 Alpha 34 — Physics Liquid Core
 
 - Replaced the layered SVG liquid artwork with a runtime canvas spring-fluid simulation.

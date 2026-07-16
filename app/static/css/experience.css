@@ -61,14 +61,19 @@
   isolation: isolate;
   overflow: visible;
   background:
-    radial-gradient(circle at 50% 22%, rgba(56, 116, 182, .12), transparent 34%),
-    linear-gradient(180deg, rgba(5, 13, 28, .99), rgba(2, 7, 18, .99));
+    radial-gradient(circle at 38% 18%, rgba(151, 218, 255, .11), transparent 24%),
+    radial-gradient(circle at 50% 50%, rgba(16, 69, 137, .15), transparent 62%),
+    linear-gradient(180deg, rgba(7, 17, 34, .99), rgba(1, 5, 14, .995));
   border: 6px solid rgba(24, 82, 151, .54);
   box-shadow:
+    inset 0 2px 2px rgba(196, 235, 255, .10),
+    inset 0 -8px 18px rgba(0, 0, 0, .68),
     inset 0 0 36px rgba(10, 48, 104, .28),
     inset 0 0 72px rgba(0, 0, 0, .78),
-    0 0 24px rgba(24, 111, 224, .16),
-    0 0 58px rgba(0, 70, 174, .10);
+    0 2px 0 rgba(129, 205, 255, .08),
+    0 10px 24px rgba(0, 0, 0, .48),
+    0 0 24px rgba(24, 111, 224, .18),
+    0 0 58px rgba(0, 70, 174, .11);
   animation: milestoneVesselBreath 6.2s ease-in-out infinite;
 }
 
@@ -115,9 +120,29 @@
     linear-gradient(180deg, rgba(4, 12, 26, .98), rgba(1, 5, 15, .99));
   border: 6px solid rgba(39, 104, 181, .48);
   box-shadow:
-    inset 0 0 28px rgba(50, 134, 224, .14),
+    inset 0 2px 3px rgba(210, 242, 255, .16),
+    inset 8px 0 18px rgba(73, 159, 239, .08),
+    inset -9px -13px 24px rgba(0, 0, 0, .54),
+    inset 0 0 28px rgba(50, 134, 224, .16),
     inset 0 0 58px rgba(0, 0, 0, .58),
-    0 0 12px rgba(20, 107, 224, .08);
+    0 0 0 2px rgba(0, 4, 13, .82),
+    0 0 0 5px rgba(53, 139, 225, .08),
+    0 8px 16px rgba(0, 0, 0, .42),
+    0 0 12px rgba(20, 107, 224, .10);
+}
+
+.experience-score-core .milestone-vessel::before {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  z-index: 2;
+  border-radius: 50%;
+  border: 1px solid rgba(167, 221, 255, .13);
+  box-shadow:
+    inset 0 1px 1px rgba(225, 248, 255, .13),
+    inset 0 -2px 5px rgba(0, 0, 0, .28),
+    0 0 8px rgba(70, 171, 255, .06);
+  pointer-events: none;
 }
 
 .experience-score-core .milestone-vessel::after {
@@ -127,8 +152,10 @@
   z-index: 3;
   border-radius: 50%;
   background:
-    linear-gradient(145deg, rgba(255,255,255,.10), transparent 24% 72%, rgba(83, 164, 246, .05)),
-    radial-gradient(circle at 42% 14%, rgba(255,255,255,.09), transparent 18%);
+    linear-gradient(143deg, rgba(224,246,255,.16), transparent 19% 68%, rgba(83,164,246,.07)),
+    linear-gradient(96deg, transparent 12%, rgba(196,235,255,.035) 28%, transparent 43%),
+    radial-gradient(circle at 39% 13%, rgba(238,250,255,.15), transparent 17%),
+    radial-gradient(circle at 69% 76%, transparent 48%, rgba(0,0,0,.16) 78%);
   pointer-events: none;
 }
 

@@ -2,6 +2,7 @@
   "use strict";
 
   const ENGINE_KEY = "__vaultarrMilestoneLiquidEngine";
+  const engines = new Set();
 
   class SpringLiquid {
     constructor(core) {
@@ -16,7 +17,6 @@
       this.visible = true;
       this.lastTime = 0;
       this.accumulator = 0;
-      this.impulseTimer = 0;
       this.resizeObserver = null;
       this.intersectionObserver = null;
 
@@ -32,6 +32,7 @@
       this.intersectionObserver = new IntersectionObserver(([entry]) => {
         this.visible = Boolean(entry?.isIntersecting);
         if (this.visible) this.start();
+        else this.stop();
       }, { threshold: 0.05 });
       this.intersectionObserver.observe(this.core);
 
@@ -56,7 +57,11 @@
       this.radius = Math.min(this.width, this.height) / 2;
       this.centerX = this.width / 2;
       this.centerY = this.height / 2;
-      this.baseY = this.height * (1 - this.progress / 100);
+      const vesselStyle = getComputedStyle(this.vessel);
+      const borderWidth = Number.parseFloat(vesselStyle.borderTopWidth) || 0;
+      this.liquidTop = borderWidth;
+      this.liquidBottom = this.height - borderWidth;
+      this.baseY = this.liquidBottom - (this.liquidBottom - this.liquidTop) * (this.progress / 100);
 
       const pointCount = 34;
       this.points = Array.from({ length: pointCount }, (_, index) => ({
@@ -70,10 +75,10 @@
     }
 
     makeParticle(randomY = false) {
-      const liquidDepth = Math.max(4, this.height - this.baseY);
+      const liquidDepth = Math.max(4, this.liquidBottom - this.baseY);
       return {
         x: Math.random() * this.width,
-        y: randomY ? this.baseY + Math.random() * liquidDepth : this.height + Math.random() * 12,
+        y: randomY ? this.baseY + Math.random() * liquidDepth : this.liquidBottom + Math.random() * 12,
         radius: 0.45 + Math.random() * 1.15,
         speed: 4 + Math.random() * 8,
         alpha: 0.13 + Math.random() * 0.28,
@@ -82,7 +87,8 @@
     }
 
     onVisibilityChange() {
-      if (!document.hidden) this.start();
+      if (document.hidden) this.stop();
+      else this.start();
     }
 
     start() {
@@ -96,51 +102,38 @@
       this.running = false;
     }
 
-    disturb(strength = 7) {
+    disturbAt(x, strength = 7, direction = -1) {
       if (!this.points.length || this.progress <= 0) return;
-      const center = 4 + Math.floor(Math.random() * Math.max(1, this.points.length - 8));
-      const direction = Math.random() > 0.5 ? 1 : -1;
+      const rawIndex = Math.round((x / Math.max(1, this.width)) * (this.points.length - 1));
+      const center = Math.max(2, Math.min(this.points.length - 3, rawIndex));
       this.points[center].velocity += strength * direction;
       if (this.points[center - 1]) this.points[center - 1].velocity += strength * 0.45 * direction;
       if (this.points[center + 1]) this.points[center + 1].velocity += strength * 0.55 * direction;
+      if (this.points[center - 2]) this.points[center - 2].velocity += strength * 0.16 * direction;
+      if (this.points[center + 2]) this.points[center + 2].velocity += strength * 0.20 * direction;
     }
 
     update(dt) {
-      const tension = 28;
-      const damping = 4.4;
-      const spread = 18;
-      const maxOffset = Math.max(3, Math.min(11, (this.height - this.baseY) * 0.36));
+      const tension = 22;
+      const damping = 2.9;
+      const spread = 29;
+      const maxOffset = Math.max(3, Math.min(11, (this.liquidBottom - this.baseY) * 0.36));
+      const accelerations = new Array(this.points.length).fill(0);
 
-      for (const point of this.points) {
+      for (let i = 0; i < this.points.length; i += 1) {
+        const point = this.points[i];
         const displacement = point.y - this.baseY;
-        point.velocity += (-tension * displacement - damping * point.velocity) * dt;
+        const leftY = this.points[i - 1]?.y ?? point.y;
+        const rightY = this.points[i + 1]?.y ?? point.y;
+        const neighborCurve = leftY + rightY - point.y * 2;
+        accelerations[i] = -tension * displacement - damping * point.velocity + spread * neighborCurve;
       }
 
-      const leftDeltas = new Array(this.points.length).fill(0);
-      const rightDeltas = new Array(this.points.length).fill(0);
-
-      for (let pass = 0; pass < 4; pass += 1) {
-        for (let i = 0; i < this.points.length; i += 1) {
-          if (i > 0) {
-            leftDeltas[i] = spread * (this.points[i].y - this.points[i - 1].y) * dt;
-            this.points[i - 1].velocity += leftDeltas[i];
-          }
-          if (i < this.points.length - 1) {
-            rightDeltas[i] = spread * (this.points[i].y - this.points[i + 1].y) * dt;
-            this.points[i + 1].velocity += rightDeltas[i];
-          }
-        }
-      }
-
-      for (const point of this.points) {
+      for (let i = 0; i < this.points.length; i += 1) {
+        const point = this.points[i];
+        point.velocity += accelerations[i] * dt;
         point.y += point.velocity * dt;
         point.y = Math.max(this.baseY - maxOffset, Math.min(this.baseY + maxOffset, point.y));
-      }
-
-      this.impulseTimer -= dt;
-      if (this.impulseTimer <= 0) {
-        this.disturb(4.8 + Math.random() * 4.2);
-        this.impulseTimer = 1.1 + Math.random() * 2.3;
       }
 
       for (let i = 0; i < this.particles.length; i += 1) {
@@ -148,6 +141,7 @@
         particle.y -= particle.speed * dt;
         particle.x += Math.sin((particle.y + i * 11) * 0.045) * particle.drift * dt;
         if (particle.y < this.baseY + 4) {
+          this.disturbAt(particle.x, 13 + particle.radius * 7, -1);
           this.particles[i] = this.makeParticle(false);
         }
       }
@@ -180,11 +174,11 @@
 
       if (this.progress > 0 && this.points.length) {
         this.surfacePath(ctx);
-        ctx.lineTo(this.width, this.height);
-        ctx.lineTo(0, this.height);
+        ctx.lineTo(this.width, this.liquidBottom);
+        ctx.lineTo(0, this.liquidBottom);
         ctx.closePath();
 
-        const fill = ctx.createLinearGradient(0, this.baseY - 12, 0, this.height);
+        const fill = ctx.createLinearGradient(0, this.baseY - 12, 0, this.liquidBottom);
         fill.addColorStop(0, "#087bf2");
         fill.addColorStop(0.28, "#005bd7");
         fill.addColorStop(0.68, "#003d9f");
@@ -197,28 +191,28 @@
         ctx.save();
         this.surfacePath(ctx);
         const surfaceGradient = ctx.createLinearGradient(0, this.baseY - 7, 0, this.baseY + 8);
-        surfaceGradient.addColorStop(0, "rgba(164, 244, 255, .98)");
-        surfaceGradient.addColorStop(0.35, "rgba(61, 211, 255, .96)");
-        surfaceGradient.addColorStop(1, "rgba(5, 109, 239, .32)");
+        surfaceGradient.addColorStop(0, "rgba(211, 252, 255, 1)");
+        surfaceGradient.addColorStop(0.35, "rgba(80, 225, 255, 1)");
+        surfaceGradient.addColorStop(1, "rgba(5, 109, 239, .48)");
         ctx.strokeStyle = surfaceGradient;
-        ctx.lineWidth = 3;
-        ctx.shadowColor = "rgba(87, 226, 255, .95)";
-        ctx.shadowBlur = 14;
+        ctx.lineWidth = 5.5;
+        ctx.shadowColor = "rgba(87, 226, 255, 1)";
+        ctx.shadowBlur = 22;
         ctx.stroke();
         ctx.restore();
 
         const current = ctx.createRadialGradient(
-          this.width * 0.32, this.baseY + (this.height - this.baseY) * 0.52, 2,
-          this.width * 0.44, this.baseY + (this.height - this.baseY) * 0.62, this.width * 0.72
+          this.width * 0.32, this.baseY + (this.liquidBottom - this.baseY) * 0.52, 2,
+          this.width * 0.44, this.baseY + (this.liquidBottom - this.baseY) * 0.62, this.width * 0.72
         );
         current.addColorStop(0, "rgba(29, 150, 255, .25)");
         current.addColorStop(0.45, "rgba(0, 95, 230, .10)");
         current.addColorStop(1, "rgba(0, 20, 76, 0)");
         ctx.fillStyle = current;
-        ctx.fillRect(0, this.baseY, this.width, this.height - this.baseY);
+        ctx.fillRect(0, this.baseY, this.width, this.liquidBottom - this.baseY);
 
         for (const particle of this.particles) {
-          if (particle.y < this.baseY || particle.y > this.height) continue;
+          if (particle.y < this.baseY || particle.y > this.liquidBottom) continue;
           ctx.beginPath();
           ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
           ctx.fillStyle = `rgba(151, 225, 255, ${particle.alpha})`;
@@ -257,29 +251,32 @@
       this.resizeObserver?.disconnect();
       this.intersectionObserver?.disconnect();
       document.removeEventListener("visibilitychange", this.onVisibilityChange);
+      engines.delete(this);
+      if (this.core?.[ENGINE_KEY] === this) delete this.core[ENGINE_KEY];
     }
   }
 
   function mount() {
     document.querySelectorAll(".experience-score-core").forEach((core) => {
       if (core[ENGINE_KEY]) return;
-      core[ENGINE_KEY] = new SpringLiquid(core);
+      const engine = new SpringLiquid(core);
+      core[ENGINE_KEY] = engine;
+      engines.add(engine);
     });
   }
 
   function cleanupDetached() {
-    document.querySelectorAll(".experience-score-core").forEach((core) => {
-      const engine = core[ENGINE_KEY];
-      if (engine && !document.body.contains(core)) {
-        engine.destroy();
-        delete core[ENGINE_KEY];
-      }
-    });
+    for (const engine of engines) {
+      if (!document.body.contains(engine.core)) engine.destroy();
+    }
   }
 
   document.addEventListener("DOMContentLoaded", mount);
   window.addEventListener("pageshow", mount);
-  document.addEventListener("vaultarr:navigation-complete", mount);
+  document.addEventListener("vaultarr:page-loaded", () => {
+    cleanupDetached();
+    mount();
+  });
 
   const observer = new MutationObserver(() => {
     cleanupDetached();

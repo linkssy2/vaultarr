@@ -1,6 +1,6 @@
-# Vaultarr 2.0.0 Alpha 14
+# Vaultarr 2.0.0 Alpha 35
 
-> Experimental release: **Vaultarr 2.0.0 Alpha 14 — Visible Scan Shimmer**
+> Experimental release: **Vaultarr 2.0.0 Alpha 35 — Fluid Simulation Lifecycle**
 
 
 ## Alpha 12 scan shimmer
@@ -354,3 +354,7 @@ The Milestone core now has only an outer housing and inner glass vessel. Its liq
 ## Alpha 34 — Physics Liquid Core
 
 The Milestone vessel now uses a lightweight canvas spring-fluid simulation with real secondary motion. The Milestone Progress label follows the upper inner arc of the vessel.
+
+## Alpha 35 — Fluid Simulation Lifecycle
+
+The Milestone liquid now reacts only when rising particles pop at the surface. Each pop injects a strong localized impulse into nearby spring points, producing pronounced waves that spread through neighbor propagation and settle naturally through damping. Fill depth is mapped to the visible vessel interior so even low progress remains visible above the glass border. The same two-layer enclosure gains refracted highlights, a sealed contact rim, and embedded mounting depth without changing its dimensions. Smooth page navigation mounts and disposes the canvas engine through Vaultarr's current lifecycle while the fill percentage and curved upper label remain unchanged.
