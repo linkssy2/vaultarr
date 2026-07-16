@@ -1,3 +1,12 @@
+## 2.0.0 Alpha 29 — Glass Liquid Milestone Vessel
+
+- Kept the existing Milestones hero layout and circular gauge size.
+- Replaced only the gauge internals with a glass liquid vessel.
+- Liquid height directly matches Milestone Progress.
+- Added two calm wave layers, a bright cyan surface edge, drifting particles, and stronger Vaultarr-blue glow.
+- Removed radial bar visuals, outer orbit lines, and orbiting dots.
+- Kept milestone calculations, badges, achievements, and all other page systems unchanged.
+
 ## 2.0.0 Alpha 28 — Liquid Milestone Vessel
 
 - Replaced the circular bar meter with a true liquid-filled progress vessel.

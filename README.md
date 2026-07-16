@@ -331,3 +331,7 @@ The Milestone Progress ring now animates under all motion settings. Reduced-moti
 
 Milestone Progress now fills the circle from the bottom upward according to the actual percentage. The liquid uses a brighter Vaultarr-blue glow with a softly animated surface and no outer orbit line.
 
+## Alpha 29 — Glass Liquid Milestone Vessel
+
+The Milestones hero remains unchanged, but the circular gauge now behaves like a glowing glass vessel. Liquid height matches the percentage and includes layered waves, drifting particles, and a brighter Vaultarr-blue glow.
+
