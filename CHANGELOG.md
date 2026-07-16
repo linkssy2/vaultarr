@@ -1,3 +1,12 @@
+## 2.0.0 Alpha 25 — Living Milestone Meter
+
+- Changed the Milestones percentage to aggregate progress across every achievement target.
+- Completed achievements contribute fully, while partial achievements contribute proportionally.
+- Renamed the gauge to Milestone Progress.
+- Rebuilt the ring as a breathing blue power meter with liquid-like energy movement and a traveling light bead.
+- Added reduced-motion support that preserves the glow while stopping continuous movement.
+- Left badges, achievements, scoring targets, Museum cards, scan controls, and navigation unchanged.
+
 ## 2.0.0 Alpha 24 — Home Simplification
 
 - Removed Continue Curating and Discover Games from the Home Curator spotlight.

@@ -129,13 +129,12 @@ def get_collection_experience():
         LIMIT 8
     """)
 
-    vault_score = round((
-        _percent(metadata_games, total_games or 1) * 0.22 +
-        _percent(cover_games, total_games or 1) * 0.18 +
-        _percent(manual_games, total_games or 1) * 0.20 +
-        _percent(gallery_games, total_games or 1) * 0.15 +
-        _percent(complete_games, total_games or 1) * 0.25
-    )) if total_games else 0
+    # Overall Milestone Progress uses every badge target as part of the goal.
+    # Completed badges contribute 100%, while in-progress badges contribute
+    # proportionally up to their target.
+    milestone_current = sum(min(max(int(b.get('value') or 0), 0), max(int(b.get('target') or 0), 0)) for b in badges)
+    milestone_total = sum(max(int(b.get('target') or 0), 0) for b in badges)
+    milestone_progress = round((milestone_current / milestone_total) * 100) if milestone_total else 0
 
     conn.close()
 
@@ -156,5 +155,5 @@ def get_collection_experience():
         'franchise_signals': franchise_signals,
         'timeline_badges': timeline_badges,
         'recent_candidates': recent_candidates,
-        'vault_score': vault_score,
+        'milestone_progress': milestone_progress,
     }

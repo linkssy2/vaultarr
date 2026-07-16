@@ -9,10 +9,11 @@
       <p class="muted hero-copy">Celebrate your progress as your museum grows.</p>
     </div>
 
-    <div class="experience-score-core" style="--score: {{ vault_score }}%;">
-      <span>{{ vault_score }}%</span>
-      <small>Museum Progress</small>
-      <i></i>
+    <div class="experience-score-core" style="--score: {{ milestone_progress }}%;" aria-label="{{ milestone_progress }} percent milestone progress">
+      <b class="milestone-liquid" aria-hidden="true"></b>
+      <span>{{ milestone_progress }}%</span>
+      <small>Milestone Progress</small>
+      <i aria-hidden="true"></i>
     </div>
   </section>
 

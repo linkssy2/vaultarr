@@ -315,3 +315,7 @@ The Milestones page now uses direct naming: **Milestones** for the page title an
 
 Home no longer duplicates Museum and Discover navigation in the Curator spotlight. The Continue Browsing shelf was also removed, allowing Recently Added to follow the museum status overview directly.
 
+## Alpha 25 — Living Milestone Meter
+
+The Milestones ring now represents aggregate achievement progress. Partial progress toward every badge contributes to the percentage, while the gauge uses a living, liquid-energy blue animation with a breathing glow.
+
