@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - vaultarr-2.0-alpha
     tags:
       - "v*.*.*"
   workflow_dispatch:
@@ -37,12 +38,25 @@ jobs:
         id: version
         run: echo "version=$(tr -d '[:space:]' < VERSION)" >> "$GITHUB_OUTPUT"
 
+      - name: Select image tags
+        id: tags
+        shell: bash
+        run: |
+          if [[ "$GITHUB_REF" == "refs/heads/vaultarr-2.0-alpha" ]]; then
+            echo "tags=${IMAGE_NAME}:2.experimental" >> "$GITHUB_OUTPUT"
+          else
+            {
+              echo "tags<<EOF"
+              echo "${IMAGE_NAME}:latest"
+              echo "${IMAGE_NAME}:${{ steps.version.outputs.version }}"
+              echo "EOF"
+            } >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
           context: .
           file: ./Dockerfile
           push: true
-          tags: |
-            ghcr.io/linkssy2/vaultarr:latest
-            ghcr.io/linkssy2/vaultarr:${{ steps.version.outputs.version }}
+          tags: ${{ steps.tags.outputs.tags }}

@@ -1,6 +1,6 @@
 services:
   vaultarr:
-    image: ghcr.io/linkssy2/vaultarr:latest
+    image: ghcr.io/linkssy2/vaultarr:2.experimental
     container_name: vaultarr
     ports:
       - "8787:8787"

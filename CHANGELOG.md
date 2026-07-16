@@ -10,6 +10,7 @@
 - Corrected smooth-navigation mounting to use Vaultarr's actual page-loaded lifecycle event.
 - Removed the obsolete navigation callback and now dispose detached liquid engines, observers, and visibility listeners.
 - Kept the protected two-layer container, vessel dimensions, curved label alignment, hero layout, badges, achievements, routes, and sidebar unchanged.
+- Added the branch-specific `ghcr.io/linkssy2/vaultarr:2.experimental` Docker channel without changing the stable `latest` publishing behavior on `main`.
 
 ## 2.0.0 Alpha 34 — Physics Liquid Core
 

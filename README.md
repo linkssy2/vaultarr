@@ -2,6 +2,8 @@
 
 > Experimental release: **Vaultarr 2.0.0 Alpha 35 — Fluid Simulation Lifecycle**
 
+The `vaultarr-2.0-alpha` branch publishes its Docker image as `ghcr.io/linkssy2/vaultarr:2.experimental`. The stable `main` branch continues to own the `latest` tag.
+
 
 ## Alpha 12 scan shimmer
 

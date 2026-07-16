@@ -25,4 +25,10 @@ Milestone Progress remains aligned to the upper inner-circle arc.
 - Sealed contact rim
 - Embedded mounting shadow and glass depth
 
+## Experimental Docker channel
+
+- Branch image: `ghcr.io/linkssy2/vaultarr:2.experimental`
+- `vaultarr-2.0-alpha` publishes only the experimental tracking tag
+- `main` continues to publish `latest` and the numbered release tag
+
 The protected two-layer container, dimensions, progress calculation, hero layout, badges, achievements, routes, and sidebar are unchanged.
