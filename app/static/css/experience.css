@@ -7,11 +7,11 @@
 
 .experience-hero {
   grid-column: 1 / -1;
-  min-height: 310px;
+  min-height: 260px;
   display: grid;
   grid-template-columns: minmax(0, 1fr) 280px;
   gap: 28px;
-  padding: 34px;
+  padding: 30px 34px;
   overflow: hidden;
   position: relative;
 }

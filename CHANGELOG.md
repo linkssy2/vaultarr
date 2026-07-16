@@ -1,3 +1,10 @@
+## 2.0.0 Alpha 22 — Milestones Simplification
+
+- Removed the redundant Improve Your Museum and Rediscover buttons from the Milestones hero.
+- Reduced the hero height so badge and milestone content begins sooner.
+- Left badges, progress, achievements, audio feedback, and the Vault Legacy score unchanged.
+- Preserved all protected Museum card, scan, navigation, and search systems.
+
 ## 2.0.0 Alpha 21 — Discover Simplification
 
 - Removed the redundant Browse Museum and Improve Museum buttons from the Discover hero.

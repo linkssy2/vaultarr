@@ -303,3 +303,7 @@ Museum cover artwork now fills the complete card dimensions with `object-fit: fi
 
 The Discover hero no longer repeats Museum navigation actions already available elsewhere. Its first content section now begins closer to the introductory copy, while Discover search, Timeline, shelves, and add-to-Museum behavior remain unchanged.
 
+## Alpha 22 — Milestones Simplification
+
+The Milestones hero no longer repeats navigation actions available elsewhere. Badge and achievement content now starts closer to the page introduction, while all milestone functionality remains unchanged.
+
