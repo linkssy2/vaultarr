@@ -1,3 +1,12 @@
+## 2.0.0 Alpha 31 — Liquid Vessel Polish
+
+- Thickened both the outer shell and inner glass chamber.
+- Darkened the liquid to a richer Vaultarr blue while retaining a bright cyan surface edge.
+- Increased controlled slosh motion with two independent wave layers.
+- Made the Milestone Progress label brighter, thicker, and more legible.
+- Strengthened glass reflections and reduced visible particle density.
+- Kept the vessel size, hero layout, fill calculation, badges, and achievements unchanged.
+
 ## 2.0.0 Alpha 30 — Enclosed Liquid Vessel
 
 - Added a dedicated inner glass chamber inside the Milestone Progress gauge.

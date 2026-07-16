@@ -338,3 +338,7 @@ The Milestones hero remains unchanged, but the circular gauge now behaves like a
 ## Alpha 30 — Enclosed Liquid Vessel
 
 The Milestone Progress liquid is now clipped inside a dedicated inner glass chamber, leaving the outer ring decorative only.
+
+## Alpha 31 — Liquid Vessel Polish
+
+The Milestone Progress vessel now uses thicker inner and outer walls, darker Vaultarr-blue liquid, a brighter cyan surface, stronger glass depth, more natural slosh motion, and a bolder progress label.
