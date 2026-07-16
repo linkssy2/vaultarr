@@ -1,3 +1,10 @@
+## 2.0.0 Alpha 30 — Enclosed Liquid Vessel
+
+- Added a dedicated inner glass chamber inside the Milestone Progress gauge.
+- Liquid is clipped entirely inside the inner vessel and no longer reaches the outer decorative ring.
+- Added visible glass thickness between the liquid and outer shell.
+- Preserved liquid height, wave layers, particles, percentage text, and milestone calculations.
+
 ## 2.0.0 Alpha 29 — Glass Liquid Milestone Vessel
 
 - Kept the existing Milestones hero layout and circular gauge size.

@@ -335,3 +335,6 @@ Milestone Progress now fills the circle from the bottom upward according to the 
 
 The Milestones hero remains unchanged, but the circular gauge now behaves like a glowing glass vessel. Liquid height matches the percentage and includes layered waves, drifting particles, and a brighter Vaultarr-blue glow.
 
+## Alpha 30 — Enclosed Liquid Vessel
+
+The Milestone Progress liquid is now clipped inside a dedicated inner glass chamber, leaving the outer ring decorative only.
