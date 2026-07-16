@@ -290,3 +290,8 @@ The login form is layered directly over the animated Orbital Core. The orbital p
 ## Alpha 18 — Settings Danger Zone
 
 **Reset Vault Settings** now lives at the absolute bottom of the Settings page, after Museum Backup. The action remains protected by its confirmation phrase and is visually isolated from ordinary configuration controls.
+
+## Alpha 19 — Adaptive Cover Presentation
+
+Museum cards now keep the complete cover visible using an aspect-ratio-safe foreground image, with a darker blurred copy behind it to fill the card naturally. Hover, tilt, parallax, and expanded-card behavior are unchanged.
+

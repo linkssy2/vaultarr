@@ -1,3 +1,10 @@
+## 2.0.0 Alpha 19 — Adaptive Cover Presentation
+
+- Changed Museum card artwork from crop-to-fill to full-cover presentation.
+- Added a darker blurred duplicate of each cover behind the foreground artwork to fill unused space.
+- Preserved original aspect ratios without stretching or distortion.
+- Left floating-card hover, tilt, parallax, gloss, and expansion behavior unchanged.
+
 ## 2.0.0 Alpha 18 — Settings Danger Zone
 
 - Moved Reset Vault Settings to the absolute bottom of Settings, after Museum Backup.
