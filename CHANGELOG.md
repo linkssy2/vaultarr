@@ -1,3 +1,12 @@
+## 2.0.0 Alpha 33 — Two-Layer Liquid Core
+
+- Reduced the Milestone core to exactly two visible structural layers: outer housing and inner glass vessel.
+- Removed the extra middle ring.
+- Rebuilt the liquid with wider asymmetric SVG waves and stronger vertical slosh.
+- Added independent foreground and background motion, internal current drift, and sparse suspended particles.
+- Darkened the liquid body while retaining a bright cyan crest.
+- Preserved hero layout, vessel size, percentage calculation, badges, and achievements.
+
 ## 2.0.0 Alpha 32 — SVG Liquid Core
 
 - Rebuilt only the inner Milestone vessel using two animated SVG wave masks.

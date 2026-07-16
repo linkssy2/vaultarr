@@ -12,18 +12,18 @@
     <div class="experience-score-core" style="--score: {{ milestone_progress }}%;" aria-label="{{ milestone_progress }} percent milestone progress">
       <div class="milestone-vessel" aria-hidden="true">
         <div class="milestone-liquid" style="--liquid-level: {{ milestone_progress }}%;">
-          <svg class="milestone-wave milestone-wave-back" viewBox="0 0 240 60" preserveAspectRatio="none" aria-hidden="true">
-            <path d="M0,30 C30,8 58,54 90,30 C122,6 150,54 182,30 C208,12 224,18 240,30 L240,60 L0,60 Z"></path>
+          <svg class="milestone-wave milestone-wave-back" viewBox="0 0 320 90" preserveAspectRatio="none" aria-hidden="true">
+            <path d="M0,52 C38,14 78,74 124,40 C168,8 212,82 258,44 C282,24 302,28 320,46 L320,90 L0,90 Z"></path>
           </svg>
-          <svg class="milestone-wave milestone-wave-front" viewBox="0 0 240 60" preserveAspectRatio="none" aria-hidden="true">
-            <path d="M0,32 C24,12 52,48 82,30 C116,10 148,52 180,30 C204,16 224,20 240,32 L240,60 L0,60 Z"></path>
+          <svg class="milestone-wave milestone-wave-front" viewBox="0 0 320 90" preserveAspectRatio="none" aria-hidden="true">
+            <path d="M0,48 C30,20 66,66 106,42 C148,16 188,70 232,44 C266,24 294,30 320,50 L320,90 L0,90 Z"></path>
           </svg>
+          <span class="milestone-current" aria-hidden="true"></span>
           <span class="milestone-particles" aria-hidden="true"></span>
         </div>
       </div>
       <small class="milestone-label">Milestone Progress</small>
       <span>{{ milestone_progress }}%</span>
-      <i aria-hidden="true"></i>
     </div>
   </section>
 

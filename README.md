@@ -346,3 +346,7 @@ The Milestone Progress vessel now uses thicker inner and outer walls, darker Vau
 ## Alpha 32 — SVG Liquid Core
 
 The Milestone vessel now uses two animated SVG wave layers, darker Vaultarr-blue liquid, visible internal currents, and a top-mounted progress label that stays inside the inner glass chamber.
+
+## Alpha 33 — Two-Layer Liquid Core
+
+The Milestone core now has only an outer housing and inner glass vessel. Its liquid uses wider asymmetric SVG waves, stronger slosh, darker Vaultarr-blue depth, internal currents, and sparse suspended particles.
