@@ -1,3 +1,12 @@
+## 2.0.0 Alpha 34 — Physics Liquid Core
+
+- Replaced the layered SVG liquid artwork with a runtime canvas spring-fluid simulation.
+- Added connected surface points with tension, damping, inertia, neighbor propagation, and randomized impulses.
+- Liquid now sloshes and settles through secondary motion instead of sliding static shapes.
+- Curved Milestone Progress around the upper inner circle using an SVG text path.
+- Kept the two-layer housing, inner vessel, percentage calculation, hero layout, badges, and achievements unchanged.
+- Added visibility pausing, capped simulation updates, and reduced canvas resolution for lightweight operation.
+
 ## 2.0.0 Alpha 33 — Two-Layer Liquid Core
 
 - Reduced the Milestone core to exactly two visible structural layers: outer housing and inner glass vessel.

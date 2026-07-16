@@ -9,20 +9,18 @@
       <p class="muted hero-copy">Celebrate your progress as your museum grows.</p>
     </div>
 
-    <div class="experience-score-core" style="--score: {{ milestone_progress }}%;" aria-label="{{ milestone_progress }} percent milestone progress">
+    <div class="experience-score-core" data-milestone-progress="{{ milestone_progress }}" aria-label="{{ milestone_progress }} percent milestone progress">
       <div class="milestone-vessel" aria-hidden="true">
-        <div class="milestone-liquid" style="--liquid-level: {{ milestone_progress }}%;">
-          <svg class="milestone-wave milestone-wave-back" viewBox="0 0 320 90" preserveAspectRatio="none" aria-hidden="true">
-            <path d="M0,52 C38,14 78,74 124,40 C168,8 212,82 258,44 C282,24 302,28 320,46 L320,90 L0,90 Z"></path>
-          </svg>
-          <svg class="milestone-wave milestone-wave-front" viewBox="0 0 320 90" preserveAspectRatio="none" aria-hidden="true">
-            <path d="M0,48 C30,20 66,66 106,42 C148,16 188,70 232,44 C266,24 294,30 320,50 L320,90 L0,90 Z"></path>
-          </svg>
-          <span class="milestone-current" aria-hidden="true"></span>
-          <span class="milestone-particles" aria-hidden="true"></span>
-        </div>
+        <canvas class="milestone-liquid-canvas"></canvas>
       </div>
-      <small class="milestone-label">Milestone Progress</small>
+      <svg class="milestone-label-arc" viewBox="0 0 220 220" aria-hidden="true">
+        <defs>
+          <path id="milestoneProgressArc" d="M 48 82 A 76 76 0 0 1 172 82"></path>
+        </defs>
+        <text>
+          <textPath href="#milestoneProgressArc" startOffset="50%">MILESTONE PROGRESS</textPath>
+        </text>
+      </svg>
       <span>{{ milestone_progress }}%</span>
     </div>
   </section>

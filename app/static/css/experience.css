@@ -72,7 +72,7 @@
   animation: milestoneVesselBreath 6.2s ease-in-out infinite;
 }
 
-/* Layer 1: outer housing only. No extra middle ring. */
+/* Layer 1: outer housing. */
 .experience-score-core::before {
   content: "";
   position: absolute;
@@ -103,7 +103,7 @@
   animation: milestoneVesselHalo 6.2s ease-in-out infinite;
 }
 
-/* Layer 2: the single inner glass vessel. */
+/* Layer 2: inner glass vessel. */
 .experience-score-core .milestone-vessel {
   position: absolute;
   inset: 25px;
@@ -124,7 +124,7 @@
   content: "";
   position: absolute;
   inset: 0;
-  z-index: 6;
+  z-index: 3;
   border-radius: 50%;
   background:
     linear-gradient(145deg, rgba(255,255,255,.10), transparent 24% 72%, rgba(83, 164, 246, .05)),
@@ -132,92 +132,47 @@
   pointer-events: none;
 }
 
-.experience-score-core .milestone-liquid {
+.milestone-liquid-canvas {
   position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: var(--liquid-level);
-  min-height: 0;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
   z-index: 1;
-  overflow: visible;
-  background:
-    radial-gradient(circle at 32% 70%, rgba(25, 111, 255, .36), transparent 26%),
-    radial-gradient(circle at 72% 74%, rgba(0, 74, 202, .34), transparent 28%),
-    linear-gradient(180deg, #086ee6 0%, #0055cf 38%, #003a9e 72%, #00266d 100%);
-  box-shadow:
-    0 -10px 28px rgba(37, 184, 255, .42),
-    0 0 34px rgba(0, 93, 238, .30),
-    inset 0 18px 26px rgba(21, 132, 255, .18),
-    inset 0 -24px 34px rgba(0, 17, 60, .48);
-  transition: height 850ms cubic-bezier(.2,.8,.2,1);
-  animation: milestoneCurrentShift 7.5s ease-in-out infinite;
 }
 
-.experience-score-core .milestone-wave {
+.milestone-label-arc {
   position: absolute;
-  left: -26%;
-  width: 152%;
-  height: 72px;
-  top: -36px;
+  inset: 0;
+  z-index: 7;
+  width: 100%;
+  height: 100%;
   overflow: visible;
   pointer-events: none;
-  transform-origin: 50% 55%;
+}
+
+.milestone-label-arc text {
+  fill: rgba(243, 250, 255, .98);
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 1.45px;
+  text-transform: uppercase;
+  paint-order: stroke fill;
+  stroke: rgba(15, 87, 181, .54);
+  stroke-width: .7px;
   filter:
-    drop-shadow(0 0 8px rgba(104, 231, 255, .92))
-    drop-shadow(0 0 18px rgba(0, 126, 255, .58));
+    drop-shadow(0 0 3px rgba(255,255,255,.16))
+    drop-shadow(0 0 7px rgba(30, 147, 255, .54));
 }
 
-.experience-score-core .milestone-wave path {
-  fill: #075bd0;
-  stroke: #7cecff;
-  stroke-width: 2.3;
+.milestone-label-arc textPath {
+  text-anchor: middle;
 }
 
-.experience-score-core .milestone-wave-back {
-  opacity: .52;
-  top: -27px;
-  animation: milestoneWaveBack 5.1s cubic-bezier(.45,.05,.55,.95) infinite;
-}
-
-.experience-score-core .milestone-wave-back path {
-  fill: #003f9f;
-  stroke: #2fc7ff;
-  stroke-width: 1.7;
-}
-
-.experience-score-core .milestone-wave-front {
-  opacity: .98;
-  animation: milestoneWaveFront 4.1s cubic-bezier(.45,.05,.55,.95) infinite;
-}
-
-.experience-score-core .milestone-current {
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(ellipse at 28% 62%, rgba(23, 142, 255, .30), transparent 34%),
-    radial-gradient(ellipse at 72% 46%, rgba(0, 88, 232, .26), transparent 32%),
-    linear-gradient(110deg, transparent 20%, rgba(21, 126, 255, .14) 48%, transparent 74%);
-  mix-blend-mode: screen;
-  filter: blur(7px);
-  animation: milestoneCurrentFlow 6.8s ease-in-out infinite;
-}
-
-.experience-score-core .milestone-particles {
-  position: absolute;
-  inset: 0;
-  opacity: .38;
-  background-image:
-    radial-gradient(circle at 18% 78%, rgba(159, 226, 255, .52) 0 1px, transparent 2px),
-    radial-gradient(circle at 48% 64%, rgba(74, 184, 255, .40) 0 1.1px, transparent 2.1px),
-    radial-gradient(circle at 76% 82%, rgba(140, 218, 255, .46) 0 1px, transparent 2px);
-  background-size: 110px 148px, 126px 164px, 118px 156px;
-  animation: milestoneParticleRise 18s linear infinite;
-}
-
-.experience-score-core span {
+.experience-score-core > span {
   position: relative;
-  z-index: 7;
+  z-index: 8;
+  margin-top: 4px;
   font-size: 48px;
   font-weight: 900;
   letter-spacing: -.07em;
@@ -225,23 +180,6 @@
   text-shadow:
     0 0 10px rgba(255,255,255,.18),
     0 0 28px rgba(27, 136, 255, .44);
-}
-
-.experience-score-core .milestone-label {
-  position: absolute;
-  z-index: 7;
-  top: 32px;
-  left: 50%;
-  transform: translateX(-50%);
-  color: rgba(241, 249, 255, .98);
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  font-size: 9px;
-  font-weight: 900;
-  white-space: nowrap;
-  text-shadow:
-    0 0 8px rgba(255,255,255,.12),
-    0 0 16px rgba(31, 147, 255, .46);
 }
 
 .experience-panel {
@@ -522,51 +460,6 @@
   50% { opacity: .70; transform: scale(1.035); }
 }
 
-@keyframes milestoneWaveFront {
-  0%, 100% {
-    transform: translateX(-8%) translateY(1px) rotate(-3deg) scaleX(1.04) scaleY(1.00);
-  }
-  22% {
-    transform: translateX(-2%) translateY(6px) rotate(-1deg) scaleX(1.12) scaleY(.88);
-  }
-  50% {
-    transform: translateX(6%) translateY(-5px) rotate(3.2deg) scaleX(1.08) scaleY(1.14);
-  }
-  78% {
-    transform: translateX(1%) translateY(4px) rotate(1deg) scaleX(1.15) scaleY(.92);
-  }
-}
-
-@keyframes milestoneWaveBack {
-  0%, 100% {
-    transform: translateX(7%) translateY(4px) rotate(3deg) scaleX(1.08) scaleY(.92);
-  }
-  30% {
-    transform: translateX(1%) translateY(-6px) rotate(.5deg) scaleX(1.16) scaleY(1.12);
-  }
-  58% {
-    transform: translateX(-7%) translateY(3px) rotate(-3.5deg) scaleX(1.10) scaleY(.90);
-  }
-  82% {
-    transform: translateX(-1%) translateY(-3px) rotate(-1deg) scaleX(1.14) scaleY(1.08);
-  }
-}
-
-@keyframes milestoneCurrentShift {
-  0%, 100% { filter: brightness(1) saturate(1); }
-  50% { filter: brightness(1.10) saturate(1.12); }
-}
-
-@keyframes milestoneCurrentFlow {
-  0%, 100% { transform: translate3d(-6%, 2%, 0) scale(1.02); opacity: .52; }
-  50% { transform: translate3d(7%, -4%, 0) scale(1.10); opacity: .88; }
-}
-
-@keyframes milestoneParticleRise {
-  from { background-position: 0 0, 24px 12px, 10px 26px; }
-  to { background-position: 0 -148px, 24px -152px, 10px -130px; }
-}
-
 @media (max-width: 1200px) {
   .experience-space,
   .experience-hero {
@@ -592,31 +485,9 @@
 
 
 @media (prefers-reduced-motion: reduce) {
-  .experience-score-core {
-    animation-duration: 10s !important;
-  }
-
+  .experience-score-core,
   .experience-score-core::after {
     animation-duration: 10s !important;
   }
-
-  .experience-score-core .milestone-liquid {
-    animation-duration: 14s !important;
-  }
-
-  .experience-score-core .milestone-wave-front {
-    animation-duration: 8s !important;
-  }
-
-  .experience-score-core .milestone-wave-back {
-    animation-duration: 11s !important;
-  }
-
-  .experience-score-core .milestone-current {
-    animation-duration: 12s !important;
-  }
-
-  .experience-score-core .milestone-particles {
-    animation-duration: 26s !important;
-  }
 }
+

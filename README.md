@@ -350,3 +350,7 @@ The Milestone vessel now uses two animated SVG wave layers, darker Vaultarr-blue
 ## Alpha 33 — Two-Layer Liquid Core
 
 The Milestone core now has only an outer housing and inner glass vessel. Its liquid uses wider asymmetric SVG waves, stronger slosh, darker Vaultarr-blue depth, internal currents, and sparse suspended particles.
+
+## Alpha 34 — Physics Liquid Core
+
+The Milestone vessel now uses a lightweight canvas spring-fluid simulation with real secondary motion. The Milestone Progress label follows the upper inner arc of the vessel.
