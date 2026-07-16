@@ -299,3 +299,7 @@ Museum cards now keep the complete cover visible using an aspect-ratio-safe fore
 
 Museum cover artwork now fills the complete card dimensions with `object-fit: fill`. This intentionally stretches or compresses artwork when necessary so no portion is cropped and no empty space remains.
 
+## Alpha 21 — Discover Simplification
+
+The Discover hero no longer repeats Museum navigation actions already available elsewhere. Its first content section now begins closer to the introductory copy, while Discover search, Timeline, shelves, and add-to-Museum behavior remain unchanged.
+

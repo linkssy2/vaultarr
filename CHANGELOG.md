@@ -1,3 +1,10 @@
+## 2.0.0 Alpha 21 — Discover Simplification
+
+- Removed the redundant Browse Museum and Improve Museum buttons from the Discover hero.
+- Tightened the Discover hero spacing so the first content section begins sooner.
+- Left Discover search, Timeline, shelves, cards, filters, and add-to-Museum behavior unchanged.
+- Preserved all protected Museum card and navigation systems.
+
 ## 2.0.0 Alpha 20 — Full-Card Cover Stretch
 
 - Reverted the adaptive contained-cover presentation from Alpha 19.
