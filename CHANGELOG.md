@@ -1,3 +1,11 @@
+## 2.0.0 Alpha 20 — Full-Card Cover Stretch
+
+- Reverted the adaptive contained-cover presentation from Alpha 19.
+- Removed the blurred duplicate artwork layer.
+- Museum cover artwork now stretches to fill the entire card surface.
+- Covers are no longer cropped; differing aspect ratios are intentionally warped to fit.
+- Preserved floating-card hover, tilt, parallax, gloss, and expansion behavior.
+
 ## 2.0.0 Alpha 19 — Adaptive Cover Presentation
 
 - Changed Museum card artwork from crop-to-fill to full-cover presentation.

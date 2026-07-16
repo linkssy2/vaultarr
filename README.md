@@ -295,3 +295,7 @@ The login form is layered directly over the animated Orbital Core. The orbital p
 
 Museum cards now keep the complete cover visible using an aspect-ratio-safe foreground image, with a darker blurred copy behind it to fill the card naturally. Hover, tilt, parallax, and expanded-card behavior are unchanged.
 
+## Alpha 20 — Full-Card Cover Stretch
+
+Museum cover artwork now fills the complete card dimensions with `object-fit: fill`. This intentionally stretches or compresses artwork when necessary so no portion is cropped and no empty space remains.
+

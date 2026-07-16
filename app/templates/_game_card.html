@@ -5,11 +5,8 @@
     <div class="poster-art">
       <div class="poster-gloss"></div>
       {% if game.cover_path %}
-        {% set poster_src = '/covers/' ~ game.cover_path ~ '?v=' ~ (game.updated_at or game.last_scanned or game.id) %}
-        <img loading="lazy" decoding="async" class="poster-cover-backdrop" src="{{ poster_src }}" alt="" aria-hidden="true">
-        <img loading="lazy" decoding="async" class="poster-cover" src="{{ poster_src }}" alt="{{ game.title }}">
+        <img loading="lazy" decoding="async" class="poster-cover" src="/covers/{{ game.cover_path }}?v={{ game.updated_at or game.last_scanned or game.id }}" alt="{{ game.title }}">
       {% elif game.cover_url %}
-        <img loading="lazy" decoding="async" class="poster-cover-backdrop" src="{{ game.cover_url }}" alt="" aria-hidden="true">
         <img loading="lazy" decoding="async" class="poster-cover" src="{{ game.cover_url }}" alt="{{ game.title }}">
       {% else %}
         <div class="poster-placeholder">🎮</div>
