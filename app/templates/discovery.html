@@ -8,10 +8,19 @@
       <h1>Discover</h1>
       <p class="muted hero-copy">Browse familiar shelves, rediscover hidden corners of your collection, and find the next game to add.</p>
     </div>
-    <div class="discovery-core" style="--score: {{ discovery_score }}%;">
+    <div class="experience-score-core discovery-depth-core" data-milestone-progress="{{ discovery_score }}" aria-label="{{ discovery_score }} percent discovery depth">
+      <div class="milestone-vessel" aria-hidden="true">
+        <canvas class="milestone-liquid-canvas"></canvas>
+      </div>
+      <svg class="milestone-label-arc" viewBox="0 0 220 220" aria-hidden="true">
+        <defs>
+          <path id="discoveryDepthArc" d="M 48 82 A 76 76 0 0 1 172 82"></path>
+        </defs>
+        <text>
+          <textPath href="#discoveryDepthArc" startOffset="50%">DISCOVERY DEPTH</textPath>
+        </text>
+      </svg>
       <span>{{ discovery_score }}%</span>
-      <small>Discovery Depth</small>
-      <i></i>
     </div>
   </section>
 

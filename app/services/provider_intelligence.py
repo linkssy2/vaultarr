@@ -1,3 +1,4 @@
+from concurrent.futures import ThreadPoolExecutor
 from copy import deepcopy
 from app.database.database import get_connection
 from app.services.preservation_engine import enrich_preservation, game_score, game_badge
@@ -139,13 +140,17 @@ def build_provider_intelligence(game_id, query=""):
     diagnostics = search_metadata_diagnostics(search_query, "all")
     raw_results = diagnostics.get("results", [])
 
-    provider_cards = []
-    details_by_provider = {}
-
+    candidates = []
+    seen_sources = set()
     for result in raw_results:
         source = result.get("source") or ""
-        if not source or source in details_by_provider:
+        if not source or source in seen_sources:
             continue
+        seen_sources.add(source)
+        candidates.append((source, result))
+
+    def load_details(candidate):
+        source, result = candidate
         try:
             details = get_provider_details(source, str(result.get("external_id") or ""))
         except Exception:
@@ -155,6 +160,17 @@ def build_provider_intelligence(game_id, query=""):
             details["metadata_source"] = source
             details["metadata_external_id"] = result.get("external_id", "")
         details["confidence"] = result.get("confidence", details.get("confidence", 0))
+        return source, result, details
+
+    if candidates:
+        with ThreadPoolExecutor(max_workers=min(4, len(candidates)), thread_name_prefix="vaultarr-details") as pool:
+            loaded_details = list(pool.map(load_details, candidates))
+    else:
+        loaded_details = []
+
+    provider_cards = []
+    details_by_provider = {}
+    for source, result, details in loaded_details:
         details_by_provider[source] = details
         provider_cards.append(_provider_quality(details, result.get("confidence", 0)))
 
@@ -244,6 +260,7 @@ def enrich_after_merge(game_id, game):
     summary = {
         "cover_cached": False,
         "cached_media": 0,
+        "manual_checked": False,
         "manual_downloaded": False,
         "errors": [],
     }
@@ -318,6 +335,7 @@ def enrich_after_merge(game_id, game):
 
     # If the Manual Engine finds a very strong direct PDF match, download it automatically.
     try:
+        summary["manual_checked"] = True
         manual_data = manual_search_results(game.get("title") or "", game.get("platform") or "", "all")
         candidates = [
             item for item in (manual_data.get("results") or [])

@@ -1,6 +1,7 @@
 import os
 import re
 import time
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from urllib.parse import quote_plus
 
@@ -72,7 +73,7 @@ def provider_enabled(settings, key):
     return bool(settings.get(f'enable_{key}', True))
 
 
-def search_metadata_diagnostics(title, provider='all'):
+def _search_metadata_diagnostics_serial(title, provider='all'):
     settings = load_provider_settings()
     results = []
     logs = []
@@ -182,6 +183,26 @@ def search_metadata_diagnostics(title, provider='all'):
         'results': results[:20],
         'logs': logs,
     }
+
+
+def search_metadata_diagnostics(title, provider='all'):
+    if provider != 'all':
+        return _search_metadata_diagnostics_serial(title, provider)
+
+    provider_order = ['launchbox', 'igdb', 'rawg', 'steamgriddb', 'steam', 'wikipedia']
+    with ThreadPoolExecutor(max_workers=4, thread_name_prefix='vaultarr-metadata') as pool:
+        responses = list(pool.map(
+            lambda provider_name: _search_metadata_diagnostics_serial(title, provider_name),
+            provider_order,
+        ))
+
+    results = []
+    logs = []
+    for response in responses:
+        results.extend(response.get('results') or [])
+        logs.extend(response.get('logs') or [])
+    results.sort(key=lambda item: (provider_priority(item.get('source')), item.get('confidence', 0)), reverse=True)
+    return {'results': results[:20], 'logs': logs}
 
 
 def provider_priority(source):

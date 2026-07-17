@@ -21,9 +21,13 @@
       let targetCoverY = 0;
       let currentCoverX = 0;
       let currentCoverY = 0;
+      let targetCoverZ = 18;
+      let currentCoverZ = 18;
 
       let targetInfoY = 0;
       let currentInfoY = 0;
+      let targetInfoZ = 22;
+      let currentInfoZ = 22;
 
       let rafId = null;
       let isHovering = false;
@@ -46,12 +50,12 @@
 
         const cover = getCoverElement();
         if (cover) {
-          cover.style.transform = `translate3d(${currentCoverX}px, ${currentCoverY}px, 34px) scale(${isHovering ? 1.035 : 1.01})`;
+          cover.style.transform = `translate3d(${currentCoverX}px, ${currentCoverY}px, ${currentCoverZ}px) scale(${isHovering ? 1.04 : 1.01})`;
         }
 
         const info = getInfoElement();
         if (info) {
-          info.style.transform = `translate3d(0, ${currentInfoY}px, 24px)`;
+          info.style.transform = `translate3d(0, ${currentInfoY}px, ${currentInfoZ}px)`;
         }
       }
 
@@ -62,7 +66,9 @@
         currentLift += (targetLift - currentLift) * 0.20;
         currentCoverX += (targetCoverX - currentCoverX) * 0.18;
         currentCoverY += (targetCoverY - currentCoverY) * 0.18;
+        currentCoverZ += (targetCoverZ - currentCoverZ) * 0.18;
         currentInfoY += (targetInfoY - currentInfoY) * 0.18;
+        currentInfoZ += (targetInfoZ - currentInfoZ) * 0.18;
 
         applyTransform();
 
@@ -73,7 +79,9 @@
           Math.abs(targetLift - currentLift) > 0.1 ||
           Math.abs(targetCoverX - currentCoverX) > 0.05 ||
           Math.abs(targetCoverY - currentCoverY) > 0.05 ||
-          Math.abs(targetInfoY - currentInfoY) > 0.05;
+          Math.abs(targetCoverZ - currentCoverZ) > 0.05 ||
+          Math.abs(targetInfoY - currentInfoY) > 0.05 ||
+          Math.abs(targetInfoZ - currentInfoZ) > 0.05;
 
         if (stillMoving) {
           rafId = requestAnimationFrame(animate);
@@ -96,12 +104,16 @@
         targetLift = 0;
         targetCoverX = 0;
         targetCoverY = 0;
+        targetCoverZ = 18;
         targetInfoY = 0;
+        targetInfoZ = 22;
 
         card.style.removeProperty("--gloss-x");
         card.style.removeProperty("--gloss-y");
-        card.style.removeProperty("--shadow-x");
-        card.style.removeProperty("--shadow-y");
+        card.style.removeProperty("--slate-bevel-x");
+        card.style.removeProperty("--slate-bevel-y");
+        card.style.removeProperty("--slate-bevel-opposite-x");
+        card.style.removeProperty("--slate-bevel-opposite-y");
 
         startAnimation();
       }
@@ -121,23 +133,27 @@
         isHovering = true;
         card.classList.add("is-hovering");
 
-        targetRotateY = normalizedX * 8.5;
-        targetRotateX = -normalizedY * 8.5;
+        targetRotateY = normalizedX * 9.5;
+        targetRotateX = -normalizedY * 9.5;
         targetScale = 1.043;
         targetLift = -11;
-        targetCoverX = normalizedX * 5;
-        targetCoverY = normalizedY * 4;
-        targetInfoY = -1.5;
+        targetCoverX = normalizedX * 7;
+        targetCoverY = normalizedY * 5.5;
+        targetCoverZ = 46;
+        targetInfoY = normalizedY * 1.5;
+        targetInfoZ = 34;
 
         const glossX = (x / rect.width) * 100;
         const glossY = (y / rect.height) * 100;
-        const shadowX = normalizedX * -14;
-        const shadowY = 28 + Math.abs(normalizedY) * 10;
+        const slateBevelX = normalizedX * -2.5;
+        const slateBevelY = normalizedY * -2.5;
 
         card.style.setProperty("--gloss-x", `${glossX}%`);
         card.style.setProperty("--gloss-y", `${glossY}%`);
-        card.style.setProperty("--shadow-x", `${shadowX}px`);
-        card.style.setProperty("--shadow-y", `${shadowY}px`);
+        card.style.setProperty("--slate-bevel-x", `${slateBevelX}px`);
+        card.style.setProperty("--slate-bevel-y", `${slateBevelY}px`);
+        card.style.setProperty("--slate-bevel-opposite-x", `${-slateBevelX}px`);
+        card.style.setProperty("--slate-bevel-opposite-y", `${-slateBevelY}px`);
 
         startAnimation();
       });

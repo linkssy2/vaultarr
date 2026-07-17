@@ -1,12 +1,11 @@
-/* Vaultarr 2.0 Alpha 12 — visible Museum Scan shimmer.
-   One fixed-size pill, one working state, one completion state. */
+/* Vaultarr 2.0 Alpha 36 — expanding Museum Scan information panel. */
 .sidebar.vaultos-sidebar .sidebar-utility-stack {
   width: 100%;
   margin-top: auto;
   padding: 0;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: 22px;
+  gap: 18px;
   box-sizing: border-box;
 }
 
@@ -19,15 +18,22 @@
   box-sizing: border-box;
 }
 
-.sidebar.vaultos-sidebar .museum-scan-pill__button {
+.sidebar.vaultos-sidebar .museum-scan-pill {
   position: relative;
+  will-change: height;
+  transition: height .92s cubic-bezier(.22, .82, .22, 1);
+}
+
+.sidebar.vaultos-sidebar .museum-scan-pill__button {
+  position: absolute;
+  inset: auto 0 0;
   width: 100%;
   height: 44px;
   min-height: 44px;
-  padding: 0 15px;
+  padding: 0;
   overflow: hidden;
   border: 1px solid rgba(125, 211, 252, .40);
-  border-radius: 999px;
+  border-radius: 22px;
   appearance: none;
   color: #fff;
   background: linear-gradient(135deg, #2563eb 0%, #3b82f6 58%, #168dca 100%);
@@ -35,11 +41,41 @@
   font: inherit;
   cursor: pointer;
   isolation: isolate;
+  transform-origin: bottom center;
   transition:
-    background .42s cubic-bezier(.22, .61, .36, 1),
-    border-color .32s ease,
-    box-shadow .34s ease,
+    height .92s cubic-bezier(.22, .82, .22, 1),
+    background .76s ease,
+    border-color .68s ease,
+    box-shadow .82s ease,
     transform .26s cubic-bezier(.22, .61, .36, 1);
+}
+
+.sidebar.vaultos-sidebar .museum-scan-pill__button::before,
+.sidebar.vaultos-sidebar .museum-scan-pill__button::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+}
+.sidebar.vaultos-sidebar .museum-scan-pill__button::before {
+  z-index: 1;
+  inset: 7px;
+  border: 1px solid rgba(125, 211, 252, .12);
+  border-radius: 15px;
+  opacity: 0;
+  transform: scaleY(.22);
+  transform-origin: bottom center;
+  background: linear-gradient(180deg, rgba(125, 211, 252, .035), transparent 32%);
+  transition: opacity .62s ease .12s, transform .82s cubic-bezier(.22, .82, .22, 1) .08s;
+}
+.sidebar.vaultos-sidebar .museum-scan-pill__button::after {
+  z-index: 1;
+  left: 13px;
+  right: 13px;
+  bottom: 8px;
+  height: 1px;
+  opacity: 0;
+  background: linear-gradient(90deg, transparent, rgba(125, 211, 252, .68), transparent);
+  box-shadow: 0 0 12px rgba(56, 189, 248, .30);
 }
 
 .sidebar.vaultos-sidebar .museum-scan-pill__button:hover,
@@ -57,7 +93,7 @@
   position: absolute;
   z-index: 2;
   inset: 0;
-  transition: opacity .34s cubic-bezier(.22, .61, .36, 1), transform .38s cubic-bezier(.22, .61, .36, 1), filter .30s ease;
+  transition: opacity .38s ease, transform .64s cubic-bezier(.22, 1, .36, 1), filter .34s ease;
 }
 
 .sidebar.vaultos-sidebar .museum-scan-pill__idle {
@@ -73,151 +109,216 @@
 
 .sidebar.vaultos-sidebar .museum-scan-pill__working {
   display: grid;
-  grid-template-rows: 21px 14px;
-  align-content: center;
-  gap: 0;
-  padding: 3px 14px 4px;
+  grid-template-rows: auto 18px auto 30px;
+  gap: 10px;
+  align-content: start;
+  padding: 16px;
+  text-align: left;
   opacity: 0;
-  transform: translateY(5px);
+  transform: translateY(12px) scale(.985);
   filter: blur(2px);
   pointer-events: none;
 }
 
-.sidebar.vaultos-sidebar .museum-scan-pill__topline {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 8px;
-  align-items: end;
-  min-width: 0;
-}
-.sidebar.vaultos-sidebar .museum-scan-pill__topline strong {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-size: .78rem;
-  line-height: 1;
-  font-weight: 800;
-}
-.sidebar.vaultos-sidebar .museum-scan-pill__topline span {
-  color: #dff4ff;
-  font-size: .74rem;
-  line-height: 1;
-  font-weight: 800;
-}
-.sidebar.vaultos-sidebar .museum-scan-pill__working small {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  color: rgba(214, 232, 255, .72);
-  font-size: .65rem;
-  line-height: 1;
+.sidebar.vaultos-sidebar .museum-scan-pill__working > * {
+  opacity: 0;
+  transform: translateY(7px);
+  transition: opacity .42s ease, transform .62s cubic-bezier(.22, .82, .22, 1);
 }
 
-.sidebar.vaultos-sidebar .museum-scan-pill__progress {
-  position: absolute;
-  z-index: 3;
-  left: 12px;
-  right: 12px;
-  bottom: 3px;
-  height: 2px;
-  overflow: hidden;
-  border-radius: 999px;
-  background: rgba(2, 12, 28, .48);
-  opacity: 0;
-  transition: opacity .28s ease;
+.sidebar.vaultos-sidebar .museum-scan-pill__heading {
+  display: grid;
+  grid-template-columns: 9px minmax(0, 1fr) auto;
+  gap: 9px;
+  align-items: center;
+  min-width: 0;
 }
-.sidebar.vaultos-sidebar .museum-scan-pill__progress i {
+.sidebar.vaultos-sidebar .museum-scan-pill__pulse {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #7dd3fc;
+  box-shadow: 0 0 0 0 rgba(125, 211, 252, .42), 0 0 12px rgba(56, 189, 248, .7);
+  animation: vaultarrScanPulse 2s ease-out infinite;
+}
+.sidebar.vaultos-sidebar .museum-scan-pill__title { min-width: 0; }
+.sidebar.vaultos-sidebar .museum-scan-pill__title small {
+  display: block;
+  margin-bottom: 4px;
+  color: rgba(186, 230, 253, .66);
+  font-size: .56rem;
+  line-height: 1;
+  font-weight: 850;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+.sidebar.vaultos-sidebar .museum-scan-pill__title strong {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: .76rem;
+  line-height: 1.1;
+  font-weight: 850;
+}
+.sidebar.vaultos-sidebar .museum-scan-pill__percent {
+  color: #e0f2fe;
+  font-size: 1rem;
+  line-height: 1;
+  letter-spacing: -.03em;
+}
+.sidebar.vaultos-sidebar .museum-scan-pill__detail {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: rgba(219, 234, 254, .72);
+  font-size: .63rem;
+  line-height: 18px;
+}
+
+.sidebar.vaultos-sidebar .museum-scan-pill__stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+.sidebar.vaultos-sidebar .museum-scan-pill__stats > span {
+  min-width: 0;
+  padding: 7px 6px;
+  border: 1px solid rgba(125, 211, 252, .10);
+  border-radius: 10px;
+  background: rgba(2, 12, 28, .30);
+}
+.sidebar.vaultos-sidebar .museum-scan-pill__stats small,
+.sidebar.vaultos-sidebar .museum-scan-pill__stats strong {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sidebar.vaultos-sidebar .museum-scan-pill__stats small {
+  color: rgba(186, 230, 253, .55);
+  font-size: .49rem;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.sidebar.vaultos-sidebar .museum-scan-pill__stats strong {
+  margin-top: 3px;
+  color: #eff6ff;
+  font-size: .66rem;
+}
+
+.sidebar.vaultos-sidebar .museum-scan-pill__liquid {
+  position: relative;
+  display: block;
+  height: 30px;
+  overflow: hidden;
+  border: 1px solid rgba(125, 211, 252, .46);
+  border-radius: 13px;
+  background:
+    linear-gradient(90deg, rgba(56, 189, 248, .055) 1px, transparent 1px) 0 0 / 24px 100%,
+    linear-gradient(180deg, rgba(2, 10, 24, .84), rgba(3, 18, 38, .76));
+  box-shadow: inset 0 2px 11px rgba(0, 0, 0, .46), inset 0 1px 0 rgba(255, 255, 255, .07), 0 0 18px rgba(14, 165, 233, .08);
+}
+.sidebar.vaultos-sidebar .museum-scan-pill__liquid-canvas {
+  position: absolute;
   display: block;
   width: 100%;
   height: 100%;
-  border-radius: inherit;
-  transform: scaleX(0);
-  transform-origin: left center;
-  background: linear-gradient(90deg, #38bdf8, #60a5fa 56%, #8b5cf6);
-  box-shadow: 0 0 9px rgba(96, 165, 250, .48);
-  will-change: transform;
 }
-
-/* Visible blue energy ribbon. It sits above the pill background and below the text. */
-.sidebar.vaultos-sidebar .museum-scan-pill__light {
+.sidebar.vaultos-sidebar .museum-scan-pill__liquid-glass {
   position: absolute;
-  z-index: 1;
-  top: -55%;
-  bottom: -55%;
-  left: 0;
-  width: 34%;
-  opacity: 0;
+  z-index: 2;
+  inset: 0;
+  border-radius: inherit;
   pointer-events: none;
-  transform: translate3d(-155%, 0, 0) skewX(-18deg);
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(14, 165, 233, .10) 18%,
-    rgba(56, 189, 248, .55) 42%,
-    rgba(147, 197, 253, .88) 52%,
-    rgba(59, 130, 246, .42) 67%,
-    transparent 100%
-  );
-  filter: blur(1.2px);
-  box-shadow: 0 0 18px rgba(56, 189, 248, .32);
-  will-change: transform, opacity;
+  background: linear-gradient(180deg, rgba(255,255,255,.10), transparent 33%, transparent 72%, rgba(255,255,255,.035));
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.035);
 }
 
+.sidebar.vaultos-sidebar .museum-scan-pill[data-state="scanning"],
+.sidebar.vaultos-sidebar .museum-scan-pill[data-state="complete"],
+.sidebar.vaultos-sidebar .museum-scan-pill[data-state="error"] {
+  height: 176px;
+}
 .sidebar.vaultos-sidebar .museum-scan-pill[data-state="scanning"] .museum-scan-pill__button,
 .sidebar.vaultos-sidebar .museum-scan-pill[data-state="complete"] .museum-scan-pill__button,
 .sidebar.vaultos-sidebar .museum-scan-pill[data-state="error"] .museum-scan-pill__button {
-  background: linear-gradient(135deg, rgba(7, 35, 75, .99), rgba(8, 68, 108, .99));
-  border-color: rgba(56, 189, 248, .53);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .08), 0 8px 22px rgba(3, 19, 43, .29);
+  height: 176px;
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at 90% 12%, rgba(56, 189, 248, .13), transparent 30%),
+    linear-gradient(155deg, rgba(7, 32, 67, .99), rgba(3, 18, 41, .99));
+  border-color: rgba(56, 189, 248, .42);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 16px 36px rgba(1, 10, 28, .34);
+}
+.sidebar.vaultos-sidebar .museum-scan-pill[data-state="scanning"] .museum-scan-pill__button::before,
+.sidebar.vaultos-sidebar .museum-scan-pill[data-state="complete"] .museum-scan-pill__button::before,
+.sidebar.vaultos-sidebar .museum-scan-pill[data-state="error"] .museum-scan-pill__button::before {
+  opacity: 1;
+  transform: scaleY(1);
+}
+.sidebar.vaultos-sidebar .museum-scan-pill[data-state="scanning"] .museum-scan-pill__button::after,
+.sidebar.vaultos-sidebar .museum-scan-pill[data-state="complete"] .museum-scan-pill__button::after,
+.sidebar.vaultos-sidebar .museum-scan-pill[data-state="error"] .museum-scan-pill__button::after {
+  animation: vaultarrPanelWake .96s cubic-bezier(.22, .82, .22, 1) .08s 1 both;
 }
 .sidebar.vaultos-sidebar .museum-scan-pill[data-state="scanning"] .museum-scan-pill__idle,
 .sidebar.vaultos-sidebar .museum-scan-pill[data-state="complete"] .museum-scan-pill__idle,
 .sidebar.vaultos-sidebar .museum-scan-pill[data-state="error"] .museum-scan-pill__idle {
   opacity: 0;
-  transform: translateY(-5px);
-  filter: blur(2px);
+  transform: translateY(-12px) scale(.96);
+  filter: blur(3px);
 }
 .sidebar.vaultos-sidebar .museum-scan-pill[data-state="scanning"] .museum-scan-pill__working,
 .sidebar.vaultos-sidebar .museum-scan-pill[data-state="complete"] .museum-scan-pill__working,
 .sidebar.vaultos-sidebar .museum-scan-pill[data-state="error"] .museum-scan-pill__working {
   opacity: 1;
-  transform: translateY(0);
+  transform: translateY(0) scale(1);
   filter: blur(0);
+  transition-delay: .10s;
 }
-.sidebar.vaultos-sidebar .museum-scan-pill[data-state="scanning"] .museum-scan-pill__progress,
-.sidebar.vaultos-sidebar .museum-scan-pill[data-state="complete"] .museum-scan-pill__progress { opacity: 1; }
-.sidebar.vaultos-sidebar .museum-scan-pill[data-state="scanning"] .museum-scan-pill__light {
-  animation: vaultarrMuseumScanLight 2.35s cubic-bezier(.22, .61, .36, 1) .10s infinite;
+.sidebar.vaultos-sidebar .museum-scan-pill[data-state="scanning"] .museum-scan-pill__working > *,
+.sidebar.vaultos-sidebar .museum-scan-pill[data-state="complete"] .museum-scan-pill__working > *,
+.sidebar.vaultos-sidebar .museum-scan-pill[data-state="error"] .museum-scan-pill__working > * {
+  opacity: 1;
+  transform: translateY(0);
 }
-.sidebar.vaultos-sidebar .museum-scan-pill[data-state="complete"] .museum-scan-pill__light {
-  animation: vaultarrMuseumScanFinish 1.05s cubic-bezier(.16, 1, .3, 1) 1 forwards;
+.sidebar.vaultos-sidebar .museum-scan-pill[data-state] .museum-scan-pill__heading { transition-delay: .20s; }
+.sidebar.vaultos-sidebar .museum-scan-pill[data-state] .museum-scan-pill__detail { transition-delay: .27s; }
+.sidebar.vaultos-sidebar .museum-scan-pill[data-state] .museum-scan-pill__stats { transition-delay: .34s; }
+.sidebar.vaultos-sidebar .museum-scan-pill[data-state] .museum-scan-pill__liquid { transition-delay: .41s; }
+.sidebar.vaultos-sidebar .museum-scan-pill[data-state="idle"] .museum-scan-pill__working > * {
+  transition-delay: 0s;
+}
+.sidebar.vaultos-sidebar .museum-scan-pill[data-state="complete"] .museum-scan-pill__pulse {
+  background: #34d399;
+  box-shadow: 0 0 14px rgba(52, 211, 153, .65);
+  animation: none;
+}
+.sidebar.vaultos-sidebar .museum-scan-pill[data-state="error"] .museum-scan-pill__pulse {
+  background: #fb7185;
+  box-shadow: 0 0 14px rgba(251, 113, 133, .55);
+  animation: none;
 }
 
-@keyframes vaultarrMuseumScanLight {
-  0%, 12% { opacity: 0; transform: translate3d(-155%, 0, 0) skewX(-18deg); }
-  20% { opacity: .22; }
-  43% { opacity: .88; }
-  63% { opacity: .42; }
-  79%, 100% { opacity: 0; transform: translate3d(385%, 0, 0) skewX(-18deg); }
+@keyframes vaultarrScanPulse {
+  0% { box-shadow: 0 0 0 0 rgba(125, 211, 252, .40), 0 0 12px rgba(56, 189, 248, .7); }
+  70%, 100% { box-shadow: 0 0 0 7px rgba(125, 211, 252, 0), 0 0 12px rgba(56, 189, 248, .45); }
 }
-@keyframes vaultarrMuseumScanFinish {
-  0% { opacity: 0; transform: translate3d(-155%, 0, 0) skewX(-18deg); }
-  24% { opacity: .40; }
-  50% { opacity: 1; }
-  100% { opacity: 0; transform: translate3d(385%, 0, 0) skewX(-18deg); }
+@keyframes vaultarrPanelWake {
+  0% { opacity: 0; transform: translateY(0); }
+  28% { opacity: .52; }
+  72% { opacity: .18; }
+  100% { opacity: 0; transform: translateY(-150px); }
 }
-
 @media (prefers-reduced-motion: reduce) {
-  .sidebar.vaultos-sidebar .museum-scan-pill__button,
+  .sidebar.vaultos-sidebar .museum-scan-pill,
+  .sidebar.vaultos-sidebar .museum-scan-pill__button { transition-duration: .56s !important; }
   .sidebar.vaultos-sidebar .museum-scan-pill__idle,
-  .sidebar.vaultos-sidebar .museum-scan-pill__working { transition-duration: .01ms !important; }
-  .sidebar.vaultos-sidebar .museum-scan-pill[data-state="scanning"] .museum-scan-pill__light {
-    animation-duration: 4.8s !important;
-    filter: blur(1.6px);
-  }
-  .sidebar.vaultos-sidebar .museum-scan-pill[data-state="complete"] .museum-scan-pill__light {
-    animation-duration: 1.4s !important;
-  }
+  .sidebar.vaultos-sidebar .museum-scan-pill__working { transition-duration: .32s !important; }
+  .sidebar.vaultos-sidebar .museum-scan-pill__working > * { transition-duration: .26s !important; }
+  .sidebar.vaultos-sidebar .museum-scan-pill__button::before { transition-duration: .44s !important; }
+  .sidebar.vaultos-sidebar .museum-scan-pill__pulse { animation: none !important; }
+  .sidebar.vaultos-sidebar .museum-scan-pill__button::after { animation: none !important; }
 }

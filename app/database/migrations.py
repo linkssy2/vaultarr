@@ -62,6 +62,11 @@ def migrate():
         "trailer_provider": "TEXT DEFAULT ''",
         "trailer_title": "TEXT DEFAULT ''",
         "trailer_embed_url": "TEXT DEFAULT ''",
+        "soundtrack_url": "TEXT DEFAULT ''",
+        "soundtrack_provider": "TEXT DEFAULT ''",
+        "soundtrack_title": "TEXT DEFAULT ''",
+        "soundtrack_embed_url": "TEXT DEFAULT ''",
+        "soundtrack_updated_at": "TEXT DEFAULT ''",
 
         "patch_url": "TEXT DEFAULT ''",
         "patch_provider": "TEXT DEFAULT ''",
@@ -291,6 +296,11 @@ def migrate_to_1(c):
         trailer_title TEXT DEFAULT '',
         trailer_embed_url TEXT DEFAULT '',
         trailer_updated_at TEXT DEFAULT '',
+        soundtrack_url TEXT DEFAULT '',
+        soundtrack_provider TEXT DEFAULT '',
+        soundtrack_title TEXT DEFAULT '',
+        soundtrack_embed_url TEXT DEFAULT '',
+        soundtrack_updated_at TEXT DEFAULT '',
         FOREIGN KEY(library_id) REFERENCES libraries(id)
     )
     """)

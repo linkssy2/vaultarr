@@ -93,7 +93,8 @@ def queue_incomplete_games(reason="manual"):
 def _auto_manual(game):
     if (game.get("manual_file_path") or "").strip() or int(game.get("manual_count") or 0) > 0:
         return {"skipped": True, "reason": "manual already present"}
-    results = manual_search_results(game.get("title") or "", game.get("platform") or "", "all")
+    manual_data = manual_search_results(game.get("title") or "", game.get("platform") or "", "all")
+    results = manual_data.get("results") or []
     candidates = [r for r in results if int(r.get("confidence") or r.get("score") or 0) >= 94 and r.get("manual_url")]
     if not candidates:
         return {"skipped": True, "reason": "no high-confidence manual"}
@@ -127,6 +128,7 @@ def run_game(game_id, include_manual=True, progress_callback=None):
     conn.commit(); conn.close()
 
     actions = []
+    manual_checked_during_enrichment = False
     def report(progress, stage):
         conn = get_connection()
         conn.execute("UPDATE curator_jobs SET status='running', progress=?, stage=?, updated_at=CURRENT_TIMESTAMP WHERE game_id=?", (int(progress), stage, game_id))
@@ -140,6 +142,7 @@ def run_game(game_id, include_manual=True, progress_callback=None):
         else:
             report(24, "Researching game information")
             result = apply_merge_best(game_id, game.get("title") or "", enrich=True)
+            manual_checked_during_enrichment = bool(result.get("enrichment", {}).get("manual_checked"))
             if result.get("success"):
                 actions.append({"metadata": "merged", "message": result.get("message")})
             else:
@@ -147,7 +150,7 @@ def run_game(game_id, include_manual=True, progress_callback=None):
 
         report(52, "Building museum record")
         conn = get_connection(); refreshed = conn.execute("SELECT * FROM games WHERE id=?", (game_id,)).fetchone(); conn.close()
-        if include_manual and refreshed:
+        if include_manual and refreshed and not manual_checked_during_enrichment:
             try:
                 report(72, "Looking for a manual")
                 actions.append({"manual": _auto_manual(dict(refreshed))})

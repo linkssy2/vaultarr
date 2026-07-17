@@ -1,4 +1,4 @@
-/* Vaultarr 1.8.4 — Interface Cohesion Audit
+/* Vaultarr 2.0.0 Alpha 36 — Interface Cohesion Audit
    Final, low-specificity component rules for consistent controls and page rhythm.
    Protected systems (poster cards, Focus Mode motion, navigation motion, and
    Museum Scan) are intentionally excluded from structural overrides. */
@@ -12,17 +12,7 @@
 }
 
 /* Standard action controls inside page content. */
-.content :where(button, .button-link, .secondary-button, .capsule-link)
-:not(.game-card-link)
-:not(.focus-tab)
-:not(.focus-close)
-:not(.global-search-close)
-:not(.global-search-mode)
-:not(.global-add-close)
-:not(.clear-search)
-:not(.theme-pack-button)
-:not(.studio-theme-card button)
-:not(.audio-chip) {
+.content :where(button, .button-link, .secondary-button, .capsule-link):where(:not(.game-card-link):not(.focus-tab):not(.focus-close):not(.global-search-close):not(.global-search-mode):not(.global-add-close):not(.clear-search):not(.theme-pack-button):not(.studio-theme-card button):not(.audio-chip)) {
   min-height: var(--vault-control-height);
   padding: 0 18px;
   margin: 0;
@@ -85,10 +75,10 @@
 .content :where(
   .row-actions,
   .studio-actions,
-  .archive-button-row,
-  .capsule-button-row,
+  .archive-button-row:not(.capsule-button-row),
   .preservation-actions,
   .preserve-hero-actions,
+  .hero-actions,
   .global-add-actions,
   .add-game-preview-actions,
   .focus-action-buttons,
@@ -102,7 +92,7 @@
   gap: var(--vault-control-gap);
 }
 
-.content :where(.row-actions, .studio-actions, .archive-button-row, .capsule-button-row) form {
+.content :where(.row-actions, .studio-actions, .archive-button-row, .capsule-button-row, .hero-actions, .capsule-actions) form {
   margin: 0;
 }
 
@@ -111,6 +101,10 @@
 .content form > .studio-actions:last-child,
 .content form > .row-actions:last-child {
   margin-top: 16px;
+}
+
+.content :where(.row-actions, .studio-actions, .archive-button-row, .capsule-button-row, .preservation-actions, .preserve-hero-actions, .hero-actions, .capsule-actions, .global-add-actions, .add-game-preview-actions) form > :where(button, .button-link):last-child {
+  margin-top: 0;
 }
 
 .content :where(.studio-actions, .row-actions, .global-add-actions, .add-game-preview-actions) > :where(button, .button-link, form) {
@@ -163,7 +157,11 @@
 }
 
 /* Cards that act like controls should not inherit primary-button chrome. */
-.content :where(.game-card-link, .shelf-card, .theme-pack-button, .studio-theme-card button, .audio-chip) {
+.content :where(.game-card-link, .shelf-card, .theme-pack-button, .audio-chip) {
+  margin: 0;
+}
+
+.content .studio-theme-card button {
   margin: 0;
 }
 

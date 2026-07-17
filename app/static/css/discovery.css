@@ -25,24 +25,6 @@
     margin-bottom: 14px;
 }
 
-.discovery-core {
-    position: relative;
-    width: 210px;
-    height: 210px;
-    border-radius: 50%;
-    display: grid;
-    place-items: center;
-    justify-self: center;
-    background:
-        radial-gradient(circle, rgba(8,13,23,.98) 0 54%, transparent 55%),
-        conic-gradient(var(--accent) 0 var(--score, 72%), rgba(148,163,184,.13) var(--score, 72%) 100%);
-    box-shadow: 0 0 60px color-mix(in srgb, var(--accent) 22%, transparent);
-}
-
-.discovery-core span { font-size: 46px; font-weight: 900; letter-spacing: -.07em; }
-.discovery-core small { position: absolute; bottom: 42px; color: var(--text-muted); text-transform: uppercase; font-size: 10px; letter-spacing: .14em; }
-.discovery-core i { position: absolute; inset: -16px; border-radius: inherit; border: 1px solid color-mix(in srgb, var(--accent) 18%, transparent); animation: discoveryPulse 6s ease-in-out infinite; }
-
 .discovery-panel {
     padding: 22px;
     min-height: 180px;
@@ -148,8 +130,6 @@
 }
 .mini-discovery-list img { width: 100%; height: 100%; object-fit: cover; }
 .mini-discovery-list strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-
-@keyframes discoveryPulse { 0%, 100% { opacity:.4; transform: scale(.96); } 50% { opacity: 1; transform: scale(1.02); } }
 
 @media (max-width: 1250px) {
     .discovery-space, .discovery-hero, .cluster-grid { grid-template-columns: 1fr; }

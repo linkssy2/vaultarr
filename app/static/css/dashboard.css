@@ -1853,9 +1853,13 @@
 
 @media (prefers-reduced-motion: reduce) {
     .vault-cosmos.orbital-js-active .orbit,
+    .vault-cosmos.orbital-js-active .node {
+        animation: none !important;
+        transition: none !important;
+    }
+
     .vault-cosmos.orbital-js-active .orbital-field,
     .vault-cosmos.orbital-js-active .orbital-core,
-    .vault-cosmos.orbital-js-active .node,
     .vault-cosmos.orbital-js-active .orbital-progress i::after {
         animation: none !important;
         transition: none !important;

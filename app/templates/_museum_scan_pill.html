@@ -2,13 +2,24 @@
   <button class="museum-scan-pill__button" type="button" data-scan-action aria-label="Scan Museum">
     <span class="museum-scan-pill__idle" data-scan-idle>Scan Museum</span>
     <span class="museum-scan-pill__working" data-scan-working aria-hidden="true">
-      <span class="museum-scan-pill__topline">
-        <strong data-scan-stage>Scanning Museum</strong>
-        <span data-scan-percent>0%</span>
+      <span class="museum-scan-pill__heading">
+        <span class="museum-scan-pill__pulse" aria-hidden="true"></span>
+        <span class="museum-scan-pill__title">
+          <small>Museum Scan</small>
+          <strong data-scan-stage>Scanning Museum</strong>
+        </span>
+        <strong class="museum-scan-pill__percent" data-scan-percent>0%</strong>
       </span>
-      <small data-scan-detail>Checking your collection…</small>
+      <span class="museum-scan-pill__detail" data-scan-detail>Checking your collection…</span>
+      <span class="museum-scan-pill__stats" aria-hidden="true">
+        <span><small>Checked</small><strong data-scan-checked>0 / 0</strong></span>
+        <span><small>Prepared</small><strong data-scan-prepared>0</strong></span>
+        <span><small>Review</small><strong data-scan-review>0</strong></span>
+      </span>
+      <span class="museum-scan-pill__liquid" role="progressbar" aria-label="Museum scan progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" data-scan-progressbar>
+        <canvas class="museum-scan-pill__liquid-canvas" data-scan-liquid aria-hidden="true"></canvas>
+        <span class="museum-scan-pill__liquid-glass" aria-hidden="true"></span>
+      </span>
     </span>
-    <span class="museum-scan-pill__progress" aria-hidden="true"><i data-scan-progress></i></span>
-    <span class="museum-scan-pill__light" aria-hidden="true"></span>
   </button>
 </div>

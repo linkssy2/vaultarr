@@ -2,6 +2,7 @@ import mimetypes
 import os
 import re
 import time
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -188,25 +189,31 @@ def search_steam_media(game):
     return [x for x in items if x]
 
 
+def _provider_media_result(name, game, settings):
+    try:
+        if name == 'launchbox':
+            items = launchbox_media_for_game(game)
+        elif name == 'rawg':
+            items = search_rawg_media(game, settings)
+        elif name == 'igdb':
+            items = search_igdb_media(game, settings)
+        else:
+            items = search_steam_media(game)
+        return items, {'provider': name.upper(), 'status': 'ok', 'message': f'{len(items)} image(s).'}
+    except Exception as exc:
+        return [], {'provider': name.upper(), 'status': 'error', 'message': str(exc)}
+
+
 def provider_media_results(game, provider='all'):
     settings = load_provider_settings()
     providers = ['launchbox', 'rawg', 'igdb', 'steam'] if provider == 'all' else [provider]
+    with ThreadPoolExecutor(max_workers=min(4, len(providers)), thread_name_prefix='vaultarr-media') as pool:
+        responses = list(pool.map(lambda name: _provider_media_result(name, game, settings), providers))
     results = []
     logs = []
-    for name in providers:
-        try:
-            before = len(results)
-            if name == 'launchbox':
-                results.extend(launchbox_media_for_game(game))
-            elif name == 'rawg':
-                results.extend(search_rawg_media(game, settings))
-            elif name == 'igdb':
-                results.extend(search_igdb_media(game, settings))
-            elif name == 'steam':
-                results.extend(search_steam_media(game))
-            logs.append({'provider': name.upper(), 'status': 'ok', 'message': f'{len(results) - before} image(s).'})
-        except Exception as exc:
-            logs.append({'provider': name.upper(), 'status': 'error', 'message': str(exc)})
+    for provider_results, provider_log in responses:
+        results.extend(provider_results)
+        logs.append(provider_log)
     return {'results': [annotate_media_item(item) for item in _dedupe(results)[:40]], 'logs': logs}
 
 

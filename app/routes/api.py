@@ -1,5 +1,6 @@
-from flask import Blueprint, jsonify, abort, request
+from flask import Blueprint, jsonify, abort, request, send_file
 from pathlib import Path
+from concurrent.futures import ThreadPoolExecutor
 import os
 import shutil
 import time
@@ -16,6 +17,15 @@ from app.services.manual_service import MANUAL_PROVIDERS, manual_search_results,
 from app.services.patch_service import patch_search_results, playability_score, patch_status
 from app.services.launchbox_service import get_launchbox_details
 from app.services.game_removal_service import remove_game
+from app.services.soundtrack_service import (
+    MAX_UPLOAD_BYTES,
+    audio_mimetype,
+    khinsider_album_candidates,
+    khinsider_album_tracks,
+    list_local_tracks,
+    resolve_audio_path,
+    save_uploaded_tracks,
+)
 from app.services.metadata_service import (
     search_metadata_diagnostics,
     get_steam_details,
@@ -193,6 +203,101 @@ def _youtube_trailer_candidates(query, game_title, platform='', year=''):
     return candidates[:8]
 
 
+def _score_soundtrack_candidate(video_title, game_title, platform='', year=''):
+    candidate = (video_title or '').lower()
+    game = (game_title or '').lower()
+    score = 24
+    if game and game in candidate:
+        score += 38
+    for token in re.findall(r"[a-z0-9]+", game):
+        if len(token) >= 3 and token in candidate:
+            score += 4
+    if re.search(r"\bsoundtrack\b", candidate):
+        score += 24
+    if re.search(r"\bost\b", candidate):
+        score += 20
+    if re.search(r"\b(music|score|theme)\b", candidate):
+        score += 8
+    if any(term in candidate for term in ("official", "complete", "full")):
+        score += 6
+    if platform and platform.lower() in candidate:
+        score += 6
+    if year and str(year) in candidate:
+        score += 4
+    for term, penalty in {
+        "trailer": 22,
+        "walkthrough": 24,
+        "longplay": 24,
+        "review": 20,
+        "reaction": 18,
+        "gameplay": 14,
+        "cover": 10,
+        "remix": 8,
+    }.items():
+        if term in candidate:
+            score -= penalty
+    return max(1, min(100, score))
+
+
+def _youtube_soundtrack_candidates(query, game_title, platform='', year=''):
+    url = f"https://www.youtube.com/results?search_query={quote_plus(query)}"
+    response = requests.get(
+        url,
+        timeout=18,
+        headers={
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36",
+            "Accept-Language": "en-US,en;q=0.9",
+        },
+    )
+    response.raise_for_status()
+    data = _extract_youtube_initial_data(response.text)
+    if not data:
+        return []
+    candidates = []
+    seen = set()
+    game_lower = (game_title or '').lower().strip()
+    game_tokens = [
+        token for token in re.findall(r"[a-z0-9]+", game_lower)
+        if len(token) >= 3 and token not in {"the", "and", "for", "with", "game"}
+    ]
+    for node in _walk_json(data):
+        renderer = node.get("videoRenderer") if isinstance(node, dict) else None
+        if not renderer:
+            continue
+        video_id = renderer.get("videoId") or ""
+        if not video_id or video_id in seen:
+            continue
+        title = _plain_text(renderer.get("title"))
+        if not title:
+            continue
+        lower = title.lower()
+        has_music_marker = bool(re.search(r"\b(soundtrack|ost|score|theme)\b", lower))
+        title_matches = sum(token in lower for token in game_tokens)
+        minimum_matches = min(2, len(game_tokens))
+        if not has_music_marker or (game_lower not in lower and title_matches < minimum_matches):
+            continue
+        seen.add(video_id)
+        thumbs = renderer.get("thumbnail", {}).get("thumbnails", []) if isinstance(renderer.get("thumbnail"), dict) else []
+        thumbnail = thumbs[-1].get("url") if thumbs else f"https://i.ytimg.com/vi/{video_id}/hqdefault.jpg"
+        watch_url = f"https://www.youtube.com/watch?v={video_id}"
+        score = _score_soundtrack_candidate(title, game_title, platform, year)
+        candidates.append({
+            "source": "YouTube",
+            "provider": "YouTube",
+            "video_id": video_id,
+            "title": title,
+            "url": watch_url,
+            "embed_url": youtube_embed_url(watch_url),
+            "thumbnail": thumbnail,
+            "duration": _plain_text(renderer.get("lengthText")),
+            "published": _plain_text(renderer.get("publishedTimeText")),
+            "confidence": score,
+            "reason": "Strong soundtrack title match" if score >= 75 else "Likely music candidate",
+        })
+    candidates.sort(key=lambda item: item.get("confidence", 0), reverse=True)
+    return candidates[:8]
+
+
 def enrich_game(data):
     size_bytes = data.get("size_bytes") or 0
     data["size_gb"] = round(size_bytes / 1024 / 1024 / 1024, 2)
@@ -207,6 +312,8 @@ def enrich_game(data):
     data["manual_file_size_mb"] = round((data.get("manual_file_size") or 0) / 1024 / 1024, 2)
     data["trailer_embed_src"] = data.get("trailer_embed_url") or youtube_embed_url(data.get("trailer_url") or "")
     data["trailer_status"] = "saved" if data.get("trailer_url") else "none"
+    data["soundtrack_embed_src"] = data.get("soundtrack_embed_url") or youtube_embed_url(data.get("soundtrack_url") or "")
+    data["soundtrack_status"] = "saved" if data.get("soundtrack_url") else "none"
     data["patch_status"] = patch_status(data)
     data["playability_score"] = playability_score(data)
     data["patch_saved"] = 1 if data.get("patch_url") else 0
@@ -1014,6 +1121,187 @@ def api_game_trailer_remove(game_id):
     updated = conn.execute("SELECT * FROM games WHERE id=?", (game_id,)).fetchone()
     conn.close()
     return jsonify({"success": True, "message": "Trailer removed.", "game": enrich_game(row_to_dict(updated))})
+
+
+@api_bp.route("/api/games/<int:game_id>/soundtrack/search")
+def api_game_soundtrack_search(game_id):
+    conn = get_connection()
+    game = conn.execute("SELECT * FROM games WHERE id=?", (game_id,)).fetchone()
+    conn.close()
+    if game is None:
+        abort(404)
+
+    game_data = row_to_dict(game)
+    title = (request.args.get("query") or game_data.get("title") or "").strip()
+    platform = (game_data.get("platform") or "").strip()
+    year = (str(game_data.get("release_year") or "")).strip()
+    provider = (request.args.get("provider") or "all").strip().lower()
+    if not title:
+        return jsonify({"success": False, "message": "No game title available for soundtrack search.", "results": []}), 400
+
+    search_query = " ".join(part for part in [title, platform, year, "original soundtrack OST"] if part).strip()
+    try:
+        jobs = []
+        with ThreadPoolExecutor(max_workers=2) as executor:
+            if provider in {"all", "youtube"}:
+                jobs.append(("YouTube", executor.submit(_youtube_soundtrack_candidates, search_query, title, platform, year)))
+            if provider in {"all", "khinsider"}:
+                jobs.append(("KHInsider", executor.submit(khinsider_album_candidates, title, platform, year)))
+            results = []
+            provider_errors = []
+            for provider_name, future in jobs:
+                try:
+                    results.extend(future.result())
+                except Exception as exc:
+                    provider_errors.append(f"{provider_name}: {exc}")
+        results.sort(key=lambda item: item.get("confidence", 0), reverse=True)
+        results = results[:12]
+        if not jobs:
+            return jsonify({"success": False, "message": "Unknown soundtrack provider.", "results": []}), 400
+        return jsonify({
+            "success": True,
+            "query": search_query,
+            "results": results,
+            "message": f"Found {len(results)} likely soundtrack candidate{'s' if len(results) != 1 else ''}.",
+            "provider_errors": provider_errors,
+        })
+    except Exception as exc:
+        return jsonify({
+            "success": False,
+            "message": f"Soundtrack search failed: {exc}",
+            "query": search_query,
+            "results": [],
+        }), 400
+
+
+@api_bp.route("/api/games/<int:game_id>/soundtrack/catalog/tracks")
+def api_game_soundtrack_catalog_tracks(game_id):
+    conn = get_connection()
+    game = conn.execute("SELECT id FROM games WHERE id=?", (game_id,)).fetchone()
+    conn.close()
+    if game is None:
+        abort(404)
+    try:
+        album = khinsider_album_tracks((request.args.get("url") or "").strip())
+        return jsonify({"success": True, "album": album})
+    except ValueError as exc:
+        return jsonify({"success": False, "message": str(exc)}), 400
+    except Exception as exc:
+        return jsonify({"success": False, "message": f"Could not load KHInsider track metadata: {exc}"}), 400
+
+
+@api_bp.route("/api/games/<int:game_id>/soundtrack", methods=["POST"])
+def api_game_soundtrack_save(game_id):
+    payload = request.get_json(silent=True) or request.form
+    soundtrack_url = (payload.get("soundtrack_url") or "").strip()
+    soundtrack_provider = (payload.get("soundtrack_provider") or "YouTube").strip()
+    soundtrack_title = (payload.get("soundtrack_title") or "Original Soundtrack").strip()
+    embed_url = youtube_embed_url(soundtrack_url)
+
+    if not soundtrack_url:
+        return jsonify({"success": False, "message": "No soundtrack URL was provided."}), 400
+
+    conn = get_connection()
+    game = conn.execute("SELECT * FROM games WHERE id=?", (game_id,)).fetchone()
+    if game is None:
+        conn.close()
+        abort(404)
+    conn.execute(
+        """
+        UPDATE games
+        SET soundtrack_url=?, soundtrack_provider=?, soundtrack_title=?, soundtrack_embed_url=?, soundtrack_updated_at=CURRENT_TIMESTAMP, updated_at=CURRENT_TIMESTAMP
+        WHERE id=?
+        """,
+        (soundtrack_url, soundtrack_provider, soundtrack_title, embed_url, game_id),
+    )
+    conn.commit()
+    updated = conn.execute("SELECT * FROM games WHERE id=?", (game_id,)).fetchone()
+    conn.close()
+    return jsonify({"success": True, "message": "Soundtrack saved.", "game": enrich_game(row_to_dict(updated))})
+
+
+@api_bp.route("/api/games/<int:game_id>/soundtrack/remove", methods=["POST"])
+def api_game_soundtrack_remove(game_id):
+    conn = get_connection()
+    game = conn.execute("SELECT * FROM games WHERE id=?", (game_id,)).fetchone()
+    if game is None:
+        conn.close()
+        abort(404)
+    conn.execute(
+        """
+        UPDATE games
+        SET soundtrack_url='', soundtrack_provider='', soundtrack_title='', soundtrack_embed_url='', soundtrack_updated_at=CURRENT_TIMESTAMP, updated_at=CURRENT_TIMESTAMP
+        WHERE id=?
+        """,
+        (game_id,),
+    )
+    conn.commit()
+    updated = conn.execute("SELECT * FROM games WHERE id=?", (game_id,)).fetchone()
+    conn.close()
+    return jsonify({"success": True, "message": "Soundtrack removed.", "game": enrich_game(row_to_dict(updated))})
+
+
+@api_bp.route("/api/games/<int:game_id>/soundtrack/tracks")
+def api_game_soundtrack_tracks(game_id):
+    conn = get_connection()
+    game = conn.execute("SELECT * FROM games WHERE id=?", (game_id,)).fetchone()
+    conn.close()
+    if game is None:
+        abort(404)
+    tracks = list_local_tracks(row_to_dict(game))
+    return jsonify({"success": True, "tracks": tracks, "count": len(tracks)})
+
+
+@api_bp.route("/api/games/<int:game_id>/soundtrack/upload", methods=["POST"])
+def api_game_soundtrack_upload(game_id):
+    conn = get_connection()
+    game = conn.execute("SELECT * FROM games WHERE id=?", (game_id,)).fetchone()
+    conn.close()
+    if game is None:
+        abort(404)
+    if request.content_length and request.content_length > MAX_UPLOAD_BYTES * 4:
+        return jsonify({"success": False, "message": "Soundtrack import is limited to 1 GB per request and 250 MB per file."}), 413
+    uploads = [upload for upload in request.files.getlist("tracks") if upload and upload.filename]
+    if not uploads:
+        return jsonify({"success": False, "message": "Choose one or more audio files to import."}), 400
+    result = save_uploaded_tracks(game_id, uploads)
+    tracks = list_local_tracks(row_to_dict(game))
+    conn = get_connection()
+    conn.execute(
+        "UPDATE games SET soundtrack_count=?, updated_at=CURRENT_TIMESTAMP WHERE id=?",
+        (len(tracks), game_id),
+    )
+    conn.commit()
+    updated = conn.execute("SELECT * FROM games WHERE id=?", (game_id,)).fetchone()
+    conn.close()
+    message = f"Imported {len(result['saved'])} soundtrack file{'s' if len(result['saved']) != 1 else ''}."
+    if result["rejected"]:
+        message += f" Rejected {len(result['rejected'])} unsupported or oversized file{'s' if len(result['rejected']) != 1 else ''}."
+    return jsonify({
+        "success": bool(result["saved"]),
+        "message": message,
+        "saved": result["saved"],
+        "rejected": result["rejected"],
+        "tracks": tracks,
+        "game": enrich_game(row_to_dict(updated)),
+    }), 200 if result["saved"] else 400
+
+
+@api_bp.route("/api/games/<int:game_id>/soundtrack/audio")
+def api_game_soundtrack_audio(game_id):
+    conn = get_connection()
+    game = conn.execute("SELECT * FROM games WHERE id=?", (game_id,)).fetchone()
+    conn.close()
+    if game is None:
+        abort(404)
+    path = resolve_audio_path(
+        row_to_dict(game),
+        (request.args.get("source") or "").strip().lower(),
+        request.args.get("path") or "",
+    )
+    if path is None:
+        abort(404)
+    return send_file(path, mimetype=audio_mimetype(path), conditional=True, as_attachment=False, download_name=path.name)
 
 
 

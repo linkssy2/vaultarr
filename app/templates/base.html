@@ -15,18 +15,18 @@
   <link rel="stylesheet" href="/static/css/sidebar.css">
   <link rel="stylesheet" href="/static/css/layout.css">
   <link rel="stylesheet" href="/static/css/forms.css">
-  <link rel="stylesheet" href="/static/css/dashboard.css">
+  <link rel="stylesheet" href="/static/css/dashboard.css?v=2.0.0-alpha.36-orbit-motion.1">
   <link rel="stylesheet" href="/static/css/museum-experience.css?v=1.7.6">
-  <link rel="stylesheet" href="/static/css/library.css">
-  <link rel="stylesheet" href="/static/css/cards.css">
-  <link rel="stylesheet" href="/static/css/game-detail.css">
-  <link rel="stylesheet" href="/static/css/focus-mode.css">
+  <link rel="stylesheet" href="/static/css/library.css?v=2.0.0-alpha.36-depth.1">
+  <link rel="stylesheet" href="/static/css/cards.css?v=2.0.0-alpha.36-depth.1">
+  <link rel="stylesheet" href="/static/css/game-detail.css?v=2.0.0-alpha.36-acquisition.1">
+  <link rel="stylesheet" href="/static/css/focus-mode.css?v=2.0.0-alpha.36-acquisition.4">
   <link rel="stylesheet" href="/static/css/performance-foundation.css?v=1.7.6">
   <link rel="stylesheet" href="/static/css/preservation.css">
   <link rel="stylesheet" href="/static/css/vaultos.css">
   <link rel="stylesheet" href="/static/css/navigation.css?v=1.7.6">
   <link rel="stylesheet" href="/static/css/global-search.css">
-  <link rel="stylesheet" href="/static/css/discovery.css">
+  <link rel="stylesheet" href="/static/css/discovery.css?v=2.0.0-alpha.36-depth-liquid.1">
   <link rel="stylesheet" href="/static/css/scrollbars.css">
   <link rel="stylesheet" href="/static/css/archive.css">
     <link rel="stylesheet" href="/static/css/studio.css">
@@ -36,9 +36,9 @@
   <link rel="stylesheet" href="/static/css/readiness.css">
   <link rel="stylesheet" href="/static/css/responsive.css">
   <link rel="stylesheet" href="/static/css/controls.css?v=1.7.6">
-  <link rel="stylesheet" href="/static/css/museum-scan-pill.css?v=2.0.0-alpha.12">
-  <link rel="stylesheet" href="/static/css/interface-cohesion.css?v=2.0.0-alpha.2">
-  <link rel="stylesheet" href="/static/css/familiar-experience.css?v=2.0.0-alpha.7">
+  <link rel="stylesheet" href="/static/css/museum-scan-pill.css?v=2.0.0-alpha.36-scan-panel.14">
+  <link rel="stylesheet" href="/static/css/interface-cohesion.css?v=2.0.0-alpha.36">
+  <link rel="stylesheet" href="/static/css/familiar-experience.css?v=2.0.0-alpha.36-v-liquid.6">
   <style id="vaultarr-theme">{{ theme_css|safe }}</style>
 </head>
 <body class="vaultos {{ 'advanced-mode' if ui_settings.advanced_mode else 'standard-mode' }} {% if theme.dark_reader_compat %}dark-reader-compat{% endif %}">
@@ -74,7 +74,7 @@
     <div class="sidebar-footer">
       <div class="mini-stat vault-build-card">
         <span>Current build</span>
-        <strong>Vaultarr 2.0 Alpha 35</strong>
+        <strong>Vaultarr 2.0 Alpha 36</strong>
         <em></em>
       </div>
       {% if auth_enabled %}
@@ -133,6 +133,7 @@
         <button class="focus-tab" data-tab="acquisition" type="button">Acquisition</button>
         <button class="focus-tab" data-tab="gallery" type="button">Gallery</button>
         <button class="focus-tab" data-tab="trailer" type="button">Trailer</button>
+        <button class="focus-tab" data-tab="soundtrack" type="button">Soundtrack</button>
         <button class="focus-tab" data-tab="patches" type="button">Patches</button>
         <button class="focus-tab" data-tab="files" type="button">Files</button>
         <button class="focus-tab" data-tab="actions" type="button">Actions</button>
@@ -286,7 +287,7 @@
             <div>
               <p class="eyebrow">Acquisition Assistant</p>
               <h2>Find a reference copy</h2>
-              <p class="muted">Vaultarr finds the matching Vimm reference page. You paste the final link yourself.</p>
+              <p class="muted">Search public Vimm and My Abandonware catalog pages, then obtain the selected release from its original site.</p>
             </div>
             <span class="metadata-pill" id="focusAcquisitionBadge">Not Configured</span>
           </div>
@@ -299,8 +300,33 @@
           </div>
 
           <div class="acquisition-search-row">
-            <input id="focusAcquisitionQuery" aria-label="Search Vimm reference catalog" placeholder="Game title">
-            <input id="focusAcquisitionPlatform" aria-label="Platform hint" placeholder="Platform (optional)">
+            <input id="focusAcquisitionQuery" aria-label="Search acquisition catalogs" placeholder="Game title">
+            <select id="focusAcquisitionProvider" aria-label="Acquisition source">
+              <option value="all">All Sources</option>
+              <option value="vimm">Vimm Vault</option>
+              <option value="myabandonware">My Abandonware</option>
+            </select>
+            <select id="focusAcquisitionPlatform" aria-label="Platform version">
+              <option value="">All Versions</option>
+              <option value="PC / Windows">PC / Windows</option>
+              <option value="DOS">DOS</option>
+              <option value="GameCube">GameCube</option>
+              <option value="Xbox">Xbox</option>
+              <option value="Xbox 360">Xbox 360</option>
+              <option value="PlayStation">PlayStation</option>
+              <option value="PlayStation 2">PlayStation 2</option>
+              <option value="PlayStation 3">PlayStation 3</option>
+              <option value="PSP">PSP</option>
+              <option value="Nintendo 64">Nintendo 64</option>
+              <option value="NES">NES</option>
+              <option value="SNES">SNES</option>
+              <option value="Wii">Wii</option>
+              <option value="Game Boy Advance">Game Boy Advance</option>
+              <option value="Nintendo DS">Nintendo DS</option>
+              <option value="Dreamcast">Dreamcast</option>
+              <option value="Saturn">Saturn</option>
+              <option value="Genesis">Genesis</option>
+            </select>
             <button type="button" id="focusAcquisitionSearchButton">Find Copy</button>
           </div>
           <div id="focusAcquisitionSearchStatus" class="muted acquisition-search-status">Choose Find Copy to search the live reference catalog.</div>
@@ -309,7 +335,7 @@
           <details class="acquisition-source-fallback">
             <summary>Already know the exact source page?</summary>
             <div class="acquisition-source-row">
-              <input id="focusAcquisitionSourcePageInput" placeholder="https://vimm.net/vault/12345">
+              <input id="focusAcquisitionSourcePageInput" placeholder="Paste a Vimm Vault or My Abandonware game page">
               <button type="button" id="focusAcquisitionReadSourceButton" class="secondary">Read Source Page</button>
             </div>
           </details>
@@ -465,6 +491,103 @@
       </div>
 
 
+      <div class="focus-tab-panel" id="focusTab-soundtrack">
+        <div class="trailer-workspace soundtrack-workspace">
+          <div class="trailer-hero soundtrack-hero">
+            <div>
+              <p class="eyebrow">Soundtrack Scanner</p>
+              <h2 id="focusSoundtrackHeading">Game Soundtrack</h2>
+              <p class="muted" id="focusSoundtrackCopy">Find, preview, and preserve a source link for this game's music.</p>
+            </div>
+            <div class="trailer-actions">
+              <select id="focusSoundtrackSearchProvider" aria-label="Soundtrack search source">
+                <option value="all">All Sources</option>
+                <option value="khinsider">KHInsider Catalog</option>
+                <option value="youtube">YouTube</option>
+              </select>
+              <button class="button-link small" id="focusSoundtrackFindButton" type="button">Scan for Music</button>
+              <a class="button-link secondary small disabled" id="focusSoundtrackOpenLink" href="#" target="_blank" rel="noopener">External</a>
+            </div>
+          </div>
+
+          <div class="trailer-stage soundtrack-stage" id="focusSoundtrackStage">
+            <div class="trailer-empty">No soundtrack saved yet. Scan for music to find likely matches.</div>
+          </div>
+
+          <section class="soundtrack-player-panel" aria-labelledby="focusSoundtrackPlayerHeading">
+            <div class="soundtrack-player-heading">
+              <div>
+                <p class="eyebrow">Vaultarr Audio Library</p>
+                <h3 id="focusSoundtrackPlayerHeading">Local Soundtrack Player</h3>
+                <p class="muted">Plays soundtrack files already in the game folder or files you import into Vaultarr.</p>
+              </div>
+              <label class="secondary-button small soundtrack-import-button" for="focusSoundtrackUploadInput">Import Audio</label>
+              <input id="focusSoundtrackUploadInput" type="file" name="tracks" accept=".mp3,.flac,.ogg,.wav,.m4a,audio/*" multiple hidden>
+            </div>
+
+            <div class="soundtrack-drop-zone" id="focusSoundtrackDropZone">
+              <div class="soundtrack-now-playing">
+                <div class="soundtrack-player-art" id="focusSoundtrackPlayerArt"><span>♪</span></div>
+                <div>
+                  <span>Now Playing</span>
+                  <strong id="focusSoundtrackNowPlaying">No local soundtrack selected</strong>
+                  <small id="focusSoundtrackNowSource">Import audio or rescan a game folder containing a Soundtrack, OST, or Music directory.</small>
+                </div>
+              </div>
+              <audio id="focusSoundtrackAudio" controls preload="metadata"></audio>
+              <div class="soundtrack-player-controls">
+                <button class="secondary-button small" id="focusSoundtrackPrevious" type="button">Previous</button>
+                <button class="secondary-button small" id="focusSoundtrackShuffle" type="button" aria-pressed="false">Shuffle</button>
+                <button class="secondary-button small" id="focusSoundtrackRepeat" type="button" aria-pressed="false">Repeat</button>
+                <button class="secondary-button small" id="focusSoundtrackNext" type="button">Next</button>
+              </div>
+              <p class="soundtrack-drop-copy">Drop owned MP3, FLAC, OGG, WAV, or M4A files here to import them.</p>
+            </div>
+
+            <div id="focusSoundtrackUploadStatus" class="metadata-status-row"></div>
+            <div id="focusSoundtrackTrackList" class="soundtrack-track-list">
+              <div class="trailer-candidate-empty">No local soundtrack files found.</div>
+            </div>
+          </section>
+
+          <details class="trailer-finder-panel soundtrack-finder" id="focusSoundtrackFinderPanel">
+            <summary>
+              <span>Soundtrack Candidates</span>
+              <small>Preview or save a source for this game</small>
+            </summary>
+            <div class="trailer-search-shortcuts">
+              <a id="focusSoundtrackYouTubeSearch" href="#" target="_blank" rel="noopener"><strong>YouTube</strong><span>External soundtrack search</span></a>
+              <a id="focusSoundtrackMusicSearch" href="#" target="_blank" rel="noopener"><strong>YouTube Music</strong><span>Search music catalog</span></a>
+              <a id="focusSoundtrackKHInsiderSearch" href="#" target="_blank" rel="noopener"><strong>KHInsider</strong><span>External album catalog</span></a>
+              <a id="focusSoundtrackGoogleSearch" href="#" target="_blank" rel="noopener"><strong>Web</strong><span>Find official stores</span></a>
+            </div>
+            <div id="focusSoundtrackResults" class="trailer-candidate-grid">
+              <div class="trailer-candidate-empty">Use Scan for Music to search likely soundtrack matches inside Vaultarr.</div>
+            </div>
+          </details>
+
+          <details class="trailer-advanced-panel">
+            <summary>Advanced soundtrack URL</summary>
+            <form id="focusSoundtrackForm" class="metadata-inline-form trailer-inline-form">
+              <input id="focusSoundtrackUrlInput" name="soundtrack_url" placeholder="Paste YouTube soundtrack URL...">
+              <select id="focusSoundtrackProvider" name="soundtrack_provider">
+                <option>YouTube</option>
+                <option>YouTube Music</option>
+                <option>KHInsider</option>
+                <option>Bandcamp</option>
+                <option>Spotify</option>
+                <option>Other</option>
+              </select>
+              <button type="submit">Save Soundtrack</button>
+              <button id="focusSoundtrackRemoveButton" class="secondary-button" type="button">Remove</button>
+            </form>
+          </details>
+
+          <div id="focusSoundtrackStatus" class="metadata-status-row"></div>
+        </div>
+      </div>
+
+
       <div class="focus-tab-panel" id="focusTab-patches">
         <div class="patch-workspace">
           <div class="patch-hero">
@@ -591,13 +714,13 @@
   </dialog>
 
   <script src="/static/js/live-events.js?v=1.7.6"></script>
-  <script src="/static/js/museum-scan-pill.js?v=2.0.0-alpha.12"></script>
-  <script src="/static/js/library.js?v=2.0.0-alpha.7"></script>
-  <script src="/static/js/focus-mode.js?v=1.7.6"></script>
+  <script src="/static/js/museum-scan-pill.js?v=2.0.0-alpha.36-scan-panel.15"></script>
+  <script src="/static/js/library.js?v=2.0.0-alpha.36-depth.1"></script>
+  <script src="/static/js/focus-mode.js?v=2.0.0-alpha.36-acquisition.4"></script>
   <script src="/static/js/performance-foundation.js?v=1.7.6"></script>
   <script src="/static/js/theme-compat.js"></script>
   <script src="/static/js/studio-navigation.js"></script>
-  <script src="/static/js/orbital-vault.js"></script>
+  <script src="/static/js/orbital-vault.js?v=2.0.0-alpha.36-v-liquid.7"></script>
   <script src="/static/js/experience.js"></script>
   <script src="/static/js/milestone-liquid-engine.js?v=2.0.0-alpha.35"></script>
 

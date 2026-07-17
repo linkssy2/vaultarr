@@ -99,6 +99,35 @@
       trailerSteamSearch: document.getElementById("focusTrailerSteamSearch"),
       trailerGoogleSearch: document.getElementById("focusTrailerGoogleSearch"),
       trailerStatus: document.getElementById("focusTrailerStatus"),
+      soundtrackHeading: document.getElementById("focusSoundtrackHeading"),
+      soundtrackCopy: document.getElementById("focusSoundtrackCopy"),
+      soundtrackStage: document.getElementById("focusSoundtrackStage"),
+      soundtrackForm: document.getElementById("focusSoundtrackForm"),
+      soundtrackUrlInput: document.getElementById("focusSoundtrackUrlInput"),
+      soundtrackProvider: document.getElementById("focusSoundtrackProvider"),
+      soundtrackRemoveButton: document.getElementById("focusSoundtrackRemoveButton"),
+      soundtrackOpenLink: document.getElementById("focusSoundtrackOpenLink"),
+      soundtrackFindButton: document.getElementById("focusSoundtrackFindButton"),
+      soundtrackSearchProvider: document.getElementById("focusSoundtrackSearchProvider"),
+      soundtrackFinderPanel: document.getElementById("focusSoundtrackFinderPanel"),
+      soundtrackResults: document.getElementById("focusSoundtrackResults"),
+      soundtrackYouTubeSearch: document.getElementById("focusSoundtrackYouTubeSearch"),
+      soundtrackMusicSearch: document.getElementById("focusSoundtrackMusicSearch"),
+      soundtrackKHInsiderSearch: document.getElementById("focusSoundtrackKHInsiderSearch"),
+      soundtrackGoogleSearch: document.getElementById("focusSoundtrackGoogleSearch"),
+      soundtrackStatus: document.getElementById("focusSoundtrackStatus"),
+      soundtrackUploadInput: document.getElementById("focusSoundtrackUploadInput"),
+      soundtrackUploadStatus: document.getElementById("focusSoundtrackUploadStatus"),
+      soundtrackDropZone: document.getElementById("focusSoundtrackDropZone"),
+      soundtrackAudio: document.getElementById("focusSoundtrackAudio"),
+      soundtrackNowPlaying: document.getElementById("focusSoundtrackNowPlaying"),
+      soundtrackNowSource: document.getElementById("focusSoundtrackNowSource"),
+      soundtrackPlayerArt: document.getElementById("focusSoundtrackPlayerArt"),
+      soundtrackTrackList: document.getElementById("focusSoundtrackTrackList"),
+      soundtrackPrevious: document.getElementById("focusSoundtrackPrevious"),
+      soundtrackNext: document.getElementById("focusSoundtrackNext"),
+      soundtrackShuffle: document.getElementById("focusSoundtrackShuffle"),
+      soundtrackRepeat: document.getElementById("focusSoundtrackRepeat"),
       playabilityScore: document.getElementById("focusPlayabilityScore"),
       patchStatus: document.getElementById("focusPatchStatus"),
       patchCurrent: document.getElementById("focusPatchCurrent"),
@@ -135,6 +164,7 @@
       acquisitionCurrentSource: document.getElementById("focusAcquisitionCurrentSource"),
       acquisitionCurrentStatus: document.getElementById("focusAcquisitionCurrentStatus"),
       acquisitionQuery: document.getElementById("focusAcquisitionQuery"),
+      acquisitionProvider: document.getElementById("focusAcquisitionProvider"),
       acquisitionPlatform: document.getElementById("focusAcquisitionPlatform"),
       acquisitionSearchButton: document.getElementById("focusAcquisitionSearchButton"),
       acquisitionSearchStatus: document.getElementById("focusAcquisitionSearchStatus"),
@@ -298,6 +328,117 @@
       if (fields.acquisitionSearchStatus) fields.acquisitionSearchStatus.textContent = message || "";
     }
 
+    function enhanceAcquisitionSelect(select) {
+      if (!select || select.dataset.vaultSelectEnhanced === "true") return;
+      select.dataset.vaultSelectEnhanced = "true";
+      select.classList.add("vault-select-native");
+      select.tabIndex = -1;
+      select.setAttribute("aria-hidden", "true");
+
+      const wrapper = document.createElement("div");
+      wrapper.className = "vault-select";
+      select.parentNode.insertBefore(wrapper, select);
+      wrapper.append(select);
+
+      const trigger = document.createElement("button");
+      trigger.type = "button";
+      trigger.className = "vault-select-trigger";
+      trigger.setAttribute("aria-haspopup", "listbox");
+      trigger.setAttribute("aria-expanded", "false");
+      trigger.setAttribute("aria-label", select.getAttribute("aria-label") || "Choose option");
+      trigger.innerHTML = '<span class="vault-select-value"></span><span class="vault-select-chevron" aria-hidden="true"></span>';
+
+      const menu = document.createElement("div");
+      menu.className = "vault-select-menu";
+      menu.id = `${select.id}Menu`;
+      menu.setAttribute("role", "listbox");
+      menu.setAttribute("aria-label", select.getAttribute("aria-label") || "Options");
+      trigger.setAttribute("aria-controls", menu.id);
+
+      Array.from(select.options).forEach((option) => {
+        const item = document.createElement("button");
+        item.type = "button";
+        item.className = "vault-select-option";
+        item.setAttribute("role", "option");
+        item.dataset.value = option.value;
+        item.textContent = option.textContent;
+        item.addEventListener("click", () => {
+          select.value = option.value;
+          select.dispatchEvent(new Event("change", { bubbles: true }));
+          closeMenu(true);
+        });
+        menu.append(item);
+      });
+
+      wrapper.append(trigger, menu);
+      const valueLabel = trigger.querySelector(".vault-select-value");
+
+      const sync = () => {
+        const selected = select.options[select.selectedIndex] || select.options[0];
+        valueLabel.textContent = selected?.textContent || "Choose";
+        menu.querySelectorAll(".vault-select-option").forEach((item) => {
+          const isSelected = item.dataset.value === select.value;
+          item.classList.toggle("is-selected", isSelected);
+          item.setAttribute("aria-selected", String(isSelected));
+        });
+      };
+
+      const closeMenu = (restoreFocus = false) => {
+        wrapper.classList.remove("is-open");
+        trigger.setAttribute("aria-expanded", "false");
+        if (restoreFocus) trigger.focus({ preventScroll: true });
+      };
+
+      const openMenu = () => {
+        document.querySelectorAll(".vault-select.is-open").forEach((openSelect) => {
+          if (openSelect !== wrapper) {
+            openSelect.classList.remove("is-open");
+            openSelect.querySelector(".vault-select-trigger")?.setAttribute("aria-expanded", "false");
+          }
+        });
+        wrapper.classList.add("is-open");
+        trigger.setAttribute("aria-expanded", "true");
+        const selectedItem = menu.querySelector('.vault-select-option[aria-selected="true"]');
+        if (selectedItem) menu.scrollTop = Math.max(0, selectedItem.offsetTop - 44);
+      };
+
+      trigger.addEventListener("click", (event) => {
+        event.stopPropagation();
+        if (wrapper.classList.contains("is-open")) closeMenu();
+        else openMenu();
+      });
+      trigger.addEventListener("keydown", (event) => {
+        if (["ArrowDown", "Enter", " "].includes(event.key)) {
+          event.preventDefault();
+          openMenu();
+          (menu.querySelector('.vault-select-option[aria-selected="true"]') || menu.querySelector(".vault-select-option"))?.focus({ preventScroll: true });
+        }
+      });
+      menu.addEventListener("keydown", (event) => {
+        const options = Array.from(menu.querySelectorAll(".vault-select-option"));
+        const index = options.indexOf(document.activeElement);
+        if (event.key === "Escape") {
+          event.preventDefault();
+          event.stopPropagation();
+          closeMenu(true);
+        } else if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+          event.preventDefault();
+          const direction = event.key === "ArrowDown" ? 1 : -1;
+          options[Math.max(0, Math.min(options.length - 1, index + direction))]?.focus({ preventScroll: true });
+        }
+      });
+      document.addEventListener("click", (event) => {
+        if (!wrapper.contains(event.target)) closeMenu();
+      });
+      select.addEventListener("change", sync);
+      select._vaultSelectSync = sync;
+      sync();
+    }
+
+    function syncAcquisitionSelect(select) {
+      if (typeof select?._vaultSelectSync === "function") select._vaultSelectSync();
+    }
+
     function chooseAcquisition(item) {
       selectedAcquisition = item || null;
       if (!item || !fields.acquisitionSelection) return;
@@ -306,20 +447,22 @@
       if (fields.acquisitionSelectionMeta) fields.acquisitionSelectionMeta.textContent = [item.platform, item.region, item.version, `${item.match_score || 0}% match`].filter(Boolean).join(" · ");
       if (fields.acquisitionSelectionSource) { fields.acquisitionSelectionSource.href = item.source_page || "#"; }
       if (fields.acquisitionSourceInput) fields.acquisitionSourceInput.value = item.source_page || "";
-      setAcquisitionStatus("Release selected. Open the source, then paste the final link below.");
+      setAcquisitionStatus("Release selected. Open the original source to continue manually.");
     }
 
     function renderAcquisitionResults(items = []) {
       if (!fields.acquisitionResults) return;
       fields.acquisitionResults.replaceChildren();
       if (!items.length) {
-        fields.acquisitionResults.innerHTML = `<div class="metadata-empty"><h3>No reference match found</h3><p class="muted">Try a shorter title or paste the exact Vimm Vault page below.</p></div>`;
+        fields.acquisitionResults.innerHTML = `<div class="metadata-empty"><h3>No reference match found</h3><p class="muted">Try a shorter title, another source, or paste an exact supported game page below.</p></div>`;
         return;
       }
       items.forEach((item) => {
         const card = document.createElement("article");
         card.className = "acquisition-result-card";
-        card.innerHTML = `<div class="acquisition-result-top"><h3>${escapeHtml(item.title || "Unknown release")}</h3><span class="confidence-badge">${Number(item.match_score || 0)}%</span></div><p class="muted">${escapeHtml([item.platform, item.region, item.version].filter(Boolean).join(" · ") || "Release details available on source page")}</p><div class="acquisition-result-actions"><a class="button-link secondary" href="${escapeHtml(item.source_page || "#")}" target="_blank" rel="noopener noreferrer">Open Source</a><button type="button" class="focus-acquisition-use">Use This Release</button></div>`;
+        const provider = item.provider || "External catalog";
+        const actionLabel = item.external_search ? "Search Source" : "Open Source";
+        card.innerHTML = `<div class="acquisition-result-top"><div><span class="acquisition-provider-label">${escapeHtml(provider)}</span><h3>${escapeHtml(item.title || "Unknown release")}</h3></div><span class="confidence-badge">${Number(item.match_score || 0)}%</span></div><p class="muted">${escapeHtml([item.platform, item.region, item.version].filter(Boolean).join(" · ") || "Release details available on source page")}</p><div class="acquisition-result-actions"><a class="button-link secondary" href="${escapeHtml(item.source_page || "#")}" target="_blank" rel="noopener noreferrer">${actionLabel}</a>${item.external_search ? "" : '<button type="button" class="focus-acquisition-use">Use This Release</button>'}</div>`;
         card.querySelector(".focus-acquisition-use")?.addEventListener("click", () => chooseAcquisition(item));
         fields.acquisitionResults.append(card);
       });
@@ -329,6 +472,10 @@
       selectedAcquisition = null;
       if (fields.acquisitionQuery) fields.acquisitionQuery.value = game?.title || "";
       if (fields.acquisitionPlatform) fields.acquisitionPlatform.value = game?.platform || "";
+      if (fields.acquisitionPlatform && !Array.from(fields.acquisitionPlatform.options).some((option) => option.value === fields.acquisitionPlatform.value)) fields.acquisitionPlatform.value = "";
+      if (fields.acquisitionProvider) fields.acquisitionProvider.value = "all";
+      syncAcquisitionSelect(fields.acquisitionPlatform);
+      syncAcquisitionSelect(fields.acquisitionProvider);
       if (fields.acquisitionResults) fields.acquisitionResults.replaceChildren();
       if (fields.acquisitionSelection) fields.acquisitionSelection.hidden = true;
       if (fields.acquisitionCurrent) fields.acquisitionCurrent.hidden = true;
@@ -362,12 +509,13 @@
       if (button) { button.disabled = true; button.textContent = "Searching…"; }
       setAcquisitionStatus("Searching the live reference catalog…");
       try {
-        const params = new URLSearchParams({ q: term, platform: fields.acquisitionPlatform?.value.trim() || "" });
+        const params = new URLSearchParams({ q: term, platform: fields.acquisitionPlatform?.value.trim() || "", provider: fields.acquisitionProvider?.value || "all" });
         const response = await fetch(`/api/games/${activeGameId}/acquisition/search?${params}`, { headers: { Accept: "application/json" } });
         const data = await response.json();
         if (!response.ok || !data.success) throw new Error(data.message || "Search failed.");
         renderAcquisitionResults(data.results || []);
-        setAcquisitionStatus(`${(data.results || []).length} reference result${(data.results || []).length === 1 ? "" : "s"} found.`);
+        const warning = (data.provider_errors || []).length ? ` ${(data.provider_errors || []).join(" ")}` : "";
+        setAcquisitionStatus(`${(data.results || []).length} reference result${(data.results || []).length === 1 ? "" : "s"} found.${warning}`);
       } catch (error) { renderAcquisitionResults([]); setAcquisitionStatus(error.message); }
       finally { if (button) { button.disabled = false; button.textContent = "Find Copy"; } }
     }
@@ -477,6 +625,8 @@
       }
       updateManualViewer(game);
       updateTrailerViewer(game);
+      updateSoundtrackViewer(game);
+      loadLocalSoundtrackTracks(game);
       updatePatchPanel(game);
       loadCachedGallery();
       if (fields.preservationArchive) fields.preservationArchive.textContent = (game.archive_count || 0) || (game.installer_count || 0) || (game.disc_image_count || 0) ? `✓ Archive assets detected` : "⚠ No archive assets detected";
@@ -532,6 +682,7 @@
       if (isAnimating || body.classList.contains("focus-active")) return;
 
       stopTrailerPlayback(false);
+      stopSoundtrackPlayback();
       const gameId = trigger.dataset.gameId;
       if (!gameId) return;
 
@@ -581,6 +732,7 @@
       if (isAnimating || !body.classList.contains("focus-active")) return;
 
       stopTrailerPlayback(false);
+      stopSoundtrackPlayback();
       isAnimating = true;
       const liveCard = activeTrigger?.querySelector(".poster-card") || activeTrigger;
       const liveRect = liveCard?.getBoundingClientRect?.();
@@ -632,6 +784,9 @@
       const currentActive = document.querySelector(".focus-tab.active")?.dataset?.tab || "";
       if (currentActive === "trailer" && tabName !== "trailer") {
         stopTrailerPlayback(false);
+      }
+      if (currentActive === "soundtrack" && tabName !== "soundtrack") {
+        stopSoundtrackPlayback();
       }
       if (tabName === "trailer") {
         restoreTrailerPlaybackIfNeeded();
@@ -1528,6 +1683,393 @@
     }
 
 
+    function renderSoundtrackStatus(message, status = "ok") {
+      if (!fields.soundtrackStatus) return;
+      fields.soundtrackStatus.innerHTML = message ? `<span class="metadata-provider-pill ${escapeHtml(status)}"><strong>Soundtrack</strong><span>${escapeHtml(message)}</span></span>` : "";
+    }
+
+    function renderSoundtrackUploadStatus(message, status = "ok") {
+      if (!fields.soundtrackUploadStatus) return;
+      fields.soundtrackUploadStatus.innerHTML = message ? `<span class="metadata-provider-pill ${escapeHtml(status)}"><strong>Local Audio</strong><span>${escapeHtml(message)}</span></span>` : "";
+    }
+
+    let localSoundtrackTracks = [];
+    let localSoundtrackIndex = -1;
+    let localSoundtrackShuffle = false;
+    let localSoundtrackRepeat = false;
+
+    function formatTrackSize(value) {
+      const bytes = Number(value || 0);
+      if (!bytes) return "";
+      if (bytes >= 1024 * 1024) return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
+      return `${Math.max(1, Math.round(bytes / 1024))} KB`;
+    }
+
+    function updateSoundtrackPlayerArt(game) {
+      if (!fields.soundtrackPlayerArt) return;
+      fields.soundtrackPlayerArt.innerHTML = game?.cover_src
+        ? `<img src="${escapeHtml(cacheBust(game.cover_src))}" alt="${escapeHtml(game.title || "Game")} cover">`
+        : `<span>♪</span>`;
+    }
+
+    function renderLocalSoundtrackTracks(tracks = []) {
+      localSoundtrackTracks = Array.isArray(tracks) ? tracks : [];
+      if (!fields.soundtrackTrackList) return;
+      if (!localSoundtrackTracks.length) {
+        localSoundtrackIndex = -1;
+        fields.soundtrackTrackList.innerHTML = `<div class="trailer-candidate-empty">No local soundtrack files found. Import owned audio or place files in a Soundtrack, OST, or Music folder inside the game directory.</div>`;
+        if (fields.soundtrackAudio) {
+          fields.soundtrackAudio.pause();
+          fields.soundtrackAudio.removeAttribute("src");
+          fields.soundtrackAudio.load();
+        }
+        if (fields.soundtrackNowPlaying) fields.soundtrackNowPlaying.textContent = "No local soundtrack selected";
+        if (fields.soundtrackNowSource) fields.soundtrackNowSource.textContent = "Import audio or rescan a soundtrack folder.";
+        return;
+      }
+      fields.soundtrackTrackList.innerHTML = localSoundtrackTracks.map((track, index) => `
+        <button class="soundtrack-track-row${index === localSoundtrackIndex ? " active" : ""}" type="button" data-track-index="${index}">
+          <span class="soundtrack-track-number">${String(index + 1).padStart(2, "0")}</span>
+          <span class="soundtrack-track-copy">
+            <strong>${escapeHtml(track.title || track.filename || "Track")}</strong>
+            <small>${escapeHtml([track.album, track.source].filter(Boolean).join(" · "))}</small>
+          </span>
+          <span class="soundtrack-track-size">${escapeHtml(formatTrackSize(track.size_bytes))}</span>
+        </button>
+      `).join("");
+    }
+
+    function playLocalSoundtrack(index, autoplay = true) {
+      if (!fields.soundtrackAudio || !localSoundtrackTracks.length) return;
+      const normalized = ((Number(index) % localSoundtrackTracks.length) + localSoundtrackTracks.length) % localSoundtrackTracks.length;
+      const track = localSoundtrackTracks[normalized];
+      localSoundtrackIndex = normalized;
+      fields.soundtrackAudio.src = track.url;
+      if (fields.soundtrackNowPlaying) fields.soundtrackNowPlaying.textContent = track.title || track.filename || "Track";
+      if (fields.soundtrackNowSource) fields.soundtrackNowSource.textContent = [track.album, track.source].filter(Boolean).join(" · ");
+      fields.soundtrackTrackList?.querySelectorAll(".soundtrack-track-row").forEach((row, rowIndex) => row.classList.toggle("active", rowIndex === normalized));
+      if (autoplay) fields.soundtrackAudio.play().catch(() => {});
+    }
+
+    function stepLocalSoundtrack(direction) {
+      if (!localSoundtrackTracks.length) return;
+      if (localSoundtrackShuffle && localSoundtrackTracks.length > 1) {
+        let next = localSoundtrackIndex;
+        while (next === localSoundtrackIndex) next = Math.floor(Math.random() * localSoundtrackTracks.length);
+        playLocalSoundtrack(next);
+        return;
+      }
+      playLocalSoundtrack((localSoundtrackIndex < 0 ? 0 : localSoundtrackIndex) + direction);
+    }
+
+    async function loadLocalSoundtrackTracks(game) {
+      if (!game?.id) return;
+      const gameId = game.id;
+      updateSoundtrackPlayerArt(game);
+      if (fields.soundtrackTrackList) fields.soundtrackTrackList.innerHTML = `<div class="trailer-candidate-empty">Indexing local soundtrack files...</div>`;
+      try {
+        const response = await fetch(`/api/games/${gameId}/soundtrack/tracks`);
+        const data = await response.json();
+        if (String(gameId) !== String(activeGameId)) return;
+        if (!response.ok || !data.success) throw new Error(data.message || "Could not index local soundtrack files.");
+        renderLocalSoundtrackTracks(data.tracks || []);
+        renderSoundtrackUploadStatus(data.count ? `${data.count} local track${data.count === 1 ? "" : "s"} ready.` : "");
+      } catch (error) {
+        renderLocalSoundtrackTracks([]);
+        renderSoundtrackUploadStatus(error.message || "Could not index local soundtrack files.", "error");
+      }
+    }
+
+    async function uploadLocalSoundtracks(files) {
+      const selected = Array.from(files || []);
+      if (!activeGameId || !selected.length) return;
+      const form = new FormData();
+      selected.forEach((file) => form.append("tracks", file));
+      renderSoundtrackUploadStatus(`Importing ${selected.length} audio file${selected.length === 1 ? "" : "s"}...`);
+      try {
+        const response = await fetch(`/api/games/${activeGameId}/soundtrack/upload`, { method: "POST", body: form });
+        const data = await response.json();
+        if (!response.ok || !data.success) throw new Error(data.message || "Could not import audio files.");
+        renderLocalSoundtrackTracks(data.tracks || []);
+        if (data.game) {
+          activeGame = data.game;
+          refreshOriginalCard(data.game);
+        }
+        renderSoundtrackUploadStatus(data.message || "Audio imported.");
+      } catch (error) {
+        renderSoundtrackUploadStatus(error.message || "Could not import audio files.", "error");
+      } finally {
+        if (fields.soundtrackUploadInput) fields.soundtrackUploadInput.value = "";
+      }
+    }
+
+    function stopSoundtrackPlayback() {
+      if (fields.soundtrackStage?.querySelector("iframe")) updateSoundtrackViewer(activeGame);
+      fields.soundtrackAudio?.pause();
+    }
+
+    function updateSoundtrackSearchLinks(game) {
+      const title = game?.title || activeGame?.title || "game";
+      const platform = game?.platform || activeGame?.platform || "";
+      const query = `${title} ${platform} original soundtrack OST`.trim();
+      const encoded = encodeURIComponent(query);
+      if (fields.soundtrackYouTubeSearch) fields.soundtrackYouTubeSearch.href = `https://www.youtube.com/results?search_query=${encoded}`;
+      if (fields.soundtrackMusicSearch) fields.soundtrackMusicSearch.href = `https://music.youtube.com/search?q=${encoded}`;
+      if (fields.soundtrackKHInsiderSearch) fields.soundtrackKHInsiderSearch.href = `https://downloads.khinsider.com/search?search=${encodeURIComponent(`${title} ${platform}`.trim())}&type=album`;
+      if (fields.soundtrackGoogleSearch) fields.soundtrackGoogleSearch.href = `https://www.google.com/search?q=${encodeURIComponent(`${query} official soundtrack store`)}`;
+    }
+
+    function soundtrackThumbnail(url = "", embed = "") {
+      const id = getYouTubeVideoId(url) || getYouTubeVideoId(embed);
+      return id ? `https://img.youtube.com/vi/${id}/hqdefault.jpg` : "";
+    }
+
+    function renderSoundtrackPoster({ title, provider, url, embed }) {
+      const thumbnail = soundtrackThumbnail(url, embed);
+      const background = thumbnail ? `style="--trailer-thumb: url('${escapeHtml(thumbnail)}')"` : "";
+      fields.soundtrackStage.innerHTML = `
+        <div class="cinematic-poster soundtrack-poster" ${background}>
+          <div class="cinematic-poster-bg"></div>
+          <button class="cinematic-play soundtrack-play" type="button" id="focusSoundtrackPlayButton" aria-label="Play ${escapeHtml(title)}">
+            <span>♪</span>
+          </button>
+          <div class="cinematic-trailer-info">
+            <p class="eyebrow">${escapeHtml(provider || "Soundtrack")}</p>
+            <strong>${escapeHtml(title)}</strong>
+            <span>Saved music source · ready to play inside Vaultarr</span>
+          </div>
+        </div>
+      `;
+      document.getElementById("focusSoundtrackPlayButton")?.addEventListener("click", () => {
+        fields.soundtrackStage.innerHTML = `
+          <div class="trailer-frame-shell cinematic-frame-shell">
+            <iframe class="trailer-frame" src="${escapeHtml(trailerAutoplaySrc(embed))}" title="${escapeHtml(title)}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+          </div>
+        `;
+      });
+    }
+
+    function updateSoundtrackViewer(game) {
+      if (!fields.soundtrackStage) return;
+      updateSoundtrackSearchLinks(game);
+      const url = game?.soundtrack_url || "";
+      const embed = game?.soundtrack_embed_src || game?.soundtrack_embed_url || "";
+      const provider = game?.soundtrack_provider || "YouTube";
+      const title = game?.soundtrack_title || `${game?.title || "Game"} Soundtrack`;
+
+      if (fields.soundtrackHeading) fields.soundtrackHeading.textContent = title;
+      if (fields.soundtrackUrlInput) fields.soundtrackUrlInput.value = url;
+      if (fields.soundtrackProvider && provider) fields.soundtrackProvider.value = provider;
+      if (fields.soundtrackOpenLink) {
+        fields.soundtrackOpenLink.href = url || "#";
+        fields.soundtrackOpenLink.classList.toggle("disabled", !url);
+      }
+
+      if (!url) {
+        if (fields.soundtrackCopy) fields.soundtrackCopy.textContent = "Scan YouTube for a game-specific soundtrack or add a source manually.";
+        fields.soundtrackStage.innerHTML = `
+          <div class="cinematic-empty soundtrack-empty">
+            <span>♪</span>
+            <strong>No soundtrack selected</strong>
+            <p class="muted">Use Scan for Music to find likely soundtrack and OST matches.</p>
+          </div>
+        `;
+        if (fields.soundtrackResults) fields.soundtrackResults.innerHTML = `<div class="trailer-candidate-empty">Use Scan for Music to search likely soundtrack matches inside Vaultarr.</div>`;
+        renderSoundtrackStatus("");
+        return;
+      }
+
+      if (!embed) {
+        if (fields.soundtrackCopy) fields.soundtrackCopy.textContent = `${provider} source saved. This source opens externally.`;
+        fields.soundtrackStage.innerHTML = `
+          <div class="trailer-external-card cinematic-external-card">
+            <span>♪</span>
+            <strong>External Soundtrack Saved</strong>
+            <p class="muted">The source is preserved on this game record and opens on its provider.</p>
+            <a class="button-link secondary small" href="${escapeHtml(url)}" target="_blank" rel="noopener">Open Soundtrack</a>
+          </div>
+        `;
+        renderSoundtrackStatus("External soundtrack source saved.");
+        return;
+      }
+
+      if (fields.soundtrackCopy) fields.soundtrackCopy.textContent = `${provider} soundtrack saved. Press play when you are ready.`;
+      renderSoundtrackPoster({ title, provider, url, embed });
+      renderSoundtrackStatus(`${provider} soundtrack ready.`);
+    }
+
+    function renderSoundtrackCandidates(results = []) {
+      if (!fields.soundtrackResults) return;
+      if (!results.length) {
+        fields.soundtrackResults.innerHTML = `<div class="trailer-candidate-empty">No likely soundtrack candidates found. Try the external searches or paste a source URL manually.</div>`;
+        return;
+      }
+      fields.soundtrackResults.innerHTML = results.map((result) => `
+        <article class="trailer-candidate-card soundtrack-candidate-card" data-url="${escapeHtml(result.url)}" data-embed="${escapeHtml(result.embed_url || "")}" data-title="${escapeHtml(result.title)}" data-provider="${escapeHtml(result.provider || result.source || "YouTube")}">
+          <button class="trailer-candidate-preview" type="button" aria-label="Preview ${escapeHtml(result.title)}">
+            <span class="trailer-thumb">
+              ${result.thumbnail ? `<img src="${escapeHtml(result.thumbnail)}" alt="${escapeHtml(result.title)}">` : `<span>♪</span>`}
+              <i>♪</i>
+            </span>
+          </button>
+          <div class="trailer-candidate-body">
+            <div class="trailer-candidate-topline"><span>${escapeHtml(result.source || "YouTube")}</span><strong>${Number(result.confidence || 0)}%</strong></div>
+            <h4>${escapeHtml(result.title)}</h4>
+            <p>${escapeHtml([result.duration, result.published, result.reason].filter(Boolean).join(" · "))}</p>
+            <div class="trailer-candidate-actions">
+              <button class="secondary-button soundtrack-preview-button" type="button">${result.embed_url ? "Preview" : "Open Album"}</button>
+              <button class="soundtrack-set-button" type="button">Save Source</button>
+            </div>
+          </div>
+        </article>
+      `).join("");
+    }
+
+    async function previewSoundtrackCandidate(card) {
+      if (!card || !fields.soundtrackStage) return;
+      const title = card.dataset.title || "Soundtrack Preview";
+      const embed = card.dataset.embed || "";
+      const url = card.dataset.url || "";
+      const provider = card.dataset.provider || "";
+      if (fields.soundtrackHeading) fields.soundtrackHeading.textContent = title;
+      if (embed) {
+        fields.soundtrackStage.innerHTML = `<div class="trailer-frame-shell"><iframe class="trailer-frame" src="${escapeHtml(trailerAutoplaySrc(embed))}" title="${escapeHtml(title)}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>`;
+      } else if (provider === "KHInsider") {
+        await loadKHInsiderAlbumTracks(title, url);
+        return;
+      } else {
+        fields.soundtrackStage.innerHTML = `<div class="trailer-external-card"><span>♪</span><strong>${escapeHtml(title)}</strong><p class="muted">This result opens externally.</p><a class="button-link secondary small" href="${escapeHtml(url)}" target="_blank" rel="noopener">Open Soundtrack</a></div>`;
+      }
+      renderSoundtrackStatus(embed ? "Previewing music candidate. Save Source to keep it on this game record." : "Catalog album selected. Open it externally or save its source link.");
+    }
+
+    async function loadKHInsiderAlbumTracks(title, albumUrl) {
+      if (!activeGameId || !fields.soundtrackStage) return;
+      fields.soundtrackStage.innerHTML = `<div class="cinematic-empty"><span>♪</span><strong>Loading album tracks...</strong><p class="muted">Reading public KHInsider catalog metadata.</p></div>`;
+      renderSoundtrackStatus("Loading KHInsider track metadata...");
+      try {
+        const response = await fetch(`/api/games/${activeGameId}/soundtrack/catalog/tracks?url=${encodeURIComponent(albumUrl)}`);
+        const data = await response.json();
+        if (!response.ok || !data.success) throw new Error(data.message || "Could not load album tracks.");
+        const album = data.album || {};
+        const tracks = album.tracks || [];
+        fields.soundtrackStage.innerHTML = `
+          <div class="soundtrack-catalog-view">
+            <div class="soundtrack-catalog-heading">
+              <div>
+                <p class="eyebrow">KHInsider Catalog</p>
+                <h3>${escapeHtml(album.title || title)}</h3>
+                <p class="muted">${tracks.length} track${tracks.length === 1 ? "" : "s"} · metadata and external song pages only</p>
+              </div>
+              <a class="button-link secondary small" href="${escapeHtml(album.url || albumUrl)}" target="_blank" rel="noopener">Open Album</a>
+            </div>
+            <div class="soundtrack-catalog-notice">To play a track in Vaultarr, obtain it manually and use Import Audio. Vaultarr does not stream or download KHInsider audio.</div>
+            <div class="soundtrack-catalog-tracks">
+              ${tracks.length ? tracks.map((track) => `
+                <a class="soundtrack-catalog-track" href="${escapeHtml(track.page_url)}" target="_blank" rel="noopener">
+                  <span>${String(Number(track.number || 0)).padStart(2, "0")}</span>
+                  <strong>${escapeHtml(track.title || "Track")}</strong>
+                  <small>${escapeHtml([track.duration, track.size].filter(Boolean).join(" · "))}</small>
+                  <em>Open song page</em>
+                </a>
+              `).join("") : `<div class="trailer-candidate-empty">No public track metadata was found for this album.</div>`}
+            </div>
+          </div>
+        `;
+        renderSoundtrackStatus(`Loaded ${tracks.length} KHInsider track${tracks.length === 1 ? "" : "s"}.`);
+      } catch (error) {
+        fields.soundtrackStage.innerHTML = `<div class="trailer-external-card"><span>♪</span><strong>${escapeHtml(title)}</strong><p class="muted">${escapeHtml(error.message || "Could not load album tracks.")}</p><a class="button-link secondary small" href="${escapeHtml(albumUrl)}" target="_blank" rel="noopener">Open Album</a></div>`;
+        renderSoundtrackStatus(error.message || "Could not load album tracks.", "error");
+      }
+    }
+
+    async function findSoundtrackCandidates() {
+      if (!activeGameId) return;
+      if (fields.soundtrackFinderPanel) fields.soundtrackFinderPanel.open = true;
+      if (fields.soundtrackFindButton) {
+        fields.soundtrackFindButton.disabled = true;
+        fields.soundtrackFindButton.textContent = "Scanning...";
+      }
+      if (fields.soundtrackResults) fields.soundtrackResults.innerHTML = `<div class="trailer-candidate-empty">Scanning YouTube for soundtrack and OST matches...</div>`;
+      renderSoundtrackStatus("Scanning YouTube for likely game music...");
+      const gameId = activeGameId;
+      try {
+        const provider = fields.soundtrackSearchProvider?.value || "all";
+        const response = await fetch(`/api/games/${gameId}/soundtrack/search?provider=${encodeURIComponent(provider)}`);
+        const data = await response.json();
+        if (String(gameId) !== String(activeGameId)) return;
+        if (!response.ok || !data.success) throw new Error(data.message || "Soundtrack scan failed.");
+        renderSoundtrackCandidates(data.results || []);
+        renderSoundtrackStatus(data.message || "Soundtrack scan complete.");
+      } catch (error) {
+        renderSoundtrackCandidates([]);
+        renderSoundtrackStatus(error.message || "Soundtrack scan failed.", "error");
+      } finally {
+        if (fields.soundtrackFindButton) {
+          fields.soundtrackFindButton.disabled = false;
+          fields.soundtrackFindButton.textContent = "Scan for Music";
+        }
+      }
+    }
+
+    async function saveSoundtrackCandidate(card) {
+      if (!activeGameId || !card?.dataset.url) return;
+      await persistSoundtrack({
+        soundtrack_url: card.dataset.url,
+        soundtrack_provider: card.dataset.provider || "YouTube",
+        soundtrack_title: card.dataset.title || `${activeGame?.title || "Game"} Soundtrack`,
+      }, "Soundtrack saved from scanner.");
+    }
+
+    async function saveSoundtrack(event) {
+      event.preventDefault();
+      const url = fields.soundtrackUrlInput?.value?.trim() || "";
+      if (!url) {
+        renderSoundtrackStatus("Paste a soundtrack URL first.", "error");
+        return;
+      }
+      await persistSoundtrack({
+        soundtrack_url: url,
+        soundtrack_provider: fields.soundtrackProvider?.value || "YouTube",
+        soundtrack_title: `${activeGame?.title || "Game"} Soundtrack`,
+      }, "Soundtrack saved.");
+    }
+
+    async function persistSoundtrack(payload, successMessage) {
+      if (!activeGameId) return;
+      renderSoundtrackStatus("Saving soundtrack source...");
+      try {
+        const response = await fetch(`/api/games/${activeGameId}/soundtrack`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        const data = await response.json();
+        if (!response.ok || !data.success) throw new Error(data.message || "Could not save soundtrack.");
+        populate(data.game);
+        setActiveTab("soundtrack");
+        renderSoundtrackStatus(successMessage);
+      } catch (error) {
+        renderSoundtrackStatus(error.message || "Could not save soundtrack.", "error");
+      }
+    }
+
+    async function removeSoundtrack() {
+      if (!activeGameId) return;
+      renderSoundtrackStatus("Removing saved soundtrack...");
+      try {
+        const response = await fetch(`/api/games/${activeGameId}/soundtrack/remove`, { method: "POST" });
+        const data = await response.json();
+        if (!response.ok || !data.success) throw new Error(data.message || "Could not remove soundtrack.");
+        populate(data.game);
+        setActiveTab("soundtrack");
+        renderSoundtrackStatus("Soundtrack removed.");
+      } catch (error) {
+        renderSoundtrackStatus(error.message || "Could not remove soundtrack.", "error");
+      }
+    }
+
+
     function renderManualStatus(message, status = "ok") {
       if (!fields.manualStatus) return;
       fields.manualStatus.innerHTML = `<span class="metadata-provider-pill ${escapeHtml(status)}"><strong>Manuals</strong><span>${escapeHtml(message)}</span></span>`;
@@ -2084,6 +2626,17 @@
 
     if (closeButton) closeButton.addEventListener("click", closeFocus);
     if (backdrop) backdrop.addEventListener("click", closeFocus);
+    panel.addEventListener("wheel", (event) => {
+      if (!body.classList.contains("focus-active") || event.target.closest(".focus-content")) return;
+
+      const content = panel.querySelector(".focus-content");
+      if (!content || Math.abs(event.deltaY) < 1) return;
+
+      // Keep wheel input over the artwork/metadata column inside Focus Mode.
+      // The right content column remains the panel's single scroll surface.
+      content.scrollTop += event.deltaY;
+      event.preventDefault();
+    }, { passive: false });
     if (fields.removeGameButton) fields.removeGameButton.addEventListener("click", openRemoveGameDialog);
     if (fields.removeCancelButton) fields.removeCancelButton.addEventListener("click", () => fields.removeGameDialog?.close());
     if (fields.removeConfirmButton) fields.removeConfirmButton.addEventListener("click", confirmRemoveGame);
@@ -2095,6 +2648,35 @@
     if (fields.trailerForm) fields.trailerForm.addEventListener("submit", saveTrailer);
     if (fields.trailerRemoveButton) fields.trailerRemoveButton.addEventListener("click", removeTrailer);
     if (fields.trailerFindButton) fields.trailerFindButton.addEventListener("click", findTrailerCandidates);
+    if (fields.soundtrackForm) fields.soundtrackForm.addEventListener("submit", saveSoundtrack);
+    if (fields.soundtrackRemoveButton) fields.soundtrackRemoveButton.addEventListener("click", removeSoundtrack);
+    if (fields.soundtrackFindButton) fields.soundtrackFindButton.addEventListener("click", findSoundtrackCandidates);
+    if (fields.soundtrackUploadInput) fields.soundtrackUploadInput.addEventListener("change", () => uploadLocalSoundtracks(fields.soundtrackUploadInput.files));
+    if (fields.soundtrackPrevious) fields.soundtrackPrevious.addEventListener("click", () => stepLocalSoundtrack(-1));
+    if (fields.soundtrackNext) fields.soundtrackNext.addEventListener("click", () => stepLocalSoundtrack(1));
+    if (fields.soundtrackShuffle) fields.soundtrackShuffle.addEventListener("click", () => {
+      localSoundtrackShuffle = !localSoundtrackShuffle;
+      fields.soundtrackShuffle.setAttribute("aria-pressed", String(localSoundtrackShuffle));
+    });
+    if (fields.soundtrackRepeat) fields.soundtrackRepeat.addEventListener("click", () => {
+      localSoundtrackRepeat = !localSoundtrackRepeat;
+      fields.soundtrackRepeat.setAttribute("aria-pressed", String(localSoundtrackRepeat));
+    });
+    if (fields.soundtrackAudio) fields.soundtrackAudio.addEventListener("ended", () => {
+      if (localSoundtrackRepeat) playLocalSoundtrack(localSoundtrackIndex);
+      else stepLocalSoundtrack(1);
+    });
+    if (fields.soundtrackDropZone) {
+      ["dragenter", "dragover"].forEach((eventName) => fields.soundtrackDropZone.addEventListener(eventName, (event) => {
+        event.preventDefault();
+        fields.soundtrackDropZone.classList.add("is-dragging");
+      }));
+      ["dragleave", "drop"].forEach((eventName) => fields.soundtrackDropZone.addEventListener(eventName, (event) => {
+        event.preventDefault();
+        fields.soundtrackDropZone.classList.remove("is-dragging");
+      }));
+      fields.soundtrackDropZone.addEventListener("drop", (event) => uploadLocalSoundtracks(event.dataTransfer?.files));
+    }
     if (fields.patchSearchButton) fields.patchSearchButton.addEventListener("click", () => searchPatches());
     if (fields.patchSearchForm) fields.patchSearchForm.addEventListener("submit", searchPatches);
     if (fields.patchLinkForm) fields.patchLinkForm.addEventListener("submit", savePatchFromAdvanced);
@@ -2117,6 +2699,25 @@
         if (event.target.closest(".trailer-preview-button, .trailer-candidate-preview")) {
           previewTrailerCandidate(card);
         }
+      });
+    }
+    if (fields.soundtrackResults) {
+      fields.soundtrackResults.addEventListener("click", (event) => {
+        const card = event.target.closest(".soundtrack-candidate-card");
+        if (!card) return;
+        if (event.target.closest(".soundtrack-set-button")) {
+          saveSoundtrackCandidate(card);
+          return;
+        }
+        if (event.target.closest(".soundtrack-preview-button, .trailer-candidate-preview")) {
+          previewSoundtrackCandidate(card);
+        }
+      });
+    }
+    if (fields.soundtrackTrackList) {
+      fields.soundtrackTrackList.addEventListener("click", (event) => {
+        const row = event.target.closest(".soundtrack-track-row");
+        if (row) playLocalSoundtrack(Number(row.dataset.trackIndex || 0));
       });
     }
     if (fields.gallerySearchForm) fields.gallerySearchForm.addEventListener("submit", searchGallery);
@@ -2179,6 +2780,8 @@
     }
 
 
+    enhanceAcquisitionSelect(fields.acquisitionProvider);
+    enhanceAcquisitionSelect(fields.acquisitionPlatform);
     fields.acquisitionSearchButton?.addEventListener("click", searchAcquisition);
     fields.acquisitionQuery?.addEventListener("keydown", (event) => { if (event.key === "Enter") { event.preventDefault(); searchAcquisition(); } });
     fields.acquisitionReadSourceButton?.addEventListener("click", readAcquisitionSource);

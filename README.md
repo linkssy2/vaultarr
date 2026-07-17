@@ -1,8 +1,25 @@
-# Vaultarr 2.0.0 Alpha 35
+# Vaultarr 2.0.0 Alpha 36
 
-> Experimental release: **Vaultarr 2.0.0 Alpha 35 — Fluid Simulation Lifecycle**
+> Experimental release: **Vaultarr 2.0.0 Alpha 36 — Interface and Scan Responsiveness**
 
 The `vaultarr-2.0-alpha` branch publishes its Docker image as `ghcr.io/linkssy2/vaultarr:2.experimental`. The stable `main` branch continues to own the `latest` tag.
+
+## Alpha 36 scan responsiveness
+
+- Replaces the Home Orbital Core's numeric Museum Health gauge with an enlarged glowing blue badge whose hollow white Vaultarr V fills to the live health percentage and undulates when bubbles pop at its spring-simulated surface; a same-size orbital node displays the live percentage.
+- Searches independent metadata providers concurrently with a bounded four-worker pool.
+- Fetches the best provider-detail candidates and media-source results concurrently while retaining deterministic provider priority.
+- Avoids repeating the manual-provider search after the enrichment pass already completed it.
+- Morphs the Museum Scan pill upward into a live information panel with the current game, checked/prepared/review counters, and a thin canvas chamber whose spring-driven liquid front reacts physically as progress advances.
+- Preserves the click-only start rule, server-authoritative progress lifecycle, routes, and provider result ranking.
+- Keeps stale completed scan records visually idle on page load while still reconnecting to scans that are actively running.
+- Keeps the Home orbital moving at a calmer rate in reduced-motion environments and maintains an upright health percentage node.
+- Calculates Discovery Depth across every game using metadata identity, core information, cover art, trailer, soundtrack, manual, gallery media, and scanned files rather than sampling one shelf.
+- Presents Discovery Depth through the same two-layer glass and spring-liquid percentage vessel used by Milestones, without changing how completeness is calculated.
+- Adds a per-game Soundtrack Scanner to the expanded Museum card, with ranked YouTube soundtrack/OST candidates, in-card previews, saved source links, and manual URL support.
+- Searches KHInsider's public album catalog for metadata and external album links while keeping audio acquisition outside Vaultarr.
+- Opens KHInsider album results inside Vaultarr as track metadata lists with durations, sizes, and external song-page links; imported local files remain the only KHInsider-related audio Vaultarr plays.
+- Plays owned local soundtrack files from game folders or Vaultarr imports with a per-game playlist, native seek/volume controls, shuffle, and repeat.
 
 
 ## Alpha 12 scan shimmer
@@ -49,6 +66,7 @@ Vaultarr is a self-hosted digital game museum. Point it at your game folders, le
 - Manual Engine with indexed VideoGameManual.com search, Vimm's Manual Project fallback, PDF validation, and local manual storage
 - Media Library for covers, screenshots, hero art, logos, and trailer assets
 - Trailer Finder and cinematic Trailer tab
+- Soundtrack Scanner with YouTube previews, KHInsider catalog discovery, saved source links, and a local-audio player
 - Patch Engine for community fixes and compatibility references
 - Per-game Preservation status, issues, and archived-asset summaries
 - Smart Collections and collection milestones
@@ -255,9 +273,9 @@ The **Add Game** button on the Library page opens the detailed manual form for p
 
 ## Acquisition Assistant
 
-Open a game and use **Acquisition Assistant → Find Copy**. Vaultarr searches the live Vimm Vault reference catalog using the game title and platform, ranks matching releases, and opens the exact source page. Vaultarr does not download the game itself: after choosing the correct release, paste the final direct link yourself and save it to the museum record. You can later link the local file or folder and mark the game as stored locally.
+Open a game and use **Acquisition Assistant → Find Copy**. Choose **All Sources**, **Vimm Vault**, or **My Abandonware**, then select a platform/version such as GameCube, Xbox, PC / Windows, DOS, or PlayStation. Vaultarr ranks matching public catalog pages and opens the original source. It does not download or proxy the game: acquisition continues manually on the source site, after which you can save a reference link and attach the local file or folder to the museum record.
 
-No uploaded JSON or CSV index is required. If live search cannot find a result, paste the exact Vimm Vault source-page URL and use **Read Source Page**.
+No uploaded JSON or CSV index is required. If a source requires interactive browser verification, Vaultarr provides a focused external catalog search instead of attempting to bypass it. You can also paste an exact Vimm Vault or My Abandonware game-page URL and use **Read Source Page**.
 
 
 ## Performance foundation
@@ -360,3 +378,7 @@ The Milestone vessel now uses a lightweight canvas spring-fluid simulation with 
 ## Alpha 35 — Fluid Simulation Lifecycle
 
 The Milestone liquid now reacts only when rising particles pop at the surface. Each pop injects a strong localized impulse into nearby spring points, producing pronounced waves that spread through neighbor propagation and settle naturally through damping. Fill depth is mapped to the visible vessel interior so even low progress remains visible above the glass border. The same two-layer enclosure gains refracted highlights, a sealed contact rim, and embedded mounting depth without changing its dimensions. Smooth page navigation mounts and disposes the canvas engine through Vaultarr's current lifecycle while the fill percentage and curved upper label remain unchanged.
+
+## Alpha 36 — Interface and Scan Responsiveness
+
+Standard page actions now share a reliable 44px height whether rendered as buttons or links. Compact Museum controls remain 36px, mobile actions no longer wrap into accidental tall variants, and Settings theme tiles align evenly within their rows. Museum research now overlaps independent provider, detail, and media lookups through bounded worker pools and avoids a duplicate manual-provider pass. While active, the compact Museum Scan pill grows upward into a live glassy panel with record counters and a liquid progress chamber.

@@ -3,7 +3,7 @@ from urllib.parse import quote_plus
 
 from app.database.database import get_connection
 from app.services.acquisition_assistant_service import (
-    search_vimm_reference, read_vimm_source_page, save_acquisition_source,
+    search_acquisition_sources, read_acquisition_source_page, save_acquisition_source,
     attach_local_file, get_game_acquisition,
 )
 
@@ -29,9 +29,10 @@ def acquisition_search(game_id):
         abort(404)
     query = request.args.get("q", "").strip() or game["title"]
     platform = request.args.get("platform", "").strip() or game["platform"] or ""
+    provider = request.args.get("provider", "all").strip().lower() or "all"
     try:
-        results = search_vimm_reference(query, platform)
-        return jsonify({"success": True, "query": query, "results": results})
+        results, provider_errors = search_acquisition_sources(query, platform, provider)
+        return jsonify({"success": True, "query": query, "results": results, "provider_errors": provider_errors})
     except Exception as exc:
         return jsonify({"success": False, "message": str(exc)[:220], "results": []}), 502
 
@@ -45,7 +46,7 @@ def acquisition_read_source(game_id):
         abort(404)
     payload = request.get_json(silent=True) or {}
     try:
-        result = read_vimm_source_page(payload.get("source_page", ""), game["title"], game["platform"] or "")
+        result = read_acquisition_source_page(payload.get("source_page", ""), game["title"], game["platform"] or "")
         return jsonify({"success": True, "result": result})
     except Exception as exc:
         return jsonify({"success": False, "message": str(exc)[:220]}), 400

@@ -10,15 +10,18 @@
   </header>
 
   <section class="curator-spotlight">
-    <div class="curator-core orbital-vault vault-cosmos" aria-label="Museum Curator status">
+    <div class="curator-core orbital-vault vault-cosmos" data-health="{{ stats.health_score }}" style="--museum-health: {{ stats.health_score }}" aria-label="Museum Curator status, {{ stats.health_score }} percent healthy">
       <div class="cosmos-nebula"></div><div class="cosmos-comet"></div>
       <div class="orbital-stars"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
       <div class="orbital-field">
-        <div class="orbit orbit-one"><span class="node node-metadata">◇</span></div>
+        <div class="orbit orbit-one"><span class="node node-health" aria-label="Museum health {{ stats.health_score }} percent">{{ stats.health_score }}%</span></div>
         <div class="orbit orbit-two"><span class="node node-gallery">▣</span></div>
         <div class="orbit orbit-three"><span class="node node-manuals">▤</span></div>
         <div class="orbit orbit-four"><span class="node node-preservation">⌁</span></div>
-        <div class="vault-door orbital-core"><span>V</span></div>
+        <div class="vault-door orbital-core" aria-label="Museum health {{ stats.health_score }} percent">
+          <span class="orbital-health-symbol" aria-hidden="true"><canvas class="orbital-health-liquid"></canvas></span>
+          <span class="orbital-health-accessible" role="progressbar" aria-label="Museum health" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ stats.health_score }}">Museum health {{ stats.health_score }} percent</span>
+        </div>
       </div>
     </div>
     <div class="curator-message">
@@ -30,9 +33,6 @@
       <h2>Your Curator found {{ stats.open_tasks }} way{% if stats.open_tasks != 1 %}s{% endif %} to improve the museum.</h2>
       <p>Missing artwork, information, manuals, and local-file checks are grouped into one simple review.</p>
       {% endif %}
-    </div>
-    <div class="museum-health-ring" style="--health: {{ stats.health_score }}">
-      <strong>{{ stats.health_score }}%</strong><span>Museum health</span>
     </div>
   </section>
 

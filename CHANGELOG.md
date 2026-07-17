@@ -1,3 +1,36 @@
+## 2.0.0 Alpha 36 — Interface and Scan Responsiveness
+
+- Removed the numeric Home health gauge and rebuilt the Orbital Core around an enlarged glowing blue badge with a hollow white Vaultarr V. Its liquid fill reflects Museum Health and undulates only when rising bubbles pop into its spring surface, while a same-size outer orbital node keeps the live health percentage visible.
+
+- Added a Soundtrack tab to expanded Museum cards with per-game YouTube soundtrack/OST scanning, ranked candidates, previews, saved source links, manual URL entry, and removal.
+- Added KHInsider as a catalog-only soundtrack discovery source that returns ranked album metadata and external album links without downloading hosted audio.
+- Added KHInsider album-detail browsing with track names, durations, file sizes, and external per-song pages; playback remains limited to locally owned/imported audio.
+- Added Vaultarr's local soundtrack player with game-folder indexing, owned-audio imports, drag-and-drop, playlists, seek/volume controls, previous/next, shuffle, repeat, and HTTP range playback.
+- Added soundtrack completeness to the museum-wide Discovery Depth score, accepting either a saved source or locally scanned soundtrack files.
+- Expanded the Acquisition Assistant with Vimm Vault and My Abandonware source selection, a platform/version dropdown, provider-labelled results, and manual source-page handoff without downloading game files.
+- Added a graceful My Abandonware browser-search handoff when its interactive verification page prevents server-side catalog parsing.
+- Corrected Vimm platform parsing to read each result's own table row, preserving Xbox releases such as Enter the Matrix `/vault/15370` and accurate detail-page region/version metadata.
+- Collapsed equivalent Vimm region/revision records into one title/platform result, preferring the strongest USA/world revision so Xbox searches no longer show several identical-looking links.
+- Replaced the expanded-card Acquisition source and platform native popups with compact, scrollable Vaultarr menus using eased open/close motion, keyboard navigation, and a four-choice viewport.
+- Routed wheel input over the expanded card's artwork column into its information pane so the card remains scrollable without moving the dimmed Museum page behind it.
+- Added a shadowless glass-slate treatment to lifted Museum covers with stronger perspective, smoothly animated artwork/title depth, and directional internal edge reflections; card dimensions, full-card artwork, and expansion behavior remain unchanged.
+
+- Corrected the shared control selector so its intended 44px standard height applies to buttons and button-style links across active pages.
+- Preserved the deliberate 36px compact variant used by Museum filters and small actions.
+- Restored zero-margin alignment for header actions such as Milestones Test Sound.
+- Removed inherited submit spacing from forms nested inside shared action rows.
+- Prevented narrow mobile action links from wrapping into inconsistent two-line heights.
+- Equalized Settings theme tiles within each grid row without forcing desktop heights onto the single-column mobile layout.
+- Restored the Museum Backup hero alignment and its equal-width two-column settings action row.
+- Parallelized independent metadata, provider-detail, and media-source lookups through bounded worker pools.
+- Removed the redundant manual-provider lookup after enrichment and corrected manual search result handling.
+- Replaced the active Museum Scan shimmer with a smooth vertical panel morph, live scan counters, current-game detail, and a thin canvas chamber with spring-driven liquid physics.
+- Prevented page-load status hydration from replaying an old completed Museum Scan while preserving explicit click starts and reattachment to genuinely active scans.
+- Restored calm Home orbital travel in reduced-motion browser environments while keeping the percentage node upright and slowing the motion rate.
+- Rebuilt Discovery Depth as a museum-wide 13-area record-completeness score covering core metadata, covers, trailers, soundtracks, manuals, gallery media, and scanned files.
+- Replaced the static Discovery Depth percentage ring with the protected Milestones-style two-layer glass vessel and spring-liquid percentage display, while keeping its completeness calculation unchanged.
+- Preserved Museum card dimensions and expansion behavior, Focus Mode geometry, Museum Scan click protection and server lifecycle, sidebar navigation, authentication, Museum Backup, and Milestone systems.
+
 ## 2.0.0 Alpha 35 — Fluid Simulation Lifecycle
 
 - Refined the canvas liquid surface into a coherent spring-point simulation with damping, tension, inertia, and direct neighbor propagation.
