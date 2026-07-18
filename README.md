@@ -1,8 +1,15 @@
-# Vaultarr 2.0.0 Alpha 46
+# Vaultarr 2.0.0 Alpha 47
 
-> Experimental release: **Vaultarr 2.0.0 Alpha 46 — Integrated Museum Access**
+> Experimental release: **Vaultarr 2.0.0 Alpha 47 — Unified Orbital Login**
 
 The `vaultarr-2.0-alpha` branch publishes its Docker image as `ghcr.io/linkssy2/vaultarr:2.experimental`. The stable `main` branch continues to own the `latest` tag.
+
+## Alpha 47 unified orbital login
+
+- Presents the entire login experience inside one centered glass enclosure.
+- Keeps the welcome at the top, the animated orbital and canonical Vaultarr logo in the middle, and curator credentials near the bottom.
+- Removes the separate corner branding, lower museum message, data bridge, access strip, and footer information.
+- Preserves authentication behavior, sessions, errors, redirects, and settings.
 
 ## Alpha 46 integrated museum access
 

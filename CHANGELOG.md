@@ -1,3 +1,10 @@
+## 2.0.0 Alpha 47 — Unified Orbital Login
+
+- Replaced the split login composition with one centered glass enclosure containing the entire access experience.
+- Removed the upper-left Vaultarr masthead, lower-left museum message, access-status strip, data bridge, and chamber footer.
+- Positioned Welcome back and Enter the museum at the top, the animated orbital and canonical Vaultarr logo in the center, and credentials near the bottom.
+- Preserved credential verification, sessions, errors, redirects, logout, authentication settings, and all protected authentication behavior.
+
 ## 2.0.0 Alpha 46 — Integrated Museum Access
 
 - Recomposed the login screen so the credential form no longer overlays and obscures the animated orbital core.
