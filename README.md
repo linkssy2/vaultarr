@@ -1,8 +1,22 @@
-# Vaultarr 2.0.0 Alpha 37
+# Vaultarr 2.0.0 Alpha 38
 
-> Experimental release: **Vaultarr 2.0.0 Alpha 37 — Authorized Acquisition Downloads**
+> Experimental release: **Vaultarr 2.0.0 Alpha 38 — Library-First Expanded Cards**
 
 The `vaultarr-2.0-alpha` branch publishes its Docker image as `ghcr.io/linkssy2/vaultarr:2.experimental`. The stable `main` branch continues to own the `latest` tag.
+
+## Alpha 38 library-first expanded cards
+
+- Opens the expanded card's Soundtrack tab with owned and acquired tracks at the top instead of discovery and acquisition controls.
+- Makes every listed track an explicit play action connected to Vaultarr's existing local audio player.
+- Keeps the active track, track count, playback controls, source, and file size together in one focused library panel.
+- Consolidates importing and authorized direct-link acquisition under **Add owned music**.
+- Consolidates catalog scanning, external previews, and manual source links under **Find soundtrack sources**.
+- Opens Manuals with the saved reader and its library actions, with provider search and manual-link entry in one secondary section.
+- Opens Gallery with cached media and its preview stage, while provider search and cover management remain available as secondary tools.
+- Opens Trailer with the saved video stage and its actions, with recommendations, external searches, and manual URL entry consolidated below it.
+- Opens Acquisition with the saved source and local-copy status first, followed by separate panels for finding a reference, importing an authorized file, or attaching an existing local copy.
+- Restores saved Acquisition record hydration so existing sources and authorized links appear when an expanded card is reopened.
+- Preserves the existing manual, gallery, trailer, soundtrack, and acquisition behavior, storage routes, acquisition safety checks, card expansion, and unrelated page layouts.
 
 ## Alpha 37 authorized acquisition downloads
 

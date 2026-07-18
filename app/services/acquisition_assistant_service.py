@@ -631,7 +631,7 @@ def get_game_acquisition(game_id):
     conn = get_connection()
     row = conn.execute("SELECT * FROM game_acquisitions WHERE game_id=?", (game_id,)).fetchone()
     conn.close()
-    return row
+    return dict(row) if row else None
 
 
 def _public_download_url(value):

@@ -132,6 +132,7 @@
       soundtrackNowSource: document.getElementById("focusSoundtrackNowSource"),
       soundtrackPlayerArt: document.getElementById("focusSoundtrackPlayerArt"),
       soundtrackTrackList: document.getElementById("focusSoundtrackTrackList"),
+      soundtrackTrackCount: document.getElementById("focusSoundtrackTrackCount"),
       soundtrackPrevious: document.getElementById("focusSoundtrackPrevious"),
       soundtrackNext: document.getElementById("focusSoundtrackNext"),
       soundtrackShuffle: document.getElementById("focusSoundtrackShuffle"),
@@ -168,6 +169,7 @@
       removeStatus: document.getElementById("focusRemoveGameStatus"),
       acquisitionBadge: document.getElementById("focusAcquisitionBadge"),
       acquisitionCurrent: document.getElementById("focusAcquisitionCurrent"),
+      acquisitionEmpty: document.getElementById("focusAcquisitionEmpty"),
       acquisitionCurrentTitle: document.getElementById("focusAcquisitionCurrentTitle"),
       acquisitionCurrentSource: document.getElementById("focusAcquisitionCurrentSource"),
       acquisitionCurrentStatus: document.getElementById("focusAcquisitionCurrentStatus"),
@@ -494,6 +496,7 @@
       if (fields.acquisitionResults) fields.acquisitionResults.replaceChildren();
       if (fields.acquisitionSelection) fields.acquisitionSelection.hidden = true;
       if (fields.acquisitionCurrent) fields.acquisitionCurrent.hidden = true;
+      if (fields.acquisitionEmpty) fields.acquisitionEmpty.hidden = false;
       if (fields.acquisitionBadge) fields.acquisitionBadge.textContent = "Not Configured";
       if (fields.acquisitionDownloadPermission) fields.acquisitionDownloadPermission.checked = false;
       if (fields.acquisitionDownloadProgress) fields.acquisitionDownloadProgress.hidden = true;
@@ -508,6 +511,7 @@
         const acquisition = data.acquisition;
         if (!acquisition) return;
         if (fields.acquisitionCurrent) fields.acquisitionCurrent.hidden = false;
+        if (fields.acquisitionEmpty) fields.acquisitionEmpty.hidden = true;
         if (fields.acquisitionCurrentTitle) fields.acquisitionCurrentTitle.textContent = acquisition.source_title || game.title || "Saved acquisition";
         if (fields.acquisitionCurrentSource) { fields.acquisitionCurrentSource.href = acquisition.source_page || "#"; fields.acquisitionCurrentSource.hidden = !acquisition.source_page; }
         if (fields.acquisitionDownloadUrl) fields.acquisitionDownloadUrl.value = acquisition.download_url || "";
@@ -1591,7 +1595,7 @@
       }
 
       if (!url) {
-        if (fields.trailerCopy) fields.trailerCopy.textContent = "Find an official trailer or add one manually under Advanced.";
+        if (fields.trailerCopy) fields.trailerCopy.textContent = "Find an official trailer or add one manually under Find or replace the trailer.";
         fields.trailerStage.innerHTML = `
           <div class="cinematic-empty">
             <span>▶</span>
@@ -1807,6 +1811,10 @@
 
     function renderLocalSoundtrackTracks(tracks = []) {
       localSoundtrackTracks = Array.isArray(tracks) ? tracks : [];
+      if (fields.soundtrackTrackCount) {
+        const count = localSoundtrackTracks.length;
+        fields.soundtrackTrackCount.textContent = `${count} track${count === 1 ? "" : "s"}`;
+      }
       if (!fields.soundtrackTrackList) return;
       if (!localSoundtrackTracks.length) {
         localSoundtrackIndex = -1;
@@ -1821,8 +1829,8 @@
         return;
       }
       fields.soundtrackTrackList.innerHTML = localSoundtrackTracks.map((track, index) => `
-        <button class="soundtrack-track-row${index === localSoundtrackIndex ? " active" : ""}" type="button" data-track-index="${index}">
-          <span class="soundtrack-track-number">${String(index + 1).padStart(2, "0")}</span>
+        <button class="soundtrack-track-row${index === localSoundtrackIndex ? " active" : ""}" type="button" data-track-index="${index}" aria-label="Play ${escapeHtml(track.title || track.filename || "Track")}" aria-pressed="${index === localSoundtrackIndex}">
+          <span class="soundtrack-track-play" aria-hidden="true">▶</span>
           <span class="soundtrack-track-copy">
             <strong>${escapeHtml(track.title || track.filename || "Track")}</strong>
             <small>${escapeHtml([track.album, track.source].filter(Boolean).join(" · "))}</small>
@@ -1840,7 +1848,11 @@
       fields.soundtrackAudio.src = track.url;
       if (fields.soundtrackNowPlaying) fields.soundtrackNowPlaying.textContent = track.title || track.filename || "Track";
       if (fields.soundtrackNowSource) fields.soundtrackNowSource.textContent = [track.album, track.source].filter(Boolean).join(" · ");
-      fields.soundtrackTrackList?.querySelectorAll(".soundtrack-track-row").forEach((row, rowIndex) => row.classList.toggle("active", rowIndex === normalized));
+      fields.soundtrackTrackList?.querySelectorAll(".soundtrack-track-row").forEach((row, rowIndex) => {
+        const selected = rowIndex === normalized;
+        row.classList.toggle("active", selected);
+        row.setAttribute("aria-pressed", String(selected));
+      });
       if (autoplay) fields.soundtrackAudio.play().catch(() => {});
     }
 
@@ -1866,7 +1878,7 @@
         if (String(gameId) !== String(activeGameId)) return;
         if (!response.ok || !data.success) throw new Error(data.message || "Could not index local soundtrack files.");
         renderLocalSoundtrackTracks(data.tracks || []);
-        renderSoundtrackUploadStatus(data.count ? `${data.count} local track${data.count === 1 ? "" : "s"} ready.` : "");
+        renderSoundtrackUploadStatus("");
       } catch (error) {
         renderLocalSoundtrackTracks([]);
         renderSoundtrackUploadStatus(error.message || "Could not index local soundtrack files.", "error");
@@ -2042,7 +2054,7 @@
       const provider = game?.soundtrack_provider || "YouTube";
       const title = game?.soundtrack_title || `${game?.title || "Game"} Soundtrack`;
 
-      if (fields.soundtrackHeading) fields.soundtrackHeading.textContent = title;
+      if (fields.soundtrackHeading) fields.soundtrackHeading.textContent = `${game?.title || "Game"} Soundtrack`;
       if (fields.soundtrackUrlInput) fields.soundtrackUrlInput.value = url;
       if (fields.soundtrackProvider && provider) fields.soundtrackProvider.value = provider;
       if (fields.soundtrackOpenLink) {
@@ -2051,7 +2063,7 @@
       }
 
       if (!url) {
-        if (fields.soundtrackCopy) fields.soundtrackCopy.textContent = "Scan YouTube for a game-specific soundtrack or add a source manually.";
+        if (fields.soundtrackCopy) fields.soundtrackCopy.textContent = "Play owned and acquired tracks first. Add music or find external sources only when needed.";
         fields.soundtrackStage.innerHTML = `
           <div class="cinematic-empty soundtrack-empty">
             <span>♪</span>
@@ -2065,7 +2077,7 @@
       }
 
       if (!embed) {
-        if (fields.soundtrackCopy) fields.soundtrackCopy.textContent = `${provider} source saved. This source opens externally.`;
+        if (fields.soundtrackCopy) fields.soundtrackCopy.textContent = `Play owned and acquired tracks below. A ${provider} source is also saved.`;
         fields.soundtrackStage.innerHTML = `
           <div class="trailer-external-card cinematic-external-card">
             <span>♪</span>
@@ -2078,7 +2090,7 @@
         return;
       }
 
-      if (fields.soundtrackCopy) fields.soundtrackCopy.textContent = `${provider} soundtrack saved. Press play when you are ready.`;
+      if (fields.soundtrackCopy) fields.soundtrackCopy.textContent = `Play owned and acquired tracks below. A ${provider} preview is also saved.`;
       renderSoundtrackPoster({ title, provider, url, embed });
       renderSoundtrackStatus(`${provider} soundtrack ready.`);
     }
@@ -2116,7 +2128,6 @@
       const embed = card.dataset.embed || "";
       const url = card.dataset.url || "";
       const provider = card.dataset.provider || "";
-      if (fields.soundtrackHeading) fields.soundtrackHeading.textContent = title;
       if (embed) {
         fields.soundtrackStage.innerHTML = `<div class="trailer-frame-shell"><iframe class="trailer-frame" src="${escapeHtml(trailerAutoplaySrc(embed))}" title="${escapeHtml(title)}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>`;
       } else if (provider === "KHInsider") {

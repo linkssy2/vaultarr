@@ -20,7 +20,7 @@
   <link rel="stylesheet" href="/static/css/library.css?v=2.0.0-alpha.36-depth.1">
   <link rel="stylesheet" href="/static/css/cards.css?v=2.0.0-alpha.36-depth.1">
   <link rel="stylesheet" href="/static/css/game-detail.css?v=2.0.0-alpha.37-acquisition-download.1">
-  <link rel="stylesheet" href="/static/css/focus-mode.css?v=2.0.0-alpha.37-soundtrack-download.1">
+  <link rel="stylesheet" href="/static/css/focus-mode.css?v=2.0.0-alpha.38-library-tabs.2">
   <link rel="stylesheet" href="/static/css/performance-foundation.css?v=1.7.6">
   <link rel="stylesheet" href="/static/css/preservation.css">
   <link rel="stylesheet" href="/static/css/vaultos.css">
@@ -74,7 +74,7 @@
     <div class="sidebar-footer">
       <div class="mini-stat vault-build-card">
         <span>Current build</span>
-        <strong>Vaultarr 2.0 Alpha 37</strong>
+        <strong>Vaultarr 2.0 Alpha 38</strong>
         <em></em>
       </div>
       {% if auth_enabled %}
@@ -233,121 +233,162 @@
       </div>
 
       <div class="focus-tab-panel" id="focusTab-manuals">
-        <div class="manual-workspace">
-          <div class="manual-workspace-header">
-            <div>
-              <h2>Manual Provider Search</h2>
-              <p class="muted">Search supported manual sources. Direct PDF results can be downloaded into Vaultarr instead of saving search pages.</p>
+        <div class="manual-workspace manual-workspace-library-first">
+          <section class="manual-library-panel" aria-labelledby="focusManualLibraryHeading">
+            <div class="manual-library-heading">
+              <div>
+                <p class="eyebrow">Vaultarr Document Library</p>
+                <h2 id="focusManualLibraryHeading">Saved Manual</h2>
+                <p class="muted">Read the owned or preserved manual here without leaving the game record.</p>
+              </div>
+              <div class="manual-download-actions">
+                <button id="focusManualDownloadButton" type="button">Download PDF</button>
+                <a class="button-link secondary small disabled" id="focusManualSavedLink" href="#" target="_blank" rel="noopener">Open PDF in Browser</a>
+                <a class="button-link secondary small disabled" id="focusManualSourcePageLink" href="#" target="_blank" rel="noopener">Open Source Page</a>
+                <button id="focusManualRemoveButton" class="secondary-button" type="button">Remove Manual</button>
+              </div>
             </div>
-          </div>
 
-          <form id="focusManualSearchForm" class="metadata-inline-form manual-search-form">
-            <input id="focusManualQuery" name="query" placeholder="Search manuals...">
-            <select id="focusManualProvider" name="provider">
-              <option value="all">All manual providers</option>
-              <option value="videogamemanual">VideoGameManual.com</option>
-              <option value="vimm">Vimm's Lair Manual Project</option>
-              <option value="local">Local library</option>
-            </select>
-            <button type="submit">Search Manuals</button>
-          </form>
+            <div class="manual-reader" id="focusManualViewer">
+              <div class="manual-reader-empty">No downloaded manual yet. Save or paste a direct PDF link, then download it into Vaultarr.</div>
+            </div>
+          </section>
 
-          <form id="focusManualLinkForm" class="metadata-inline-form manual-link-form">
-            <input id="focusManualUrlInput" name="manual_url" placeholder="Paste manual PDF/link URL...">
-            <select id="focusManualLinkProvider" name="manual_provider">
-              <option>User Link</option>
-              <option>VideoGameManual.com</option>
-              <option>Vimm's Lair Manual Project</option>
-              <option>Local Manual</option>
-              <option>Other</option>
-            </select>
-            <button type="submit">Save Manual Link</button>
-          </form>
+          <details class="soundtrack-secondary-panel manual-secondary-panel">
+            <summary>
+              <span>Find or add a manual</span>
+              <small>Search supported providers or paste a manual link</small>
+            </summary>
+            <div class="manual-secondary-content">
+              <div class="manual-workspace-header">
+                <div>
+                  <h3>Manual Provider Search</h3>
+                  <p class="muted">Direct PDF results can be downloaded into Vaultarr instead of saving search pages.</p>
+                </div>
+              </div>
 
-          <div class="manual-download-actions">
-            <button id="focusManualDownloadButton" type="button">Download PDF</button>
-            <a class="button-link secondary small disabled" id="focusManualSavedLink" href="#" target="_blank" rel="noopener">Open PDF in Browser</a>
-            <a class="button-link secondary small disabled" id="focusManualSourcePageLink" href="#" target="_blank" rel="noopener">Open Source Page</a>
-            <button id="focusManualRemoveButton" class="secondary-button" type="button">Remove Manual</button>
-          </div>
+              <form id="focusManualSearchForm" class="metadata-inline-form manual-search-form">
+                <input id="focusManualQuery" name="query" placeholder="Search manuals...">
+                <select id="focusManualProvider" name="provider">
+                  <option value="all">All manual providers</option>
+                  <option value="videogamemanual">VideoGameManual.com</option>
+                  <option value="vimm">Vimm's Lair Manual Project</option>
+                  <option value="local">Local library</option>
+                </select>
+                <button type="submit">Search Manuals</button>
+              </form>
 
-          <div class="manual-reader" id="focusManualViewer">
-            <div class="manual-reader-empty">No downloaded manual yet. Save or paste a direct PDF link, then download it into Vaultarr.</div>
-          </div>
+              <form id="focusManualLinkForm" class="metadata-inline-form manual-link-form">
+                <input id="focusManualUrlInput" name="manual_url" placeholder="Paste manual PDF/link URL...">
+                <select id="focusManualLinkProvider" name="manual_provider">
+                  <option>User Link</option>
+                  <option>VideoGameManual.com</option>
+                  <option>Vimm's Lair Manual Project</option>
+                  <option>Local Manual</option>
+                  <option>Other</option>
+                </select>
+                <button type="submit">Save Manual Link</button>
+              </form>
 
-          <div id="focusManualStatus" class="metadata-status-row"></div>
-          <div id="focusManualResults" class="manual-provider-results"></div>
+              <div id="focusManualStatus" class="metadata-status-row"></div>
+              <div id="focusManualResults" class="manual-provider-results"></div>
+            </div>
+          </details>
         </div>
       </div>
 
 
       <div class="focus-tab-panel" id="focusTab-acquisition">
         <div class="focus-acquisition-workspace" id="focusAcquisitionPanel">
-          <div class="focus-acquisition-header">
-            <div>
-              <p class="eyebrow">Acquisition Assistant</p>
-              <h2>Find a reference copy</h2>
-              <p class="muted">Search public catalog pages, then securely import an authorized file from a direct link you provide.</p>
+          <section class="acquisition-library-panel" aria-labelledby="focusAcquisitionLibraryHeading">
+            <div class="focus-acquisition-header">
+              <div>
+                <p class="eyebrow">Vaultarr Acquisition Library</p>
+                <h2 id="focusAcquisitionLibraryHeading">Acquisition Record</h2>
+                <p class="muted">Review the preserved source and local-copy status already attached to this game.</p>
+              </div>
+              <span class="metadata-pill" id="focusAcquisitionBadge">Not Configured</span>
             </div>
-            <span class="metadata-pill" id="focusAcquisitionBadge">Not Configured</span>
-          </div>
 
-          <div class="acquisition-current" id="focusAcquisitionCurrent" hidden>
-            <span>Selected release</span>
-            <strong id="focusAcquisitionCurrentTitle">—</strong>
-            <a id="focusAcquisitionCurrentSource" href="#" target="_blank" rel="noopener noreferrer">Open saved source page</a>
-            <small id="focusAcquisitionCurrentStatus"></small>
-          </div>
+            <div class="acquisition-current" id="focusAcquisitionCurrent" hidden>
+              <span>Saved release</span>
+              <strong id="focusAcquisitionCurrentTitle">—</strong>
+              <a id="focusAcquisitionCurrentSource" href="#" target="_blank" rel="noopener noreferrer">Open saved source page</a>
+              <small id="focusAcquisitionCurrentStatus"></small>
+            </div>
+            <div class="acquisition-library-empty" id="focusAcquisitionEmpty">
+              <strong>No acquisition record saved yet.</strong>
+              <span>Find a reference source, import an authorized file, or attach a copy already stored locally.</span>
+            </div>
+          </section>
 
-          <div class="acquisition-search-row">
-            <input id="focusAcquisitionQuery" aria-label="Search acquisition catalogs" placeholder="Game title">
-            <select id="focusAcquisitionProvider" aria-label="Acquisition source">
-              <option value="all">All Sources</option>
-              <option value="vimm">Vimm Vault</option>
-              <option value="myabandonware">My Abandonware</option>
-            </select>
-            <select id="focusAcquisitionPlatform" aria-label="Platform version">
-              <option value="">All Versions</option>
-              <option value="PC / Windows">PC / Windows</option>
-              <option value="DOS">DOS</option>
-              <option value="GameCube">GameCube</option>
-              <option value="Xbox">Xbox</option>
-              <option value="Xbox 360">Xbox 360</option>
-              <option value="PlayStation">PlayStation</option>
-              <option value="PlayStation 2">PlayStation 2</option>
-              <option value="PlayStation 3">PlayStation 3</option>
-              <option value="PSP">PSP</option>
-              <option value="Nintendo 64">Nintendo 64</option>
-              <option value="NES">NES</option>
-              <option value="SNES">SNES</option>
-              <option value="Wii">Wii</option>
-              <option value="Game Boy Advance">Game Boy Advance</option>
-              <option value="Nintendo DS">Nintendo DS</option>
-              <option value="Dreamcast">Dreamcast</option>
-              <option value="Saturn">Saturn</option>
-              <option value="Genesis">Genesis</option>
-            </select>
-            <button type="button" id="focusAcquisitionSearchButton">Find Copy</button>
-          </div>
-          <div id="focusAcquisitionSearchStatus" class="muted acquisition-search-status">Choose Find Copy to search the live reference catalog.</div>
-          <div id="focusAcquisitionResults" class="acquisition-results"></div>
+          <details class="soundtrack-secondary-panel acquisition-search-panel">
+            <summary>
+              <span>Find a reference copy</span>
+              <small>Search supported catalogs or read an exact source page</small>
+            </summary>
+            <div class="acquisition-secondary-content">
+              <div class="acquisition-search-row">
+                <input id="focusAcquisitionQuery" aria-label="Search acquisition catalogs" placeholder="Game title">
+                <select id="focusAcquisitionProvider" aria-label="Acquisition source">
+                  <option value="all">All Sources</option>
+                  <option value="vimm">Vimm Vault</option>
+                  <option value="myabandonware">My Abandonware</option>
+                </select>
+                <select id="focusAcquisitionPlatform" aria-label="Platform version">
+                  <option value="">All Versions</option>
+                  <option value="PC / Windows">PC / Windows</option>
+                  <option value="DOS">DOS</option>
+                  <option value="GameCube">GameCube</option>
+                  <option value="Xbox">Xbox</option>
+                  <option value="Xbox 360">Xbox 360</option>
+                  <option value="PlayStation">PlayStation</option>
+                  <option value="PlayStation 2">PlayStation 2</option>
+                  <option value="PlayStation 3">PlayStation 3</option>
+                  <option value="PSP">PSP</option>
+                  <option value="Nintendo 64">Nintendo 64</option>
+                  <option value="NES">NES</option>
+                  <option value="SNES">SNES</option>
+                  <option value="Wii">Wii</option>
+                  <option value="Game Boy Advance">Game Boy Advance</option>
+                  <option value="Nintendo DS">Nintendo DS</option>
+                  <option value="Dreamcast">Dreamcast</option>
+                  <option value="Saturn">Saturn</option>
+                  <option value="Genesis">Genesis</option>
+                </select>
+                <button type="button" id="focusAcquisitionSearchButton">Find Copy</button>
+              </div>
+              <div id="focusAcquisitionSearchStatus" class="muted acquisition-search-status">Choose Find Copy to search the live reference catalog.</div>
+              <div id="focusAcquisitionResults" class="acquisition-results"></div>
 
-          <details class="acquisition-source-fallback">
-            <summary>Already know the exact source page?</summary>
-            <div class="acquisition-source-row">
-              <input id="focusAcquisitionSourcePageInput" placeholder="Paste a Vimm Vault or My Abandonware game page">
-              <button type="button" id="focusAcquisitionReadSourceButton" class="secondary">Read Source Page</button>
+              <details class="acquisition-source-fallback">
+                <summary>Already know the exact source page?</summary>
+                <div class="acquisition-source-row">
+                  <input id="focusAcquisitionSourcePageInput" placeholder="Paste a Vimm Vault or My Abandonware game page">
+                  <button type="button" id="focusAcquisitionReadSourceButton" class="secondary">Read Source Page</button>
+                </div>
+              </details>
+
+              <div id="focusAcquisitionSelection" class="acquisition-selection" hidden>
+                <h3 id="focusAcquisitionSelectionTitle">Selected release</h3>
+                <p id="focusAcquisitionSelectionMeta" class="muted"></p>
+                <div class="acquisition-selection-actions">
+                  <a id="focusAcquisitionSelectionSource" class="button-link secondary" target="_blank" rel="noopener noreferrer">Open Source</a>
+                  <button type="button" id="focusAcquisitionSaveButton">Save Acquisition</button>
+                </div>
+              </div>
             </div>
           </details>
 
-          <div id="focusAcquisitionSelection" class="acquisition-selection" hidden>
-            <h3 id="focusAcquisitionSelectionTitle">Selected release</h3>
-            <p id="focusAcquisitionSelectionMeta" class="muted"></p>
-            <a id="focusAcquisitionSelectionSource" class="button-link secondary" target="_blank" rel="noopener noreferrer">Open Source</a>
-            <label for="focusAcquisitionDownloadUrl">Final download link</label>
-            <input id="focusAcquisitionDownloadUrl" placeholder="Paste the final link here">
-            <button type="button" id="focusAcquisitionSaveButton">Save Acquisition</button>
-            <div class="acquisition-download-box">
+          <details class="soundtrack-secondary-panel acquisition-import-panel">
+            <summary>
+              <span>Import an authorized file</span>
+              <small>Use a direct link only when you have permission to preserve it</small>
+            </summary>
+            <div class="acquisition-import-content">
+              <label for="focusAcquisitionDownloadUrl">Final download link</label>
+              <input id="focusAcquisitionDownloadUrl" placeholder="Paste the final authorized download link here">
+              <div class="acquisition-download-box">
               <label class="acquisition-download-permission">
                 <input type="checkbox" id="focusAcquisitionDownloadPermission">
                 <span><strong>I have permission to download and preserve this file.</strong><small>Vaultarr saves the file without extracting or running it.</small></span>
@@ -358,10 +399,14 @@
                 <progress id="focusAcquisitionDownloadMeter" max="100" value="0" aria-label="Acquisition download progress"></progress>
               </div>
             </div>
-          </div>
+            </div>
+          </details>
 
-          <details class="acquisition-attach-details">
-            <summary>Link files after acquisition</summary>
+          <details class="soundtrack-secondary-panel acquisition-attach-details">
+            <summary>
+              <span>Attach an existing local copy</span>
+              <small>Link a file or folder that is already stored on this system</small>
+            </summary>
             <form id="focusAcquisitionAttachForm" class="acquisition-attach-form">
               <label for="focusAcquisitionLocalPath">Local file or folder</label>
               <input id="focusAcquisitionLocalPath" placeholder="D:\ROMs\Nintendo 64\Example Game.z64" required>
@@ -373,53 +418,20 @@
 
       <div class="focus-tab-panel" id="focusTab-gallery">
         <div class="gallery-workspace gallery-workspace-saved-first">
-          <div class="gallery-workspace-header">
-            <div>
-              <h2>Media Library</h2>
-              <p class="muted">Covers, screenshots, artwork, logos, and trailer media are kept as reusable assets instead of being overwritten.</p>
-            </div>
-            <div class="gallery-actions">
-              <button id="focusGallerySearchButton" type="button">Search More Media</button>
-            </div>
-          </div>
-
-          <div id="focusGalleryStatus" class="metadata-status-row"></div>
-
-          <section class="gallery-cover-manager-section">
-            <div class="gallery-section-heading">
-              <div>
-                <p class="eyebrow">Cover Manager</p>
-                <h3>Library Cover</h3>
-              </div>
-              <div class="cover-manager-heading-actions">
-                <span id="focusCoverManagerStatus">Current cover</span>
-                <button class="secondary-button small" id="focusCoverSearchButton" type="button">Find More Covers</button>
-                <label class="secondary-button small cover-upload-button" for="focusCoverUploadInput">Upload Cover</label>
-                <input id="focusCoverUploadInput" type="file" accept="image/png,image/jpeg,image/webp" hidden>
-              </div>
-            </div>
-            <div class="cover-manager-layout">
-              <div class="cover-manager-current" id="focusCoverManagerCurrent">
-                <div class="gallery-empty compact">No cover selected yet.</div>
-              </div>
-              <div>
-                <p class="muted cover-manager-copy">Build Best Record recommends a cover, but you can choose any cached or provider cover and set it as the Library cover.</p>
-                <div class="gallery-grid cover-candidate-grid" id="focusCoverCandidates"></div>
-              </div>
-            </div>
-          </section>
-
           <section class="gallery-saved-section">
             <div class="gallery-section-heading">
               <div>
-                <p class="eyebrow">Saved Media</p>
-                <h3>Cached Gallery</h3>
+                <p class="eyebrow">Vaultarr Media Library</p>
+                <h2>Saved Gallery</h2>
+                <p class="muted">Browse the covers, screenshots, artwork, logos, and trailer media already preserved for this game.</p>
               </div>
               <div class="gallery-cache-actions">
                 <span id="focusGallerySavedCount">0 cached</span>
+                <button id="focusGallerySearchButton" type="button">Search More Media</button>
                 <button id="focusGalleryClearButton" class="secondary-button small" type="button">Clear Game Cache</button>
               </div>
             </div>
+            <div id="focusGalleryStatus" class="metadata-status-row"></div>
             <div class="gallery-stage" id="focusGalleryStage">
               <div class="gallery-empty">No cached gallery images yet. Use Search More Media to find screenshots and artwork.</div>
             </div>
@@ -445,31 +457,62 @@
             </form>
             <div class="gallery-grid gallery-provider-grid" id="focusGalleryResults"></div>
           </section>
+
+          <details class="soundtrack-secondary-panel gallery-cover-panel">
+            <summary>
+              <span>Manage the library cover</span>
+              <small>Choose a cached cover, find alternatives, or upload one</small>
+            </summary>
+            <section class="gallery-cover-manager-section">
+              <div class="gallery-section-heading">
+                <div>
+                  <p class="eyebrow">Cover Manager</p>
+                  <h3>Library Cover</h3>
+                </div>
+                <div class="cover-manager-heading-actions">
+                  <span id="focusCoverManagerStatus">Current cover</span>
+                  <button class="secondary-button small" id="focusCoverSearchButton" type="button">Find More Covers</button>
+                  <label class="secondary-button small cover-upload-button" for="focusCoverUploadInput">Upload Cover</label>
+                  <input id="focusCoverUploadInput" type="file" accept="image/png,image/jpeg,image/webp" hidden>
+                </div>
+              </div>
+              <div class="cover-manager-layout">
+                <div class="cover-manager-current" id="focusCoverManagerCurrent">
+                  <div class="gallery-empty compact">No cover selected yet.</div>
+                </div>
+                <div>
+                  <p class="muted cover-manager-copy">Build Best Record recommends a cover, but you can choose any cached or provider cover and set it as the Library cover.</p>
+                  <div class="gallery-grid cover-candidate-grid" id="focusCoverCandidates"></div>
+                </div>
+              </div>
+            </section>
+          </details>
         </div>
       </div>
 
       <div class="focus-tab-panel" id="focusTab-trailer">
         <div class="trailer-workspace trailer-cinematic-workspace">
-          <div class="trailer-hero cinematic-trailer-hero">
+          <section class="trailer-hero cinematic-trailer-hero trailer-library-panel" aria-labelledby="focusTrailerHeading">
             <div>
-              <p class="eyebrow">Cinematic Engine</p>
+              <p class="eyebrow">Vaultarr Video Library</p>
               <h2 id="focusTrailerHeading">Game Trailer</h2>
               <p class="muted" id="focusTrailerCopy">Watch, preview, and curate the saved trailer without leaving Vaultarr.</p>
             </div>
             <div class="trailer-actions">
               <button class="button-link small" id="focusTrailerFindButton" type="button">Change Trailer</button>
               <a class="button-link secondary small disabled" id="focusTrailerOpenLink" href="#" target="_blank" rel="noopener">External</a>
+              <button id="focusTrailerRemoveButton" class="secondary-button" type="button">Remove</button>
             </div>
-          </div>
+            <div class="trailer-stage cinematic-trailer-stage" id="focusTrailerStage">
+              <div class="trailer-empty">No trailer saved yet. Use Change Trailer to find one inside Vaultarr.</div>
+            </div>
+            <div id="focusTrailerStatus" class="metadata-status-row"></div>
+          </section>
 
-          <div class="trailer-stage cinematic-trailer-stage" id="focusTrailerStage">
-            <div class="trailer-empty">No trailer saved yet. Use Change Trailer to find one inside Vaultarr.</div>
-          </div>
-
-          <details class="trailer-finder-panel cinematic-trailer-finder" id="focusTrailerFinderPanel">
+          <details class="trailer-finder-panel cinematic-trailer-finder soundtrack-secondary-panel" id="focusTrailerFinderPanel">
             <summary>
-              <span>Recommended Trailers</span>
-              <small>Preview or set a new trailer</small>
+              <span>Find or replace the trailer</span>
+              <small>Preview recommendations, search externally, or paste a URL</small>
             </summary>
             <div class="trailer-search-shortcuts">
               <a id="focusTrailerYouTubeSearch" href="#" target="_blank" rel="noopener"><strong>YouTube</strong><span>External search</span></a>
@@ -479,10 +522,6 @@
             <div id="focusTrailerResults" class="trailer-candidate-grid">
               <div class="trailer-candidate-empty">Use Change Trailer to search likely matches inside Vaultarr.</div>
             </div>
-          </details>
-
-          <details class="trailer-advanced-panel">
-            <summary>Advanced trailer URL</summary>
             <form id="focusTrailerForm" class="metadata-inline-form trailer-inline-form">
               <input id="focusTrailerUrlInput" name="trailer_url" placeholder="Paste YouTube trailer URL...">
               <select id="focusTrailerProvider" name="trailer_provider">
@@ -493,50 +532,34 @@
                 <option>Other</option>
               </select>
               <button type="submit">Save Trailer</button>
-              <button id="focusTrailerRemoveButton" class="secondary-button" type="button">Remove</button>
             </form>
           </details>
-
-          <div id="focusTrailerStatus" class="metadata-status-row"></div>
         </div>
       </div>
 
 
       <div class="focus-tab-panel" id="focusTab-soundtrack">
         <div class="trailer-workspace soundtrack-workspace">
-          <div class="trailer-hero soundtrack-hero">
-            <div>
-              <p class="eyebrow">Soundtrack Scanner</p>
-              <h2 id="focusSoundtrackHeading">Game Soundtrack</h2>
-              <p class="muted" id="focusSoundtrackCopy">Find, preview, and preserve a source link for this game's music.</p>
-            </div>
-            <div class="trailer-actions">
-              <select id="focusSoundtrackSearchProvider" aria-label="Soundtrack search source">
-                <option value="all">All Sources</option>
-                <option value="khinsider">KHInsider Catalog</option>
-                <option value="youtube">YouTube</option>
-              </select>
-              <button class="button-link small" id="focusSoundtrackFindButton" type="button">Scan for Music</button>
-              <a class="button-link secondary small disabled" id="focusSoundtrackOpenLink" href="#" target="_blank" rel="noopener">External</a>
-            </div>
-          </div>
-
-          <div class="trailer-stage soundtrack-stage" id="focusSoundtrackStage">
-            <div class="trailer-empty">No soundtrack saved yet. Scan for music to find likely matches.</div>
-          </div>
-
-          <section class="soundtrack-player-panel" aria-labelledby="focusSoundtrackPlayerHeading">
+          <section class="soundtrack-player-panel" aria-labelledby="focusSoundtrackHeading">
             <div class="soundtrack-player-heading">
               <div>
                 <p class="eyebrow">Vaultarr Audio Library</p>
-                <h3 id="focusSoundtrackPlayerHeading">Local Soundtrack Player</h3>
-                <p class="muted">Plays soundtrack files already in the game folder or files you import into Vaultarr.</p>
+                <h2 id="focusSoundtrackHeading">Soundtrack Library</h2>
+                <p class="muted" id="focusSoundtrackCopy">Choose any owned or acquired track to play it immediately inside Vaultarr.</p>
               </div>
-              <label class="secondary-button small soundtrack-import-button" for="focusSoundtrackUploadInput">Import Audio</label>
-              <input id="focusSoundtrackUploadInput" type="file" name="tracks" accept=".mp3,.flac,.ogg,.wav,.m4a,audio/*" multiple hidden>
+              <div class="soundtrack-library-actions">
+                <span class="soundtrack-track-count" id="focusSoundtrackTrackCount">0 tracks</span>
+                <label class="button-link small soundtrack-import-button" for="focusSoundtrackUploadInput">Import Audio</label>
+                <input id="focusSoundtrackUploadInput" type="file" name="tracks" accept=".mp3,.flac,.ogg,.wav,.m4a,audio/*" multiple hidden>
+              </div>
             </div>
 
-            <div class="soundtrack-drop-zone" id="focusSoundtrackDropZone">
+            <div id="focusSoundtrackUploadStatus" class="metadata-status-row"></div>
+            <div id="focusSoundtrackTrackList" class="soundtrack-track-list">
+              <div class="trailer-candidate-empty">No local soundtrack files found.</div>
+            </div>
+
+            <div class="soundtrack-player-dock soundtrack-drop-zone" id="focusSoundtrackDropZone">
               <div class="soundtrack-now-playing">
                 <div class="soundtrack-player-art" id="focusSoundtrackPlayerArt"><span>♪</span></div>
                 <div>
@@ -555,7 +578,13 @@
               <p class="soundtrack-drop-copy">Drop owned MP3, FLAC, OGG, WAV, or M4A files here to import them.</p>
             </div>
 
-            <div id="focusSoundtrackUploadStatus" class="metadata-status-row"></div>
+          </section>
+
+          <details class="soundtrack-secondary-panel">
+            <summary>
+              <span>Add owned music</span>
+              <small>Import files or use an authorized direct audio link</small>
+            </summary>
             <div class="soundtrack-direct-import" aria-labelledby="focusSoundtrackDirectHeading">
               <div>
                 <p class="eyebrow">Authorized Link Import</p>
@@ -578,16 +607,25 @@
                 </div>
               </div>
             </div>
-            <div id="focusSoundtrackTrackList" class="soundtrack-track-list">
-              <div class="trailer-candidate-empty">No local soundtrack files found.</div>
-            </div>
-          </section>
+          </details>
 
-          <details class="trailer-finder-panel soundtrack-finder" id="focusSoundtrackFinderPanel">
+          <details class="trailer-finder-panel soundtrack-finder soundtrack-secondary-panel" id="focusSoundtrackFinderPanel">
             <summary>
-              <span>Soundtrack Candidates</span>
-              <small>Preview or save a source for this game</small>
+              <span>Find soundtrack sources</span>
+              <small>Search catalogs and save an external music source</small>
             </summary>
+            <div class="soundtrack-source-toolbar">
+              <select id="focusSoundtrackSearchProvider" aria-label="Soundtrack search source">
+                <option value="all">All Sources</option>
+                <option value="khinsider">KHInsider Catalog</option>
+                <option value="youtube">YouTube</option>
+              </select>
+              <button class="button-link small" id="focusSoundtrackFindButton" type="button">Scan for Music</button>
+              <a class="button-link secondary small disabled" id="focusSoundtrackOpenLink" href="#" target="_blank" rel="noopener">Open Saved Source</a>
+            </div>
+            <div class="trailer-stage soundtrack-stage" id="focusSoundtrackStage">
+              <div class="trailer-empty">No soundtrack source saved yet.</div>
+            </div>
             <div class="trailer-search-shortcuts">
               <a id="focusSoundtrackYouTubeSearch" href="#" target="_blank" rel="noopener"><strong>YouTube</strong><span>External soundtrack search</span></a>
               <a id="focusSoundtrackMusicSearch" href="#" target="_blank" rel="noopener"><strong>YouTube Music</strong><span>Search music catalog</span></a>
@@ -597,23 +635,25 @@
             <div id="focusSoundtrackResults" class="trailer-candidate-grid">
               <div class="trailer-candidate-empty">Use Scan for Music to search likely soundtrack matches inside Vaultarr.</div>
             </div>
-          </details>
-
-          <details class="trailer-advanced-panel">
-            <summary>Advanced soundtrack URL</summary>
-            <form id="focusSoundtrackForm" class="metadata-inline-form trailer-inline-form">
-              <input id="focusSoundtrackUrlInput" name="soundtrack_url" placeholder="Paste YouTube soundtrack URL...">
-              <select id="focusSoundtrackProvider" name="soundtrack_provider">
-                <option>YouTube</option>
-                <option>YouTube Music</option>
-                <option>KHInsider</option>
-                <option>Bandcamp</option>
-                <option>Spotify</option>
-                <option>Other</option>
-              </select>
-              <button type="submit">Save Soundtrack</button>
-              <button id="focusSoundtrackRemoveButton" class="secondary-button" type="button">Remove</button>
-            </form>
+            <div class="soundtrack-manual-source">
+              <div>
+                <strong>Already have a source?</strong>
+                <small>Save its external link with this game.</small>
+              </div>
+              <form id="focusSoundtrackForm" class="metadata-inline-form trailer-inline-form">
+                <input id="focusSoundtrackUrlInput" name="soundtrack_url" placeholder="Paste YouTube soundtrack URL...">
+                <select id="focusSoundtrackProvider" name="soundtrack_provider">
+                  <option>YouTube</option>
+                  <option>YouTube Music</option>
+                  <option>KHInsider</option>
+                  <option>Bandcamp</option>
+                  <option>Spotify</option>
+                  <option>Other</option>
+                </select>
+                <button type="submit">Save Soundtrack</button>
+                <button id="focusSoundtrackRemoveButton" class="secondary-button" type="button">Remove</button>
+              </form>
+            </div>
           </details>
 
           <div id="focusSoundtrackStatus" class="metadata-status-row"></div>
@@ -749,7 +789,7 @@
   <script src="/static/js/live-events.js?v=1.7.6"></script>
   <script src="/static/js/museum-scan-pill.js?v=2.0.0-alpha.36-scan-panel.15"></script>
   <script src="/static/js/library.js?v=2.0.0-alpha.36-depth.1"></script>
-  <script src="/static/js/focus-mode.js?v=2.0.0-alpha.37-soundtrack-download.1"></script>
+  <script src="/static/js/focus-mode.js?v=2.0.0-alpha.38-library-tabs.2"></script>
   <script src="/static/js/performance-foundation.js?v=1.7.6"></script>
   <script src="/static/js/theme-compat.js"></script>
   <script src="/static/js/studio-navigation.js"></script>

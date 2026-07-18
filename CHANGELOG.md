@@ -1,3 +1,19 @@
+## 2.0.0 Alpha 38 — Library-First Expanded Cards
+
+- Reordered the expanded Museum card's Soundtrack tab so owned and acquired tracks are the first content presented.
+- Turned every local track row into an explicit in-Vaultarr play action and added a live track-count indicator.
+- Attached the existing audio player directly beneath the library list so selected-track state and playback controls read as one workflow.
+- Moved file import and permission-confirmed direct audio acquisition into one collapsed **Add owned music** section.
+- Moved catalog scanning, previews, external shortcuts, and manual source saving into one collapsed **Find soundtrack sources** section.
+- Reordered Manuals around the saved reader and its actions, with provider search and link entry in one collapsed secondary section.
+- Reordered Gallery around cached media and its preview stage, with provider search directly below and cover management collapsed until needed.
+- Reordered Trailer around its saved playback stage and primary actions, consolidating recommendations, external searches, and manual URL entry into one secondary section.
+- Reordered Acquisition around its saved source and local-copy status, with distinct secondary sections for catalog discovery, permission-confirmed importing, and local-file attachment.
+- Kept saved acquisition download links reachable after reopening a game by placing the authorized import controls in their own persistent section.
+- Corrected saved Acquisition API hydration so an existing record is returned as JSON instead of failing with an HTTP 500 response.
+- Removed the obsolete separate advanced-trailer panel styling after merging manual URL entry into the finder.
+- Preserved manual, gallery, trailer, and soundtrack APIs, storage, scanners, authorized-download protections, expanded-card dimensions, and unrelated systems.
+
 ## 2.0.0 Alpha 37 — Authorized Acquisition Downloads
 
 - Replaced My Abandonware's verification-page search fallback with exact game-page resolution through its public alphabetical catalog whenever a matching title is available.
