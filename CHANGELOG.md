@@ -1,3 +1,11 @@
+## 2.0.0 Alpha 49 — Login Orbital Motion
+
+- Corrected the login reduced-motion fallback so it no longer freezes the Orbital Core completely.
+- Retained slow, continuous ring rotation while disabling decorative sweeps, breathing, pulsing, and glow animations.
+- Added a coordinated login exit and Home arrival so successful authentication no longer replaces the page abruptly.
+- Updated login cache keys to ensure refreshed and Docker-hosted clients receive the corrected stylesheet.
+- Preserved the login composition, credential verification, sessions, redirects, logout, and authentication settings.
+
 ## 2.0.0 Alpha 48 — Museum Home Actions
 
 - Redesigned Continue curating, Timeline, and Next milestone as cohesive glass museum-navigation chambers.

@@ -196,3 +196,32 @@
   margin-left: 0 !important;
   margin-right: 0 !important;
 }
+
+/* Alpha 49 — calm handoff from authenticated login to the museum shell. */
+html.vault-login-arrival body > .vault-ambient,
+html.vault-login-arrival body > .sidebar,
+html.vault-login-arrival body > .vaultos-content {
+  animation: vaultLoginArrival 560ms cubic-bezier(.22, 1, .36, 1) both;
+}
+html.vault-login-arrival body > .sidebar { animation-delay: 45ms; }
+html.vault-login-arrival body > .vaultos-content { animation-delay: 95ms; }
+
+@keyframes vaultLoginArrival {
+  from { opacity: 0; transform: translateY(7px); filter: blur(3px); }
+  to { opacity: 1; transform: none; filter: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.vault-login-arrival body > .vault-ambient,
+  html.vault-login-arrival body > .sidebar,
+  html.vault-login-arrival body > .vaultos-content {
+    animation-name: vaultLoginArrivalReduced;
+    animation-duration: 380ms;
+    animation-delay: 0ms;
+  }
+}
+
+@keyframes vaultLoginArrivalReduced {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}

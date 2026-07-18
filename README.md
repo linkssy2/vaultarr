@@ -1,8 +1,16 @@
-# Vaultarr 2.0.0 Alpha 48
+# Vaultarr 2.0.0 Alpha 49
 
-> Experimental release: **Vaultarr 2.0.0 Alpha 48 — Museum Home Actions**
+> Experimental release: **Vaultarr 2.0.0 Alpha 49 — Login Orbital Motion**
 
 The `vaultarr-2.0-alpha` branch publishes its Docker image as `ghcr.io/linkssy2/vaultarr:2.experimental`. The stable `main` branch continues to own the `latest` tag.
+
+## Alpha 49 login orbital motion
+
+- Keeps the login orbital rings and central energy ring moving when reduced motion is enabled.
+- Stops the broader comet, nebula, scan, pulse, and glow effects in reduced-motion mode.
+- Adds a calm authenticated handoff from the login chamber into the Home museum shell.
+- Refreshes the login asset versions so updated Docker deployments do not reuse the frozen stylesheet.
+- Preserves the unified login layout and all authentication behavior.
 
 ## Alpha 48 museum home actions
 
