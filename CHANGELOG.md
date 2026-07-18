@@ -1,3 +1,10 @@
+## 2.0.0 Alpha 51 — Complete Platform Menu
+
+- Widened the Museum platform dropdown list without enlarging the compact filter control.
+- Corrected the dropdown scroll window so its last visible platform option is not partially cut off.
+- Added single-line overflow handling for unusually long platform names.
+- Preserved Museum layout, routes, cards, filters, and the existing dropdown animation.
+
 ## 2.0.0 Alpha 50 — Seamless Login First Paint
 
 - Added an immediate dark first-paint guard during the authenticated login handoff.

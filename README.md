@@ -1,8 +1,12 @@
-# Vaultarr 2.0.0 Alpha 50
+# Vaultarr 2.0.0 Alpha 51
 
-> Experimental release: **Vaultarr 2.0.0 Alpha 50 — Seamless Login First Paint**
+> Experimental release: **Vaultarr 2.0.0 Alpha 51 — Complete Platform Menu**
 
 The `vaultarr-2.0-alpha` branch publishes its Docker image as `ghcr.io/linkssy2/vaultarr:2.experimental`. The stable `main` branch continues to own the `latest` tag.
+
+## Alpha 51 complete platform menu
+
+The Museum platform menu now opens wide enough to show full platform names and scrolls in complete option rows instead of cutting through the last visible choice. The compact filter trigger and existing smooth menu animation remain unchanged.
 
 ## Alpha 50 seamless login first paint
 

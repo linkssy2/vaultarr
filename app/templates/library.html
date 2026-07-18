@@ -26,7 +26,7 @@
     {% if museum_view == 'games' %}
     <form class="museum-library-filter-row" id="museumFilterForm" method="get" action="/museum" aria-label="Museum filters">
       {% if attention %}<input type="hidden" name="attention" value="1">{% endif %}
-      <label class="museum-filter-select-wrap">
+      <label class="museum-filter-select-wrap museum-platform-wrap">
         <span>Platform</span>
         <select class="select-input museum-filter-select" name="platform">
           <option value="All Platforms">All Platforms</option>
