@@ -13,6 +13,7 @@
     let isAnimating = false;
     let activeGameId = null;
     let activeGame = null;
+    let emulationProfile = null;
     let selectedAcquisition = null;
     let acquisitionDownloadPollTimer = null;
 
@@ -137,6 +138,26 @@
       soundtrackNext: document.getElementById("focusSoundtrackNext"),
       soundtrackShuffle: document.getElementById("focusSoundtrackShuffle"),
       soundtrackRepeat: document.getElementById("focusSoundtrackRepeat"),
+      emulationHeading: document.getElementById("focusEmulationHeading"),
+      emulationStatus: document.getElementById("focusEmulationStatus"),
+      emulationMessage: document.getElementById("focusEmulationMessage"),
+      emulationDetails: document.getElementById("focusEmulationDetails"),
+      emulationStart: document.getElementById("focusEmulationStart"),
+      emulationUpload: document.getElementById("focusEmulationUpload"),
+      emulationReplace: document.getElementById("focusEmulationReplace"),
+      emulationImportButton: document.querySelector(".emulation-import-button"),
+      emulationBiosPrimary: document.getElementById("focusEmulationBiosPrimary"),
+      emulationUploadStatus: document.getElementById("focusEmulationUploadStatus"),
+      emulationPlayerShell: document.getElementById("focusEmulationPlayerShell"),
+      emulationFrame: document.getElementById("focusEmulationFrame"),
+      emulationExit: document.getElementById("focusEmulationExit"),
+      emulationPlayerTitle: document.getElementById("focusEmulationPlayerTitle"),
+      emulationSetup: document.getElementById("focusEmulationSetup"),
+      emulationRomLabel: document.getElementById("focusEmulationRomLabel"),
+      emulationRemove: document.getElementById("focusEmulationRemove"),
+      emulationBiosRow: document.getElementById("focusEmulationBiosRow"),
+      emulationBiosLabel: document.getElementById("focusEmulationBiosLabel"),
+      emulationBios: document.getElementById("focusEmulationBios"),
       playabilityScore: document.getElementById("focusPlayabilityScore"),
       patchStatus: document.getElementById("focusPatchStatus"),
       patchCurrent: document.getElementById("focusPatchCurrent"),
@@ -661,6 +682,7 @@
     function populate(game) {
       if (activeGameId && String(game.id) !== String(activeGameId)) return;
       activeGame = game;
+      resetEmulationPanel();
       loadAcquisition(game);
 
       if (fields.cover) {
@@ -828,6 +850,7 @@
 
       stopTrailerPlayback(false);
       stopSoundtrackPlayback();
+      stopEmulationPlayer();
       isAnimating = true;
       const liveCard = activeTrigger?.querySelector(".poster-card") || activeTrigger;
       const liveRect = liveCard?.getBoundingClientRect?.();
@@ -883,6 +906,9 @@
       if (currentActive === "soundtrack" && tabName !== "soundtrack") {
         stopSoundtrackPlayback();
       }
+      if (currentActive === "play" && tabName !== "play") {
+        stopEmulationPlayer();
+      }
       if (tabName === "trailer") {
         restoreTrailerPlaybackIfNeeded();
       }
@@ -893,6 +919,129 @@
       const tabPanel = document.getElementById(`focusTab-${tabName}`);
       if (tab) tab.classList.add("active");
       if (tabPanel) tabPanel.classList.add("active");
+      if (tabName === "play") loadEmulationProfile();
+    }
+
+    function renderEmulationNotice(message = "", status = "") {
+      if (!fields.emulationUploadStatus) return;
+      fields.emulationUploadStatus.innerHTML = message
+        ? `<span class="metadata-provider-pill ${escapeHtml(status)}"><strong>Player</strong><span>${escapeHtml(message)}</span></span>`
+        : "";
+    }
+
+    function stopEmulationPlayer() {
+      if (fields.emulationFrame) fields.emulationFrame.src = "about:blank";
+      if (fields.emulationPlayerShell) fields.emulationPlayerShell.hidden = true;
+      document.querySelector(".emulation-launch-panel")?.removeAttribute("hidden");
+    }
+
+    function resetEmulationPanel() {
+      emulationProfile = null;
+      stopEmulationPlayer();
+      if (fields.emulationHeading) fields.emulationHeading.textContent = `Play ${activeGame?.title || "in Vaultarr"}`;
+      if (fields.emulationStatus) {
+        fields.emulationStatus.textContent = "Not checked";
+        fields.emulationStatus.dataset.status = "idle";
+      }
+      if (fields.emulationMessage) fields.emulationMessage.textContent = "Open the Play tab to check this game.";
+      if (fields.emulationDetails) fields.emulationDetails.hidden = true;
+      if (fields.emulationStart) fields.emulationStart.hidden = true;
+      if (fields.emulationBiosPrimary) fields.emulationBiosPrimary.hidden = true;
+      if (fields.emulationRemove) fields.emulationRemove.hidden = true;
+      if (fields.emulationBiosRow) fields.emulationBiosRow.hidden = true;
+      renderEmulationNotice();
+    }
+
+    function renderEmulationProfile(profile) {
+      emulationProfile = profile;
+      const hasRom = Boolean(profile?.rom);
+      const isReady = profile?.status === "ready";
+      const needsBios = profile?.status === "missing_bios";
+      const accept = (profile?.accepted_extensions || []).join(",");
+      if (fields.emulationHeading) fields.emulationHeading.textContent = `Play ${activeGame?.title || "in Vaultarr"}`;
+      if (fields.emulationStatus) {
+        fields.emulationStatus.textContent = isReady ? "Ready" : needsBios ? "BIOS needed" : "Game file needed";
+        fields.emulationStatus.dataset.status = profile?.status || "idle";
+      }
+      if (fields.emulationMessage) fields.emulationMessage.textContent = profile?.message || "Player setup is incomplete.";
+      if (fields.emulationDetails) {
+        fields.emulationDetails.hidden = !hasRom;
+        fields.emulationDetails.innerHTML = hasRom
+          ? `<strong>${escapeHtml(profile.system_label || "Classic game")}</strong><span>${escapeHtml(profile.rom.name)} · ${escapeHtml(profile.rom.size_label || "")}</span>`
+          : "";
+      }
+      if (fields.emulationStart) fields.emulationStart.hidden = !isReady;
+      if (fields.emulationImportButton) fields.emulationImportButton.hidden = hasRom;
+      if (fields.emulationBiosPrimary) fields.emulationBiosPrimary.hidden = !needsBios;
+      if (fields.emulationUpload) fields.emulationUpload.accept = accept;
+      if (fields.emulationReplace) fields.emulationReplace.accept = accept;
+      if (fields.emulationRomLabel) fields.emulationRomLabel.textContent = hasRom ? `${profile.rom.name} · ${profile.rom.size_label || ""}` : "No game file added";
+      if (fields.emulationRemove) fields.emulationRemove.hidden = !hasRom;
+      if (fields.emulationBiosRow) fields.emulationBiosRow.hidden = !profile?.requires_bios;
+      if (fields.emulationBiosLabel) fields.emulationBiosLabel.textContent = profile?.bios ? `${profile.bios.name} · ${profile.bios.size_label || ""}` : "Required to play PlayStation games";
+      if (fields.emulationSetup && needsBios) fields.emulationSetup.open = true;
+      if (fields.emulationPlayerTitle) fields.emulationPlayerTitle.textContent = activeGame?.title || "Vaultarr Player";
+    }
+
+    async function loadEmulationProfile() {
+      if (!activeGameId) return;
+      if (fields.emulationStatus) {
+        fields.emulationStatus.textContent = "Checking…";
+        fields.emulationStatus.dataset.status = "loading";
+      }
+      try {
+        const response = await fetch(`/api/games/${activeGameId}/emulation`);
+        const data = await response.json();
+        if (!response.ok || !data.success) throw new Error(data.message || "Could not check the player.");
+        renderEmulationProfile(data.profile);
+      } catch (error) {
+        if (fields.emulationStatus) fields.emulationStatus.textContent = "Unavailable";
+        if (fields.emulationMessage) fields.emulationMessage.textContent = "Vaultarr Player could not be prepared.";
+        renderEmulationNotice(error.message || "Could not check the player.", "error");
+      }
+    }
+
+    async function uploadEmulationFile(input, kind) {
+      const file = input?.files?.[0];
+      if (!activeGameId || !file) return;
+      renderEmulationNotice(kind === "bios" ? "Adding BIOS…" : "Adding game file…");
+      const form = new FormData();
+      form.append(kind === "bios" ? "bios" : "rom", file);
+      try {
+        const suffix = kind === "bios" ? "/bios" : "/rom";
+        const response = await fetch(`/api/games/${activeGameId}/emulation${suffix}`, { method: "POST", body: form });
+        const data = await response.json();
+        if (!response.ok || !data.success) throw new Error(data.message || "Could not add the selected file.");
+        renderEmulationProfile(data.profile);
+        renderEmulationNotice(kind === "bios" ? "BIOS added. The game is ready." : "Game file added.", "success");
+      } catch (error) {
+        renderEmulationNotice(error.message || "Could not add the selected file.", "error");
+      } finally {
+        input.value = "";
+      }
+    }
+
+    function startEmulationPlayer() {
+      if (!emulationProfile?.available || !emulationProfile.player_url || !fields.emulationFrame) return;
+      const launchPanel = document.querySelector(".emulation-launch-panel");
+      if (launchPanel) launchPanel.hidden = true;
+      if (fields.emulationPlayerShell) fields.emulationPlayerShell.hidden = false;
+      fields.emulationFrame.src = emulationProfile.player_url;
+    }
+
+    async function removeEmulationRom() {
+      if (!activeGameId) return;
+      stopEmulationPlayer();
+      renderEmulationNotice("Removing game file…");
+      try {
+        const response = await fetch(`/api/games/${activeGameId}/emulation/rom`, { method: "DELETE" });
+        const data = await response.json();
+        if (!response.ok || !data.success) throw new Error(data.message || "Could not remove the game file.");
+        renderEmulationProfile(data.profile);
+        renderEmulationNotice("Game file removed.", "success");
+      } catch (error) {
+        renderEmulationNotice(error.message || "Could not remove the game file.", "error");
+      }
     }
 
     function renderMetadataLogs(logs = []) {
@@ -2865,6 +3014,12 @@
       if (localSoundtrackRepeat) playLocalSoundtrack(localSoundtrackIndex);
       else stepLocalSoundtrack(1);
     });
+    if (fields.emulationStart) fields.emulationStart.addEventListener("click", startEmulationPlayer);
+    if (fields.emulationExit) fields.emulationExit.addEventListener("click", stopEmulationPlayer);
+    if (fields.emulationUpload) fields.emulationUpload.addEventListener("change", () => uploadEmulationFile(fields.emulationUpload, "rom"));
+    if (fields.emulationReplace) fields.emulationReplace.addEventListener("change", () => uploadEmulationFile(fields.emulationReplace, "rom"));
+    if (fields.emulationBios) fields.emulationBios.addEventListener("change", () => uploadEmulationFile(fields.emulationBios, "bios"));
+    if (fields.emulationRemove) fields.emulationRemove.addEventListener("click", removeEmulationRom);
     if (fields.soundtrackDropZone) {
       ["dragenter", "dragover"].forEach((eventName) => fields.soundtrackDropZone.addEventListener(eventName, (event) => {
         event.preventDefault();

@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ game.title }} · Vaultarr Player</title>
+  <style>
+    html, body, #game { width: 100%; height: 100%; margin: 0; overflow: hidden; background: #020617; }
+    body { color: #e5f3ff; font-family: Inter, system-ui, sans-serif; }
+    #loading { position: fixed; inset: 0; display: grid; place-items: center; letter-spacing: .08em; color: #93c5fd; background: radial-gradient(circle, #10244c 0, #020617 68%); }
+  </style>
+</head>
+<body>
+  <div id="loading">PREPARING VAULTARR PLAYER…</div>
+  <div id="game"></div>
+  <script>
+    window.EJS_player = "#game";
+    window.EJS_core = {{ profile.core|tojson }};
+    window.EJS_gameName = {{ game.title|tojson }};
+    window.EJS_gameUrl = {{ ("/api/games/" ~ game.id ~ "/emulation/content")|tojson }};
+    window.EJS_pathtodata = "https://cdn.emulatorjs.org/4.2.3/data/";
+    window.EJS_startOnLoaded = true;
+    window.EJS_threads = false;
+    window.EJS_color = "#38bdf8";
+    window.EJS_backgroundColor = "#020617";
+    {% if profile.requires_bios %}window.EJS_biosUrl = {{ ("/api/games/" ~ game.id ~ "/emulation/bios")|tojson }};{% endif %}
+    window.addEventListener("load", () => document.getElementById("loading")?.remove());
+  </script>
+  <script src="https://cdn.emulatorjs.org/4.2.3/data/loader.js"></script>
+</body>
+</html>

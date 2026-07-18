@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, abort, request, send_file
+from flask import Blueprint, jsonify, abort, request, send_file, render_template
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor
 import os
@@ -27,6 +27,14 @@ from app.services.soundtrack_service import (
     save_uploaded_tracks,
     soundtrack_download_status,
     start_soundtrack_download,
+)
+from app.services.emulation_service import (
+    emulation_profile,
+    remove_uploaded_rom,
+    resolve_bios,
+    resolve_rom,
+    save_uploaded_bios,
+    save_uploaded_rom,
 )
 from app.services.metadata_service import (
     search_metadata_diagnostics,
@@ -430,6 +438,79 @@ def api_game_detail(game_id):
         abort(404)
 
     return jsonify(enrich_game(row_to_dict(game)))
+
+
+def _emulation_game(game_id):
+    conn = get_connection()
+    game = conn.execute("SELECT * FROM games WHERE id = ?", (game_id,)).fetchone()
+    conn.close()
+    if game is None:
+        abort(404)
+    return row_to_dict(game)
+
+
+@api_bp.route("/api/games/<int:game_id>/emulation")
+def api_game_emulation(game_id):
+    return jsonify({"success": True, "profile": emulation_profile(_emulation_game(game_id))})
+
+
+@api_bp.route("/api/games/<int:game_id>/emulation/rom", methods=["POST", "DELETE"])
+def api_game_emulation_rom(game_id):
+    game = _emulation_game(game_id)
+    if request.method == "DELETE":
+        remove_uploaded_rom(game_id)
+        return jsonify({"success": True, "profile": emulation_profile(game)})
+
+    upload = request.files.get("rom")
+    if upload is None or not upload.filename:
+        return jsonify({"success": False, "message": "Choose a game file first."}), 400
+    try:
+        save_uploaded_rom(game_id, upload)
+    except ValueError as error:
+        return jsonify({"success": False, "message": str(error)}), 400
+    return jsonify({"success": True, "profile": emulation_profile(game)})
+
+
+@api_bp.route("/api/games/<int:game_id>/emulation/bios", methods=["POST"])
+def api_game_emulation_bios_upload(game_id):
+    game = _emulation_game(game_id)
+    profile = emulation_profile(game)
+    system_key = profile.get("system")
+    upload = request.files.get("bios")
+    if upload is None or not upload.filename:
+        return jsonify({"success": False, "message": "Choose a BIOS file first."}), 400
+    try:
+        save_uploaded_bios(system_key, upload)
+    except ValueError as error:
+        return jsonify({"success": False, "message": str(error)}), 400
+    return jsonify({"success": True, "profile": emulation_profile(game)})
+
+
+@api_bp.route("/api/games/<int:game_id>/emulation/content")
+def api_game_emulation_content(game_id):
+    _emulation_game(game_id)
+    path = resolve_rom(game_id)
+    if path is None:
+        abort(404)
+    return send_file(path, mimetype="application/octet-stream", conditional=True, as_attachment=False, download_name=path.name)
+
+
+@api_bp.route("/api/games/<int:game_id>/emulation/bios")
+def api_game_emulation_bios(game_id):
+    profile = emulation_profile(_emulation_game(game_id))
+    path = resolve_bios(profile.get("system")) if profile.get("requires_bios") else None
+    if path is None:
+        abort(404)
+    return send_file(path, mimetype="application/octet-stream", conditional=True, as_attachment=False, download_name=path.name)
+
+
+@api_bp.route("/games/<int:game_id>/player")
+def game_emulation_player(game_id):
+    game = _emulation_game(game_id)
+    profile = emulation_profile(game)
+    if not profile.get("available"):
+        abort(404)
+    return render_template("emulator_player.html", game=game, profile=profile)
 
 
 @api_bp.route("/api/games/<int:game_id>/metadata/search")

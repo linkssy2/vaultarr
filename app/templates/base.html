@@ -20,7 +20,7 @@
   <link rel="stylesheet" href="/static/css/library.css?v=2.0.0-alpha.36-depth.1">
   <link rel="stylesheet" href="/static/css/cards.css?v=2.0.0-alpha.36-depth.1">
   <link rel="stylesheet" href="/static/css/game-detail.css?v=2.0.0-alpha.37-acquisition-download.1">
-  <link rel="stylesheet" href="/static/css/focus-mode.css?v=2.0.0-alpha.38-library-tabs.2">
+  <link rel="stylesheet" href="/static/css/focus-mode.css?v=2.0.0-alpha.39-player.1">
   <link rel="stylesheet" href="/static/css/performance-foundation.css?v=1.7.6">
   <link rel="stylesheet" href="/static/css/preservation.css">
   <link rel="stylesheet" href="/static/css/vaultos.css">
@@ -74,7 +74,7 @@
     <div class="sidebar-footer">
       <div class="mini-stat vault-build-card">
         <span>Current build</span>
-        <strong>Vaultarr 2.0 Alpha 38</strong>
+        <strong>Vaultarr 2.0 Alpha 39</strong>
         <em></em>
       </div>
       {% if auth_enabled %}
@@ -127,6 +127,7 @@
 
       <div class="focus-tabs">
         <button class="focus-tab active" data-tab="overview" type="button">Overview</button>
+        <button class="focus-tab" data-tab="play" type="button">Play</button>
         <button class="focus-tab" data-tab="metadata" type="button">Game Information</button>
         <button class="focus-tab" data-tab="preservation" type="button">Preservation</button>
         <button class="focus-tab" data-tab="manuals" type="button">Manuals</button>
@@ -149,6 +150,57 @@
           <div class="card"><h2>Category</h2><p id="focusCategory">—</p></div>
           <div class="card"><h2>Source</h2><p id="focusSourceType">—</p></div>
           <div class="card"><h2>Lock</h2><p id="focusLockStatus">—</p></div>
+        </div>
+      </div>
+
+      <div class="focus-tab-panel" id="focusTab-play">
+        <div class="emulation-workspace">
+          <section class="emulation-launch-panel" aria-labelledby="focusEmulationHeading">
+            <div class="emulation-heading-row">
+              <div>
+                <span class="emulation-eyebrow">Vaultarr Player</span>
+                <h2 id="focusEmulationHeading">Play in Vaultarr</h2>
+              </div>
+              <span class="emulation-status" id="focusEmulationStatus">Checking…</span>
+            </div>
+            <p class="emulation-message" id="focusEmulationMessage">Checking this game's player compatibility.</p>
+            <div class="emulation-file-summary" id="focusEmulationDetails" hidden></div>
+            <div class="emulation-primary-actions">
+              <button id="focusEmulationStart" type="button" hidden>Start Game</button>
+              <label class="button-link emulation-import-button" for="focusEmulationUpload">Add Game File</label>
+              <label class="button-link emulation-bios-primary" id="focusEmulationBiosPrimary" for="focusEmulationBios" hidden>Add PlayStation BIOS</label>
+              <input id="focusEmulationUpload" type="file" hidden>
+            </div>
+            <div class="metadata-status-row" id="focusEmulationUploadStatus"></div>
+            <p class="emulation-ownership-note">Use game and BIOS files you own or are authorized to preserve. Vaultarr does not provide game files.</p>
+          </section>
+
+          <section class="emulation-player-shell" id="focusEmulationPlayerShell" hidden>
+            <div class="emulation-player-bar">
+              <div><span>Now playing</span><strong id="focusEmulationPlayerTitle">Vaultarr Player</strong></div>
+              <button class="secondary-button small" id="focusEmulationExit" type="button">Exit Player</button>
+            </div>
+            <iframe id="focusEmulationFrame" title="Vaultarr game player" allow="autoplay; fullscreen; gamepad" allowfullscreen></iframe>
+          </section>
+
+          <details class="soundtrack-secondary-panel emulation-setup-panel" id="focusEmulationSetup">
+            <summary><span>Player setup</span><small>Replace the game file or add a required system file</small></summary>
+            <div class="emulation-setup-content">
+              <div class="emulation-setup-row">
+                <div><strong>Game file</strong><span id="focusEmulationRomLabel">No game file added</span></div>
+                <label class="button-link secondary small" for="focusEmulationReplace">Replace</label>
+                <input id="focusEmulationReplace" type="file" hidden>
+                <button class="secondary-button small danger" id="focusEmulationRemove" type="button" hidden>Remove</button>
+              </div>
+              <div class="emulation-setup-row" id="focusEmulationBiosRow" hidden>
+                <div><strong>PlayStation BIOS</strong><span id="focusEmulationBiosLabel">Required to play PlayStation games</span></div>
+                <label class="button-link secondary small" for="focusEmulationBios">Add BIOS</label>
+                <input id="focusEmulationBios" type="file" accept=".bin,.rom" hidden>
+              </div>
+              <p class="muted">Supported preview systems: NES, SNES, Genesis / Mega Drive, Game Boy, Game Boy Advance, and PlayStation.</p>
+              <a class="emulation-runtime-link" href="https://emulatorjs.org/" target="_blank" rel="noopener">Player runtime by EmulatorJS</a>
+            </div>
+          </details>
         </div>
       </div>
 
@@ -789,7 +841,7 @@
   <script src="/static/js/live-events.js?v=1.7.6"></script>
   <script src="/static/js/museum-scan-pill.js?v=2.0.0-alpha.36-scan-panel.15"></script>
   <script src="/static/js/library.js?v=2.0.0-alpha.36-depth.1"></script>
-  <script src="/static/js/focus-mode.js?v=2.0.0-alpha.38-library-tabs.2"></script>
+  <script src="/static/js/focus-mode.js?v=2.0.0-alpha.39-player.1"></script>
   <script src="/static/js/performance-foundation.js?v=1.7.6"></script>
   <script src="/static/js/theme-compat.js"></script>
   <script src="/static/js/studio-navigation.js"></script>

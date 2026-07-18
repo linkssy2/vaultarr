@@ -1,8 +1,18 @@
-# Vaultarr 2.0.0 Alpha 38
+# Vaultarr 2.0.0 Alpha 39
 
-> Experimental release: **Vaultarr 2.0.0 Alpha 38 — Library-First Expanded Cards**
+> Experimental release: **Vaultarr 2.0.0 Alpha 39 — In-App Preservation Player**
 
 The `vaultarr-2.0-alpha` branch publishes its Docker image as `ghcr.io/linkssy2/vaultarr:2.experimental`. The stable `main` branch continues to own the `latest` tag.
+
+## Alpha 39 in-app preservation player
+
+- Adds a simple **Play** tab to expanded Museum cards for locally owned or authorized classic-console game files.
+- Supports NES, SNES, Genesis / Mega Drive, Game Boy, Game Boy Advance, and PlayStation in the initial preview.
+- Presents one clear **Start Game** action when ready and plain missing-file or missing-BIOS guidance when setup is incomplete.
+- Keeps replacement, removal, and BIOS controls inside a collapsed **Player setup** section.
+- Stores game files per Museum record, stores the PlayStation BIOS once for reuse, and streams both only through authenticated Vaultarr routes.
+- Loads the pinned EmulatorJS 4.2.3 runtime only after Play is pressed. This Alpha preview requires internet access for those runtime assets; game and BIOS files stay local.
+- Does not search for, acquire, download, extract, or execute game files.
 
 ## Alpha 38 library-first expanded cards
 

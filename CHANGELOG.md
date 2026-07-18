@@ -1,3 +1,12 @@
+## 2.0.0 Alpha 39 — In-App Preservation Player
+
+- Added a simplified Play tab to expanded Museum cards for locally owned or authorized NES, SNES, Genesis / Mega Drive, Game Boy, Game Boy Advance, and PlayStation files.
+- Reduced the primary workflow to a guided file action followed by one Start Game button; replacement, removal, and BIOS tools remain collapsed until needed.
+- Added per-game ROM storage, shared PlayStation BIOS storage, extension and size validation, authenticated streaming, and HTTP range support.
+- Added an isolated in-card player frame that is created only on demand and fully unloaded when the user exits, changes tabs, or closes the expanded card.
+- Pinned the preview player runtime to EmulatorJS 4.2.3 and documented its internet requirement; no ROMs, BIOS files, or acquisition automation are included.
+- Preserved expanded-card dimensions and interaction behavior, Acquisition Assistant, Museum Scan, Orbital Core, sidebar, authentication, Manual, Backup, and Milestone systems.
+
 ## 2.0.0 Alpha 38 — Library-First Expanded Cards
 
 - Reordered the expanded Museum card's Soundtrack tab so owned and acquired tracks are the first content presented.
