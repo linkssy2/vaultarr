@@ -1,3 +1,20 @@
+## 2.0.0 Alpha 52 — Milestone Journey
+
+- Reorganized Milestones into a clear progress dashboard centered on overall status, the closest goal, active milestones, and the achievement archive.
+- Added concise museum summary signals and clearer earned, in-progress, count, and completion states.
+- Expanded the achievement archive to cover emulator launches, soundtrack preservation, trailers, gallery coverage, collections, and authorized local acquisitions.
+- Added local emulator-launch activity tracking so player achievements reflect actual Vaultarr use.
+- Gave achievement symbols distinct feature colors, tier-aware illumination, and calm staggered motion with a reduced-motion fallback.
+- Connected Milestone Progress, Discovery Depth, Home museum health, and Museum Scan liquids to the active theme's primary and accent colors.
+- Preserved all percentage calculations, canvas physics, bubble disturbances, clipping, and protected liquid containers while replacing hard-coded paint palettes.
+- Replaced the legacy collection, publisher, decade, and sound-preview panels with one cohesive Curator Paths summary.
+- Added live path progress for cataloging, preservation, visual media, soundtrack archiving, in-app play, and metadata connections.
+- Rebuilt Discover below Release Timeline as a calm Curator Index, a focused Quiet Corners shelf, and consistent Guided Shelves.
+- Unified developer, publisher, genre, rediscovery, museum-care, and archive-size browsing with smoother motion and clearer destinations.
+- Rebuilt the Museum header as one cohesive archive-control chamber with clearer view navigation, search, filters, sorting, and result context.
+- Preserved Museum card dimensions, artwork, hover and tilt behavior, filter logic, routes, and Add Game behavior.
+- Preserved the protected two-layer liquid vessel, curved progress label, milestone percentage calculation, badge data, routes, sidebar, and unrelated systems.
+
 ## 2.0.0 Alpha 51 — Complete Platform Menu
 
 - Widened the Museum platform dropdown list without enlarging the compact filter control.

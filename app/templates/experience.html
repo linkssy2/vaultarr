@@ -1,143 +1,144 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="experience-space">
-  <section class="experience-hero alive-panel">
-    <div class="experience-hero-copy">
-      <p class="eyebrow">Milestones</p>
-      <h1>Milestones</h1>
-      <p class="muted hero-copy">Celebrate your progress as your museum grows.</p>
-    </div>
+<div class="experience-space milestone-dashboard">
+  <section class="experience-hero alive-panel milestone-hero">
+    <div class="experience-hero-copy milestone-hero-copy">
+      <p class="eyebrow">Museum Milestones</p>
+      <h1>Your collection has a story.</h1>
+      <p class="muted hero-copy">Follow what your museum has accomplished, see what is within reach, and choose where to curate next.</p>
 
-    <div class="experience-score-core" data-milestone-progress="{{ milestone_progress }}" aria-label="{{ milestone_progress }} percent milestone progress">
-      <div class="milestone-vessel" aria-hidden="true">
-        <canvas class="milestone-liquid-canvas"></canvas>
+      <div class="milestone-status-strip" aria-label="Museum milestone summary">
+        <div>
+          <span>Badges earned</span>
+          <strong>{{ earned_badges|length }} <small>of {{ badges|length }}</small></strong>
+        </div>
+        <div>
+          <span>Games catalogued</span>
+          <strong>{{ total_games }}</strong>
+        </div>
+        <div>
+          <span>Preserved</span>
+          <strong>{{ complete_games }}</strong>
+        </div>
       </div>
-      <svg class="milestone-label-arc" viewBox="0 0 220 220" aria-hidden="true">
-        <defs>
-          <path id="milestoneProgressArc" d="M 48 82 A 76 76 0 0 1 172 82"></path>
-        </defs>
-        <text>
-          <textPath href="#milestoneProgressArc" startOffset="50%">MILESTONE PROGRESS</textPath>
-        </text>
-      </svg>
-      <span>{{ milestone_progress }}%</span>
+
+      {% if next_badges %}
+      {% set focus_badge = next_badges[0] %}
+      <a class="milestone-focus-card badge-{{ focus_badge.tier }} badge-accent-{{ focus_badge.accent }}" href="{{ focus_badge.url }}" style="--progress: {{ focus_badge.progress }}%;">
+        <span class="milestone-focus-icon">{{ focus_badge.icon }}</span>
+        <div>
+          <small>Closest milestone</small>
+          <strong>{{ focus_badge.title }}</strong>
+          <p>{{ focus_badge.description }}</p>
+          <span class="milestone-focus-progress"><i></i></span>
+        </div>
+        <em>{{ focus_badge.value }} / {{ focus_badge.target }}</em>
+      </a>
+      {% else %}
+      <div class="milestone-focus-card milestone-focus-complete">
+        <span class="milestone-focus-icon">★</span>
+        <div><small>Current collection</small><strong>Every milestone earned</strong><p>Your museum has completed the current badge archive.</p></div>
+        <em>Complete</em>
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="milestone-core-stage">
+      <div class="experience-score-core" data-milestone-progress="{{ milestone_progress }}" aria-label="{{ milestone_progress }} percent milestone progress">
+        <div class="milestone-vessel" aria-hidden="true">
+          <canvas class="milestone-liquid-canvas"></canvas>
+        </div>
+        <svg class="milestone-label-arc" viewBox="0 0 220 220" aria-hidden="true">
+          <defs>
+            <path id="milestoneProgressArc" d="M 48 82 A 76 76 0 0 1 172 82"></path>
+          </defs>
+          <text>
+            <textPath href="#milestoneProgressArc" startOffset="50%">MILESTONE PROGRESS</textPath>
+          </text>
+        </svg>
+        <span>{{ milestone_progress }}%</span>
+      </div>
     </div>
   </section>
 
-  <section class="experience-panel alive-panel badge-summary-panel">
-    <div class="panel-heading flush-heading">
-      <div><p class="eyebrow">Badges</p><h2>{{ earned_badges|length }} / {{ badges|length }} Earned</h2></div>
-      <button class="secondary-button small" id="badgeSoundTest" type="button">Test Sound</button>
+  <section class="experience-panel alive-panel wide-panel milestone-section milestone-next-panel">
+    <div class="milestone-section-heading">
+      <div>
+        <p class="eyebrow">Within Reach</p>
+        <h2>Continue your journey</h2>
+        <p>These are the closest milestones in your museum right now.</p>
+      </div>
+      <span class="milestone-section-count">{{ next_badges|length }} active</span>
     </div>
-    <div class="badge-summary-grid">
-      <div><span>Games</span><strong>{{ total_games }}</strong></div>
-      <div><span>Preserved</span><strong>{{ complete_games }}</strong></div>
-      <div><span>Manuals</span><strong>{{ manual_games }}</strong></div>
-      <div><span>Media</span><strong>{{ cached_media }}</strong></div>
-    </div>
-  </section>
-
-  <section class="experience-panel alive-panel wide-panel">
-    <div class="panel-heading flush-heading">
-      <div><p class="eyebrow">Next Milestones</p><h2>Closest Badges</h2></div>
-    </div>
-    <div class="badge-row">
+    <div class="badge-row milestone-next-grid">
       {% for badge in next_badges %}
-        <a class="badge-card badge-{{ badge.tier }}" href="{{ badge.url }}" style="--progress: {{ badge.progress }}%;">
-          <span class="badge-icon">{{ badge.icon }}</span>
+        <a class="badge-card milestone-next-card badge-{{ badge.tier }} badge-accent-{{ badge.accent }}" href="{{ badge.url }}" style="--progress: {{ badge.progress }}%; --badge-delay: -{{ loop.index0 * 420 }}ms;">
+          <div class="milestone-card-topline">
+            <span class="badge-icon">{{ badge.icon }}</span>
+            <em>{{ badge.progress }}%</em>
+          </div>
           <strong>{{ badge.title }}</strong>
           <small>{{ badge.description }}</small>
           <div class="badge-progress"><i></i></div>
-          <em>{{ badge.value }} / {{ badge.target }}</em>
+          <span class="milestone-card-count">{{ badge.value }} of {{ badge.target }}</span>
         </a>
       {% else %}
-        <p class="muted">All current badges earned. New badge sets will unlock in later builds.</p>
+        <div class="milestone-empty-state">
+          <span>★</span><div><strong>All current badges earned</strong><p>New badge sets will appear here as Vaultarr grows.</p></div>
+        </div>
       {% endfor %}
     </div>
   </section>
 
-  <section class="experience-panel alive-panel wide-panel">
-    <div class="panel-heading flush-heading">
-      <div><p class="eyebrow">Vaultarr Badges</p><h2>Collection Achievements</h2></div>
+  <section class="experience-panel alive-panel wide-panel milestone-section milestone-achievement-panel">
+    <div class="milestone-section-heading">
+      <div>
+        <p class="eyebrow">Achievement Archive</p>
+        <h2>Your museum record</h2>
+        <p>Unlocked achievements stay illuminated. In-progress goals show exactly how close they are.</p>
+      </div>
+      <span class="milestone-section-count">{{ earned_badges|length }} / {{ badges|length }} earned</span>
     </div>
-    <div class="achievement-grid">
+    <div class="achievement-grid milestone-achievement-grid">
       {% for badge in badges %}
-        <a class="achievement-card {% if badge.earned %}earned{% endif %} badge-{{ badge.tier }}" href="{{ badge.url }}" style="--progress: {{ badge.progress }}%;">
+        <a class="achievement-card milestone-achievement-card {% if badge.earned %}earned{% endif %} badge-{{ badge.tier }} badge-accent-{{ badge.accent }}" href="{{ badge.url }}" style="--progress: {{ badge.progress }}%; --badge-delay: -{{ loop.index0 * 310 }}ms;">
           <span class="badge-icon">{{ badge.icon }}</span>
-          <div>
+          <div class="milestone-achievement-copy">
+            <span class="milestone-achievement-state">{% if badge.earned %}Unlocked{% else %}In progress{% endif %}</span>
             <strong>{{ badge.title }}</strong>
             <small>{{ badge.description }}</small>
+            {% if not badge.earned %}<span class="milestone-mini-progress"><i></i></span>{% endif %}
           </div>
-          <em>{% if badge.earned %}Unlocked{% else %}{{ badge.progress }}%{% endif %}</em>
+          <em>{% if badge.earned %}✓{% else %}{{ badge.progress }}%{% endif %}</em>
         </a>
       {% endfor %}
     </div>
   </section>
 
-  <section class="experience-panel alive-panel">
-    <div class="panel-heading flush-heading">
-      <div><p class="eyebrow">Collections</p><h2>Collection Badges</h2></div>
-      <a href="/collections">Collections →</a>
+  <section class="experience-panel alive-panel wide-panel milestone-section milestone-paths-panel">
+    <div class="milestone-section-heading">
+      <div>
+        <p class="eyebrow">Curator Paths</p>
+        <h2>Every part of the museum counts</h2>
+        <p>See how cataloging, preservation, media, music, play, and research contribute to your achievement record.</p>
+      </div>
+      <span class="milestone-section-count">6 disciplines</span>
     </div>
-    <div class="collection-badge-list">
-      {% for row in top_collections %}
-        <a href="/library?category={{ row.name }}" class="collection-badge-line {% if row.earned %}earned{% endif %}" style="--progress: {{ row.progress }}%;">
-          <span>{{ row.name[:1] }}</span>
-          <div><strong>{{ row.badge_title }}</strong><small>{{ row.complete_count or 0 }} / {{ row.count }} preserved</small></div>
-          <em>{{ row.progress }}%</em>
+    <div class="milestone-path-grid">
+      {% for path in achievement_paths %}
+        <a class="milestone-path-card badge-accent-{{ path.accent }}" href="{{ path.url }}" style="--progress: {{ path.progress }}%; --path-delay: {{ loop.index0 * 55 }}ms;">
+          <span class="milestone-path-icon">{{ path.icon }}</span>
+          <div class="milestone-path-copy">
+            <span>{{ path.earned }} of {{ path.total }} achievements</span>
+            <strong>{{ path.title }}</strong>
+            <p>{{ path.description }}</p>
+          </div>
+          <em>{{ path.progress }}%</em>
+          <span class="milestone-path-progress" aria-hidden="true"><i></i></span>
         </a>
-      {% else %}
-        <p class="muted">Collections appear after scanning games.</p>
       {% endfor %}
     </div>
-  </section>
-
-  <section class="experience-panel alive-panel">
-    <div class="panel-heading flush-heading">
-      <div><p class="eyebrow">Franchise Signals</p><h2>Publisher Sets</h2></div>
-    </div>
-    <div class="collection-badge-list compact-lines">
-      {% for row in franchise_signals %}
-        <a href="/library?q={{ row.name }}" class="collection-badge-line" style="--progress: {{ row.progress }}%;">
-          <span>◆</span>
-          <div><strong>{{ row.name }}</strong><small>{{ row.count }} games · {{ row.progress }}% preserved</small></div>
-          <em>{{ row.count }}</em>
-        </a>
-      {% else %}
-        <p class="muted">Provider metadata will unlock franchise-style signals.</p>
-      {% endfor %}
-    </div>
-  </section>
-
-  <section class="experience-panel alive-panel timeline-badges-panel">
-    <div class="panel-heading flush-heading">
-      <div><p class="eyebrow">Timeline Badges</p><h2>Decade Progress</h2></div>
-    </div>
-    <div class="decade-badge-grid">
-      {% for row in timeline_badges %}
-        <a href="/library?q={{ row.decade[:3] }}" style="--progress: {{ row.progress }}%;">
-          <strong>{{ row.decade }}</strong>
-          <span><i></i></span>
-          <small>{{ row.complete_count or 0 }} / {{ row.count }}</small>
-        </a>
-      {% else %}
-        <p class="muted">Release years unlock decade badges.</p>
-      {% endfor %}
-    </div>
-  </section>
-
-  <section class="experience-panel alive-panel audio-panel">
-    <div class="panel-heading flush-heading">
-      <div><p class="eyebrow">VaultOS Audio Queue</p><h2>Celebration Feedback</h2></div>
-    </div>
-    <div class="audio-queue-preview">
-      <button class="audio-chip" data-sound="badge" type="button"><span>★</span> Badge Unlock</button>
-      <button class="audio-chip" data-sound="manual" type="button"><span>📖</span> Manual Archived</button>
-      <button class="audio-chip" data-sound="preserve" type="button"><span>🛡</span> Preservation Complete</button>
-      <button class="audio-chip" data-sound="sync" type="button"><span>◇</span> Provider Synced</button>
-    </div>
-    <p class="muted small-note">Audio is generated locally with subtle WebAudio tones. No files are required, and sounds stay calm by default.</p>
   </section>
 </div>
 {% endblock %}

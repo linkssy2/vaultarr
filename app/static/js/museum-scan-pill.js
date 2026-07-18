@@ -24,6 +24,11 @@
     if (!canvas || !context) return { setProgress() {}, setActive() {}, destroy() {} };
 
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const fallbackPalette = {
+      top: '#0ea5e9', middle: '#2563eb', deep: '#6366f1',
+      surface: 'rgba(186, 230, 253, .72)', surfaceBright: 'rgba(224, 242, 254, 1)',
+      glow: 'rgba(56, 189, 248, .65)',
+    };
     const surface = Array.from({ length: 9 }, () => ({ offset: 0, velocity: 0 }));
     let width = 1;
     let height = 1;
@@ -37,12 +42,14 @@
     let frame = 0;
     let lastFrame = 0;
     let disposed = false;
+    let palette = fallbackPalette;
 
     function resize() {
       const rect = canvas.getBoundingClientRect();
       width = Math.max(1, rect.width);
       height = Math.max(1, rect.height);
       ratio = Math.min(1.5, window.devicePixelRatio || 1);
+      palette = window.VaultarrLiquidTheme?.getPalette?.() || fallbackPalette;
       canvas.width = Math.round(width * ratio);
       canvas.height = Math.round(height * ratio);
       context.setTransform(ratio, 0, 0, ratio, 0, 0);
@@ -55,9 +62,9 @@
 
       const front = Math.max(10, Math.min(width, width * position / 100));
       const gradient = context.createLinearGradient(0, 0, Math.max(front, 1), height);
-      gradient.addColorStop(0, '#0ea5e9');
-      gradient.addColorStop(.52, '#2563eb');
-      gradient.addColorStop(1, '#6366f1');
+      gradient.addColorStop(0, palette.top);
+      gradient.addColorStop(.52, palette.middle);
+      gradient.addColorStop(1, palette.deep);
 
       const edge = surface.map((point, index) => ({
         x: Math.max(0, Math.min(width, front + point.offset)),
@@ -94,8 +101,11 @@
         const radius = 1.1 + (index % 3) * .55;
         context.beginPath();
         context.arc(x, y, radius, 0, Math.PI * 2);
-        context.fillStyle = `rgba(224, 242, 254, ${.16 + (index % 2) * .10})`;
+        context.save();
+        context.globalAlpha = .16 + (index % 2) * .10;
+        context.fillStyle = palette.surfaceBright;
         context.fill();
+        context.restore();
       }
       const sheen = context.createLinearGradient(0, 0, 0, height);
       sheen.addColorStop(0, 'rgba(255,255,255,.22)');
@@ -107,9 +117,9 @@
 
       context.beginPath();
       traceEdge(true);
-      context.strokeStyle = 'rgba(186, 230, 253, .72)';
+      context.strokeStyle = palette.surface;
       context.lineWidth = 1.25;
-      context.shadowColor = 'rgba(56, 189, 248, .65)';
+      context.shadowColor = palette.glow;
       context.shadowBlur = 7;
       context.stroke();
       context.shadowBlur = 0;

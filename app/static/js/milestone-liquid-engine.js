@@ -3,6 +3,14 @@
 
   const ENGINE_KEY = "__vaultarrMilestoneLiquidEngine";
   const engines = new Set();
+  const DEFAULT_PALETTE = {
+    top: "#087bf2", middle: "#005bd7", low: "#003d9f", deep: "#00256a",
+    surfaceBright: "rgba(211, 252, 255, 1)", surface: "rgba(80, 225, 255, 1)",
+    surfaceFade: "rgba(5, 109, 239, .48)", glow: "rgba(87, 226, 255, 1)",
+    shadow: "rgba(0, 102, 255, .38)", current: "rgba(29, 150, 255, .25)",
+    currentFade: "rgba(0, 95, 230, .10)", bubble: "rgba(151, 225, 255, .58)",
+    transparent: "rgba(0, 20, 76, 0)",
+  };
 
   class SpringLiquid {
     constructor(core) {
@@ -17,6 +25,7 @@
       this.visible = true;
       this.lastTime = 0;
       this.accumulator = 0;
+      this.palette = DEFAULT_PALETTE;
       this.resizeObserver = null;
       this.intersectionObserver = null;
 
@@ -46,6 +55,7 @@
       if (!rect.width || !rect.height) return;
 
       const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+      this.palette = window.VaultarrLiquidTheme?.getPalette?.() || DEFAULT_PALETTE;
       this.width = Math.max(1, Math.round(rect.width));
       this.height = Math.max(1, Math.round(rect.height));
       this.canvas.width = Math.round(this.width * dpr);
@@ -173,30 +183,31 @@
       ctx.clip();
 
       if (this.progress > 0 && this.points.length) {
+        const palette = this.palette || DEFAULT_PALETTE;
         this.surfacePath(ctx);
         ctx.lineTo(this.width, this.liquidBottom);
         ctx.lineTo(0, this.liquidBottom);
         ctx.closePath();
 
         const fill = ctx.createLinearGradient(0, this.baseY - 12, 0, this.liquidBottom);
-        fill.addColorStop(0, "#087bf2");
-        fill.addColorStop(0.28, "#005bd7");
-        fill.addColorStop(0.68, "#003d9f");
-        fill.addColorStop(1, "#00256a");
+        fill.addColorStop(0, palette.top);
+        fill.addColorStop(0.28, palette.middle);
+        fill.addColorStop(0.68, palette.low);
+        fill.addColorStop(1, palette.deep);
         ctx.fillStyle = fill;
-        ctx.shadowColor = "rgba(0, 102, 255, .38)";
+        ctx.shadowColor = palette.shadow;
         ctx.shadowBlur = 22;
         ctx.fill();
 
         ctx.save();
         this.surfacePath(ctx);
         const surfaceGradient = ctx.createLinearGradient(0, this.baseY - 7, 0, this.baseY + 8);
-        surfaceGradient.addColorStop(0, "rgba(211, 252, 255, 1)");
-        surfaceGradient.addColorStop(0.35, "rgba(80, 225, 255, 1)");
-        surfaceGradient.addColorStop(1, "rgba(5, 109, 239, .48)");
+        surfaceGradient.addColorStop(0, palette.surfaceBright);
+        surfaceGradient.addColorStop(0.35, palette.surface);
+        surfaceGradient.addColorStop(1, palette.surfaceFade);
         ctx.strokeStyle = surfaceGradient;
         ctx.lineWidth = 5.5;
-        ctx.shadowColor = "rgba(87, 226, 255, 1)";
+        ctx.shadowColor = palette.glow;
         ctx.shadowBlur = 22;
         ctx.stroke();
         ctx.restore();
@@ -205,20 +216,23 @@
           this.width * 0.32, this.baseY + (this.liquidBottom - this.baseY) * 0.52, 2,
           this.width * 0.44, this.baseY + (this.liquidBottom - this.baseY) * 0.62, this.width * 0.72
         );
-        current.addColorStop(0, "rgba(29, 150, 255, .25)");
-        current.addColorStop(0.45, "rgba(0, 95, 230, .10)");
-        current.addColorStop(1, "rgba(0, 20, 76, 0)");
+        current.addColorStop(0, palette.current);
+        current.addColorStop(0.45, palette.currentFade);
+        current.addColorStop(1, palette.transparent);
         ctx.fillStyle = current;
         ctx.fillRect(0, this.baseY, this.width, this.liquidBottom - this.baseY);
 
         for (const particle of this.particles) {
           if (particle.y < this.baseY || particle.y > this.liquidBottom) continue;
+          ctx.save();
           ctx.beginPath();
           ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(151, 225, 255, ${particle.alpha})`;
-          ctx.shadowColor = "rgba(66, 185, 255, .65)";
+          ctx.globalAlpha = particle.alpha;
+          ctx.fillStyle = palette.surfaceBright;
+          ctx.shadowColor = palette.glow;
           ctx.shadowBlur = 5;
           ctx.fill();
+          ctx.restore();
         }
       }
 

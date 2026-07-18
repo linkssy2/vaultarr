@@ -14,6 +14,12 @@
     if (!canvas || !context) return null;
 
     const health = Math.max(0, Math.min(100, Number(panel.dataset.health) || 0));
+    const fallbackPalette = {
+      top: 'rgba(255,255,255,.98)', low: 'rgba(207,224,243,.78)',
+      surfaceBright: 'rgba(255,255,255,.98)', surface: 'rgba(244,250,255,.92)',
+      glow: 'rgba(191,225,255,.62)', bubbleDark: 'rgba(20,36,58,.28)',
+      glass: 'rgba(244,249,255,.055)',
+    };
     const motionScale = reducedMotion ? 0.42 : 1;
     const points = Array.from({ length: 17 }, () => ({ offset: 0, velocity: 0 }));
     const bubbles = Array.from({ length: 5 }, () => ({ x: 0, y: 0, radius: 0, speed: 0 }));
@@ -22,6 +28,7 @@
     let baseY = 1;
     let rafId = 0;
     let lastTime = performance.now();
+    let palette = fallbackPalette;
 
     function traceV() {
       context.beginPath();
@@ -46,6 +53,7 @@
       width = Math.max(1, canvas.clientWidth || 42);
       height = Math.max(1, canvas.clientHeight || 48);
       const ratio = Math.min(2, window.devicePixelRatio || 1);
+      palette = window.VaultarrLiquidTheme?.getPalette?.() || fallbackPalette;
       canvas.width = Math.round(width * ratio);
       canvas.height = Math.round(height * ratio);
       context.setTransform(ratio, 0, 0, ratio, 0, 0);
@@ -102,7 +110,7 @@
       context.clearRect(0, 0, width, height);
 
       traceV();
-      context.fillStyle = 'rgba(244, 249, 255, 0.055)';
+      context.fillStyle = palette.glass;
       context.fill();
 
       context.save();
@@ -122,11 +130,11 @@
       context.closePath();
 
       const liquid = context.createLinearGradient(0, baseY - 4, 0, height);
-      liquid.addColorStop(0, 'rgba(255,255,255,0.98)');
-      liquid.addColorStop(0.16, 'rgba(246,250,255,0.94)');
-      liquid.addColorStop(1, 'rgba(207,224,243,0.78)');
+      liquid.addColorStop(0, palette.surfaceBright);
+      liquid.addColorStop(0.16, palette.top);
+      liquid.addColorStop(1, palette.low);
       context.fillStyle = liquid;
-      context.shadowColor = 'rgba(255,255,255,0.42)';
+      context.shadowColor = palette.glow;
       context.shadowBlur = 8;
       context.fill();
       context.shadowBlur = 0;
@@ -137,11 +145,11 @@
         const x = width * index / (points.length - 1);
         context.lineTo(x, surfaceY(index));
       }
-      context.strokeStyle = 'rgba(255,255,255,0.98)';
+      context.strokeStyle = palette.surfaceBright;
       context.lineWidth = 1.05;
       context.stroke();
 
-      context.fillStyle = 'rgba(20,36,58,0.28)';
+      context.fillStyle = palette.bubbleDark;
       bubbles.forEach((bubble) => {
         if (bubble.y < baseY || bubble.y > height * 0.91) return;
         context.beginPath();
@@ -151,10 +159,10 @@
       context.restore();
 
       traceV();
-      context.strokeStyle = 'rgba(244,250,255,0.92)';
+      context.strokeStyle = palette.surface;
       context.lineWidth = 2.15;
       context.lineJoin = 'round';
-      context.shadowColor = 'rgba(191,225,255,0.62)';
+      context.shadowColor = palette.glow;
       context.shadowBlur = 10;
       context.stroke();
       context.shadowBlur = 0;

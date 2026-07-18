@@ -30,6 +30,7 @@ from app.services.soundtrack_service import (
 )
 from app.services.emulation_service import (
     emulation_profile,
+    record_player_launch,
     remove_uploaded_rom,
     resolve_bios,
     resolve_rom,
@@ -510,6 +511,7 @@ def game_emulation_player(game_id):
     profile = emulation_profile(game)
     if not profile.get("available"):
         abort(404)
+    record_player_launch(game_id)
     return render_template("emulator_player.html", game=game, profile=profile)
 
 

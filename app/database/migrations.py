@@ -219,6 +219,16 @@ def migrate():
     c.execute("DROP TABLE IF EXISTS acquisition_indexes")
 
     c.execute("""
+    CREATE TABLE IF NOT EXISTS game_play_activity (
+        game_id INTEGER PRIMARY KEY,
+        play_count INTEGER DEFAULT 0,
+        first_played_at TEXT DEFAULT CURRENT_TIMESTAMP,
+        last_played_at TEXT DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY(game_id) REFERENCES games(id)
+    )
+    """)
+
+    c.execute("""
     CREATE TABLE IF NOT EXISTS ignored_game_paths (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         path TEXT NOT NULL UNIQUE,

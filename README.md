@@ -1,8 +1,12 @@
-# Vaultarr 2.0.0 Alpha 51
+# Vaultarr 2.0.0 Alpha 52
 
-> Experimental release: **Vaultarr 2.0.0 Alpha 51 — Complete Platform Menu**
+> Experimental release: **Vaultarr 2.0.0 Alpha 52 — Milestone Journey**
 
 The `vaultarr-2.0-alpha` branch publishes its Docker image as `ghcr.io/linkssy2/vaultarr:2.experimental`. The stable `main` branch continues to own the `latest` tag.
+
+## Alpha 52 milestone journey
+
+Milestones now opens as a clear museum-progress dashboard: overall status and the closest goal lead the page, active goals and the achievement archive follow, and a unified Curator Paths summary shows progress across cataloging, preservation, visual media, soundtrack archiving, in-app play, and metadata connections. Discover now continues below Release Timeline through a calm Curator Index, Quiet Corners shelf, and consistent Guided Shelves. The Museum header is now one cohesive archive-control chamber for views, search, filtering, sorting, and result context. Achievements span emulator play, owned soundtrack tracks, trailers, gallery coverage, collections, authorized local acquisitions, and the existing preservation systems, with colorful softly animated symbols. Percentage liquids across Milestones, Discovery, Home health, and Museum Scan now inherit the active theme colors. The protected liquid progress vessel and percentage formula remain unchanged.
 
 ## Alpha 51 complete platform menu
 

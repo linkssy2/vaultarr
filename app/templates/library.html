@@ -5,7 +5,9 @@
   <header class="museum-library-header" aria-label="Museum controls">
     <div class="museum-library-heading-row">
       <div class="museum-library-title">
+        <p class="eyebrow">Collection Archive</p>
         <h1>{% if attention %}Improve Your Museum{% else %}Museum{% endif %}</h1>
+        <p class="museum-library-intro">Curate, filter, and revisit every exhibit in your collection.</p>
         <nav class="museum-library-tabs" aria-label="Museum views">
           <a class="{% if museum_view == 'games' and not attention and sort != 'added' %}is-active{% endif %}" href="/museum">All Games</a>
           <a class="{% if museum_view == 'collections' %}is-active{% endif %}" href="/museum?view=collections">Collections</a>
@@ -19,44 +21,54 @@
           <input id="librarySearch" class="search-input" type="text" placeholder="Search your museum…" value="{{ q or '' }}" autocomplete="off">
           <button id="clearLibrarySearch" class="clear-search" type="button" aria-label="Clear search">×</button>
         </div>
-        <a class="button-link compact museum-add-game" href="/games/add">+ Add Game</a>
+        <a class="button-link compact museum-add-game" href="/games/add"><span aria-hidden="true">+</span> Add Game</a>
       </div>
     </div>
 
     {% if museum_view == 'games' %}
-    <form class="museum-library-filter-row" id="museumFilterForm" method="get" action="/museum" aria-label="Museum filters">
-      {% if attention %}<input type="hidden" name="attention" value="1">{% endif %}
-      <label class="museum-filter-select-wrap museum-platform-wrap">
-        <span>Platform</span>
-        <select class="select-input museum-filter-select" name="platform">
-          <option value="All Platforms">All Platforms</option>
-          {% for item in platforms %}<option value="{{ item }}" {% if platform == item %}selected{% endif %}>{{ item }}</option>{% endfor %}
-        </select>
-      </label>
-      <label class="museum-filter-select-wrap">
-        <span>Genre</span>
-        <select class="select-input museum-filter-select" name="genre">
-          <option value="All Genres">All Genres</option>
-          {% for item in genres %}<option value="{{ item }}" {% if genre == item %}selected{% endif %}>{{ item }}</option>{% endfor %}
-        </select>
-      </label>
-      <label class="museum-filter-select-wrap">
-        <span>Category</span>
-        <select class="select-input museum-filter-select" name="category">
-          <option value="All Games">All Categories</option>
-          {% for item in categories %}<option value="{{ item }}" {% if category == item %}selected{% endif %}>{{ item }}</option>{% endfor %}
-        </select>
-      </label>
-      <label class="museum-filter-select-wrap museum-sort-wrap">
-        <span>Sort</span>
-        <select id="librarySort" class="select-input museum-sort-select" name="sort" aria-label="Sort museum">
-          <option value="title" {% if sort == 'title' %}selected{% endif %}>Title A–Z</option>
-          <option value="size" {% if sort == 'size' %}selected{% endif %}>File Size</option>
-          <option value="scanned" {% if sort == 'scanned' %}selected{% endif %}>Last Scanned</option>
-          <option value="added" {% if sort == 'added' %}selected{% endif %}>Recently Added</option>
-        </select>
-      </label>
-    </form>
+    <div class="museum-library-refine">
+      <div class="museum-filter-heading">
+        <div><span>Refine exhibits</span><small>Combine filters to focus the archive.</small></div>
+        <span class="museum-filter-status">Live filters</span>
+      </div>
+      <form class="museum-library-filter-row" id="museumFilterForm" method="get" action="/museum" aria-label="Museum filters">
+        {% if attention %}<input type="hidden" name="attention" value="1">{% endif %}
+        <label class="museum-filter-select-wrap museum-platform-wrap">
+          <span>Platform</span>
+          <select class="select-input museum-filter-select" name="platform">
+            <option value="All Platforms">All Platforms</option>
+            {% for item in platforms %}<option value="{{ item }}" {% if platform == item %}selected{% endif %}>{{ item }}</option>{% endfor %}
+          </select>
+        </label>
+        <label class="museum-filter-select-wrap">
+          <span>Genre</span>
+          <select class="select-input museum-filter-select" name="genre">
+            <option value="All Genres">All Genres</option>
+            {% for item in genres %}<option value="{{ item }}" {% if genre == item %}selected{% endif %}>{{ item }}</option>{% endfor %}
+          </select>
+        </label>
+        <label class="museum-filter-select-wrap">
+          <span>Category</span>
+          <select class="select-input museum-filter-select" name="category">
+            <option value="All Games">All Categories</option>
+            {% for item in categories %}<option value="{{ item }}" {% if category == item %}selected{% endif %}>{{ item }}</option>{% endfor %}
+          </select>
+        </label>
+        <label class="museum-filter-select-wrap museum-sort-wrap">
+          <span>Sort</span>
+          <select id="librarySort" class="select-input museum-sort-select" name="sort" aria-label="Sort museum">
+            <option value="title" {% if sort == 'title' %}selected{% endif %}>Title A–Z</option>
+            <option value="size" {% if sort == 'size' %}selected{% endif %}>File Size</option>
+            <option value="scanned" {% if sort == 'scanned' %}selected{% endif %}>Last Scanned</option>
+            <option value="added" {% if sort == 'added' %}selected{% endif %}>Recently Added</option>
+          </select>
+        </label>
+      </form>
+    </div>
+    <div class="library-search-status museum-library-status" id="librarySearchStatus">
+      <span id="librarySearchCount">{{ games|length }} game{% if games|length != 1 %}s{% endif %}</span>
+      <span class="muted" id="librarySearchHint">Search across titles, creators, genres, collections, paths, notes, and descriptions.</span>
+    </div>
     {% endif %}
   </header>
 
@@ -73,11 +85,6 @@
       <a class="button-link secondary compact" href="/museum">Show Complete Museum</a>
     </section>
     {% endif %}
-
-    <div class="library-search-status" id="librarySearchStatus">
-      <span id="librarySearchCount">{{ games|length }} game{% if games|length != 1 %}s{% endif %}</span>
-      <span class="muted" id="librarySearchHint">Search title, developer, publisher, genre, tags, category, path, notes, and descriptions.</span>
-    </div>
 
     {% if games %}
       <section class="vault-shelf single-grid-shelf">

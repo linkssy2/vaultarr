@@ -3,7 +3,7 @@ from pathlib import Path
 
 from werkzeug.utils import secure_filename
 
-from app.database.database import APP_DIR
+from app.database.database import APP_DIR, get_connection
 
 
 EMULATION_DIR = APP_DIR / "emulation"
@@ -236,3 +236,16 @@ def resolve_rom(game_id):
 
 def resolve_bios(system_key):
     return _bios_path(system_key)
+
+
+def record_player_launch(game_id):
+    conn = get_connection()
+    conn.execute("""
+        INSERT INTO game_play_activity (game_id, play_count, first_played_at, last_played_at)
+        VALUES (?, 1, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+        ON CONFLICT(game_id) DO UPDATE SET
+            play_count = game_play_activity.play_count + 1,
+            last_played_at = CURRENT_TIMESTAMP
+    """, (int(game_id),))
+    conn.commit()
+    conn.close()

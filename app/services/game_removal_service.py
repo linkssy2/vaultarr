@@ -66,7 +66,7 @@ def remove_game(game_id, ignore_path=True, delete_cached_assets=True):
             (game['path'], game.get('title', '')),
         )
 
-    for table in ('media_assets', 'game_collection_attributes', 'game_collections', 'curator_jobs', 'curator_history'):
+    for table in ('media_assets', 'game_collection_attributes', 'game_collections', 'curator_jobs', 'curator_history', 'game_play_activity'):
         try:
             conn.execute(f'DELETE FROM {table} WHERE game_id=?', (game_id,))
         except Exception:

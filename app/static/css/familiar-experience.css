@@ -70,79 +70,21 @@
 @media(max-width:760px){.familiar-welcome{align-items:flex-start}}
 
 
-/* Alpha 3 — Plex-inspired Museum header */
-.museum-library-header{display:grid;gap:15px;margin-bottom:20px;padding:0 0 14px;border-bottom:1px solid rgba(116,151,204,.13)}
-.museum-library-title-row{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;min-width:0}
-.museum-library-title{display:grid;gap:8px;min-width:0}.museum-library-title h1{margin:0;font-size:clamp(27px,2.5vw,38px);line-height:1}
-.museum-library-tabs{display:flex;align-items:center;gap:27px;min-height:34px;overflow-x:auto;scrollbar-width:none}.museum-library-tabs::-webkit-scrollbar{display:none}
-.museum-library-tabs a{position:relative;display:inline-flex;align-items:center;min-height:34px;color:#8495b1;font-size:13px;font-weight:650;white-space:nowrap;text-decoration:none;transition:color .2s ease}
-.museum-library-tabs a:hover,.museum-library-tabs a.is-active{color:#dce9ff}.museum-library-tabs a.is-active:after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;border-radius:99px;background:#4594ff;box-shadow:0 0 12px rgba(69,148,255,.5)}
-.museum-library-primary-tools{display:flex;align-items:center;justify-content:flex-end;gap:10px;min-width:0}.museum-game-count{color:#8495b1;font-size:12px;white-space:nowrap}
-.museum-view-toggle{display:flex;gap:3px;padding:3px;border:1px solid rgba(119,157,216,.14);border-radius:10px;background:rgba(8,16,31,.7)}
-.museum-view-button{display:grid;place-items:center;width:34px;height:32px;min-height:32px;padding:0;border:0;border-radius:7px;background:transparent;color:#7588a8;box-shadow:none;font-size:15px;transition:background .18s ease,color .18s ease}
-.museum-view-button:hover,.museum-view-button.is-active{background:rgba(50,119,236,.22);color:#79b3ff;transform:none;box-shadow:none}
-.museum-header-search{min-width:0;width:min(300px,27vw)}.museum-header-search .search-input{height:40px;min-height:40px;font-size:13px}.museum-add-game{height:40px;min-height:40px;white-space:nowrap}
-.museum-library-filter-row{display:flex;align-items:center;justify-content:space-between;gap:16px}.museum-filter-chips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}.museum-filter-chips::-webkit-scrollbar{display:none}
-.museum-filter-chip{display:inline-flex;align-items:center;min-height:34px;padding:0 12px;border:1px solid rgba(119,157,216,.12);border-radius:9px;background:rgba(8,16,31,.58);color:#8495b1;font-size:12px;font-weight:600;white-space:nowrap;text-decoration:none;transition:border-color .18s ease,background .18s ease,color .18s ease}
-.museum-filter-chip:hover,.museum-filter-chip.is-active{border-color:rgba(76,145,255,.34);background:rgba(41,99,193,.16);color:#d7e6ff}.museum-sort-select{width:160px;height:36px;min-height:36px;font-size:12px}
-@media(max-width:1080px){.museum-library-title-row{align-items:flex-start;flex-direction:column}.museum-library-primary-tools{width:100%;justify-content:flex-start}.museum-header-search{width:min(420px,100%);flex:1}.museum-game-count{margin-left:auto}}
-@media(max-width:720px){.museum-library-primary-tools{flex-wrap:wrap}.museum-game-count{order:3;margin:0}.museum-header-search{order:1;flex-basis:100%}.museum-view-toggle{order:2}.museum-add-game{order:2}.museum-library-filter-row{align-items:stretch;flex-direction:column}.museum-sort-select{width:100%}}
-
-/* Alpha 4: compact Plex-style Museum header and dropdown filters */
-.museum-library-header{gap:12px;margin-bottom:18px;padding-bottom:14px}
-.museum-library-heading-row{display:flex;align-items:flex-end;justify-content:space-between;gap:22px;min-width:0}
-.museum-library-title{gap:7px}.museum-library-title h1{font-size:clamp(28px,2.25vw,36px)}
-.museum-library-primary-tools{align-items:center;gap:9px}
-.museum-game-count{font-size:12px}
-.museum-header-search{width:clamp(230px,25vw,340px)}
-.museum-header-search .search-input,.museum-add-game{height:38px;min-height:38px}
-.museum-view-toggle{height:38px;padding:3px}.museum-view-button{height:30px;min-height:30px;width:32px}
-.museum-library-filter-row{display:flex;align-items:flex-end;justify-content:flex-start;gap:10px}
-.museum-filter-select-wrap{display:grid;gap:5px;min-width:150px}
-.museum-filter-select-wrap>span{color:#7183a0;font-size:10px;font-weight:750;letter-spacing:.08em;text-transform:uppercase}
-.museum-filter-select,.museum-sort-select{width:100%;height:36px;min-height:36px;padding-top:0;padding-bottom:0;font-size:12px}
+/* Alpha 52 — unified Museum control chamber */
+.museum-library-header{position:relative;display:grid;gap:20px;margin-bottom:22px;padding:clamp(22px,3vw,30px);overflow:visible;border:1px solid rgba(105,155,226,.16);border-radius:24px;background:radial-gradient(circle at 92% 5%,color-mix(in srgb,var(--accent) 11%,transparent),transparent 31%),linear-gradient(148deg,rgba(11,24,45,.93),rgba(5,12,25,.95));box-shadow:0 24px 58px rgba(0,0,0,.22),inset 0 1px 0 rgba(255,255,255,.03)}
+.museum-library-heading-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(360px,.8fr);align-items:end;gap:32px;min-width:0}
+.museum-library-title{display:grid;min-width:0}.museum-library-title>.eyebrow{margin:0 0 8px}.museum-library-title h1{margin:0;font-size:clamp(38px,4vw,55px);line-height:.94;letter-spacing:-.065em}
+.museum-library-intro{max-width:560px;margin:10px 0 17px;color:#8293ad;font-size:13px;line-height:1.5}
+.museum-library-tabs{display:flex;align-items:center;gap:5px;width:max-content;max-width:100%;padding:4px;overflow-x:auto;border:1px solid rgba(113,158,225,.13);border-radius:14px;background:rgba(5,13,27,.58);scrollbar-width:none}.museum-library-tabs::-webkit-scrollbar{display:none}
+.museum-library-tabs a{display:inline-flex;align-items:center;min-height:37px;padding:0 14px;border:1px solid transparent;border-radius:10px;color:#8293ad;font-size:12px;font-weight:750;white-space:nowrap;text-decoration:none;transition:transform .22s ease,border-color .22s ease,background .22s ease,color .22s ease,box-shadow .22s ease}
+.museum-library-tabs a:hover,.museum-library-tabs a:focus-visible{transform:translateY(-1px);color:#dce9ff;outline:none}.museum-library-tabs a.is-active{border-color:color-mix(in srgb,var(--accent) 30%,transparent);background:linear-gradient(135deg,color-mix(in srgb,var(--primary) 22%,rgba(9,22,43,.88)),color-mix(in srgb,var(--accent) 9%,rgba(6,15,30,.86)));color:#f2f7ff;box-shadow:inset 0 1px 0 rgba(255,255,255,.05),0 0 18px color-mix(in srgb,var(--accent) 8%,transparent)}
+.museum-library-primary-tools{display:flex;align-items:center;justify-content:flex-end;gap:10px;min-width:0;padding-bottom:2px}
+.museum-header-search{position:relative;min-width:0;width:min(430px,100%)}.museum-header-search::before{position:absolute;top:50%;left:16px;z-index:2;color:color-mix(in srgb,var(--accent) 72%,white);font-size:18px;line-height:1;content:"⌕";transform:translateY(-53%);pointer-events:none}.museum-header-search .search-input{height:48px;min-height:48px;padding-left:43px;border-color:rgba(111,153,215,.18);border-radius:14px;background:rgba(5,13,27,.66);font-size:13px;box-shadow:inset 0 1px 0 rgba(255,255,255,.025);transition:border-color .24s ease,background .24s ease,box-shadow .24s ease}.museum-header-search .search-input:hover,.museum-header-search .search-input:focus{border-color:color-mix(in srgb,var(--accent) 40%,transparent);background:rgba(7,17,34,.78);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 8%,transparent),inset 0 1px 0 rgba(255,255,255,.035)}
+.museum-add-game{display:inline-flex;align-items:center;gap:8px;height:48px;min-height:48px;padding:0 17px!important;white-space:nowrap;border-radius:14px!important}.museum-add-game>span{display:grid;width:24px;height:24px;place-items:center;border-radius:8px;background:rgba(255,255,255,.13);font-size:17px;line-height:1}
+.museum-library-refine{display:grid;gap:14px;padding:17px;border:1px solid rgba(105,155,226,.12);border-radius:18px;background:linear-gradient(145deg,rgba(8,19,37,.74),rgba(4,11,23,.62));box-shadow:inset 0 1px 0 rgba(255,255,255,.02)}
+.museum-filter-heading{display:flex;align-items:center;justify-content:space-between;gap:18px}.museum-filter-heading>div>span{display:block;color:#dce8fb;font-size:13px;font-weight:800}.museum-filter-heading small{display:block;margin-top:3px;color:#7183a0;font-size:10px}.museum-filter-status{display:inline-flex;align-items:center;min-height:28px;padding:0 11px;border:1px solid color-mix(in srgb,var(--accent) 20%,transparent);border-radius:99px;background:color-mix(in srgb,var(--accent) 6%,rgba(5,13,27,.7));color:color-mix(in srgb,var(--accent) 70%,white);font-size:9px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}
+.museum-library-filter-row{display:grid;grid-template-columns:repeat(3,minmax(150px,1fr)) minmax(160px,.8fr);align-items:end;gap:10px}.museum-filter-select-wrap{display:grid;gap:6px;min-width:0}.museum-filter-select-wrap>span{color:#7183a0;font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}.museum-filter-select,.museum-sort-select{width:100%;height:40px;min-height:40px;padding-top:0;padding-bottom:0;font-size:12px}
 .museum-select{position:relative;z-index:1;width:100%;min-width:0}.museum-select.is-open{z-index:70}.museum-select-native{position:absolute!important;width:1px!important;height:1px!important;margin:-1px!important;padding:0!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}.museum-select-trigger{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;height:36px;min-height:36px;margin:0;padding:0 12px;border:1px solid rgba(112,148,204,.16);border-radius:10px;background:linear-gradient(150deg,rgba(12,22,40,.9),rgba(7,14,27,.82));color:#d8e5f8;font:inherit;font-size:12px;text-align:left;box-shadow:inset 0 1px 0 rgba(255,255,255,.025);transition:border-color .22s ease,background .22s ease,box-shadow .22s ease}.museum-select-trigger:hover,.museum-select-trigger:focus-visible,.museum-select.is-open .museum-select-trigger{border-color:rgba(71,150,255,.48);background:linear-gradient(150deg,rgba(17,35,63,.96),rgba(8,18,34,.92));box-shadow:0 0 0 3px rgba(47,128,237,.1),inset 0 1px 0 rgba(255,255,255,.045);outline:none}.museum-select-value{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.museum-select-chevron{width:7px;height:7px;flex:0 0 7px;border-right:1.5px solid #7fb8ff;border-bottom:1.5px solid #7fb8ff;opacity:.76;transform:rotate(45deg) translateY(-2px);transition:transform .34s cubic-bezier(.22,1,.36,1),opacity .2s ease}.museum-select.is-open .museum-select-chevron{opacity:1;transform:rotate(225deg) translate(-2px,-1px)}.museum-select-menu{position:absolute;z-index:72;top:calc(100% + 7px);left:0;right:0;display:grid;gap:3px;max-height:199px;padding:6px;overflow-x:hidden;overflow-y:auto;visibility:hidden;border:1px solid rgba(69,144,245,.3);border-radius:13px;background:linear-gradient(165deg,rgba(13,26,47,.985),rgba(5,12,24,.985));box-shadow:0 22px 48px rgba(0,0,0,.44),inset 0 1px 0 rgba(255,255,255,.055);backdrop-filter:blur(18px);clip-path:inset(0 0 100% 0 round 13px);opacity:0;pointer-events:none;transform:translateY(-12px) scale(.975);transform-origin:top;transition:clip-path .4s cubic-bezier(.22,1,.36,1),opacity .24s ease,transform .4s cubic-bezier(.22,1,.36,1),visibility 0s linear .4s;scrollbar-width:thin;scrollbar-color:rgba(73,144,238,.55) transparent}.museum-platform-wrap .museum-select-menu{right:auto;width:max(100%,240px);max-width:calc(100vw - 32px)}.museum-select.is-open .museum-select-menu{visibility:visible;clip-path:inset(0 0 0 0 round 13px);opacity:1;pointer-events:auto;transform:translateY(0) scale(1);transition-delay:0s}.museum-select-option{display:flex;align-items:center;width:100%;min-height:35px;margin:0;padding:7px 9px;overflow:hidden;border:0;border-radius:8px;background:transparent;color:#8fa3c2;font:inherit;font-size:12px;text-align:left;text-overflow:ellipsis;white-space:nowrap;box-shadow:none;opacity:0;transform:translate3d(-14px,-2px,0);transition:color .18s ease,background .2s ease,transform .2s ease}.museum-select.is-open .museum-select-option{animation:museumOptionGlide .34s cubic-bezier(.22,1,.36,1) both;animation-delay:var(--museum-option-delay,55ms)}.museum-select-option:hover,.museum-select-option:focus-visible{color:#edf5ff;background:linear-gradient(90deg,rgba(44,125,238,.2),rgba(44,125,238,.06));outline:none;transform:translateX(3px)}.museum-select-option.is-selected{color:#f5f9ff;background:linear-gradient(90deg,rgba(44,125,238,.24),rgba(44,125,238,.07))}.museum-select-option.is-selected::before{width:5px;height:5px;margin-right:8px;border-radius:50%;background:#4ca0ff;box-shadow:0 0 9px rgba(76,160,255,.7);content:""}@keyframes museumOptionGlide{from{opacity:0;transform:translate3d(-14px,-2px,0)}to{opacity:1;transform:translate3d(0,0,0)}}
-.museum-sort-wrap{margin-left:auto;min-width:150px}
-@media(max-width:1180px){.museum-library-heading-row{align-items:flex-start;flex-direction:column}.museum-library-primary-tools{width:100%;justify-content:flex-start}.museum-header-search{flex:1;width:auto}.museum-game-count{margin-left:auto}}
-@media(max-width:760px){.museum-library-primary-tools{flex-wrap:wrap}.museum-header-search{order:1;flex-basis:100%}.museum-game-count{order:2;margin:0}.museum-view-toggle,.museum-add-game{order:3}.museum-library-filter-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:end}.museum-filter-select-wrap,.museum-sort-wrap{min-width:0;margin-left:0}}
-@media(max-width:480px){.museum-library-filter-row{grid-template-columns:1fr}}
-
-/* Alpha 5: compact result/view cluster and stable Museum filter transitions */
-.museum-view-summary{
-  display:inline-flex;
-  align-items:center;
-  gap:10px;
-  min-width:max-content;
-  height:36px;
-}
-.museum-view-summary .museum-game-count{
-  display:inline-flex;
-  align-items:center;
-  height:32px;
-  margin:0;
-  padding:0 2px;
-  line-height:1;
-}
-.museum-view-summary .museum-view-toggle{
-  display:inline-flex;
-  align-items:center;
-  gap:2px;
-  width:auto;
-  height:36px;
-  min-height:36px;
-  padding:3px;
-  border-radius:10px;
-}
-.museum-view-summary .museum-view-button{
-  flex:0 0 30px;
-  width:30px;
-  height:28px;
-  min-width:30px;
-  min-height:28px;
-  padding:0;
-  border-radius:7px;
-  line-height:1;
-}
 .museum-library-filter-row.is-navigating{
   pointer-events:none;
 }
@@ -153,21 +95,15 @@
 .museum-filter-select{
   transition:opacity .16s ease,border-color .16s ease,background-color .16s ease;
 }
-@media(max-width:1180px){
-  .museum-view-summary{margin-left:auto}
-}
-@media(max-width:760px){
-  .museum-view-summary{order:2;margin-left:0}
-}
+.museum-select-trigger{height:40px;min-height:40px;border-radius:12px;background:linear-gradient(150deg,rgba(12,24,45,.92),rgba(6,14,28,.84));transition:border-color .24s ease,background .24s ease,box-shadow .24s ease,transform .24s ease}
+.museum-select-trigger:hover,.museum-select-trigger:focus-visible,.museum-select.is-open .museum-select-trigger{transform:translateY(-1px)}
+.museum-library-status{display:flex;align-items:center;gap:13px;min-height:35px;margin:0!important;padding:13px 2px 0;border-top:1px solid rgba(105,155,226,.11);color:#8293ad;font-size:11px}
+.museum-library-status #librarySearchCount{display:inline-flex;align-items:center;min-height:30px;padding:0 12px;border:1px solid color-mix(in srgb,var(--accent) 25%,transparent);border-radius:99px;background:color-mix(in srgb,var(--accent) 8%,rgba(5,13,27,.7));color:#edf5ff;font-size:11px;font-weight:800;white-space:nowrap}
+.museum-library-status #librarySearchHint{font-size:11px;line-height:1.45}
+@media(max-width:1180px){.museum-library-heading-row{grid-template-columns:1fr;align-items:start;gap:22px}.museum-library-primary-tools{width:100%;justify-content:flex-start}.museum-header-search{flex:1;width:auto}.museum-library-filter-row{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:720px){.museum-library-header{gap:16px;padding:20px 16px;border-radius:20px}.museum-library-title h1{font-size:40px}.museum-library-primary-tools{align-items:stretch;flex-wrap:wrap}.museum-header-search{flex-basis:100%}.museum-add-game{justify-content:center}.museum-filter-heading{align-items:flex-start}.museum-filter-status{display:none}.museum-library-filter-row{grid-template-columns:1fr}.museum-library-status{align-items:flex-start;flex-direction:column}.museum-library-tabs{width:100%}.museum-library-tabs a{justify-content:center;flex:1}}
 
-
-/* Alpha 6 — focused Museum cleanup and embedded Collections */
-.museum-library-title{position:relative}
-.museum-library-primary-tools{margin-left:auto}
-.museum-library-heading-row{align-items:flex-end}
-.museum-library-header .museum-view-summary,
-.museum-library-header .museum-view-toggle,
-.museum-library-header .museum-view-button{display:none!important}
+/* Embedded Collections */
 .museum-collections-view{display:grid;gap:22px}
 .museum-collections-actions{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:18px 20px;border-radius:16px}
 .museum-collections-actions h2{margin:3px 0 4px;font-size:20px}
