@@ -1,8 +1,18 @@
-# Vaultarr 2.0.0 Alpha 41
+# Vaultarr 2.0.0 Alpha 42
 
-> Experimental release: **Vaultarr 2.0.0 Alpha 41 — Organized Expanded-Card Tabs**
+> Experimental release: **Vaultarr 2.0.0 Alpha 42 — Calm Search and Simpler Settings**
 
 The `vaultarr-2.0-alpha` branch publishes its Docker image as `ghcr.io/linkssy2/vaultarr:2.experimental`. The stable `main` branch continues to own the `latest` tag.
+
+## Alpha 42 calm search and simpler settings
+
+- Slides the active Universal Search mode smoothly between My Museum and Discover & Add.
+- Gives Information Source and category controls the same animated glass dropdown treatment as the Museum and expanded cards.
+- Keeps the full dropdown menu visible when its options extend below the Universal Search popup.
+- Lets the Universal Search panel and backdrop finish a calm closing transition when dismissed.
+- Starts Settings with clear task shortcuts instead of requiring users to scan the entire page.
+- Keeps everyday settings visible and places secondary sections behind accessible Show and Hide controls.
+- Retains all existing settings values, forms, routes, authentication, advanced-mode rules, and Museum Backup behavior.
 
 ## Alpha 41 organized expanded-card tabs
 

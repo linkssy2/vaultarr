@@ -25,11 +25,11 @@
   <link rel="stylesheet" href="/static/css/preservation.css">
   <link rel="stylesheet" href="/static/css/vaultos.css">
   <link rel="stylesheet" href="/static/css/navigation.css?v=1.7.6">
-  <link rel="stylesheet" href="/static/css/global-search.css">
+  <link rel="stylesheet" href="/static/css/global-search.css?v=2.0.0-alpha.42-search-motion.2">
   <link rel="stylesheet" href="/static/css/discovery.css?v=2.0.0-alpha.36-depth-liquid.1">
   <link rel="stylesheet" href="/static/css/scrollbars.css">
   <link rel="stylesheet" href="/static/css/archive.css">
-    <link rel="stylesheet" href="/static/css/studio.css">
+    <link rel="stylesheet" href="/static/css/studio.css?v=2.0.0-alpha.42-settings.1">
   <link rel="stylesheet" href="/static/css/cohesion.css">
   <link rel="stylesheet" href="/static/css/alpha30-flow.css">
   <link rel="stylesheet" href="/static/css/experience.css">
@@ -74,7 +74,7 @@
     <div class="sidebar-footer">
       <div class="mini-stat vault-build-card">
         <span>Current build</span>
-        <strong>Vaultarr 2.0 Alpha 41</strong>
+        <strong>Vaultarr 2.0 Alpha 42</strong>
         <em></em>
       </div>
       {% if auth_enabled %}
@@ -860,7 +860,7 @@
   <script src="/static/js/focus-mode.js?v=2.0.0-alpha.41-tabs.2"></script>
   <script src="/static/js/performance-foundation.js?v=1.7.6"></script>
   <script src="/static/js/theme-compat.js"></script>
-  <script src="/static/js/studio-navigation.js"></script>
+  <script src="/static/js/studio-navigation.js?v=2.0.0-alpha.42-settings.1"></script>
   <script src="/static/js/orbital-vault.js?v=2.0.0-alpha.36-v-liquid.7"></script>
   <script src="/static/js/experience.js"></script>
   <script src="/static/js/milestone-liquid-engine.js?v=2.0.0-alpha.35"></script>
@@ -886,7 +886,7 @@
     <div class="global-search-discover-options" id="globalSearchDiscoverOptions" hidden>
       <label>Platform hint <input id="globalSearchPlatform" type="text" placeholder="Optional, e.g. Nintendo 64"></label>
       <label>Information source
-        <select id="globalSearchProvider">
+        <select id="globalSearchProvider" aria-label="Information source">
           <option value="all">All enabled sources</option><option value="launchbox">LaunchBox</option><option value="igdb">IGDB</option><option value="rawg">RAWG</option><option value="steam">Steam</option><option value="wikipedia">Wikipedia</option>
         </select>
       </label>
@@ -907,7 +907,7 @@
       <div class="global-add-facts" id="globalAddFacts"></div>
       <div class="global-add-options">
         <label>Folder Path <span class="muted">optional</span><input id="globalAddPath" placeholder="E:\Games\Game Folder"></label>
-        <label>Category<select id="globalAddCategory"><option>Unsorted</option><option>Manual</option><option>Fanmade</option><option>PC Port</option><option>Homebrew</option><option>Prototype</option><option>Abandonware</option><option>Other</option></select></label>
+        <label>Category<select id="globalAddCategory" aria-label="Game category"><option>Unsorted</option><option>Manual</option><option>Fanmade</option><option>PC Port</option><option>Homebrew</option><option>Prototype</option><option>Abandonware</option><option>Other</option></select></label>
       </div>
       <div class="global-add-actions"><button class="secondary" id="globalAddCancel" type="button">Back to results</button><button id="globalAddConfirm" type="button">Add to Museum</button></div>
       <p class="global-add-status" id="globalAddStatus" aria-live="polite"></p>
@@ -915,7 +915,7 @@
   </section>
 
   <script src="/static/js/smooth-navigation.js?v=2.0.0-alpha.7"></script>
-  <script src="/static/js/global-search.js?v=1.7.6"></script>
+  <script src="/static/js/global-search.js?v=2.0.0-alpha.42-search-motion.1"></script>
   <script src="/static/js/interaction-lifecycle.js?v=1.7.6"></script>
   <script src="/static/js/interface-cohesion.js?v=2.0.0-alpha.2"></script>
 </body>

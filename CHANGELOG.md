@@ -1,3 +1,13 @@
+## 2.0.0 Alpha 42 — Calm Search and Simpler Settings
+
+- Added a continuous sliding indicator between My Museum and Discover & Add in Universal Search.
+- Replaced the Information Source and add-category native dropdowns with the same glass reveal and staggered option motion used elsewhere in Vaultarr.
+- Removed the obsolete Universal Search clipping boundary so animated dropdown menus can extend beyond the popup without being cut off.
+- Corrected the Universal Search close lifecycle so backdrop clicks, Escape, and the close button play the full calm exit animation before the dialog becomes hidden or inert.
+- Added a task-first Settings hub for Experience, Game Folders, Appearance, Access, Museum Backup, and Advanced tools.
+- Added accessible progressive-disclosure controls to Settings sections, keeping everyday Experience and Game Folders open while secondary tools stay compact until requested.
+- Preserved all existing settings forms, routes, stored values, authentication behavior, Museum Backup behavior, and advanced-mode visibility.
+
 ## 2.0.0 Alpha 41 — Organized Expanded-Card Tabs
 
 - Replaced the unstructured wrapping pill layout with one compact left-to-right glass navigation bar.

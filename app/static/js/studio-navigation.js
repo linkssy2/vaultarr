@@ -39,10 +39,55 @@
     activeAnimation = requestAnimationFrame(frame);
   }
 
+  function setSettingsSectionExpanded(section, expanded) {
+    if (!section?.matches("[data-settings-section]")) return;
+    const toggle = section.querySelector(":scope > .studio-section-head .settings-section-toggle");
+    const body = section.querySelector(":scope > .settings-section-body");
+    section.classList.toggle("is-settings-collapsed", !expanded);
+    toggle?.setAttribute("aria-expanded", String(expanded));
+    body?.setAttribute("aria-hidden", String(!expanded));
+    if (expanded) body?.removeAttribute("inert");
+    else body?.setAttribute("inert", "");
+    const label = expanded ? "Hide" : "Show";
+    if (toggle) toggle.querySelector("span").textContent = label;
+  }
+
+  function enhanceSettingsSections() {
+    document.querySelectorAll("[data-settings-section]").forEach((section, sectionIndex) => {
+      if (section.dataset.settingsBound === "true") return;
+      const head = section.querySelector(":scope > .studio-section-head");
+      if (!head) return;
+      section.dataset.settingsBound = "true";
+      if (!section.id) section.id = `settingsSection${sectionIndex + 1}`;
+
+      const body = document.createElement("div");
+      body.className = "settings-section-body";
+      body.id = `${section.id}Body`;
+      const content = document.createElement("div");
+      content.className = "settings-section-content";
+      Array.from(section.children).filter((child) => child !== head).forEach((child) => content.append(child));
+      body.append(content);
+      section.append(body);
+
+      const toggle = document.createElement("button");
+      toggle.type = "button";
+      toggle.className = "settings-section-toggle";
+      toggle.setAttribute("aria-controls", body.id);
+      toggle.innerHTML = '<span>Show</span><i aria-hidden="true"></i>';
+      toggle.addEventListener("click", () => {
+        setSettingsSectionExpanded(section, section.classList.contains("is-settings-collapsed"));
+      });
+      head.append(toggle);
+      setSettingsSectionExpanded(section, section.dataset.settingsOpen === "true");
+    });
+  }
+
   function scrollToStudioSection(hash, updateHash = true) {
-    if (!hash || !hash.startsWith("#studio")) return false;
+    if (!hash || !hash.startsWith("#")) return false;
     const target = document.querySelector(hash);
     if (!target) return false;
+
+    setSettingsSectionExpanded(target, true);
 
     smoothScrollTo(getScrollTargetTop(target));
     target.classList.add("studio-section-targeted");
@@ -55,7 +100,8 @@
   }
 
   function bindStudioNavigation() {
-    document.querySelectorAll('a[href^="#studio"]').forEach((link) => {
+    enhanceSettingsSections();
+    document.querySelectorAll('a[href^="#studio"]:not(.settings-jump)').forEach((link) => {
       if (link.dataset.studioSmoothBound === "true") return;
       link.dataset.studioSmoothBound = "true";
       link.addEventListener("click", (event) => {
@@ -68,7 +114,7 @@
   }
 
   document.addEventListener("click", (event) => {
-    const link = event.target.closest('a[href^="#studio"]');
+    const link = event.target.closest('a[href^="#studio"], .settings-jump');
     if (!link) return;
     if (!window.location.pathname.includes("settings")) return;
     event.preventDefault();

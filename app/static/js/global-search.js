@@ -1,5 +1,5 @@
 (() => {
-  const state = { isOpen:false, mode:'museum', debounce:null, lastQuery:'', activeIndex:-1, selected:null, requestToken:0, searchController:null };
+  const state = { isOpen:false, mode:'museum', debounce:null, closeTimer:null, lastQuery:'', activeIndex:-1, selected:null, requestToken:0, searchController:null };
   const qs = id => document.getElementById(id);
   const esc = value => String(value ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
   const elements = () => ({
@@ -13,6 +13,7 @@
   function openSearch(seed='', mode=state.mode){
     const el=elements();
     if(!el.panel||!el.input)return;
+    clearTimeout(state.closeTimer);
 
     // Reopening an already visible search should never rebuild or disable the
     // dialog. It simply restores the controls and returns focus to the query.
@@ -49,11 +50,13 @@
     state.searchController=null;
     clearTimeout(state.debounce);
     document.body.classList.remove('global-search-open');
-    el.panel?.setAttribute('aria-hidden','true');
-    el.backdrop?.setAttribute('aria-hidden','true');
-    window.setTimeout(()=>{
-      if(!state.isOpen) el.panel?.setAttribute('inert','');
-    },220);
+    clearTimeout(state.closeTimer);
+    state.closeTimer=window.setTimeout(()=>{
+      if(state.isOpen)return;
+      el.panel?.setAttribute('aria-hidden','true');
+      el.panel?.setAttribute('inert','');
+      el.backdrop?.setAttribute('aria-hidden','true');
+    },380);
   }
   function restoreSearchControls(el){
     if(!el.input)return;
@@ -73,11 +76,18 @@
     const el=elements();
     const discover=state.mode==='discover';
     restoreSearchControls(el);
+    el.panel?.classList.toggle('is-discover-mode',discover);
     el.museumMode?.classList.toggle('is-active',!discover);
     el.discoverMode?.classList.toggle('is-active',discover);
     el.museumMode?.setAttribute('aria-selected',String(!discover));
     el.discoverMode?.setAttribute('aria-selected',String(discover));
-    if(el.discoverOptions){el.discoverOptions.hidden=!discover;el.discoverOptions.setAttribute('aria-hidden',String(!discover));}
+    if(el.discoverOptions){
+      el.discoverOptions.hidden=false;
+      el.discoverOptions.classList.toggle('is-visible',discover);
+      el.discoverOptions.setAttribute('aria-hidden',String(!discover));
+      if(discover)el.discoverOptions.removeAttribute('inert');
+      else el.discoverOptions.setAttribute('inert','');
+    }
     if(el.heading)el.heading.textContent=discover?'Discover a game':'Search your museum';
     if(el.input)el.input.placeholder=discover?'Search online game information...':'Search games, collections, metadata...';
     setStatus(discover?'Search enabled information sources and add a game directly.':'Start typing to search across your library.');
@@ -142,6 +152,108 @@
   async function confirmAdd(){const el=elements();if(!state.selected)return;el.addConfirm.disabled=true;el.addConfirm.textContent='Adding…';el.addStatus.textContent='Creating the museum record and preparing it…';try{const r=await fetch('/api/games/add/from-provider',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({source:state.selected.source,external_id:state.selected.external_id,path:qs('globalAddPath').value.trim(),category:qs('globalAddCategory').value,source_type:'Imported'})}),d=await r.json();if(!r.ok||!d.success)throw new Error(d.message||'The game could not be added.');el.addStatus.textContent=d.message||'Game added.';el.addConfirm.textContent='Added';const payload={game_id:d.game_id,title:d.title||state.selected.details?.title||'Game',category:d.category||qs('globalAddCategory').value,redirect:d.redirect||`/games/${d.game_id}`,existing:Boolean(d.existing)};window.VaultarrEvents?.emit('game-added',payload);document.querySelectorAll(`.global-discover-add[data-source="${CSS.escape(state.selected.source)}"][data-external-id="${CSS.escape(state.selected.external_id)}"]`).forEach(button=>{button.disabled=true;button.textContent='In Museum';button.classList.add('is-added');});setTimeout(()=>{closeAdd();closeSearch();window.VaultarrToast?.({title:payload.existing?'Already in Museum':'Added to Museum',message:payload.existing?`${payload.title} is already in your museum.`:`${payload.title} was added and is being prepared.`,actionLabel:'View',action:()=>{const trigger=document.querySelector(`.focus-card-trigger[data-game-id="${payload.game_id}"]`);if(trigger)trigger.click();else if(window.VaultarrSmoothNavigate)window.VaultarrSmoothNavigate(payload.redirect,true);else location.assign(payload.redirect);}});el.addConfirm.disabled=false;el.addConfirm.textContent='Add to Museum';state.selected=null;},420);}catch(error){el.addStatus.textContent=error.message||'The game could not be added.';el.addConfirm.disabled=false;el.addConfirm.textContent='Add to Museum';}}
   function activate(button){const kind=button.dataset.kind;if(kind==='game')openGame(button.dataset.gameId);else if(kind==='collection')openCollection(button.dataset.category||'All Games');else if(kind==='discover')openAdd(button);}
   function setActive(index){const buttons=[...(elements().results?.querySelectorAll('[data-kind]')||[])];if(!buttons.length)return;state.activeIndex=Math.max(0,Math.min(buttons.length-1,index));buttons.forEach((b,i)=>b.classList.toggle('is-active',i===state.activeIndex));buttons[state.activeIndex]?.scrollIntoView({block:'nearest'});}
+
+  function closeSearchSelects(except=null){
+    document.querySelectorAll('.global-vault-select.is-open').forEach(wrapper=>{
+      if(wrapper===except)return;
+      wrapper.classList.remove('is-open');
+      wrapper.querySelector('.global-vault-select-trigger')?.setAttribute('aria-expanded','false');
+      wrapper.querySelector('.global-vault-select-menu')?.setAttribute('aria-hidden','true');
+    });
+  }
+
+  function enhanceSearchSelect(select){
+    if(!select||select.dataset.globalSelectEnhanced==='true')return;
+    select.dataset.globalSelectEnhanced='true';
+    select.classList.add('global-vault-select-native');
+    select.tabIndex=-1;
+    select.setAttribute('aria-hidden','true');
+
+    const wrapper=document.createElement('div');
+    wrapper.className='global-vault-select';
+    select.parentNode.insertBefore(wrapper,select);
+    wrapper.append(select);
+
+    const trigger=document.createElement('button');
+    trigger.type='button';
+    trigger.className='global-vault-select-trigger';
+    trigger.setAttribute('aria-haspopup','listbox');
+    trigger.setAttribute('aria-expanded','false');
+    trigger.setAttribute('aria-label',select.getAttribute('aria-label')||'Choose option');
+    trigger.innerHTML='<span class="global-vault-select-value"></span><span class="global-vault-select-chevron" aria-hidden="true"></span>';
+
+    const menu=document.createElement('div');
+    menu.className='global-vault-select-menu';
+    menu.id=`${select.id}VaultMenu`;
+    menu.setAttribute('role','listbox');
+    menu.setAttribute('aria-label',select.getAttribute('aria-label')||'Options');
+    menu.setAttribute('aria-hidden','true');
+    trigger.setAttribute('aria-controls',menu.id);
+
+    const sync=()=>{
+      const selected=select.options[select.selectedIndex]||select.options[0];
+      trigger.querySelector('.global-vault-select-value').textContent=selected?.textContent||'Choose';
+      menu.querySelectorAll('.global-vault-select-option').forEach(item=>{
+        const active=item.dataset.value===select.value;
+        item.classList.toggle('is-selected',active);
+        item.setAttribute('aria-selected',String(active));
+      });
+    };
+    const close=(restoreFocus=false)=>{
+      wrapper.classList.remove('is-open');
+      trigger.setAttribute('aria-expanded','false');
+      menu.setAttribute('aria-hidden','true');
+      if(restoreFocus)trigger.focus({preventScroll:true});
+    };
+    const open=()=>{
+      closeSearchSelects(wrapper);
+      wrapper.classList.add('is-open');
+      trigger.setAttribute('aria-expanded','true');
+      menu.setAttribute('aria-hidden','false');
+    };
+
+    Array.from(select.options).forEach((option,index)=>{
+      const item=document.createElement('button');
+      item.type='button';
+      item.className='global-vault-select-option';
+      item.dataset.value=option.value;
+      item.style.setProperty('--global-option-delay',`${55+(index*45)}ms`);
+      item.setAttribute('role','option');
+      item.textContent=option.textContent;
+      item.addEventListener('click',()=>{
+        select.value=option.value;
+        select.dispatchEvent(new Event('change',{bubbles:true}));
+        close(true);
+      });
+      menu.append(item);
+    });
+
+    trigger.addEventListener('click',event=>{
+      event.stopPropagation();
+      wrapper.classList.contains('is-open')?close():open();
+    });
+    trigger.addEventListener('keydown',event=>{
+      if(!['ArrowDown','Enter',' '].includes(event.key))return;
+      event.preventDefault();
+      open();
+      (menu.querySelector('[aria-selected="true"]')||menu.querySelector('.global-vault-select-option'))?.focus({preventScroll:true});
+    });
+    menu.addEventListener('keydown',event=>{
+      const options=Array.from(menu.querySelectorAll('.global-vault-select-option'));
+      const index=options.indexOf(document.activeElement);
+      if(event.key==='Escape'){
+        event.preventDefault();
+        close(true);
+      }else if(event.key==='ArrowDown'||event.key==='ArrowUp'){
+        event.preventDefault();
+        const direction=event.key==='ArrowDown'?1:-1;
+        options[Math.max(0,Math.min(options.length-1,index+direction))]?.focus({preventScroll:true});
+      }
+    });
+    select.addEventListener('change',sync);
+    wrapper.append(trigger,menu);
+    sync();
+  }
   function bind(){
     const el=elements();
     if(!el.panel)return;
@@ -163,6 +275,8 @@
       el.addCancel?.addEventListener('click',closeAdd);
       el.addBackdrop?.addEventListener('click',closeAdd);
       el.addConfirm?.addEventListener('click',confirmAdd);
+      enhanceSearchSelect(el.provider);
+      enhanceSearchSelect(qs('globalAddCategory'));
       el.panel.setAttribute('inert','');
     }
 
@@ -170,7 +284,10 @@
       window.__vaultarrGlobalSearchDelegated=true;
       document.addEventListener('click',event=>{
         const opener=event.target.closest('#globalSearchOpen');
-        if(!opener)return;
+        if(!opener){
+          if(!event.target.closest('.global-vault-select'))closeSearchSelects();
+          return;
+        }
         event.preventDefault();
         event.stopPropagation();
         openSearch();
@@ -199,6 +316,7 @@
 
     // A page swap must not leave an invisible modal layer over the app.
     if(!state.isOpen){
+      clearTimeout(state.closeTimer);
       document.body.classList.remove('global-search-open');
       el.panel.setAttribute('aria-hidden','true');
       el.panel.setAttribute('inert','');

@@ -16,11 +16,27 @@
     </div>
   </section>
 
+  <nav class="settings-task-hub alive-panel" aria-label="Settings shortcuts">
+    <div class="settings-task-hub-copy">
+      <p class="eyebrow">What would you like to change?</p>
+      <h2>Choose a settings area</h2>
+      <p class="muted">Jump directly to a task. Each area opens only when you need it.</p>
+    </div>
+    <div class="settings-task-grid">
+      <a class="settings-task-card settings-jump" href="#studioExperience"><span aria-hidden="true">&#10024;</span><strong>Experience</strong><small>Language and automation</small></a>
+      <a class="settings-task-card settings-jump" href="#studioArchiveTools"><span aria-hidden="true">&#128193;</span><strong>Game Folders</strong><small>Add and scan libraries</small></a>
+      <a class="settings-task-card settings-jump" href="#studioArtwork"><span aria-hidden="true">&#9670;</span><strong>Appearance</strong><small>Themes and colors</small></a>
+      <a class="settings-task-card settings-jump" href="#studioSecurity"><span aria-hidden="true">&#128274;</span><strong>Access</strong><small>Login protection</small></a>
+      <a class="settings-task-card settings-jump" href="#museum-backup"><span aria-hidden="true">&#8635;</span><strong>Museum Backup</strong><small>Protect and restore data</small></a>
+      {% if ui_settings.advanced_mode %}<a class="settings-task-card settings-jump" href="#studioMetadata"><span aria-hidden="true">&#9881;</span><strong>Advanced</strong><small>Providers and caches</small></a>{% endif %}
+    </div>
+  </nav>
+
   {% if saved == 'experience' %}
   <section class="studio-toast success"><strong>Experience Updated</strong><span>Your simplicity and automation preferences were saved.</span></section>
   {% endif %}
 
-  <section class="studio-section alive-panel experience-settings-panel">
+  <section class="studio-section alive-panel experience-settings-panel" id="studioExperience" data-settings-section data-settings-open="true">
     <div class="studio-section-head">
       <div>
         <p class="eyebrow">Museum Preparation</p>
@@ -118,7 +134,7 @@
     <a href="/museum?attention=1">Review Museum Needs →</a>
   </section>
 
-  <section class="studio-section alive-panel security-workshop" id="studioSecurity">
+  <section class="studio-section alive-panel security-workshop" id="studioSecurity" data-settings-section>
     <div class="studio-section-head">
       <div>
         <p class="eyebrow">Security</p>
@@ -148,7 +164,7 @@
     </form>
   </section>
 
-  <section id="studioMetadata" class="studio-section alive-panel advanced-only">
+  <section id="studioMetadata" class="studio-section alive-panel advanced-only" data-settings-section>
     <div class="studio-section-head">
       <div>
         <p class="eyebrow">Metadata Tools</p>
@@ -209,7 +225,7 @@
 
   <section class="studio-two-column">
 
-  <section class="studio-card-panel alive-panel manual-catalog-panel advanced-only" id="manualCatalogPanel">
+  <section class="studio-card-panel alive-panel manual-catalog-panel advanced-only" id="studioManualCatalog" data-settings-section>
     <div class="studio-section-head compact">
       <div>
         <p class="eyebrow">Manual Catalog</p>
@@ -237,7 +253,7 @@
     </div>
   </section>
 
-    <section class="studio-card-panel alive-panel launchbox-sync-panel advanced-only">
+    <section class="studio-card-panel alive-panel launchbox-sync-panel advanced-only" id="studioLaunchBox" data-settings-section>
       <div class="studio-section-head compact">
         <div><p class="eyebrow">LaunchBox Cache</p><h2>Local Index</h2></div>
       </div>
@@ -253,7 +269,7 @@
       </form>
     </section>
 
-    <section id="studioArtwork" class="studio-card-panel alive-panel">
+    <section id="studioArtwork" class="studio-card-panel alive-panel" data-settings-section>
       <div class="studio-section-head compact">
         <div><p class="eyebrow">Artwork Tools</p><h2>Theme Packs</h2></div>
       </div>
@@ -272,7 +288,7 @@
   </section>
 
   <section class="studio-two-column">
-    <section class="studio-card-panel alive-panel" id="darkReaderPanel">
+    <section class="studio-card-panel alive-panel" id="studioCompatibility" data-settings-section>
       <div class="studio-section-head compact">
         <div><p class="eyebrow">Compatibility</p><h2>Dark Reader Guard</h2></div>
         <span class="compat-pill" id="darkReaderStatus">Checking...</span>
@@ -287,7 +303,7 @@
       </form>
     </section>
 
-    <section class="studio-card-panel alive-panel">
+    <section class="studio-card-panel alive-panel" id="studioCustomTheme" data-settings-section>
       <div class="studio-section-head compact">
         <div><p class="eyebrow">Custom Theme</p><h2>Color Tuning</h2></div>
       </div>
@@ -309,7 +325,7 @@
   </section>
 
 
-  <section class="studio-section alive-panel media-cache-manager advanced-only" id="studioMediaCache">
+  <section class="studio-section alive-panel media-cache-manager advanced-only" id="studioMediaCache" data-settings-section>
     <div class="studio-section-head">
       <div>
         <p class="eyebrow">Media Cache</p>
@@ -344,7 +360,7 @@
 
 
 
-  <section id="studioArchiveTools" class="studio-section alive-panel">
+  <section id="studioArchiveTools" class="studio-section alive-panel" data-settings-section data-settings-open="true">
     <div class="studio-section-head">
       <div>
         <p class="eyebrow">Archive Tools</p>
@@ -381,7 +397,7 @@
 
   {% include "_museum_backup_settings.html" %}
 
-  <section id="studioDangerZone" class="studio-section alive-panel danger-zone-panel">
+  <section id="studioDangerZone" class="studio-section alive-panel danger-zone-panel" data-settings-section>
     <div class="studio-section-head">
       <div>
         <p class="eyebrow danger-eyebrow">Danger Zone</p>
