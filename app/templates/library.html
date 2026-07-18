@@ -6,7 +6,6 @@
     <div class="museum-library-heading-row">
       <div class="museum-library-title">
         <h1>{% if attention %}Improve Your Museum{% else %}Museum{% endif %}</h1>
-        <span class="museum-title-count">{{ total_count or games|length }} game{% if (total_count or games|length) != 1 %}s{% endif %}</span>
         <nav class="museum-library-tabs" aria-label="Museum views">
           <a class="{% if museum_view == 'games' and not attention and sort != 'added' %}is-active{% endif %}" href="/museum">All Games</a>
           <a class="{% if museum_view == 'collections' %}is-active{% endif %}" href="/museum?view=collections">Collections</a>

@@ -1,8 +1,19 @@
-# Vaultarr 2.0.0 Alpha 40
+# Vaultarr 2.0.0 Alpha 41
 
-> Experimental release: **Vaultarr 2.0.0 Alpha 40 — Player Performance Mode**
+> Experimental release: **Vaultarr 2.0.0 Alpha 41 — Organized Expanded-Card Tabs**
 
 The `vaultarr-2.0-alpha` branch publishes its Docker image as `ghcr.io/linkssy2/vaultarr:2.experimental`. The stable `main` branch continues to own the `latest` tag.
+
+## Alpha 41 organized expanded-card tabs
+
+- Reorganizes expanded-card navigation into one left-to-right bar with Overview, Play, Information, and Preservation always visible.
+- Places Collection and Manage tools in two smooth glass dropdowns while keeping every existing workspace available.
+- Clearly marks a dropdown when one of its contained workspaces is active.
+- Adds standard tab semantics and arrow, Home, and End keyboard navigation.
+- Removes the duplicate game count beneath the Museum title while retaining the live count below the filters.
+- Replaces the Museum's native filter popups with glass dropdowns that slide open and glide each option into position while preserving the original form values.
+- Applies the same sliding glass menu and staggered option motion to dropdowns throughout the expanded-card workspaces.
+- Preserves expanded-card dimensions, artwork, opening and closing behavior, tab contents, routes, and protected Museum interactions.
 
 ## Alpha 40 player performance mode
 

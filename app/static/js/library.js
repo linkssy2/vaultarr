@@ -172,6 +172,135 @@
     });
   }
 
+  function closeMuseumSelects(except = null) {
+    document.querySelectorAll(".museum-select.is-open").forEach((wrapper) => {
+      if (wrapper === except) return;
+      wrapper.classList.remove("is-open");
+      wrapper.querySelector(".museum-select-trigger")?.setAttribute("aria-expanded", "false");
+      wrapper.querySelector(".museum-select-menu")?.setAttribute("aria-hidden", "true");
+    });
+  }
+
+  function initMuseumSelects(filterForm) {
+    if (!filterForm) return;
+
+    filterForm.querySelectorAll("select").forEach((select, selectIndex) => {
+      if (select.dataset.museumSelectEnhanced === "1") return;
+      select.dataset.museumSelectEnhanced = "1";
+      select.classList.add("museum-select-native");
+      select.tabIndex = -1;
+      select.setAttribute("aria-hidden", "true");
+
+      const label = select.closest("label");
+      const labelText = label?.querySelector(":scope > span")?.textContent?.trim() || select.getAttribute("aria-label") || "Choose option";
+      if (!select.id) select.id = `museumFilter${select.name || selectIndex}`;
+
+      const wrapper = document.createElement("div");
+      wrapper.className = "museum-select";
+      select.parentNode.insertBefore(wrapper, select);
+      wrapper.append(select);
+
+      const trigger = document.createElement("button");
+      trigger.type = "button";
+      trigger.className = "museum-select-trigger";
+      trigger.setAttribute("aria-haspopup", "listbox");
+      trigger.setAttribute("aria-expanded", "false");
+      trigger.setAttribute("aria-label", labelText);
+      trigger.innerHTML = '<span class="museum-select-value"></span><span class="museum-select-chevron" aria-hidden="true"></span>';
+
+      const menu = document.createElement("div");
+      menu.className = "museum-select-menu";
+      menu.id = `${select.id}Menu`;
+      menu.setAttribute("role", "listbox");
+      menu.setAttribute("aria-label", `${labelText} options`);
+      menu.setAttribute("aria-hidden", "true");
+      trigger.setAttribute("aria-controls", menu.id);
+
+      Array.from(select.options).forEach((option, optionIndex) => {
+        const item = document.createElement("button");
+        item.type = "button";
+        item.className = "museum-select-option";
+        item.setAttribute("role", "option");
+        item.dataset.value = option.value;
+        item.style.setProperty("--museum-option-delay", `${55 + (optionIndex * 45)}ms`);
+        item.textContent = option.textContent;
+        item.addEventListener("click", () => {
+          select.value = option.value;
+          sync();
+          select.dispatchEvent(new Event("change", { bubbles: true }));
+          closeMuseumSelects();
+          trigger.focus({ preventScroll: true });
+        });
+        menu.append(item);
+      });
+
+      wrapper.append(trigger, menu);
+      const valueLabel = trigger.querySelector(".museum-select-value");
+
+      function sync() {
+        const selected = select.options[select.selectedIndex] || select.options[0];
+        valueLabel.textContent = selected?.textContent || "Choose";
+        menu.querySelectorAll(".museum-select-option").forEach((item) => {
+          const isSelected = item.dataset.value === select.value;
+          item.classList.toggle("is-selected", isSelected);
+          item.setAttribute("aria-selected", String(isSelected));
+        });
+      }
+
+      function openMenu(focusOption = false) {
+        closeMuseumSelects(wrapper);
+        wrapper.classList.add("is-open");
+        trigger.setAttribute("aria-expanded", "true");
+        menu.setAttribute("aria-hidden", "false");
+        const selectedItem = menu.querySelector('.museum-select-option[aria-selected="true"]');
+        if (selectedItem) menu.scrollTop = Math.max(0, selectedItem.offsetTop - 42);
+        if (focusOption) (selectedItem || menu.querySelector(".museum-select-option"))?.focus({ preventScroll: true });
+      }
+
+      function closeMenu(restoreFocus = false) {
+        wrapper.classList.remove("is-open");
+        trigger.setAttribute("aria-expanded", "false");
+        menu.setAttribute("aria-hidden", "true");
+        if (restoreFocus) trigger.focus({ preventScroll: true });
+      }
+
+      trigger.addEventListener("click", (event) => {
+        event.stopPropagation();
+        if (wrapper.classList.contains("is-open")) closeMenu();
+        else openMenu();
+      });
+      trigger.addEventListener("keydown", (event) => {
+        if (!["ArrowDown", "Enter", " "].includes(event.key)) return;
+        event.preventDefault();
+        openMenu(true);
+      });
+      menu.addEventListener("keydown", (event) => {
+        const options = Array.from(menu.querySelectorAll(".museum-select-option"));
+        const index = options.indexOf(document.activeElement);
+        if (event.key === "Escape") {
+          event.preventDefault();
+          closeMenu(true);
+        } else if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+          event.preventDefault();
+          const direction = event.key === "ArrowDown" ? 1 : -1;
+          options[(index + direction + options.length) % options.length]?.focus({ preventScroll: true });
+        } else if (event.key === "Home" || event.key === "End") {
+          event.preventDefault();
+          options[event.key === "Home" ? 0 : options.length - 1]?.focus({ preventScroll: true });
+        }
+      });
+      select.addEventListener("change", sync);
+      sync();
+    });
+
+    if (!window.__vaultarrMuseumSelectOutsideBound) {
+      window.__vaultarrMuseumSelectOutsideBound = true;
+      document.addEventListener("click", (event) => {
+        if (!event.target.closest(".museum-select")) closeMuseumSelects();
+      });
+    }
+  }
+
   function initLibraryTools() {
     const searchInput = document.getElementById("librarySearch");
     const clearButton = document.getElementById("clearLibrarySearch");
@@ -181,6 +310,7 @@
     const searchCount = document.getElementById("librarySearchCount");
     const filterForm = document.getElementById("museumFilterForm");
 
+    initMuseumSelects(filterForm);
     if (!grid || grid.dataset.vaultarrSearchBound === "1") return;
     grid.dataset.vaultarrSearchBound = "1";
 

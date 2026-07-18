@@ -1,3 +1,19 @@
+## 2.0.0 Alpha 41 — Organized Expanded-Card Tabs
+
+- Replaced the unstructured wrapping pill layout with one compact left-to-right glass navigation bar.
+- Keeps Overview, Play, Information, and Preservation visible while Collection and Manage open as smooth, compact dropdown menus.
+- Marks Collection or Manage when its currently selected workspace lives inside that dropdown.
+- Shortened the visible Game Information label to Information while retaining the existing metadata workspace and selector.
+- Added accessible tab and dropdown states, roving keyboard focus, Escape handling, and Arrow, Home, and End navigation.
+- Removed the duplicate game count beneath the Museum heading and retained the live filtered count below the dropdown controls.
+- Replaced the Museum Platform, Genre, Category, and Sort native popups with animated glass menus featuring a sliding chamber reveal and staggered option glide-in.
+- Preserved the underlying select values, filter navigation, local sorting, and keyboard navigation.
+- Uses explicit per-option animation timing so the stagger remains visible in the in-app browser instead of collapsing into simultaneous movement.
+- Applied the same menu treatment to all twelve dropdown controls across Information, Manuals, Acquisition, Gallery, Trailer, Soundtrack, and Patches.
+- Replaced the Acquisition-only enhancer with one shared expanded-card select lifecycle and one outside-click handler.
+- Removed the obsolete Alpha 30 focus-tab overrides after replacing the layout.
+- Preserved expanded-card dimensions, full-card artwork, hover/lift/tilt/gloss, expansion behavior, all tab content, routes, and protected systems.
+
 ## 2.0.0 Alpha 40 — Player Performance Mode
 
 - Added a reversible game-mode state that isolates the embedded emulator from the Museum's blurred, translucent, and shadowed rendering layers while gameplay is active.

@@ -84,28 +84,6 @@
   pointer-events: none;
 }
 
-/* Focus Mode: many tabs, one calmer strip */
-.focus-tabs {
-  gap: 8px;
-  padding: 7px;
-  border-radius: 18px;
-  background: rgba(5, 10, 20, .54);
-  border: 1px solid rgba(148, 163, 184, .12);
-}
-
-.focus-tab {
-  min-height: 38px;
-  border-radius: 12px;
-  padding-inline: 13px;
-  color: color-mix(in srgb, var(--text-muted) 86%, white 8%);
-}
-
-.focus-tab.active {
-  background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 24%, rgba(15,23,42,.86)), rgba(15,23,42,.82));
-  color: var(--text);
-  box-shadow: 0 8px 22px color-mix(in srgb, var(--accent) 11%, transparent), inset 0 1px 0 rgba(255,255,255,.06);
-}
-
 .focus-stat-grid .card,
 .focus-detail-list,
 .manual-workspace,
@@ -235,17 +213,6 @@ textarea {
 }
 
 /* Mobile and mid-width flow */
-@media (max-width: 1200px) {
-  .focus-tabs {
-    overflow-x: auto;
-    flex-wrap: nowrap;
-  }
-
-  .focus-tab {
-    flex: 0 0 auto;
-  }
-}
-
 @media (max-width: 760px) {
   .studio-workshop .studio-section,
   .capsule-settings-panel,

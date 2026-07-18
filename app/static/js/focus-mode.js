@@ -367,7 +367,16 @@
       if (fields.acquisitionSearchStatus) fields.acquisitionSearchStatus.textContent = message || "";
     }
 
-    function enhanceAcquisitionSelect(select) {
+    function closeVaultSelects(except = null) {
+      document.querySelectorAll(".vault-select.is-open").forEach((wrapper) => {
+        if (wrapper === except) return;
+        wrapper.classList.remove("is-open");
+        wrapper.querySelector(".vault-select-trigger")?.setAttribute("aria-expanded", "false");
+        wrapper.querySelector(".vault-select-menu")?.setAttribute("aria-hidden", "true");
+      });
+    }
+
+    function enhanceFocusSelect(select) {
       if (!select || select.dataset.vaultSelectEnhanced === "true") return;
       select.dataset.vaultSelectEnhanced = "true";
       select.classList.add("vault-select-native");
@@ -392,14 +401,16 @@
       menu.id = `${select.id}Menu`;
       menu.setAttribute("role", "listbox");
       menu.setAttribute("aria-label", select.getAttribute("aria-label") || "Options");
+      menu.setAttribute("aria-hidden", "true");
       trigger.setAttribute("aria-controls", menu.id);
 
-      Array.from(select.options).forEach((option) => {
+      Array.from(select.options).forEach((option, optionIndex) => {
         const item = document.createElement("button");
         item.type = "button";
         item.className = "vault-select-option";
         item.setAttribute("role", "option");
         item.dataset.value = option.value;
+        item.style.setProperty("--vault-option-delay", `${55 + (optionIndex * 45)}ms`);
         item.textContent = option.textContent;
         item.addEventListener("click", () => {
           select.value = option.value;
@@ -425,18 +436,15 @@
       const closeMenu = (restoreFocus = false) => {
         wrapper.classList.remove("is-open");
         trigger.setAttribute("aria-expanded", "false");
+        menu.setAttribute("aria-hidden", "true");
         if (restoreFocus) trigger.focus({ preventScroll: true });
       };
 
       const openMenu = () => {
-        document.querySelectorAll(".vault-select.is-open").forEach((openSelect) => {
-          if (openSelect !== wrapper) {
-            openSelect.classList.remove("is-open");
-            openSelect.querySelector(".vault-select-trigger")?.setAttribute("aria-expanded", "false");
-          }
-        });
+        closeVaultSelects(wrapper);
         wrapper.classList.add("is-open");
         trigger.setAttribute("aria-expanded", "true");
+        menu.setAttribute("aria-hidden", "false");
         const selectedItem = menu.querySelector('.vault-select-option[aria-selected="true"]');
         if (selectedItem) menu.scrollTop = Math.max(0, selectedItem.offsetTop - 44);
       };
@@ -466,15 +474,12 @@
           options[Math.max(0, Math.min(options.length - 1, index + direction))]?.focus({ preventScroll: true });
         }
       });
-      document.addEventListener("click", (event) => {
-        if (!wrapper.contains(event.target)) closeMenu();
-      });
       select.addEventListener("change", sync);
       select._vaultSelectSync = sync;
       sync();
     }
 
-    function syncAcquisitionSelect(select) {
+    function syncFocusSelect(select) {
       if (typeof select?._vaultSelectSync === "function") select._vaultSelectSync();
     }
 
@@ -514,8 +519,8 @@
       if (fields.acquisitionPlatform) fields.acquisitionPlatform.value = game?.platform || "";
       if (fields.acquisitionPlatform && !Array.from(fields.acquisitionPlatform.options).some((option) => option.value === fields.acquisitionPlatform.value)) fields.acquisitionPlatform.value = "";
       if (fields.acquisitionProvider) fields.acquisitionProvider.value = "all";
-      syncAcquisitionSelect(fields.acquisitionPlatform);
-      syncAcquisitionSelect(fields.acquisitionProvider);
+      syncFocusSelect(fields.acquisitionPlatform);
+      syncFocusSelect(fields.acquisitionProvider);
       if (fields.acquisitionResults) fields.acquisitionResults.replaceChildren();
       if (fields.acquisitionSelection) fields.acquisitionSelection.hidden = true;
       if (fields.acquisitionCurrent) fields.acquisitionCurrent.hidden = true;
@@ -853,6 +858,8 @@
       stopTrailerPlayback(false);
       stopSoundtrackPlayback();
       stopEmulationPlayer();
+      closeFocusTabMenus();
+      closeVaultSelects();
       isAnimating = true;
       const liveCard = activeTrigger?.querySelector(".poster-card") || activeTrigger;
       const liveRect = liveCard?.getBoundingClientRect?.();
@@ -900,7 +907,32 @@
       }, 500);
     }
 
+    function closeFocusTabMenus(exceptMenu = null) {
+      document.querySelectorAll("[data-focus-tab-menu]").forEach((menu) => {
+        if (menu === exceptMenu) return;
+        menu.classList.remove("is-open");
+        menu.querySelector(".focus-tab-menu-trigger")?.setAttribute("aria-expanded", "false");
+        menu.querySelector(".focus-tab-menu-popover")?.setAttribute("aria-hidden", "true");
+      });
+    }
+
+    function openFocusTabMenu(menu, focusFirst = false) {
+      if (!menu) return;
+      closeFocusTabMenus(menu);
+      menu.classList.add("is-open");
+      menu.querySelector(".focus-tab-menu-trigger")?.setAttribute("aria-expanded", "true");
+      menu.querySelector(".focus-tab-menu-popover")?.setAttribute("aria-hidden", "false");
+      if (focusFirst) menu.querySelector(".focus-tab")?.focus({ preventScroll: true });
+    }
+
+    function syncFocusTabMenus() {
+      document.querySelectorAll("[data-focus-tab-menu]").forEach((menu) => {
+        menu.classList.toggle("contains-active", Boolean(menu.querySelector(".focus-tab.active")));
+      });
+    }
+
     function setActiveTab(tabName) {
+      closeVaultSelects();
       const currentActive = document.querySelector(".focus-tab.active")?.dataset?.tab || "";
       if (currentActive === "trailer" && tabName !== "trailer") {
         stopTrailerPlayback(false);
@@ -915,12 +947,21 @@
         restoreTrailerPlaybackIfNeeded();
       }
 
-      document.querySelectorAll(".focus-tab").forEach((item) => item.classList.remove("active"));
+      document.querySelectorAll(".focus-tab").forEach((item) => {
+        item.classList.remove("active");
+        item.setAttribute("aria-selected", "false");
+        item.tabIndex = -1;
+      });
       document.querySelectorAll(".focus-tab-panel").forEach((item) => item.classList.remove("active"));
       const tab = document.querySelector(`.focus-tab[data-tab="${tabName}"]`);
       const tabPanel = document.getElementById(`focusTab-${tabName}`);
-      if (tab) tab.classList.add("active");
+      if (tab) {
+        tab.classList.add("active");
+        tab.setAttribute("aria-selected", "true");
+        tab.tabIndex = 0;
+      }
       if (tabPanel) tabPanel.classList.add("active");
+      syncFocusTabMenus();
       if (tabName === "play") loadEmulationProfile();
     }
 
@@ -3156,8 +3197,7 @@
     }
 
 
-    enhanceAcquisitionSelect(fields.acquisitionProvider);
-    enhanceAcquisitionSelect(fields.acquisitionPlatform);
+    panel.querySelectorAll("select").forEach(enhanceFocusSelect);
     fields.acquisitionSearchButton?.addEventListener("click", searchAcquisition);
     fields.acquisitionQuery?.addEventListener("keydown", (event) => { if (event.key === "Enter") { event.preventDefault(); searchAcquisition(); } });
     fields.acquisitionReadSourceButton?.addEventListener("click", readAcquisitionSource);
@@ -3168,11 +3208,58 @@
     fields.acquisitionAttachForm?.addEventListener("submit", attachAcquisition);
 
     document.addEventListener("keydown", (event) => {
-      if (event.key === "Escape" && body.classList.contains("focus-active")) closeFocus();
+      if (event.key !== "Escape" || !body.classList.contains("focus-active")) return;
+      const openMenu = document.querySelector("[data-focus-tab-menu].is-open");
+      if (openMenu) {
+        event.preventDefault();
+        closeFocusTabMenus();
+        openMenu.querySelector(".focus-tab-menu-trigger")?.focus({ preventScroll: true });
+        return;
+      }
+      closeFocus();
     });
 
-    document.querySelectorAll(".focus-tab").forEach((tab) => {
-      tab.addEventListener("click", () => setActiveTab(tab.dataset.tab));
+    document.querySelectorAll("[data-focus-tab-menu]").forEach((menu) => {
+      const trigger = menu.querySelector(".focus-tab-menu-trigger");
+      trigger?.addEventListener("click", () => {
+        if (menu.classList.contains("is-open")) closeFocusTabMenus();
+        else openFocusTabMenu(menu);
+      });
+      trigger?.addEventListener("keydown", (event) => {
+        if (event.key !== "ArrowDown") return;
+        event.preventDefault();
+        openFocusTabMenu(menu, true);
+      });
+    });
+
+    document.addEventListener("click", (event) => {
+      if (!event.target.closest("[data-focus-tab-menu]")) closeFocusTabMenus();
+      if (!event.target.closest(".vault-select")) closeVaultSelects();
+    });
+
+    const focusTabs = [...document.querySelectorAll(".focus-tab")];
+    focusTabs.forEach((tab, index) => {
+      tab.addEventListener("click", () => {
+        const parentMenu = tab.closest("[data-focus-tab-menu]");
+        setActiveTab(tab.dataset.tab);
+        closeFocusTabMenus();
+        parentMenu?.querySelector(".focus-tab-menu-trigger")?.focus({ preventScroll: true });
+      });
+      tab.addEventListener("keydown", (event) => {
+        let nextIndex = null;
+        if (event.key === "ArrowRight" || event.key === "ArrowDown") nextIndex = (index + 1) % focusTabs.length;
+        if (event.key === "ArrowLeft" || event.key === "ArrowUp") nextIndex = (index - 1 + focusTabs.length) % focusTabs.length;
+        if (event.key === "Home") nextIndex = 0;
+        if (event.key === "End") nextIndex = focusTabs.length - 1;
+        if (nextIndex === null) return;
+        event.preventDefault();
+        const nextTab = focusTabs[nextIndex];
+        const nextMenu = nextTab.closest("[data-focus-tab-menu]");
+        if (nextMenu) openFocusTabMenu(nextMenu);
+        else closeFocusTabMenus();
+        setActiveTab(nextTab.dataset.tab);
+        nextTab.focus({ preventScroll: true });
+      });
     });
 
     function openRequestedGameFromUrl() {

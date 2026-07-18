@@ -20,7 +20,7 @@
   <link rel="stylesheet" href="/static/css/library.css?v=2.0.0-alpha.36-depth.1">
   <link rel="stylesheet" href="/static/css/cards.css?v=2.0.0-alpha.36-depth.1">
   <link rel="stylesheet" href="/static/css/game-detail.css?v=2.0.0-alpha.37-acquisition-download.1">
-  <link rel="stylesheet" href="/static/css/focus-mode.css?v=2.0.0-alpha.40-game-mode.1">
+  <link rel="stylesheet" href="/static/css/focus-mode.css?v=2.0.0-alpha.41-tabs.2">
   <link rel="stylesheet" href="/static/css/performance-foundation.css?v=1.7.6">
   <link rel="stylesheet" href="/static/css/preservation.css">
   <link rel="stylesheet" href="/static/css/vaultos.css">
@@ -38,7 +38,7 @@
   <link rel="stylesheet" href="/static/css/controls.css?v=1.7.6">
   <link rel="stylesheet" href="/static/css/museum-scan-pill.css?v=2.0.0-alpha.36-scan-panel.14">
   <link rel="stylesheet" href="/static/css/interface-cohesion.css?v=2.0.0-alpha.36">
-  <link rel="stylesheet" href="/static/css/familiar-experience.css?v=2.0.0-alpha.36-v-liquid.6">
+  <link rel="stylesheet" href="/static/css/familiar-experience.css?v=2.0.0-alpha.41-museum-menus.2">
   <style id="vaultarr-theme">{{ theme_css|safe }}</style>
 </head>
 <body class="vaultos {{ 'advanced-mode' if ui_settings.advanced_mode else 'standard-mode' }} {% if theme.dark_reader_compat %}dark-reader-compat{% endif %}">
@@ -74,7 +74,7 @@
     <div class="sidebar-footer">
       <div class="mini-stat vault-build-card">
         <span>Current build</span>
-        <strong>Vaultarr 2.0 Alpha 40</strong>
+        <strong>Vaultarr 2.0 Alpha 41</strong>
         <em></em>
       </div>
       {% if auth_enabled %}
@@ -125,19 +125,35 @@
       <h1 id="focusTitle">Loading...</h1>
       <p class="muted" id="focusPath"></p>
 
-      <div class="focus-tabs">
-        <button class="focus-tab active" data-tab="overview" type="button">Overview</button>
-        <button class="focus-tab" data-tab="play" type="button">Play</button>
-        <button class="focus-tab" data-tab="metadata" type="button">Game Information</button>
-        <button class="focus-tab" data-tab="preservation" type="button">Preservation</button>
-        <button class="focus-tab" data-tab="manuals" type="button">Manuals</button>
-        <button class="focus-tab" data-tab="acquisition" type="button">Acquisition</button>
-        <button class="focus-tab" data-tab="gallery" type="button">Gallery</button>
-        <button class="focus-tab" data-tab="trailer" type="button">Trailer</button>
-        <button class="focus-tab" data-tab="soundtrack" type="button">Soundtrack</button>
-        <button class="focus-tab" data-tab="patches" type="button">Patches</button>
-        <button class="focus-tab" data-tab="files" type="button">Files</button>
-        <button class="focus-tab" data-tab="actions" type="button">Actions</button>
+      <div class="focus-tabs" role="navigation" aria-label="Game workspace">
+        <div class="focus-tab-primary" role="tablist" aria-label="Essential workspaces">
+          <button class="focus-tab active" data-tab="overview" type="button" role="tab" aria-selected="true" aria-controls="focusTab-overview">Overview</button>
+          <button class="focus-tab" data-tab="play" type="button" role="tab" aria-selected="false" aria-controls="focusTab-play" tabindex="-1">Play</button>
+          <button class="focus-tab" data-tab="metadata" type="button" role="tab" aria-selected="false" aria-controls="focusTab-metadata" tabindex="-1">Information</button>
+          <button class="focus-tab" data-tab="preservation" type="button" role="tab" aria-selected="false" aria-controls="focusTab-preservation" tabindex="-1">Preservation</button>
+        </div>
+        <div class="focus-tab-menu" data-focus-tab-menu>
+          <button class="focus-tab-menu-trigger" type="button" aria-expanded="false" aria-controls="focusCollectionTabs">
+            <span>Collection</span><span class="focus-tab-menu-chevron" aria-hidden="true">⌄</span>
+          </button>
+          <div class="focus-tab-menu-popover" id="focusCollectionTabs" role="tablist" aria-label="Collection workspaces" aria-hidden="true">
+            <button class="focus-tab" data-tab="manuals" type="button" role="tab" aria-selected="false" aria-controls="focusTab-manuals" tabindex="-1">Manuals</button>
+            <button class="focus-tab" data-tab="gallery" type="button" role="tab" aria-selected="false" aria-controls="focusTab-gallery" tabindex="-1">Gallery</button>
+            <button class="focus-tab" data-tab="trailer" type="button" role="tab" aria-selected="false" aria-controls="focusTab-trailer" tabindex="-1">Trailer</button>
+            <button class="focus-tab" data-tab="soundtrack" type="button" role="tab" aria-selected="false" aria-controls="focusTab-soundtrack" tabindex="-1">Soundtrack</button>
+          </div>
+        </div>
+        <div class="focus-tab-menu" data-focus-tab-menu>
+          <button class="focus-tab-menu-trigger" type="button" aria-expanded="false" aria-controls="focusManageTabs">
+            <span>Manage</span><span class="focus-tab-menu-chevron" aria-hidden="true">⌄</span>
+          </button>
+          <div class="focus-tab-menu-popover" id="focusManageTabs" role="tablist" aria-label="Management workspaces" aria-hidden="true">
+            <button class="focus-tab" data-tab="acquisition" type="button" role="tab" aria-selected="false" aria-controls="focusTab-acquisition" tabindex="-1">Acquisition</button>
+            <button class="focus-tab" data-tab="patches" type="button" role="tab" aria-selected="false" aria-controls="focusTab-patches" tabindex="-1">Patches</button>
+            <button class="focus-tab" data-tab="files" type="button" role="tab" aria-selected="false" aria-controls="focusTab-files" tabindex="-1">Files</button>
+            <button class="focus-tab" data-tab="actions" type="button" role="tab" aria-selected="false" aria-controls="focusTab-actions" tabindex="-1">Actions</button>
+          </div>
+        </div>
       </div>
 
       <div class="focus-tab-panel active" id="focusTab-overview">
@@ -226,7 +242,7 @@
 
             <form id="focusMetadataForm" class="metadata-inline-form">
               <input id="focusMetadataQuery" name="query" placeholder="Search metadata...">
-              <select id="focusMetadataProvider" name="provider">
+              <select id="focusMetadataProvider" name="provider" aria-label="Metadata provider">
                 <option value="all">All providers</option>
                 <option value="launchbox">LaunchBox</option>
                 <option value="igdb">IGDB</option>
@@ -321,7 +337,7 @@
 
               <form id="focusManualSearchForm" class="metadata-inline-form manual-search-form">
                 <input id="focusManualQuery" name="query" placeholder="Search manuals...">
-                <select id="focusManualProvider" name="provider">
+                <select id="focusManualProvider" name="provider" aria-label="Manual search provider">
                   <option value="all">All manual providers</option>
                   <option value="videogamemanual">VideoGameManual.com</option>
                   <option value="vimm">Vimm's Lair Manual Project</option>
@@ -332,7 +348,7 @@
 
               <form id="focusManualLinkForm" class="metadata-inline-form manual-link-form">
                 <input id="focusManualUrlInput" name="manual_url" placeholder="Paste manual PDF/link URL...">
-                <select id="focusManualLinkProvider" name="manual_provider">
+                <select id="focusManualLinkProvider" name="manual_provider" aria-label="Manual source provider">
                   <option>User Link</option>
                   <option>VideoGameManual.com</option>
                   <option>Vimm's Lair Manual Project</option>
@@ -498,7 +514,7 @@
               </div>
             </div>
             <form id="focusGallerySearchForm" class="metadata-inline-form gallery-search-form">
-              <select id="focusGalleryProvider" name="provider">
+              <select id="focusGalleryProvider" name="provider" aria-label="Gallery provider">
                 <option value="all">All media providers</option>
                 <option value="launchbox">LaunchBox Media</option>
                 <option value="rawg">RAWG Screenshots</option>
@@ -576,7 +592,7 @@
             </div>
             <form id="focusTrailerForm" class="metadata-inline-form trailer-inline-form">
               <input id="focusTrailerUrlInput" name="trailer_url" placeholder="Paste YouTube trailer URL...">
-              <select id="focusTrailerProvider" name="trailer_provider">
+              <select id="focusTrailerProvider" name="trailer_provider" aria-label="Trailer source provider">
                 <option>YouTube</option>
                 <option>Steam</option>
                 <option>IGDB</option>
@@ -694,7 +710,7 @@
               </div>
               <form id="focusSoundtrackForm" class="metadata-inline-form trailer-inline-form">
                 <input id="focusSoundtrackUrlInput" name="soundtrack_url" placeholder="Paste YouTube soundtrack URL...">
-                <select id="focusSoundtrackProvider" name="soundtrack_provider">
+                <select id="focusSoundtrackProvider" name="soundtrack_provider" aria-label="Soundtrack link provider">
                   <option>YouTube</option>
                   <option>YouTube Music</option>
                   <option>KHInsider</option>
@@ -739,7 +755,7 @@
 
           <section class="patch-search-panel" id="focusPatchSearchPanel" aria-hidden="true">
             <form id="focusPatchSearchForm" class="metadata-inline-form patch-search-form">
-              <select id="focusPatchProvider" name="provider">
+              <select id="focusPatchProvider" name="provider" aria-label="Patch search provider">
                 <option value="all">All patch providers</option>
                 <option value="pcgamingwiki">PCGamingWiki</option>
                 <option value="github">GitHub Releases</option>
@@ -747,7 +763,7 @@
                 <option value="moddb">ModDB</option>
                 <option value="nexus">Nexus Mods</option>
               </select>
-              <select id="focusPatchCategory" name="category">
+              <select id="focusPatchCategory" name="category" aria-label="Patch category">
                 <option value="all">All categories</option>
                 <option value="compatibility">Compatibility</option>
                 <option value="widescreen">Widescreen</option>
@@ -765,7 +781,7 @@
             <summary>Advanced patch/reference URL</summary>
             <form id="focusPatchLinkForm" class="metadata-inline-form patch-link-form">
               <input id="focusPatchUrlInput" name="patch_url" placeholder="Paste PCGamingWiki, GitHub, ModDB, or patch reference URL...">
-              <select id="focusPatchLinkProvider" name="patch_provider">
+              <select id="focusPatchLinkProvider" name="patch_provider" aria-label="Patch link provider">
                 <option>PCGamingWiki</option>
                 <option>GitHub</option>
                 <option>ModDB</option>
@@ -840,8 +856,8 @@
 
   <script src="/static/js/live-events.js?v=1.7.6"></script>
   <script src="/static/js/museum-scan-pill.js?v=2.0.0-alpha.36-scan-panel.15"></script>
-  <script src="/static/js/library.js?v=2.0.0-alpha.36-depth.1"></script>
-  <script src="/static/js/focus-mode.js?v=2.0.0-alpha.40-game-mode.1"></script>
+  <script src="/static/js/library.js?v=2.0.0-alpha.41-museum-menus.2"></script>
+  <script src="/static/js/focus-mode.js?v=2.0.0-alpha.41-tabs.2"></script>
   <script src="/static/js/performance-foundation.js?v=1.7.6"></script>
   <script src="/static/js/theme-compat.js"></script>
   <script src="/static/js/studio-navigation.js"></script>
