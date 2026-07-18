@@ -14,6 +14,7 @@
     let activeGameId = null;
     let activeGame = null;
     let selectedAcquisition = null;
+    let acquisitionDownloadPollTimer = null;
 
     const fields = {
       cover: document.getElementById("focusCover"),
@@ -118,6 +119,13 @@
       soundtrackStatus: document.getElementById("focusSoundtrackStatus"),
       soundtrackUploadInput: document.getElementById("focusSoundtrackUploadInput"),
       soundtrackUploadStatus: document.getElementById("focusSoundtrackUploadStatus"),
+      soundtrackDirectUrl: document.getElementById("focusSoundtrackDirectUrl"),
+      soundtrackPermission: document.getElementById("focusSoundtrackPermission"),
+      soundtrackDownloadButton: document.getElementById("focusSoundtrackDownloadButton"),
+      soundtrackDownloadProgress: document.getElementById("focusSoundtrackDownloadProgress"),
+      soundtrackDownloadFill: document.getElementById("focusSoundtrackDownloadFill"),
+      soundtrackDownloadMessage: document.getElementById("focusSoundtrackDownloadMessage"),
+      soundtrackDownloadPercent: document.getElementById("focusSoundtrackDownloadPercent"),
       soundtrackDropZone: document.getElementById("focusSoundtrackDropZone"),
       soundtrackAudio: document.getElementById("focusSoundtrackAudio"),
       soundtrackNowPlaying: document.getElementById("focusSoundtrackNowPlaying"),
@@ -177,6 +185,12 @@
       acquisitionSelectionSource: document.getElementById("focusAcquisitionSelectionSource"),
       acquisitionDownloadUrl: document.getElementById("focusAcquisitionDownloadUrl"),
       acquisitionSaveButton: document.getElementById("focusAcquisitionSaveButton"),
+      acquisitionDownloadPermission: document.getElementById("focusAcquisitionDownloadPermission"),
+      acquisitionDownloadButton: document.getElementById("focusAcquisitionDownloadButton"),
+      acquisitionDownloadProgress: document.getElementById("focusAcquisitionDownloadProgress"),
+      acquisitionDownloadMessage: document.getElementById("focusAcquisitionDownloadMessage"),
+      acquisitionDownloadBytes: document.getElementById("focusAcquisitionDownloadBytes"),
+      acquisitionDownloadMeter: document.getElementById("focusAcquisitionDownloadMeter"),
       acquisitionAttachForm: document.getElementById("focusAcquisitionAttachForm"),
       acquisitionLocalPath: document.getElementById("focusAcquisitionLocalPath"),
     };
@@ -469,6 +483,7 @@
     }
 
     async function loadAcquisition(game) {
+      window.clearTimeout(acquisitionDownloadPollTimer);
       selectedAcquisition = null;
       if (fields.acquisitionQuery) fields.acquisitionQuery.value = game?.title || "";
       if (fields.acquisitionPlatform) fields.acquisitionPlatform.value = game?.platform || "";
@@ -480,8 +495,12 @@
       if (fields.acquisitionSelection) fields.acquisitionSelection.hidden = true;
       if (fields.acquisitionCurrent) fields.acquisitionCurrent.hidden = true;
       if (fields.acquisitionBadge) fields.acquisitionBadge.textContent = "Not Configured";
+      if (fields.acquisitionDownloadPermission) fields.acquisitionDownloadPermission.checked = false;
+      if (fields.acquisitionDownloadProgress) fields.acquisitionDownloadProgress.hidden = true;
+      syncAcquisitionDownloadButton();
       setAcquisitionStatus("Choose Find Copy to search the live reference catalog.");
       if (!game?.id) return;
+      pollAcquisitionDownload(game.id);
       try {
         const response = await fetch(`/api/games/${game.id}/acquisition`, { headers: { Accept: "application/json" } });
         const data = await response.json();
@@ -546,6 +565,77 @@
         await loadAcquisition(activeGame);
       } catch (error) { setAcquisitionStatus(error.message); }
       finally { if (button) { button.disabled = false; button.textContent = "Save Acquisition"; } }
+    }
+
+    function acquisitionBytes(value) {
+      let amount = Number(value || 0);
+      const units = ["B", "KB", "MB", "GB", "TB"];
+      let unit = 0;
+      while (amount >= 1024 && unit < units.length - 1) { amount /= 1024; unit += 1; }
+      return `${amount >= 10 || unit === 0 ? amount.toFixed(0) : amount.toFixed(1)} ${units[unit]}`;
+    }
+
+    function syncAcquisitionDownloadButton() {
+      if (!fields.acquisitionDownloadButton) return;
+      fields.acquisitionDownloadButton.disabled = !(fields.acquisitionDownloadPermission?.checked && fields.acquisitionDownloadUrl?.value.trim());
+    }
+
+    function renderAcquisitionDownload(job = {}) {
+      const active = ["queued", "downloading"].includes(job.status);
+      const visible = active || ["complete", "failed"].includes(job.status);
+      if (fields.acquisitionDownloadProgress) fields.acquisitionDownloadProgress.hidden = !visible;
+      if (fields.acquisitionDownloadMeter) fields.acquisitionDownloadMeter.value = Number(job.progress || 0);
+      if (fields.acquisitionDownloadMessage) fields.acquisitionDownloadMessage.textContent = job.message || (active ? "Downloading to Vaultarr…" : "Ready.");
+      if (fields.acquisitionDownloadBytes) {
+        const received = acquisitionBytes(job.received_bytes || 0);
+        fields.acquisitionDownloadBytes.textContent = job.total_bytes ? `${received} / ${acquisitionBytes(job.total_bytes)}` : received;
+      }
+      if (fields.acquisitionDownloadButton) {
+        fields.acquisitionDownloadButton.disabled = active || !(fields.acquisitionDownloadPermission?.checked && fields.acquisitionDownloadUrl?.value.trim());
+        fields.acquisitionDownloadButton.textContent = active ? "Downloading…" : "Download to Vaultarr";
+      }
+      if (job.status === "complete") {
+        if (fields.acquisitionBadge) fields.acquisitionBadge.textContent = "Stored Locally";
+        if (fields.acquisitionLocalPath) fields.acquisitionLocalPath.value = job.local_path || "";
+        setAcquisitionStatus(`Download complete and attached: ${job.filename || "acquired file"}`);
+      } else if (job.status === "failed") {
+        setAcquisitionStatus(job.message || "The acquisition download failed.");
+      }
+    }
+
+    async function pollAcquisitionDownload(gameId = activeGameId) {
+      window.clearTimeout(acquisitionDownloadPollTimer);
+      if (!gameId) return;
+      try {
+        const response = await fetch(`/api/games/${gameId}/acquisition/download-status`, { headers: { Accept: "application/json" } });
+        const data = await response.json();
+        if (String(activeGameId) !== String(gameId) || !response.ok || !data.success) return;
+        renderAcquisitionDownload(data.job || {});
+        if (["queued", "downloading"].includes(data.job?.status)) acquisitionDownloadPollTimer = window.setTimeout(() => pollAcquisitionDownload(gameId), 700);
+      } catch (_) {}
+    }
+
+    async function startAcquisitionDownload() {
+      if (!activeGameId || !fields.acquisitionDownloadPermission?.checked || !fields.acquisitionDownloadUrl?.value.trim()) {
+        syncAcquisitionDownloadButton();
+        return;
+      }
+      const button = fields.acquisitionDownloadButton;
+      if (button) { button.disabled = true; button.textContent = "Preparing…"; }
+      try {
+        const response = await fetch(`/api/games/${activeGameId}/acquisition/download`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          body: JSON.stringify({ download_url: fields.acquisitionDownloadUrl.value.trim(), permission_confirmed: true }),
+        });
+        const data = await response.json();
+        if (!response.ok || !data.success) throw new Error(data.message || "Could not start download.");
+        renderAcquisitionDownload(data.job || {});
+        acquisitionDownloadPollTimer = window.setTimeout(() => pollAcquisitionDownload(activeGameId), 350);
+      } catch (error) {
+        setAcquisitionStatus(error.message);
+        syncAcquisitionDownloadButton();
+      }
     }
 
     async function attachAcquisition(event) {
@@ -627,6 +717,7 @@
       updateTrailerViewer(game);
       updateSoundtrackViewer(game);
       loadLocalSoundtrackTracks(game);
+      resetSoundtrackDownload(game);
       updatePatchPanel(game);
       loadCachedGallery();
       if (fields.preservationArchive) fields.preservationArchive.textContent = (game.archive_count || 0) || (game.installer_count || 0) || (game.disc_image_count || 0) ? `✓ Archive assets detected` : "⚠ No archive assets detected";
@@ -1697,6 +1788,8 @@
     let localSoundtrackIndex = -1;
     let localSoundtrackShuffle = false;
     let localSoundtrackRepeat = false;
+    let soundtrackDownloadPollTimer = null;
+    let soundtrackDownloadCompletedGameId = null;
 
     function formatTrackSize(value) {
       const bytes = Number(value || 0);
@@ -1800,6 +1893,98 @@
         renderSoundtrackUploadStatus(error.message || "Could not import audio files.", "error");
       } finally {
         if (fields.soundtrackUploadInput) fields.soundtrackUploadInput.value = "";
+      }
+    }
+
+    function syncSoundtrackDownloadButton() {
+      if (!fields.soundtrackDownloadButton) return;
+      const hasUrl = Boolean(fields.soundtrackDirectUrl?.value.trim());
+      const confirmed = Boolean(fields.soundtrackPermission?.checked);
+      fields.soundtrackDownloadButton.disabled = !activeGameId || !hasUrl || !confirmed;
+    }
+
+    function renderSoundtrackDownloadJob(job = {}) {
+      if (!fields.soundtrackDownloadProgress) return;
+      const status = job.status || 'idle';
+      const progress = Math.max(0, Math.min(100, Number(job.progress || 0)));
+      const visible = status !== 'idle';
+      fields.soundtrackDownloadProgress.hidden = !visible;
+      if (fields.soundtrackDownloadFill) fields.soundtrackDownloadFill.style.width = `${progress}%`;
+      if (fields.soundtrackDownloadPercent) fields.soundtrackDownloadPercent.textContent = `${Math.round(progress)}%`;
+      if (fields.soundtrackDownloadMessage) {
+        let message = job.message || 'Preparing audio download…';
+        if (status === 'downloading' && job.received_bytes) {
+          const size = formatTrackSize(job.received_bytes);
+          const total = formatTrackSize(job.total_bytes);
+          message = `${job.filename || 'Audio'} · ${size}${total ? ` of ${total}` : ''}`;
+        }
+        fields.soundtrackDownloadMessage.textContent = message;
+      }
+      if (fields.soundtrackDownloadButton) {
+        const active = status === 'queued' || status === 'downloading';
+        fields.soundtrackDownloadButton.disabled = active || !fields.soundtrackDirectUrl?.value.trim() || !fields.soundtrackPermission?.checked;
+        fields.soundtrackDownloadButton.textContent = active ? 'Downloading…' : 'Download Audio';
+      }
+    }
+
+    function scheduleSoundtrackDownloadPoll(gameId) {
+      if (soundtrackDownloadPollTimer) window.clearTimeout(soundtrackDownloadPollTimer);
+      soundtrackDownloadPollTimer = window.setTimeout(() => pollSoundtrackDownload(gameId), 650);
+    }
+
+    async function pollSoundtrackDownload(gameId = activeGameId) {
+      if (!gameId || String(gameId) !== String(activeGameId)) return;
+      try {
+        const response = await fetch(`/api/games/${gameId}/soundtrack/download-status`);
+        const data = await response.json();
+        if (!response.ok || !data.success) throw new Error(data.message || 'Could not read audio download status.');
+        if (String(gameId) !== String(activeGameId)) return;
+        const job = data.job || {};
+        renderSoundtrackDownloadJob(job);
+        if (job.status === 'queued' || job.status === 'downloading') {
+          scheduleSoundtrackDownloadPoll(gameId);
+        } else if (job.status === 'complete' && String(soundtrackDownloadCompletedGameId) !== String(gameId)) {
+          soundtrackDownloadCompletedGameId = gameId;
+          await loadLocalSoundtrackTracks(activeGame);
+        }
+      } catch (error) {
+        renderSoundtrackDownloadJob({ status: 'failed', progress: 0, message: error.message || 'Could not read audio download status.' });
+      }
+    }
+
+    function resetSoundtrackDownload(game) {
+      if (soundtrackDownloadPollTimer) window.clearTimeout(soundtrackDownloadPollTimer);
+      soundtrackDownloadPollTimer = null;
+      soundtrackDownloadCompletedGameId = null;
+      if (fields.soundtrackDirectUrl) fields.soundtrackDirectUrl.value = '';
+      if (fields.soundtrackPermission) fields.soundtrackPermission.checked = false;
+      if (fields.soundtrackDownloadProgress) fields.soundtrackDownloadProgress.hidden = true;
+      if (fields.soundtrackDownloadFill) fields.soundtrackDownloadFill.style.width = '0%';
+      if (fields.soundtrackDownloadPercent) fields.soundtrackDownloadPercent.textContent = '0%';
+      syncSoundtrackDownloadButton();
+      if (game?.id) pollSoundtrackDownload(game.id);
+    }
+
+    async function downloadSoundtrackFromUrl() {
+      if (!activeGameId || !fields.soundtrackDirectUrl?.value.trim() || !fields.soundtrackPermission?.checked) return;
+      const gameId = activeGameId;
+      renderSoundtrackDownloadJob({ status: 'queued', progress: 0, message: 'Validating authorized audio link…' });
+      try {
+        const response = await fetch(`/api/games/${gameId}/soundtrack/download`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            download_url: fields.soundtrackDirectUrl.value.trim(),
+            permission_confirmed: fields.soundtrackPermission.checked,
+          }),
+        });
+        const data = await response.json();
+        if (!response.ok || !data.success) throw new Error(data.message || 'Could not start the audio download.');
+        soundtrackDownloadCompletedGameId = null;
+        renderSoundtrackDownloadJob(data.job || {});
+        scheduleSoundtrackDownloadPoll(gameId);
+      } catch (error) {
+        renderSoundtrackDownloadJob({ status: 'failed', progress: 0, message: error.message || 'Could not start the audio download.' });
       }
     }
 
@@ -2652,6 +2837,9 @@
     if (fields.soundtrackRemoveButton) fields.soundtrackRemoveButton.addEventListener("click", removeSoundtrack);
     if (fields.soundtrackFindButton) fields.soundtrackFindButton.addEventListener("click", findSoundtrackCandidates);
     if (fields.soundtrackUploadInput) fields.soundtrackUploadInput.addEventListener("change", () => uploadLocalSoundtracks(fields.soundtrackUploadInput.files));
+    if (fields.soundtrackDirectUrl) fields.soundtrackDirectUrl.addEventListener("input", syncSoundtrackDownloadButton);
+    if (fields.soundtrackPermission) fields.soundtrackPermission.addEventListener("change", syncSoundtrackDownloadButton);
+    if (fields.soundtrackDownloadButton) fields.soundtrackDownloadButton.addEventListener("click", downloadSoundtrackFromUrl);
     if (fields.soundtrackPrevious) fields.soundtrackPrevious.addEventListener("click", () => stepLocalSoundtrack(-1));
     if (fields.soundtrackNext) fields.soundtrackNext.addEventListener("click", () => stepLocalSoundtrack(1));
     if (fields.soundtrackShuffle) fields.soundtrackShuffle.addEventListener("click", () => {
@@ -2786,6 +2974,9 @@
     fields.acquisitionQuery?.addEventListener("keydown", (event) => { if (event.key === "Enter") { event.preventDefault(); searchAcquisition(); } });
     fields.acquisitionReadSourceButton?.addEventListener("click", readAcquisitionSource);
     fields.acquisitionSaveButton?.addEventListener("click", saveAcquisition);
+    fields.acquisitionDownloadPermission?.addEventListener("change", syncAcquisitionDownloadButton);
+    fields.acquisitionDownloadUrl?.addEventListener("input", syncAcquisitionDownloadButton);
+    fields.acquisitionDownloadButton?.addEventListener("click", startAcquisitionDownload);
     fields.acquisitionAttachForm?.addEventListener("submit", attachAcquisition);
 
     document.addEventListener("keydown", (event) => {

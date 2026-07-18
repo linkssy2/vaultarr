@@ -2663,6 +2663,95 @@ body.focus-active .focus-backdrop {
     padding-right: 4px;
 }
 
+.soundtrack-direct-import {
+    display: grid;
+    gap: 13px;
+    padding: 15px;
+    border-radius: 18px;
+    border: 1px solid rgba(167, 139, 250, 0.18);
+    background: rgba(15, 23, 42, 0.46);
+}
+
+.soundtrack-direct-import h4,
+.soundtrack-direct-import p {
+    margin: 0;
+}
+
+.soundtrack-direct-import h4 {
+    margin: 2px 0 4px;
+    font-size: 16px;
+}
+
+.soundtrack-direct-controls {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 10px 12px;
+    align-items: center;
+}
+
+.soundtrack-direct-controls > input[type="url"] {
+    min-width: 0;
+}
+
+.soundtrack-permission-confirmation {
+    grid-column: 1;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    color: var(--text-muted);
+    font-size: 12px;
+    line-height: 1.4;
+}
+
+.soundtrack-permission-confirmation input {
+    margin-top: 2px;
+}
+
+.soundtrack-direct-controls .button-link {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+}
+
+.soundtrack-download-progress {
+    display: grid;
+    gap: 7px;
+}
+
+.soundtrack-download-progress[hidden] {
+    display: none;
+}
+
+.soundtrack-download-meter {
+    height: 7px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: rgba(2, 6, 23, 0.72);
+    border: 1px solid rgba(167, 139, 250, 0.14);
+}
+
+.soundtrack-download-meter span {
+    display: block;
+    width: 0;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, #7c3aed, #38bdf8);
+    box-shadow: 0 0 14px rgba(56, 189, 248, 0.36);
+    transition: width 220ms ease;
+}
+
+.soundtrack-download-copy {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    color: var(--text-muted);
+    font-size: 12px;
+}
+
+.soundtrack-download-copy strong {
+    color: #c4b5fd;
+    font-variant-numeric: tabular-nums;
+}
+
 .soundtrack-track-row {
     width: 100%;
     display: grid;

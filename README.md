@@ -1,8 +1,19 @@
-# Vaultarr 2.0.0 Alpha 36
+# Vaultarr 2.0.0 Alpha 37
 
-> Experimental release: **Vaultarr 2.0.0 Alpha 36 — Interface and Scan Responsiveness**
+> Experimental release: **Vaultarr 2.0.0 Alpha 37 — Authorized Acquisition Downloads**
 
 The `vaultarr-2.0-alpha` branch publishes its Docker image as `ghcr.io/linkssy2/vaultarr:2.experimental`. The stable `main` branch continues to own the `latest` tag.
+
+## Alpha 37 authorized acquisition downloads
+
+- Resolves matching My Abandonware titles through the site's public alphabetical catalog when its search form requires interactive verification.
+- Ranks direct game pages using the museum record's title, platform, and release year; Area 51 for Windows (2005) now opens its specific `area-51-cj7` page.
+- Retains the generic external search handoff only when no direct catalog match is available.
+- Downloads a manually pasted, authorized direct file link into per-game Vaultarr acquisition storage after an explicit permission confirmation.
+- Displays live progress, attaches the completed file automatically, and never extracts or executes the downloaded content.
+- Protects the downloader with public-host validation, redirect revalidation, a configurable size limit, streamed byte enforcement, and HTML-page rejection.
+- Adds the same permission-confirmed workflow to the expanded card's local soundtrack player for manually supplied direct MP3, FLAC, OGG, WAV, and M4A links.
+- Streams authorized audio into the game's Vaultarr soundtrack library, refreshes the player when complete, and keeps catalog/album pages external.
 
 ## Alpha 36 scan responsiveness
 
@@ -66,7 +77,7 @@ Vaultarr is a self-hosted digital game museum. Point it at your game folders, le
 - Manual Engine with indexed VideoGameManual.com search, Vimm's Manual Project fallback, PDF validation, and local manual storage
 - Media Library for covers, screenshots, hero art, logos, and trailer assets
 - Trailer Finder and cinematic Trailer tab
-- Soundtrack Scanner with YouTube previews, KHInsider catalog discovery, saved source links, and a local-audio player
+- Soundtrack Scanner with YouTube previews, KHInsider catalog discovery, saved source links, a local-audio player, and permission-confirmed direct audio imports
 - Patch Engine for community fixes and compatibility references
 - Per-game Preservation status, issues, and archived-asset summaries
 - Smart Collections and collection milestones
@@ -273,9 +284,13 @@ The **Add Game** button on the Library page opens the detailed manual form for p
 
 ## Acquisition Assistant
 
-Open a game and use **Acquisition Assistant → Find Copy**. Choose **All Sources**, **Vimm Vault**, or **My Abandonware**, then select a platform/version such as GameCube, Xbox, PC / Windows, DOS, or PlayStation. Vaultarr ranks matching public catalog pages and opens the original source. It does not download or proxy the game: acquisition continues manually on the source site, after which you can save a reference link and attach the local file or folder to the museum record.
+Open a game and use **Acquisition Assistant → Find Copy**. Choose **All Sources**, **Vimm Vault**, or **My Abandonware**, then select a platform/version such as GameCube, Xbox, PC / Windows, DOS, or PlayStation. Vaultarr ranks matching public catalog pages and opens the original source. Acquisition continues manually on that site. If you have permission and obtain a direct file URL, paste it into **Final download link**, confirm permission, and choose **Download to Vaultarr**. Vaultarr streams the file into per-game acquisition storage, reports progress, and attaches it without extracting or executing it. The default limit is 16 GB and can be changed from 1–64 GB with `VAULTARR_MAX_ACQUISITION_DOWNLOAD_GB`.
 
 No uploaded JSON or CSV index is required. If a source requires interactive browser verification, Vaultarr provides a focused external catalog search instead of attempting to bypass it. You can also paste an exact Vimm Vault or My Abandonware game-page URL and use **Read Source Page**.
+
+## Soundtrack acquisition
+
+Open a game's expanded Museum card and choose **Soundtrack → Authorized Link Import**. Paste a direct audio-file URL, confirm that you have permission to download and preserve it, and choose **Download Audio**. Vaultarr accepts MP3, FLAC, OGG, WAV, and M4A files up to 250 MB, streams them into the game's local soundtrack library, and refreshes the built-in player when the transfer completes. Album, catalog, and song pages remain external and are not scraped for audio.
 
 
 ## Performance foundation

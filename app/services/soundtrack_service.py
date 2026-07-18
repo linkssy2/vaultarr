@@ -1,12 +1,14 @@
 import html
 import mimetypes
 import re
+import threading
 from pathlib import Path
-from urllib.parse import quote_plus, urlencode, urlparse
+from urllib.parse import quote_plus, unquote, urlencode, urljoin, urlparse
 
 import requests
 
-from app.database.database import APP_DIR
+from app.database.database import APP_DIR, get_connection
+from app.services.acquisition_assistant_service import _public_download_url
 
 
 AUDIO_EXTENSIONS = {'.mp3', '.flac', '.ogg', '.wav', '.m4a'}
@@ -15,6 +17,10 @@ KHINSIDER_ROOT = 'https://downloads.khinsider.com'
 USER_AGENT = 'Vaultarr/2.0 Soundtrack Catalog'
 MAX_TRACKS_PER_GAME = 500
 MAX_UPLOAD_BYTES = 250 * 1024 * 1024
+DOWNLOAD_CHUNK_BYTES = 1024 * 256
+DOWNLOAD_REDIRECT_LIMIT = 5
+_DOWNLOAD_JOBS = {}
+_DOWNLOAD_LOCK = threading.Lock()
 
 
 def _plain_html(value):
@@ -207,6 +213,180 @@ def save_uploaded_tracks(game_id, uploads):
         upload.save(destination)
         saved.append(destination.name)
     return {'saved': saved, 'rejected': rejected}
+
+
+def _download_filename(response, final_url):
+    disposition = response.headers.get('Content-Disposition', '')
+    encoded = re.search(r"filename\*=UTF-8''([^;]+)", disposition, re.I)
+    plain = re.search(r'filename=["\']?([^;"\']+)', disposition, re.I)
+    name = unquote(encoded.group(1)) if encoded else (plain.group(1).strip() if plain else '')
+    if not name:
+        name = unquote(Path(urlparse(final_url).path).name)
+    name = _safe_upload_name(name or 'soundtrack')
+    if Path(name).suffix.lower() not in AUDIO_EXTENSIONS:
+        raise ValueError('The direct link must resolve to an MP3, FLAC, OGG, WAV, or M4A audio file.')
+    return name
+
+
+def _available_download_path(game_id, filename):
+    target_dir = SOUNDTRACK_DIR / str(int(game_id))
+    target_dir.mkdir(parents=True, exist_ok=True)
+    target = target_dir / filename
+    counter = 2
+    while target.exists() or target.with_name(f'{target.name}.part').exists():
+        target = target_dir / f'{Path(filename).stem} ({counter}){Path(filename).suffix}'
+        counter += 1
+    return target
+
+
+def _set_download_job(game_id, **updates):
+    with _DOWNLOAD_LOCK:
+        current = dict(_DOWNLOAD_JOBS.get(int(game_id), {}))
+        current.update(updates)
+        _DOWNLOAD_JOBS[int(game_id)] = current
+        return dict(current)
+
+
+def soundtrack_download_status(game_id):
+    with _DOWNLOAD_LOCK:
+        job = dict(_DOWNLOAD_JOBS.get(int(game_id), {}))
+    if not job:
+        return {'status': 'idle', 'progress': 0, 'received_bytes': 0, 'total_bytes': 0}
+    return job
+
+
+def _update_soundtrack_count(game_id):
+    conn = get_connection()
+    game = conn.execute('SELECT * FROM games WHERE id=?', (game_id,)).fetchone()
+    if not game:
+        conn.close()
+        raise ValueError('Game not found.')
+    count = len(list_local_tracks(dict(game)))
+    conn.execute(
+        'UPDATE games SET soundtrack_count=?, updated_at=CURRENT_TIMESTAMP WHERE id=?',
+        (count, game_id),
+    )
+    conn.commit()
+    conn.close()
+    return count
+
+
+def _download_soundtrack_worker(game_id, download_url):
+    temporary = None
+    response = None
+    try:
+        session = requests.Session()
+        headers = {'User-Agent': USER_AGENT, 'Accept': 'audio/*,application/octet-stream;q=0.9,*/*;q=0.5'}
+        current_url = download_url
+        for _ in range(DOWNLOAD_REDIRECT_LIMIT + 1):
+            current_url = _public_download_url(current_url)
+            response = session.get(
+                current_url,
+                headers=headers,
+                timeout=(12, 90),
+                stream=True,
+                allow_redirects=False,
+            )
+            if response.status_code in {301, 302, 303, 307, 308}:
+                location = response.headers.get('Location', '').strip()
+                response.close()
+                if not location:
+                    raise ValueError('The audio download redirect did not include a destination.')
+                current_url = urljoin(current_url, location)
+                continue
+            response.raise_for_status()
+            break
+        else:
+            raise ValueError('The audio download used too many redirects.')
+
+        content_type = response.headers.get('Content-Type', '').split(';', 1)[0].strip().lower()
+        if content_type in {'text/html', 'application/xhtml+xml'}:
+            response.close()
+            raise ValueError('This link opens a web page, not a direct audio file.')
+        filename = _download_filename(response, current_url)
+        total = int(response.headers.get('Content-Length') or 0)
+        if total > MAX_UPLOAD_BYTES:
+            response.close()
+            raise ValueError('The audio file exceeds Vaultarr\'s 250 MB per-file limit.')
+
+        target = _available_download_path(game_id, filename)
+        temporary = target.with_name(f'{target.name}.part')
+        received = 0
+        _set_download_job(
+            game_id,
+            status='downloading',
+            filename=filename,
+            progress=0,
+            received_bytes=0,
+            total_bytes=total,
+            message='Downloading audio to Vaultarr…',
+        )
+        with temporary.open('wb') as handle:
+            for chunk in response.iter_content(chunk_size=DOWNLOAD_CHUNK_BYTES):
+                if not chunk:
+                    continue
+                received += len(chunk)
+                if received > MAX_UPLOAD_BYTES:
+                    raise ValueError('The audio file exceeds Vaultarr\'s 250 MB per-file limit.')
+                handle.write(chunk)
+                progress = min(99, round((received / total) * 100)) if total else 0
+                _set_download_job(game_id, progress=progress, received_bytes=received, total_bytes=total)
+        response.close()
+        if received <= 0:
+            raise ValueError('The audio download returned an empty file.')
+        temporary.replace(target)
+        temporary = None
+        track_count = _update_soundtrack_count(game_id)
+        _set_download_job(
+            game_id,
+            status='complete',
+            progress=100,
+            received_bytes=received,
+            total_bytes=total or received,
+            filename=target.name,
+            track_count=track_count,
+            message='Audio download complete and ready in the Vaultarr player.',
+        )
+    except Exception as exc:
+        if response is not None:
+            response.close()
+        if temporary and temporary.exists():
+            try:
+                temporary.unlink()
+            except OSError:
+                pass
+        message = 'The remote server interrupted or rejected the audio download.' if isinstance(exc, requests.RequestException) else str(exc)
+        _set_download_job(game_id, status='failed', message=message[:220], progress=0)
+
+
+def start_soundtrack_download(game_id, download_url, permission_confirmed=False):
+    if permission_confirmed is not True:
+        raise ValueError('Confirm that you have permission to download and preserve this audio file.')
+    download_url = _public_download_url(download_url)
+    conn = get_connection()
+    game = conn.execute('SELECT id FROM games WHERE id=?', (game_id,)).fetchone()
+    conn.close()
+    if not game:
+        raise ValueError('Game not found.')
+    with _DOWNLOAD_LOCK:
+        existing = _DOWNLOAD_JOBS.get(int(game_id), {})
+        if existing.get('status') in {'queued', 'downloading'}:
+            raise ValueError('An audio download is already active for this game.')
+        _DOWNLOAD_JOBS[int(game_id)] = {
+            'status': 'queued',
+            'progress': 0,
+            'received_bytes': 0,
+            'total_bytes': 0,
+            'message': 'Audio download queued…',
+        }
+    worker = threading.Thread(
+        target=_download_soundtrack_worker,
+        args=(int(game_id), download_url),
+        daemon=True,
+        name=f'vaultarr-soundtrack-{int(game_id)}',
+    )
+    worker.start()
+    return soundtrack_download_status(game_id)
 
 
 def resolve_audio_path(game, source, relative_path):

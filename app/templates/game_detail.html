@@ -143,7 +143,7 @@
 
     <section class="panel acquisition-panel" id="acquisition-assistant" data-game-id="{{ game.id }}" data-default-title="{{ game.title|e }}" data-default-platform="{{ game.platform|e }}">
       <div class="panel-heading acquisition-heading">
-        <div><h2>Acquisition Assistant</h2><p class="muted">Search public Vimm and My Abandonware catalog pages, then continue from the original source.</p></div>
+        <div><h2>Acquisition Assistant</h2><p class="muted">Search public catalog pages, then securely import an authorized file from a direct link you provide.</p></div>
         {% if game_acquisition and game_acquisition.status == 'acquired' %}<span class="metadata-pill">Stored Locally</span>{% elif game_acquisition and game_acquisition.download_url %}<span class="metadata-pill">Link Ready</span>{% elif game_acquisition and game_acquisition.source_page %}<span class="metadata-pill">Source Found</span>{% endif %}
       </div>
 
@@ -165,7 +165,7 @@
         <select id="acquisitionPlatform" aria-label="Platform version"><option value="">All Versions</option><option value="PC / Windows">PC / Windows</option><option value="DOS">DOS</option><option value="GameCube">GameCube</option><option value="Xbox">Xbox</option><option value="Xbox 360">Xbox 360</option><option value="PlayStation">PlayStation</option><option value="PlayStation 2">PlayStation 2</option><option value="PlayStation 3">PlayStation 3</option><option value="PSP">PSP</option><option value="Nintendo 64">Nintendo 64</option><option value="NES">NES</option><option value="SNES">SNES</option><option value="Wii">Wii</option><option value="Game Boy Advance">Game Boy Advance</option><option value="Nintendo DS">Nintendo DS</option><option value="Dreamcast">Dreamcast</option><option value="Saturn">Saturn</option><option value="Genesis">Genesis</option></select>
         <button type="button" id="acquisitionSearchButton">Find Copy</button>
       </div>
-      <div id="acquisitionSearchStatus" class="muted acquisition-search-status">Searches public reference catalogs; Vaultarr does not download a game.</div>
+      <div id="acquisitionSearchStatus" class="muted acquisition-search-status">Searches public reference catalogs; downloads require your direct file link and permission confirmation.</div>
       <div id="acquisitionResults" class="acquisition-results"></div>
 
       <details class="acquisition-source-fallback">
@@ -183,6 +183,17 @@
         <label>Final direct download link</label>
         <input id="acquisitionDownloadUrl" value="{{ game_acquisition.download_url if game_acquisition else '' }}" placeholder="Paste the final link here">
         <button type="button" id="acquisitionSaveButton">Save Acquisition</button>
+        <div class="acquisition-download-box">
+          <label class="acquisition-download-permission">
+            <input type="checkbox" id="acquisitionDownloadPermission">
+            <span><strong>I have permission to download and preserve this file.</strong><small>Vaultarr will save the file without extracting or running it.</small></span>
+          </label>
+          <button type="button" id="acquisitionDownloadButton" class="secondary" disabled>Download to Vaultarr</button>
+          <div id="acquisitionDownloadProgress" class="acquisition-download-progress" hidden>
+            <div><span id="acquisitionDownloadMessage">Preparing download…</span><strong id="acquisitionDownloadBytes">0 B</strong></div>
+            <progress id="acquisitionDownloadMeter" max="100" value="0" aria-label="Acquisition download progress"></progress>
+          </div>
+        </div>
       </div>
 
       <details class="acquisition-attach-details">
@@ -288,7 +299,14 @@
   const selectionSource = document.getElementById('acquisitionSelectionSource');
   const downloadUrl = document.getElementById('acquisitionDownloadUrl');
   const saveButton = document.getElementById('acquisitionSaveButton');
+  const downloadPermission = document.getElementById('acquisitionDownloadPermission');
+  const downloadButton = document.getElementById('acquisitionDownloadButton');
+  const downloadProgress = document.getElementById('acquisitionDownloadProgress');
+  const downloadMessage = document.getElementById('acquisitionDownloadMessage');
+  const downloadBytes = document.getElementById('acquisitionDownloadBytes');
+  const downloadMeter = document.getElementById('acquisitionDownloadMeter');
   let selected = null;
+  let downloadPollTimer = null;
   const currentPlatform = {{ (game.platform or '')|tojson }};
   if ([...platform.options].some((option) => option.value === currentPlatform)) platform.value = currentPlatform;
 
@@ -361,10 +379,64 @@
     finally { saveButton.disabled = false; saveButton.textContent = 'Save Acquisition'; }
   };
 
+  const formatBytes = (value) => {
+    let amount = Number(value || 0); const units = ['B', 'KB', 'MB', 'GB', 'TB']; let unit = 0;
+    while (amount >= 1024 && unit < units.length - 1) { amount /= 1024; unit += 1; }
+    return `${amount >= 10 || unit === 0 ? amount.toFixed(0) : amount.toFixed(1)} ${units[unit]}`;
+  };
+
+  const syncDownloadButton = () => {
+    downloadButton.disabled = !(downloadPermission.checked && downloadUrl.value.trim());
+  };
+
+  const renderDownloadJob = (job = {}) => {
+    const active = ['queued', 'downloading'].includes(job.status);
+    const visible = active || ['complete', 'failed'].includes(job.status);
+    downloadProgress.hidden = !visible;
+    downloadMeter.value = Number(job.progress || 0);
+    downloadMessage.textContent = job.message || (active ? 'Downloading to Vaultarr…' : 'Ready.');
+    const received = formatBytes(job.received_bytes || 0);
+    downloadBytes.textContent = job.total_bytes ? `${received} / ${formatBytes(job.total_bytes)}` : received;
+    downloadButton.disabled = active || !(downloadPermission.checked && downloadUrl.value.trim());
+    downloadButton.textContent = active ? 'Downloading…' : 'Download to Vaultarr';
+    if (job.status === 'complete') status.textContent = `Download complete and attached: ${job.filename || 'acquired file'}`;
+    if (job.status === 'failed') status.textContent = job.message || 'The acquisition download failed.';
+  };
+
+  const pollDownload = async () => {
+    window.clearTimeout(downloadPollTimer);
+    try {
+      const response = await fetch(`/api/games/${gameId}/acquisition/download-status`, { headers: { Accept: 'application/json' } });
+      const data = await response.json();
+      if (response.ok && data.success) {
+        renderDownloadJob(data.job || {});
+        if (['queued', 'downloading'].includes(data.job?.status)) downloadPollTimer = window.setTimeout(pollDownload, 700);
+      }
+    } catch (_) {}
+  };
+
+  const startDownload = async () => {
+    if (!downloadPermission.checked || !downloadUrl.value.trim()) { syncDownloadButton(); return; }
+    downloadButton.disabled = true; downloadButton.textContent = 'Preparing…';
+    try {
+      const response = await fetch(`/api/games/${gameId}/acquisition/download`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({ download_url: downloadUrl.value.trim(), permission_confirmed: true })
+      });
+      const data = await response.json(); if (!response.ok || !data.success) throw new Error(data.message || 'Could not start download.');
+      renderDownloadJob(data.job || {}); downloadPollTimer = window.setTimeout(pollDownload, 350);
+    } catch (error) { status.textContent = error.message; syncDownloadButton(); }
+  };
+
   searchButton.addEventListener('click', search);
   query.addEventListener('keydown', (event) => { if (event.key === 'Enter') { event.preventDefault(); search(); } });
   readSourceButton.addEventListener('click', readSource);
   saveButton.addEventListener('click', save);
+  downloadPermission.addEventListener('change', syncDownloadButton);
+  downloadUrl.addEventListener('input', syncDownloadButton);
+  downloadButton.addEventListener('click', startDownload);
+  syncDownloadButton();
+  pollDownload();
 })();
 </script>
 

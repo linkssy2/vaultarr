@@ -1,13 +1,19 @@
 import html
+import ipaddress
+import os
 import re
+import socket
+import threading
+import unicodedata
 from concurrent.futures import ThreadPoolExecutor
 from difflib import SequenceMatcher
 from html.parser import HTMLParser
-from urllib.parse import quote, urljoin, urlparse
+from pathlib import Path
+from urllib.parse import quote, unquote, urljoin, urlparse
 
 import requests
 
-from app.database.database import get_connection
+from app.database.database import APP_DIR, get_connection
 
 BASE_URL = "https://vimm.net"
 SEARCH_URL = f"{BASE_URL}/vault/"
@@ -43,6 +49,12 @@ PLATFORM_ALIASES = {
     "saturn": ["Saturn"],
     "genesis": ["Genesis", "Mega-Drive"],
 }
+ACQUISITION_DIR = APP_DIR / "acquisitions"
+MAX_ACQUISITION_BYTES = max(1, min(64, int(os.getenv("VAULTARR_MAX_ACQUISITION_DOWNLOAD_GB", "16")))) * 1024 ** 3
+DOWNLOAD_CHUNK_BYTES = 1024 * 256
+DOWNLOAD_REDIRECT_LIMIT = 5
+_DOWNLOAD_JOBS = {}
+_DOWNLOAD_LOCK = threading.Lock()
 
 def _normalize(value):
     value = html.unescape(str(value or "")).lower()
@@ -58,10 +70,8 @@ def _score(title, wanted_title, platform="", wanted_platform=""):
         score = 96
     elif a in b or b in a:
         score = max(score, 88)
-    if platform and wanted_platform:
-        pa, pb = _normalize(platform), _normalize(wanted_platform)
-        if pa == pb or pa in pb or pb in pa:
-            score += 4
+    if platform and wanted_platform and _platform_matches(platform, wanted_platform):
+        score += 4
     return min(100, score)
 
 
@@ -70,7 +80,7 @@ def _platform_matches(actual, wanted):
         return True
     actual_key, wanted_key = _normalize(actual), _normalize(wanted)
     if wanted_key == "pc windows":
-        return actual_key in {"windows", "windows 3 x", "pc", "pc windows"}
+        return any(label in actual_key.split() for label in ("win", "windows", "pc"))
     return bool(actual_key and (actual_key == wanted_key or actual_key in wanted_key or wanted_key in actual_key))
 
 
@@ -266,6 +276,120 @@ def _my_abandonware_platform(page, href, fallback=""):
     return ", ".join(matches[:3]) or fallback
 
 
+def _catalog_sort_key(value):
+    value = unicodedata.normalize("NFKD", html.unescape(str(value or "")))
+    value = value.encode("ascii", "ignore").decode("ascii").lower()
+    return re.sub(r"[^a-z0-9]+", " ", value).strip()
+
+
+def _my_abandonware_catalog_url(letter, page=1):
+    root = f"{MY_ABANDONWARE_BASE_URL}/browse/name/{quote(letter, safe='')}/"
+    return root if page <= 1 else f"{root}page/{int(page)}/"
+
+
+def _parse_my_abandonware_catalog_html(page, wanted_title, wanted_platform="", wanted_year=""):
+    pattern = re.compile(
+        r'<a\b(?=[^>]*\bclass=["\'][^"\']*\bc-item-game__name\b[^"\']*["\'])'
+        r'(?=[^>]*\bhref=["\']([^"\']+)["\'])[^>]*>(.*?)</a>\s*'
+        r'<span\b[^>]*\bclass=["\'][^"\']*\bc-item-game__platforms\b[^"\']*["\'][^>]*>(.*?)</span>\s*'
+        r'<span\b[^>]*\bclass=["\'][^"\']*\bc-item-game__year\b[^"\']*["\'][^>]*>(.*?)</span>',
+        re.I | re.S,
+    )
+    found = []
+    wanted_year = str(wanted_year or "").strip()
+    for href, title_markup, platform_markup, year_markup in pattern.findall(page or ""):
+        clean_href = html.unescape(href).strip()
+        match = re.match(r"^/game/([a-z0-9-]+)(?:$|[/?#])", clean_href, re.I)
+        if not match:
+            continue
+        title = html.unescape(re.sub(r"<[^>]+>", " ", title_markup))
+        title = " ".join(title.split())
+        platform = html.unescape(re.sub(r"<[^>]+>", " ", platform_markup))
+        platform = " ".join(platform.split()).replace("Win,", "Windows,")
+        if platform == "Win":
+            platform = "Windows"
+        year = html.unescape(re.sub(r"<[^>]+>", " ", year_markup))
+        year = " ".join(year.split())
+        score = _score(title, wanted_title, platform, wanted_platform)
+        if wanted_year and wanted_year == year:
+            score = min(100, score + 4)
+        found.append({
+            "external_id": match.group(1).lower(),
+            "title": title,
+            "platform": platform,
+            "region": "",
+            "version": year,
+            "source_page": urljoin(MY_ABANDONWARE_BASE_URL, clean_href),
+            "match_score": score,
+            "provider": "My Abandonware",
+        })
+    return found
+
+
+def _search_my_abandonware_catalog(query, platform="", year=""):
+    first = next((character for character in _catalog_sort_key(query) if character.isalnum()), "$")
+    letter = first.upper() if first.isalpha() else first
+    session = requests.Session()
+    session.headers.update(HEADERS)
+    pages = {}
+
+    def load(page_number):
+        page_number = max(1, int(page_number))
+        if page_number in pages:
+            return pages[page_number]
+        response = session.get(_my_abandonware_catalog_url(letter, page_number), timeout=TIMEOUT)
+        response.raise_for_status()
+        rows = _parse_my_abandonware_catalog_html(response.text, query, platform, year)
+        pages[page_number] = (rows, response.text)
+        return pages[page_number]
+
+    first_rows, first_page = load(1)
+    page_numbers = [int(value) for value in re.findall(
+        rf"/browse/name/{re.escape(letter)}/page/(\d+)/", first_page, re.I
+    )]
+    last_page = max(page_numbers, default=1)
+    wanted_key = _catalog_sort_key(query)
+    low, high = 1, last_page
+    candidate_page = 1
+    while low <= high:
+        middle = (low + high) // 2
+        rows, _ = load(middle)
+        if not rows:
+            break
+        first_key = _catalog_sort_key(rows[0]["title"])
+        last_key = _catalog_sort_key(rows[-1]["title"])
+        candidate_page = middle
+        if wanted_key < first_key:
+            high = middle - 1
+        elif wanted_key > last_key:
+            low = middle + 1
+        else:
+            break
+
+    nearby = set(range(max(1, candidate_page - 1), min(last_page, candidate_page + 1) + 1))
+    nearby.update(page for page in (low, high) if 1 <= page <= last_page)
+    merged = {}
+    for page_number in sorted(nearby):
+        rows, _ = load(page_number)
+        for row in rows:
+            if row["match_score"] < 58:
+                continue
+            old = merged.get(row["external_id"])
+            if old is None or row["match_score"] > old["match_score"]:
+                merged[row["external_id"]] = row
+    ranked = sorted(
+        merged.values(),
+        key=lambda row: (
+            -int(row["match_score"]),
+            0 if str(row.get("version") or "") == str(year or "") else 1,
+            row["title"].lower(),
+        ),
+    )
+    if platform:
+        ranked = [row for row in ranked if _platform_matches(row.get("platform", ""), platform)]
+    return ranked[:12]
+
+
 def _parse_my_abandonware_html(page, wanted_title, wanted_platform=""):
     parser = _LinkParser()
     parser.feed(page)
@@ -294,13 +418,19 @@ def _parse_my_abandonware_html(page, wanted_title, wanted_platform=""):
     return found[:30]
 
 
-def search_my_abandonware_reference(query, platform=""):
+def search_my_abandonware_reference(query, platform="", year=""):
     query = (query or "").strip()
     if not query:
         return []
     supported_platforms = {"", "pc windows", "dos", "genesis", "saturn"}
     if _normalize(platform) not in supported_platforms:
         return []
+    try:
+        catalog_results = _search_my_abandonware_catalog(query, platform, year)
+        if catalog_results:
+            return catalog_results
+    except requests.RequestException:
+        pass
     search_url = _my_abandonware_search_url(query)
     try:
         response = requests.get(search_url, headers=HEADERS, timeout=TIMEOUT)
@@ -330,14 +460,14 @@ def search_my_abandonware_reference(query, platform=""):
     }]
 
 
-def search_acquisition_sources(query, platform="", provider="all"):
+def search_acquisition_sources(query, platform="", provider="all", year=""):
     provider = (provider or "all").strip().lower()
     jobs = []
     with ThreadPoolExecutor(max_workers=2) as executor:
         if provider in {"all", "vimm"}:
             jobs.append(("Vimm", executor.submit(search_vimm_reference, query, platform)))
         if provider in {"all", "myabandonware"}:
-            jobs.append(("My Abandonware", executor.submit(search_my_abandonware_reference, query, platform)))
+            jobs.append(("My Abandonware", executor.submit(search_my_abandonware_reference, query, platform, year)))
         if not jobs:
             raise ValueError("Choose a supported acquisition source.")
         results, errors = [], []
@@ -346,7 +476,11 @@ def search_acquisition_sources(query, platform="", provider="all"):
                 results.extend(future.result())
             except Exception as exc:
                 errors.append(f"{name}: {exc}")
-    results.sort(key=lambda row: (-int(row.get("match_score") or 0), row.get("title", "").lower()))
+    results.sort(key=lambda row: (
+        -int(row.get("match_score") or 0),
+        0 if year and str(row.get("version") or "") == str(year) else 1,
+        row.get("title", "").lower(),
+    ))
     if not results and errors:
         raise RuntimeError("; ".join(errors))
     return results[:40], errors
@@ -498,3 +632,184 @@ def get_game_acquisition(game_id):
     row = conn.execute("SELECT * FROM game_acquisitions WHERE game_id=?", (game_id,)).fetchone()
     conn.close()
     return row
+
+
+def _public_download_url(value):
+    value = _validate_http_url(value, "Download link")
+    parsed = urlparse(value)
+    if parsed.username or parsed.password:
+        raise ValueError("Download links cannot contain embedded credentials.")
+    hostname = (parsed.hostname or "").strip().lower().rstrip(".")
+    if not hostname or hostname == "localhost" or hostname.endswith(".localhost"):
+        raise ValueError("Download links must use a public internet host.")
+    try:
+        addresses = {item[4][0] for item in socket.getaddrinfo(hostname, parsed.port or (443 if parsed.scheme == "https" else 80), type=socket.SOCK_STREAM)}
+    except socket.gaierror as exc:
+        raise ValueError("The download host could not be resolved.") from exc
+    if not addresses:
+        raise ValueError("The download host could not be resolved.")
+    for address in addresses:
+        ip = ipaddress.ip_address(address.split("%")[0])
+        if not ip.is_global:
+            raise ValueError("Download links cannot target private or local network addresses.")
+    return value
+
+
+def _download_filename(response, final_url):
+    disposition = response.headers.get("Content-Disposition", "")
+    encoded = re.search(r"filename\*=UTF-8''([^;]+)", disposition, re.I)
+    plain = re.search(r'filename=["\']?([^;"\']+)', disposition, re.I)
+    name = unquote(encoded.group(1)) if encoded else (plain.group(1).strip() if plain else "")
+    if not name:
+        name = unquote(Path(urlparse(final_url).path).name)
+    name = Path(name or "acquisition.bin").name
+    stem = re.sub(r"[^A-Za-z0-9._ ()\[\]-]+", "_", Path(name).stem).strip(" ._") or "acquisition"
+    suffix = re.sub(r"[^A-Za-z0-9.]", "", Path(name).suffix.lower())[:16]
+    return f"{stem[:160]}{suffix}"
+
+
+def _available_download_path(game_id, filename):
+    target_dir = ACQUISITION_DIR / str(int(game_id))
+    target_dir.mkdir(parents=True, exist_ok=True)
+    target = target_dir / filename
+    counter = 2
+    while target.exists() or target.with_name(f"{target.name}.part").exists():
+        target = target_dir / f"{Path(filename).stem} ({counter}){Path(filename).suffix}"
+        counter += 1
+    return target
+
+
+def _set_download_job(game_id, **updates):
+    with _DOWNLOAD_LOCK:
+        current = dict(_DOWNLOAD_JOBS.get(int(game_id), {}))
+        current.update(updates)
+        _DOWNLOAD_JOBS[int(game_id)] = current
+        return dict(current)
+
+
+def acquisition_download_status(game_id):
+    with _DOWNLOAD_LOCK:
+        job = dict(_DOWNLOAD_JOBS.get(int(game_id), {}))
+    if not job:
+        return {"status": "idle", "progress": 0, "received_bytes": 0, "total_bytes": 0}
+    return job
+
+
+def _record_acquisition_download(game_id, download_url, local_path):
+    conn = get_connection()
+    game = conn.execute("SELECT title FROM games WHERE id=?", (game_id,)).fetchone()
+    if not game:
+        conn.close()
+        raise ValueError("Game not found.")
+    conn.execute("""
+        INSERT INTO game_acquisitions (game_id, source_title, download_url, local_path, status, attached_at, updated_at)
+        VALUES (?,?,?,?,'acquired',CURRENT_TIMESTAMP,CURRENT_TIMESTAMP)
+        ON CONFLICT(game_id) DO UPDATE SET
+            download_url=excluded.download_url,
+            local_path=excluded.local_path,
+            status='acquired',
+            attached_at=CURRENT_TIMESTAMP,
+            updated_at=CURRENT_TIMESTAMP
+    """, (game_id, game["title"] or "", download_url, str(local_path)))
+    conn.commit()
+    conn.close()
+
+
+def _download_acquisition_worker(game_id, download_url):
+    temporary = None
+    response = None
+    try:
+        session = requests.Session()
+        headers = dict(HEADERS)
+        headers["Accept"] = "application/octet-stream,application/zip,application/x-7z-compressed,*/*;q=0.8"
+        current_url = download_url
+        for _ in range(DOWNLOAD_REDIRECT_LIMIT + 1):
+            current_url = _public_download_url(current_url)
+            response = session.get(current_url, headers=headers, timeout=(12, 90), stream=True, allow_redirects=False)
+            if response.status_code in {301, 302, 303, 307, 308}:
+                location = response.headers.get("Location", "").strip()
+                response.close()
+                if not location:
+                    raise ValueError("The download redirect did not include a destination.")
+                current_url = urljoin(current_url, location)
+                continue
+            response.raise_for_status()
+            break
+        else:
+            raise ValueError("The download used too many redirects.")
+
+        content_type = response.headers.get("Content-Type", "").split(";", 1)[0].strip().lower()
+        if content_type in {"text/html", "application/xhtml+xml"}:
+            response.close()
+            raise ValueError("This link opens a web page, not a downloadable file.")
+        total = int(response.headers.get("Content-Length") or 0)
+        if total > MAX_ACQUISITION_BYTES:
+            response.close()
+            raise ValueError(f"The file exceeds Vaultarr's {MAX_ACQUISITION_BYTES // 1024 ** 3} GB acquisition limit.")
+
+        filename = _download_filename(response, current_url)
+        target = _available_download_path(game_id, filename)
+        temporary = target.with_name(f"{target.name}.part")
+        received = 0
+        _set_download_job(game_id, status="downloading", filename=filename, progress=0, received_bytes=0, total_bytes=total, message="Downloading to Vaultarr…")
+        with temporary.open("wb") as handle:
+            for chunk in response.iter_content(chunk_size=DOWNLOAD_CHUNK_BYTES):
+                if not chunk:
+                    continue
+                received += len(chunk)
+                if received > MAX_ACQUISITION_BYTES:
+                    raise ValueError(f"The file exceeds Vaultarr's {MAX_ACQUISITION_BYTES // 1024 ** 3} GB acquisition limit.")
+                handle.write(chunk)
+                progress = min(99, round((received / total) * 100)) if total else 0
+                _set_download_job(game_id, progress=progress, received_bytes=received, total_bytes=total)
+        response.close()
+        if received <= 0:
+            raise ValueError("The download returned an empty file.")
+        temporary.replace(target)
+        temporary = None
+        _record_acquisition_download(game_id, download_url, target.resolve())
+        _set_download_job(
+            game_id,
+            status="complete",
+            progress=100,
+            received_bytes=received,
+            total_bytes=total or received,
+            filename=target.name,
+            local_path=str(target.resolve()),
+            message="Download complete and attached to this game.",
+        )
+    except Exception as exc:
+        if response is not None:
+            response.close()
+        if temporary and temporary.exists():
+            try:
+                temporary.unlink()
+            except OSError:
+                pass
+        message = "The remote server interrupted or rejected the file download." if isinstance(exc, requests.RequestException) else str(exc)
+        _set_download_job(game_id, status="failed", message=message[:220], progress=0)
+
+
+def start_acquisition_download(game_id, download_url, permission_confirmed=False):
+    if permission_confirmed is not True:
+        raise ValueError("Confirm that you have permission to download and preserve this file.")
+    download_url = _public_download_url(download_url)
+    conn = get_connection()
+    game = conn.execute("SELECT id FROM games WHERE id=?", (game_id,)).fetchone()
+    conn.close()
+    if not game:
+        raise ValueError("Game not found.")
+    with _DOWNLOAD_LOCK:
+        existing = _DOWNLOAD_JOBS.get(int(game_id), {})
+        if existing.get("status") in {"queued", "downloading"}:
+            raise ValueError("A download is already active for this game.")
+        _DOWNLOAD_JOBS[int(game_id)] = {
+            "status": "queued",
+            "progress": 0,
+            "received_bytes": 0,
+            "total_bytes": 0,
+            "message": "Preparing secure download…",
+        }
+    worker = threading.Thread(target=_download_acquisition_worker, args=(int(game_id), download_url), daemon=True)
+    worker.start()
+    return acquisition_download_status(game_id)

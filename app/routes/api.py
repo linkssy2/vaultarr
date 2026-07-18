@@ -25,6 +25,8 @@ from app.services.soundtrack_service import (
     list_local_tracks,
     resolve_audio_path,
     save_uploaded_tracks,
+    soundtrack_download_status,
+    start_soundtrack_download,
 )
 from app.services.metadata_service import (
     search_metadata_diagnostics,
@@ -1285,6 +1287,32 @@ def api_game_soundtrack_upload(game_id):
         "tracks": tracks,
         "game": enrich_game(row_to_dict(updated)),
     }), 200 if result["saved"] else 400
+
+
+@api_bp.route("/api/games/<int:game_id>/soundtrack/download", methods=["POST"])
+def api_game_soundtrack_download(game_id):
+    payload = request.get_json(silent=True) or {}
+    try:
+        job = start_soundtrack_download(
+            game_id,
+            (payload.get("download_url") or "").strip(),
+            payload.get("permission_confirmed") is True,
+        )
+        return jsonify({"success": True, "job": job}), 202
+    except ValueError as exc:
+        message = str(exc)
+        status = 404 if message == "Game not found." else 400
+        return jsonify({"success": False, "message": message}), status
+
+
+@api_bp.route("/api/games/<int:game_id>/soundtrack/download-status")
+def api_game_soundtrack_download_status(game_id):
+    conn = get_connection()
+    game = conn.execute("SELECT id FROM games WHERE id=?", (game_id,)).fetchone()
+    conn.close()
+    if game is None:
+        abort(404)
+    return jsonify({"success": True, "job": soundtrack_download_status(game_id)})
 
 
 @api_bp.route("/api/games/<int:game_id>/soundtrack/audio")

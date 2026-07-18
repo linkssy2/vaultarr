@@ -19,8 +19,8 @@
   <link rel="stylesheet" href="/static/css/museum-experience.css?v=1.7.6">
   <link rel="stylesheet" href="/static/css/library.css?v=2.0.0-alpha.36-depth.1">
   <link rel="stylesheet" href="/static/css/cards.css?v=2.0.0-alpha.36-depth.1">
-  <link rel="stylesheet" href="/static/css/game-detail.css?v=2.0.0-alpha.36-acquisition.1">
-  <link rel="stylesheet" href="/static/css/focus-mode.css?v=2.0.0-alpha.36-acquisition.4">
+  <link rel="stylesheet" href="/static/css/game-detail.css?v=2.0.0-alpha.37-acquisition-download.1">
+  <link rel="stylesheet" href="/static/css/focus-mode.css?v=2.0.0-alpha.37-soundtrack-download.1">
   <link rel="stylesheet" href="/static/css/performance-foundation.css?v=1.7.6">
   <link rel="stylesheet" href="/static/css/preservation.css">
   <link rel="stylesheet" href="/static/css/vaultos.css">
@@ -74,7 +74,7 @@
     <div class="sidebar-footer">
       <div class="mini-stat vault-build-card">
         <span>Current build</span>
-        <strong>Vaultarr 2.0 Alpha 36</strong>
+        <strong>Vaultarr 2.0 Alpha 37</strong>
         <em></em>
       </div>
       {% if auth_enabled %}
@@ -287,7 +287,7 @@
             <div>
               <p class="eyebrow">Acquisition Assistant</p>
               <h2>Find a reference copy</h2>
-              <p class="muted">Search public Vimm and My Abandonware catalog pages, then obtain the selected release from its original site.</p>
+              <p class="muted">Search public catalog pages, then securely import an authorized file from a direct link you provide.</p>
             </div>
             <span class="metadata-pill" id="focusAcquisitionBadge">Not Configured</span>
           </div>
@@ -347,6 +347,17 @@
             <label for="focusAcquisitionDownloadUrl">Final download link</label>
             <input id="focusAcquisitionDownloadUrl" placeholder="Paste the final link here">
             <button type="button" id="focusAcquisitionSaveButton">Save Acquisition</button>
+            <div class="acquisition-download-box">
+              <label class="acquisition-download-permission">
+                <input type="checkbox" id="focusAcquisitionDownloadPermission">
+                <span><strong>I have permission to download and preserve this file.</strong><small>Vaultarr saves the file without extracting or running it.</small></span>
+              </label>
+              <button type="button" id="focusAcquisitionDownloadButton" class="secondary" disabled>Download to Vaultarr</button>
+              <div id="focusAcquisitionDownloadProgress" class="acquisition-download-progress" hidden>
+                <div><span id="focusAcquisitionDownloadMessage">Preparing download…</span><strong id="focusAcquisitionDownloadBytes">0 B</strong></div>
+                <progress id="focusAcquisitionDownloadMeter" max="100" value="0" aria-label="Acquisition download progress"></progress>
+              </div>
+            </div>
           </div>
 
           <details class="acquisition-attach-details">
@@ -545,6 +556,28 @@
             </div>
 
             <div id="focusSoundtrackUploadStatus" class="metadata-status-row"></div>
+            <div class="soundtrack-direct-import" aria-labelledby="focusSoundtrackDirectHeading">
+              <div>
+                <p class="eyebrow">Authorized Link Import</p>
+                <h4 id="focusSoundtrackDirectHeading">Download a direct audio file</h4>
+                <p class="muted">Paste a direct MP3, FLAC, OGG, WAV, or M4A link you are permitted to preserve. Catalog and album pages remain external.</p>
+              </div>
+              <div class="soundtrack-direct-controls">
+                <input id="focusSoundtrackDirectUrl" type="url" inputmode="url" autocomplete="off" placeholder="https://example.com/authorized-track.mp3" aria-label="Authorized direct audio file URL">
+                <label class="soundtrack-permission-confirmation">
+                  <input id="focusSoundtrackPermission" type="checkbox">
+                  <span>I confirm I have permission to download and preserve this audio file.</span>
+                </label>
+                <button class="button-link small" id="focusSoundtrackDownloadButton" type="button" disabled>Download Audio</button>
+              </div>
+              <div class="soundtrack-download-progress" id="focusSoundtrackDownloadProgress" hidden>
+                <div class="soundtrack-download-meter"><span id="focusSoundtrackDownloadFill"></span></div>
+                <div class="soundtrack-download-copy">
+                  <span id="focusSoundtrackDownloadMessage">Waiting for an authorized direct audio link.</span>
+                  <strong id="focusSoundtrackDownloadPercent">0%</strong>
+                </div>
+              </div>
+            </div>
             <div id="focusSoundtrackTrackList" class="soundtrack-track-list">
               <div class="trailer-candidate-empty">No local soundtrack files found.</div>
             </div>
@@ -716,7 +749,7 @@
   <script src="/static/js/live-events.js?v=1.7.6"></script>
   <script src="/static/js/museum-scan-pill.js?v=2.0.0-alpha.36-scan-panel.15"></script>
   <script src="/static/js/library.js?v=2.0.0-alpha.36-depth.1"></script>
-  <script src="/static/js/focus-mode.js?v=2.0.0-alpha.36-acquisition.4"></script>
+  <script src="/static/js/focus-mode.js?v=2.0.0-alpha.37-soundtrack-download.1"></script>
   <script src="/static/js/performance-foundation.js?v=1.7.6"></script>
   <script src="/static/js/theme-compat.js"></script>
   <script src="/static/js/studio-navigation.js"></script>

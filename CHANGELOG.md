@@ -1,3 +1,14 @@
+## 2.0.0 Alpha 37 — Authorized Acquisition Downloads
+
+- Replaced My Abandonware's verification-page search fallback with exact game-page resolution through its public alphabetical catalog whenever a matching title is available.
+- Uses stored platform and release-year data to rank editions, allowing a 2005 Windows record for Area 51 to open `https://www.myabandonware.com/game/area-51-cj7` directly instead of a generic search page.
+- Keeps the external search handoff only when no supported direct catalog match can be resolved.
+- Added permission-confirmed downloads for manually pasted direct file URLs, with live byte/progress reporting in both the full game page and expanded Museum card.
+- Streams authorized files into per-game Vaultarr acquisition storage and automatically attaches successful downloads to the game record without extracting or executing them.
+- Rejects private/local network targets, embedded URL credentials, HTML pages, oversized files, unsafe redirect destinations, and concurrent downloads for the same game.
+- Added the same explicit-permission download flow to the expanded Museum card's Soundtrack tab for manually supplied direct MP3, FLAC, OGG, WAV, and M4A file links.
+- Streams authorized audio into per-game soundtrack storage with live progress, then refreshes the existing local player without scraping or downloading from catalog and album pages.
+
 ## 2.0.0 Alpha 36 — Interface and Scan Responsiveness
 
 - Removed the numeric Home health gauge and rebuilt the Orbital Core around an enlarged glowing blue badge with a hollow white Vaultarr V. Its liquid fill reflects Museum Health and undulates only when rising bubbles pop into its spring surface, while a same-size outer orbital node keeps the live health percentage visible.
