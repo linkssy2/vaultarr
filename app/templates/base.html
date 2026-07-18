@@ -20,7 +20,7 @@
   <link rel="stylesheet" href="/static/css/library.css?v=2.0.0-alpha.36-depth.1">
   <link rel="stylesheet" href="/static/css/cards.css?v=2.0.0-alpha.36-depth.1">
   <link rel="stylesheet" href="/static/css/game-detail.css?v=2.0.0-alpha.37-acquisition-download.1">
-  <link rel="stylesheet" href="/static/css/focus-mode.css?v=2.0.0-alpha.41-tabs.2">
+  <link rel="stylesheet" href="/static/css/focus-mode.css?v=2.0.0-alpha.44-overview-gallery.1">
   <link rel="stylesheet" href="/static/css/performance-foundation.css?v=1.7.6">
   <link rel="stylesheet" href="/static/css/preservation.css">
   <link rel="stylesheet" href="/static/css/vaultos.css">
@@ -33,7 +33,7 @@
   <link rel="stylesheet" href="/static/css/cohesion.css">
   <link rel="stylesheet" href="/static/css/alpha30-flow.css">
   <link rel="stylesheet" href="/static/css/experience.css">
-  <link rel="stylesheet" href="/static/css/readiness.css">
+  <link rel="stylesheet" href="/static/css/readiness.css?v=2.0.0-alpha.45-welcome.1">
   <link rel="stylesheet" href="/static/css/responsive.css">
   <link rel="stylesheet" href="/static/css/controls.css?v=1.7.6">
   <link rel="stylesheet" href="/static/css/museum-scan-pill.css?v=2.0.0-alpha.36-scan-panel.14">
@@ -74,7 +74,7 @@
     <div class="sidebar-footer">
       <div class="mini-stat vault-build-card">
         <span>Current build</span>
-        <strong>Vaultarr 2.0 Alpha 42</strong>
+        <strong>Vaultarr 2.0 Alpha 46</strong>
         <em></em>
       </div>
       {% if auth_enabled %}
@@ -99,25 +99,6 @@
       <div class="focus-cover" id="focusCover">
         <div class="focus-cover-placeholder">🎮</div>
       </div>
-
-      <div class="focus-art-meta">
-        <div>
-          <span>Artwork Source</span>
-          <strong id="focusArtworkSource">Unknown</strong>
-        </div>
-        <div>
-          <span>Artwork Type</span>
-          <strong id="focusArtworkType">Box Cover</strong>
-        </div>
-        <div>
-          <span>Resolution</span>
-          <strong id="focusArtworkResolution">Unknown</strong>
-        </div>
-        <div>
-          <span>Metadata Lock</span>
-          <strong id="focusArtworkLock">Unlocked</strong>
-        </div>
-      </div>
     </aside>
 
     <div class="focus-content">
@@ -129,14 +110,13 @@
         <div class="focus-tab-primary" role="tablist" aria-label="Essential workspaces">
           <button class="focus-tab active" data-tab="overview" type="button" role="tab" aria-selected="true" aria-controls="focusTab-overview">Overview</button>
           <button class="focus-tab" data-tab="play" type="button" role="tab" aria-selected="false" aria-controls="focusTab-play" tabindex="-1">Play</button>
-          <button class="focus-tab" data-tab="metadata" type="button" role="tab" aria-selected="false" aria-controls="focusTab-metadata" tabindex="-1">Information</button>
-          <button class="focus-tab" data-tab="preservation" type="button" role="tab" aria-selected="false" aria-controls="focusTab-preservation" tabindex="-1">Preservation</button>
         </div>
         <div class="focus-tab-menu" data-focus-tab-menu>
           <button class="focus-tab-menu-trigger" type="button" aria-expanded="false" aria-controls="focusCollectionTabs">
             <span>Collection</span><span class="focus-tab-menu-chevron" aria-hidden="true">⌄</span>
           </button>
           <div class="focus-tab-menu-popover" id="focusCollectionTabs" role="tablist" aria-label="Collection workspaces" aria-hidden="true">
+            <button class="focus-tab" data-tab="metadata" type="button" role="tab" aria-selected="false" aria-controls="focusTab-metadata" tabindex="-1">Information</button>
             <button class="focus-tab" data-tab="manuals" type="button" role="tab" aria-selected="false" aria-controls="focusTab-manuals" tabindex="-1">Manuals</button>
             <button class="focus-tab" data-tab="gallery" type="button" role="tab" aria-selected="false" aria-controls="focusTab-gallery" tabindex="-1">Gallery</button>
             <button class="focus-tab" data-tab="trailer" type="button" role="tab" aria-selected="false" aria-controls="focusTab-trailer" tabindex="-1">Trailer</button>
@@ -148,6 +128,7 @@
             <span>Manage</span><span class="focus-tab-menu-chevron" aria-hidden="true">⌄</span>
           </button>
           <div class="focus-tab-menu-popover" id="focusManageTabs" role="tablist" aria-label="Management workspaces" aria-hidden="true">
+            <button class="focus-tab" data-tab="preservation" type="button" role="tab" aria-selected="false" aria-controls="focusTab-preservation" tabindex="-1">Preservation</button>
             <button class="focus-tab" data-tab="acquisition" type="button" role="tab" aria-selected="false" aria-controls="focusTab-acquisition" tabindex="-1">Acquisition</button>
             <button class="focus-tab" data-tab="patches" type="button" role="tab" aria-selected="false" aria-controls="focusTab-patches" tabindex="-1">Patches</button>
             <button class="focus-tab" data-tab="files" type="button" role="tab" aria-selected="false" aria-controls="focusTab-files" tabindex="-1">Files</button>
@@ -158,15 +139,30 @@
 
       <div class="focus-tab-panel active" id="focusTab-overview">
         <p id="focusDescription" class="focus-description"></p>
-
-        <div class="focus-stat-grid">
-          <div class="card"><h2>Size</h2><p id="focusSize">—</p></div>
-          <div class="card"><h2>Files</h2><p id="focusFiles">—</p></div>
-          <div class="card"><h2>Executables</h2><p id="focusExecutables">—</p></div>
-          <div class="card"><h2>Category</h2><p id="focusCategory">—</p></div>
-          <div class="card"><h2>Source</h2><p id="focusSourceType">—</p></div>
-          <div class="card"><h2>Lock</h2><p id="focusLockStatus">—</p></div>
-        </div>
+        <section class="overview-trailer-showcase" aria-labelledby="focusOverviewTrailerHeading">
+          <div class="overview-gallery-heading">
+            <div>
+              <span class="overview-gallery-eyebrow">Now showing</span>
+              <h2 id="focusOverviewTrailerHeading">Game trailer</h2>
+            </div>
+            <button class="secondary-button small" id="focusOverviewTrailerOpen" type="button">Open Trailer</button>
+          </div>
+          <div class="overview-trailer-stage" id="focusOverviewTrailer">
+            <div class="overview-trailer-empty">No trailer saved yet. Add one from the Trailer workspace to feature it here.</div>
+          </div>
+        </section>
+        <section class="overview-gallery-showcase" aria-labelledby="focusOverviewGalleryHeading">
+          <div class="overview-gallery-heading">
+            <div>
+              <span class="overview-gallery-eyebrow">From the collection</span>
+              <h2 id="focusOverviewGalleryHeading">In-game screenshots</h2>
+            </div>
+            <button class="secondary-button small" id="focusOverviewGalleryOpen" type="button">Open Gallery</button>
+          </div>
+          <div class="overview-screenshot-grid" id="focusOverviewGallery">
+            <div class="overview-screenshot-empty">No saved in-game screenshots yet. Add screenshots from Gallery to feature them here.</div>
+          </div>
+        </section>
       </div>
 
       <div class="focus-tab-panel" id="focusTab-play">
@@ -229,6 +225,15 @@
             <p><strong>Genre:</strong> <span id="focusGenre">Unknown</span></p>
             <p><strong>Platform:</strong> <span id="focusPlatform">Unknown</span></p>
             <p><strong>Source:</strong> <span id="focusSource">None</span></p>
+          </div>
+
+          <div class="focus-stat-grid information-stat-grid" aria-label="Library and file details">
+            <div class="card"><h2>Size</h2><p id="focusSize">—</p></div>
+            <div class="card"><h2>Files</h2><p id="focusFiles">—</p></div>
+            <div class="card"><h2>Executables</h2><p id="focusExecutables">—</p></div>
+            <div class="card"><h2>Category</h2><p id="focusCategory">—</p></div>
+            <div class="card"><h2>Source</h2><p id="focusSourceType">—</p></div>
+            <div class="card"><h2>Lock</h2><p id="focusLockStatus">—</p></div>
           </div>
 
           <div class="metadata-live-search">
@@ -857,7 +862,7 @@
   <script src="/static/js/live-events.js?v=1.7.6"></script>
   <script src="/static/js/museum-scan-pill.js?v=2.0.0-alpha.36-scan-panel.15"></script>
   <script src="/static/js/library.js?v=2.0.0-alpha.41-museum-menus.2"></script>
-  <script src="/static/js/focus-mode.js?v=2.0.0-alpha.41-tabs.2"></script>
+  <script src="/static/js/focus-mode.js?v=2.0.0-alpha.44-overview-gallery.1"></script>
   <script src="/static/js/performance-foundation.js?v=1.7.6"></script>
   <script src="/static/js/theme-compat.js"></script>
   <script src="/static/js/studio-navigation.js?v=2.0.0-alpha.42-settings.1"></script>
@@ -918,5 +923,6 @@
   <script src="/static/js/global-search.js?v=2.0.0-alpha.42-search-motion.1"></script>
   <script src="/static/js/interaction-lifecycle.js?v=1.7.6"></script>
   <script src="/static/js/interface-cohesion.js?v=2.0.0-alpha.2"></script>
+  <script src="/static/js/onboarding.js?v=2.0.0-alpha.45-welcome.1"></script>
 </body>
 </html>

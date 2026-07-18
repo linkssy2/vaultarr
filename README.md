@@ -1,8 +1,40 @@
-# Vaultarr 2.0.0 Alpha 42
+# Vaultarr 2.0.0 Alpha 46
 
-> Experimental release: **Vaultarr 2.0.0 Alpha 42 — Calm Search and Simpler Settings**
+> Experimental release: **Vaultarr 2.0.0 Alpha 46 — Integrated Museum Access**
 
 The `vaultarr-2.0-alpha` branch publishes its Docker image as `ghcr.io/linkssy2/vaultarr:2.experimental`. The stable `main` branch continues to own the `latest` tag.
+
+## Alpha 46 integrated museum access
+
+- Integrates the login form into the existing animated orbital scene instead of covering its center.
+- Keeps the Vaultarr core fully visible and connects it to a dedicated museum-access chamber with a softly pulsing data bridge.
+- Removes the duplicate login logo and floating overlay treatment so branding, motion, and credentials read as one composition.
+- Adds calm authentication feedback, responsive mobile composition, and reduced-motion support.
+- Uses the same interface typography and canonical Vaultarr logo as the rest of the application.
+- Preserves credential verification, sessions, redirects, logout, authentication settings, and all protected authentication behavior.
+
+## Alpha 45 museum welcome experience
+
+- Replaces the static first-run checklist with a smooth three-stage welcome, collection-folder, and museum-ready experience.
+- Introduces Vaultarr as a museum and preservation space before presenting any setup controls.
+- Lets users connect their first collection folder directly in onboarding without searching through Settings.
+- Clearly explains that setup does not move or run files and hands users to the existing Museum Scan control afterward.
+- Preserves authentication, Museum Scan behavior, Settings library management, routes, and existing collections.
+
+## Alpha 44 screenshot-first game overview
+
+- Removes artwork source, type, resolution, and lock details from beneath the expanded-card cover.
+- Moves size, file, executable, category, source, and lock details into Information.
+- Places the saved game trailer directly beneath the description with in-place playback and a link to the full Trailer workspace.
+- Features up to four saved in-game screenshots directly below the game description, with a clear path into Gallery.
+- Preserves expanded-card dimensions, cover artwork, navigation, and all existing card interactions.
+
+## Alpha 43 balanced expanded-card navigation
+
+- Presents Overview, Play, Collection, and Manage as four evenly spaced controls.
+- Places Information with the collection-oriented workspaces.
+- Places Preservation with the management-oriented workspaces.
+- Keeps every expanded-card workspace, dropdown animation, keyboard behavior, card dimension, and interaction intact.
 
 ## Alpha 42 calm search and simpler settings
 

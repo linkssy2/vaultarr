@@ -1,3 +1,37 @@
+## 2.0.0 Alpha 46 — Integrated Museum Access
+
+- Recomposed the login screen so the credential form no longer overlays and obscures the animated orbital core.
+- Kept the full orbital animation visible and connected it to a dedicated glass museum-access chamber through a pulsing access bridge.
+- Removed the duplicate form logo, radial masking overlay, and obsolete centered-card styling.
+- Added a calm secure-entrance status, integrated field focus states, submit feedback, responsive mobile arrangement, and reduced-motion behavior.
+- Matched the login typography to the application font stack and reused the canonical Vaultarr logo in the masthead and orbital core.
+- Preserved username and password verification, session creation, next-route redirects, logout, authentication settings, and all protected authentication behavior.
+
+## 2.0.0 Alpha 45 — Museum Welcome Experience
+
+- Replaced the static onboarding checklist with a visually focused, museum-first three-stage setup flow.
+- Added calm staged transitions, an animated museum seal, visible setup progress, responsive layouts, and reduced-motion support.
+- Added an inline first-collection form with clear Windows, Docker, and mounted-network path examples.
+- Added a dedicated onboarding library endpoint that preserves the existing Settings library workflow and returns users to a clear completion state.
+- Added a museum-ready handoff that points users to the protected Museum Scan control without starting a scan automatically.
+- Preserved authentication behavior, existing routes, connected libraries, sidebar layout, and unrelated systems.
+
+## 2.0.0 Alpha 44 — Screenshot-First Game Overview
+
+- Simplified the expanded-card Overview to focus on the cover, game description, and saved in-game screenshots.
+- Removed the artwork source, artwork type, resolution, and metadata lock panel beneath the cover along with its obsolete selectors and bindings.
+- Moved size, file count, executable count, category, source type, and metadata lock status into Information without changing their data.
+- Added the existing saved trailer to Overview ahead of the screenshot showcase, including in-place playback and automatic playback cleanup when leaving Overview.
+- Added an Overview screenshot showcase sourced from the existing cached Gallery and linked each image back to the full Gallery workspace.
+- Preserved expanded-card dimensions, cover rendering, navigation, routes, and protected Museum card interactions.
+
+## 2.0.0 Alpha 43 — Balanced Expanded-Card Navigation
+
+- Rebalanced expanded-card navigation into four equally sized controls: Overview, Play, Collection, and Manage.
+- Moved Information into Collection with Manuals, Gallery, Trailer, and Soundtrack.
+- Moved Preservation into Manage with Acquisition, Patches, Files, and Actions.
+- Preserved every existing workspace, active-state indicator, keyboard interaction, dropdown animation, card dimension, and expansion behavior.
+
 ## 2.0.0 Alpha 42 — Calm Search and Simpler Settings
 
 - Added a continuous sliding indicator between My Museum and Discover & Add in Universal Search.

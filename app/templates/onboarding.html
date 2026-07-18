@@ -1,45 +1,121 @@
 {% extends "base.html" %}
 {% block content %}
-<section class="readiness-page onboarding-page">
-  <section class="readiness-hero alive-panel">
+<section class="onboarding-experience" data-onboarding data-initial-step="{{ onboarding_step }}" data-has-library="{{ 'true' if libraries else 'false' }}">
+  <div class="onboarding-atmosphere" aria-hidden="true"><span></span><i></i><b></b></div>
+
+  <header class="onboarding-header">
     <div>
-      <p class="eyebrow">Vaultarr 1.0</p>
-      <h1>Build your digital museum.</h1>
-      <p class="muted hero-copy">Add a library root, scan your games, then let Vaultarr enrich them with metadata, manuals, media, trailers, patches, and smart collections.</p>
-      <div class="hero-actions slim-actions">
-        <a class="button-link" href="/settings#libraryRoots">Choose Game Folder →</a>
+      <p class="eyebrow">First-time museum setup</p>
+      <span class="onboarding-header-copy">A calm introduction to your new digital collection.</span>
+    </div>
+    <div class="onboarding-progress" role="list" aria-label="Setup progress">
+      <button type="button" data-onboarding-step="welcome" role="listitem"><span>1</span><strong>Welcome</strong></button>
+      <i aria-hidden="true"></i>
+      <button type="button" data-onboarding-step="library" role="listitem"><span>2</span><strong>Collection</strong></button>
+      <i aria-hidden="true"></i>
+      <button type="button" data-onboarding-step="ready" role="listitem"><span>3</span><strong>Ready</strong></button>
+    </div>
+  </header>
+
+  <div class="onboarding-stage" data-onboarding-stage>
+    <section class="onboarding-panel onboarding-welcome" data-onboarding-panel="welcome" aria-labelledby="onboardingWelcomeTitle">
+      <div class="onboarding-welcome-copy">
+        <span class="onboarding-kicker">Welcome to Vaultarr</span>
+        <h1 id="onboardingWelcomeTitle" tabindex="-1">Give every game<br>a place in history.</h1>
+        <p>Vaultarr is a digital museum for the games you care about. It catalogs what you own, preserves its story, and keeps artwork, manuals, media, and files together as one complete artifact.</p>
+        <div class="onboarding-actions">
+          <button type="button" data-onboarding-next="library">Begin museum setup</button>
+          {% if libraries %}<a class="button-link secondary" href="/">Return Home</a>{% endif %}
+        </div>
+        <div class="onboarding-principles" aria-label="Vaultarr principles">
+          <span><i>01</i><strong>Your collection stays yours</strong></span>
+          <span><i>02</i><strong>Nothing is moved without you</strong></span>
+          <span><i>03</i><strong>Preservation comes first</strong></span>
+        </div>
+      </div>
+
+      <div class="onboarding-museum-seal" aria-hidden="true">
+        <div class="museum-seal-rings"><i></i><i></i><i></i></div>
+        <div class="museum-seal-mark"><span>V</span><small>Digital Museum</small></div>
+        <span class="museum-seal-object object-one">ART</span>
+        <span class="museum-seal-object object-two">DOC</span>
+        <span class="museum-seal-object object-three">GAME</span>
+      </div>
+    </section>
+
+    <section class="onboarding-panel onboarding-library" data-onboarding-panel="library" aria-labelledby="onboardingLibraryTitle" aria-hidden="true">
+      <div class="onboarding-section-heading">
+        <span class="onboarding-kicker">Your first collection</span>
+        <h1 id="onboardingLibraryTitle" tabindex="-1">Where are your games kept?</h1>
+        <p>Choose the top-level folder that contains your game folders. Vaultarr will index it later when you start Museum Scan; it will not move or run anything during this step.</p>
+      </div>
+
+      {% if request.args.get('error') %}
+      <div class="onboarding-notice warning" role="alert">Enter a folder path before continuing.</div>
+      {% endif %}
+
+      <div class="onboarding-library-layout">
+        <form class="onboarding-library-form" action="/onboarding/library" method="post">
+          <label>
+            <span>Collection name <small>optional</small></span>
+            <input name="name" autocomplete="off" placeholder="Main Collection">
+          </label>
+          <label>
+            <span>Game folder path</span>
+            <input name="path" autocomplete="off" required placeholder="D:\Games or /games">
+          </label>
+          <div class="onboarding-path-examples">
+            <span><strong>Windows</strong> D:\Games</span>
+            <span><strong>Docker</strong> /games</span>
+            <span><strong>Network</strong> Use its mounted path</span>
+          </div>
+          <div class="onboarding-actions">
+            <button type="submit">Save collection folder</button>
+            <button class="secondary" type="button" data-onboarding-next="welcome">Back</button>
+          </div>
+        </form>
+
+        <aside class="onboarding-safety-note">
+          <span class="onboarding-safety-icon">◇</span>
+          <div>
+            <strong>Your files remain in place</strong>
+            <p>Vaultarr records the folder location now. Scanning, metadata research, and preservation tools remain separate actions you control from the Museum.</p>
+          </div>
+          {% if libraries %}
+          <div class="onboarding-existing-libraries">
+            <span>Already connected</span>
+            {% for library in libraries %}<p><strong>{{ library.name }}</strong><small>{{ library.path }}</small></p>{% endfor %}
+          </div>
+          {% endif %}
+        </aside>
+      </div>
+    </section>
+
+    <section class="onboarding-panel onboarding-ready" data-onboarding-panel="ready" aria-labelledby="onboardingReadyTitle" aria-hidden="true">
+      <div class="onboarding-ready-mark" aria-hidden="true"><span>✓</span><i></i></div>
+      <div class="onboarding-section-heading centered">
+        <span class="onboarding-kicker">The doors are open</span>
+        <h1 id="onboardingReadyTitle" tabindex="-1">Your museum is ready.</h1>
+        <p>{{ libraries|length }} collection folder{% if libraries|length != 1 %}s{% endif %} connected. Enter the Museum and start Museum Scan when you are ready to catalog the collection.</p>
+      </div>
+
+      <div class="onboarding-next-steps">
+        <article><span>01</span><div><strong>Enter the Museum</strong><p>See the collection space where every game will live.</p></div></article>
+        <article><span>02</span><div><strong>Start Museum Scan</strong><p>Use the sidebar control to index the connected folders.</p></div></article>
+        <article><span>03</span><div><strong>Curate over time</strong><p>Add artwork, manuals, trailers, and preservation details at your pace.</p></div></article>
+      </div>
+
+      <div class="onboarding-actions centered">
+        <a class="button-link" href="/museum">Enter the Museum</a>
+        <button class="secondary" type="button" data-onboarding-next="library">Add another folder</button>
         <a class="button-link secondary" href="/health">Check System Health</a>
       </div>
-    </div>
-    <div class="readiness-core" aria-hidden="true"><span>V</span><i></i></div>
-  </section>
+    </section>
+  </div>
 
-  <section class="readiness-grid">
-    <article class="readiness-card alive-panel">
-      <span class="readiness-step">01</span>
-      <h2>Add Game Folder</h2>
-      <p class="muted">Point Vaultarr at your game folder. This can be a local drive, external drive, or mounted network path.</p>
-      <a class="button-link secondary small" href="/settings#libraryRoots">Open Studio</a>
-    </article>
-    <article class="readiness-card alive-panel">
-      <span class="readiness-step">02</span>
-      <h2>Scan + Identify</h2>
-      <p class="muted">Run the scanner, then use Provider Intelligence to build the best record for each game.</p>
-      <a class="button-link secondary small" href="/museum">Open Museum</a>
-    </article>
-    <article class="readiness-card alive-panel">
-      <span class="readiness-step">03</span>
-      <h2>Preserve</h2>
-      <p class="muted">Archive manuals, gallery images, trailers, patches, and covers so each game becomes a complete artifact.</p>
-      <a class="button-link secondary small" href="/museum?attention=1">View Games Needing Attention</a>
-    </article>
-  </section>
-
-  <section class="readiness-card alive-panel">
-    <div class="readiness-row">
-      <div><p class="eyebrow">Current Vault</p><h2>{{ game_count }} games · {{ libraries|length }} libraries</h2></div>
-      <a class="button-link" href="/">Go Home</a>
-    </div>
-  </section>
+  <footer class="onboarding-footer">
+    <span>Vaultarr 2.0 · Museum-first preservation</span>
+    <span>{{ game_count }} cataloged games · {{ libraries|length }} connected folders</span>
+  </footer>
 </section>
 {% endblock %}

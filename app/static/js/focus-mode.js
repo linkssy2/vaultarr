@@ -70,6 +70,10 @@
       galleryStage: document.getElementById("focusGalleryStage"),
       gallerySaved: document.getElementById("focusGallerySaved"),
       gallerySavedCount: document.getElementById("focusGallerySavedCount"),
+      overviewGallery: document.getElementById("focusOverviewGallery"),
+      overviewGalleryOpen: document.getElementById("focusOverviewGalleryOpen"),
+      overviewTrailer: document.getElementById("focusOverviewTrailer"),
+      overviewTrailerOpen: document.getElementById("focusOverviewTrailerOpen"),
       galleryClearButton: document.getElementById("focusGalleryClearButton"),
       galleryResults: document.getElementById("focusGalleryResults"),
       coverManagerStatus: document.getElementById("focusCoverManagerStatus"),
@@ -175,10 +179,6 @@
       patchUrlInput: document.getElementById("focusPatchUrlInput"),
       patchLinkProvider: document.getElementById("focusPatchLinkProvider"),
       patchRemoveButton: document.getElementById("focusPatchRemoveButton"),
-      artworkSource: document.getElementById("focusArtworkSource"),
-      artworkType: document.getElementById("focusArtworkType"),
-      artworkResolution: document.getElementById("focusArtworkResolution"),
-      artworkLock: document.getElementById("focusArtworkLock"),
       editGameLink: document.getElementById("focusEditGameLink"),
       refreshGameLink: document.getElementById("focusRefreshGameLink"),
       fullDetailsLink: document.getElementById("focusFullDetailsLink"),
@@ -264,13 +264,6 @@
 
       cover.style.setProperty("--focus-art-src", `url("${img.currentSrc || img.src}")`);
       cover.classList.add("art-loaded");
-
-      if (fields.artworkResolution) {
-        fields.artworkResolution.textContent = width && height ? `${width} × ${height}` : "Unknown";
-      }
-      if (fields.artworkType) {
-        fields.artworkType.textContent = ratio >= 1.18 ? "Hero / Banner" : ratio >= 0.86 ? "Square Art" : "Box Cover";
-      }
     }
 
     function setFocusCover(src, title) {
@@ -281,8 +274,6 @@
 
       if (!src) {
         fields.cover.innerHTML = `<div class="focus-cover-placeholder">🎮</div>`;
-        if (fields.artworkResolution) fields.artworkResolution.textContent = "No artwork";
-        if (fields.artworkType) fields.artworkType.textContent = "Placeholder";
         return;
       }
 
@@ -708,8 +699,6 @@
       if (fields.category) fields.category.textContent = text(game.category, "Unsorted");
       if (fields.sourceType) fields.sourceType.textContent = text(game.source_type || (game.manual_entry ? "Manual" : "Scanned"));
       if (fields.lockStatus) fields.lockStatus.textContent = game.metadata_locked ? "Locked" : "Unlocked";
-      if (fields.artworkSource) fields.artworkSource.textContent = game.metadata_source || (game.cover_src ? "Local" : "None");
-      if (fields.artworkLock) fields.artworkLock.textContent = game.metadata_locked ? "Locked" : "Unlocked";
 
       if (fields.developer) fields.developer.textContent = text(game.developer);
       if (fields.publisher) fields.publisher.textContent = text(game.publisher);
@@ -748,10 +737,12 @@
       }
       updateManualViewer(game);
       updateTrailerViewer(game);
+      renderOverviewTrailer(game);
       updateSoundtrackViewer(game);
       loadLocalSoundtrackTracks(game);
       resetSoundtrackDownload(game);
       updatePatchPanel(game);
+      renderOverviewGallery([]);
       loadCachedGallery();
       if (fields.preservationArchive) fields.preservationArchive.textContent = (game.archive_count || 0) || (game.installer_count || 0) || (game.disc_image_count || 0) ? `✓ Archive assets detected` : "⚠ No archive assets detected";
       if (fields.preservationAssets) {
@@ -934,6 +925,9 @@
     function setActiveTab(tabName) {
       closeVaultSelects();
       const currentActive = document.querySelector(".focus-tab.active")?.dataset?.tab || "";
+      if (currentActive === "overview" && tabName !== "overview") {
+        stopOverviewTrailerPlayback();
+      }
       if (currentActive === "trailer" && tabName !== "trailer") {
         stopTrailerPlayback(false);
       }
@@ -1389,6 +1383,7 @@
     function renderCachedGallery(cached = []) {
       if (fields.gallerySavedCount) fields.gallerySavedCount.textContent = `${cached.length} cached`;
       renderCoverManager(cached);
+      renderOverviewGallery(cached);
 
       if (!cached.length) {
         if (fields.galleryStage) fields.galleryStage.innerHTML = `<div class="gallery-empty">No cached gallery images yet. Use Search More Media to find screenshots and artwork.</div>`;
@@ -1398,6 +1393,30 @@
 
       showGalleryPreview(cached[0]);
       renderGalleryThumbs(fields.gallerySaved, cached, 0);
+    }
+
+    function renderOverviewGallery(cached = []) {
+      if (!fields.overviewGallery) return;
+      const screenshots = cached
+        .filter((item) => String(item.media_type || "").toLowerCase() === "screenshot")
+        .slice(0, 4);
+
+      fields.overviewGallery.__vaultarrGalleryItems = screenshots;
+      if (!screenshots.length) {
+        fields.overviewGallery.innerHTML = `<div class="overview-screenshot-empty">No saved in-game screenshots yet. Add screenshots from Gallery to feature them here.</div>`;
+        return;
+      }
+
+      fields.overviewGallery.innerHTML = screenshots.map((item, index) => {
+        const src = item.src || item.url || item.remote_url || "";
+        const title = item.title || `In-game screenshot ${index + 1}`;
+        return `
+          <button class="overview-screenshot-card" type="button" data-index="${index}" aria-label="Open ${escapeHtml(title)} in Gallery">
+            <img src="${escapeHtml(src)}" alt="${escapeHtml(title)}" loading="lazy">
+            <span>View in Gallery</span>
+          </button>
+        `;
+      }).join("");
     }
 
     async function loadCachedGallery() {
@@ -1759,6 +1778,53 @@
       if (!embed) return "";
       const separator = embed.includes("?") ? "&" : "?";
       return `${embed}${separator}autoplay=1`;
+    }
+
+    function renderOverviewTrailer(game) {
+      if (!fields.overviewTrailer) return;
+      const url = game?.trailer_url || "";
+      const embed = game?.trailer_embed_src || game?.trailer_embed_url || "";
+      const provider = game?.trailer_provider || "Trailer";
+      const title = game?.trailer_title || `${game?.title || "Game"} Trailer`;
+      const thumb = getTrailerThumbnail(url, embed);
+
+      if (!url) {
+        fields.overviewTrailer.innerHTML = `<div class="overview-trailer-empty">No trailer saved yet. Add one from the Trailer workspace to feature it here.</div>`;
+        return;
+      }
+
+      if (!embed) {
+        fields.overviewTrailer.innerHTML = `
+          <div class="overview-trailer-external">
+            <span>▶</span>
+            <div><strong>${escapeHtml(title)}</strong><small>${escapeHtml(provider)} · external trailer</small></div>
+            <a class="button-link secondary small" href="${escapeHtml(url)}" target="_blank" rel="noopener">Open Trailer</a>
+          </div>
+        `;
+        return;
+      }
+
+      const background = thumb ? `style="--overview-trailer-thumb: url('${escapeHtml(thumb)}')"` : "";
+      fields.overviewTrailer.innerHTML = `
+        <div class="overview-trailer-poster" ${background}>
+          <div class="overview-trailer-backdrop"></div>
+          <button class="overview-trailer-play" type="button" aria-label="Play ${escapeHtml(title)}"><span>▶</span></button>
+          <div class="overview-trailer-info"><span>${escapeHtml(provider)}</span><strong>${escapeHtml(title)}</strong></div>
+        </div>
+      `;
+      fields.overviewTrailer.querySelector(".overview-trailer-play")?.addEventListener("click", () => {
+        fields.overviewTrailer.innerHTML = `
+          <div class="overview-trailer-frame-shell">
+            <iframe src="${escapeHtml(trailerAutoplaySrc(embed))}" title="${escapeHtml(title)}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+          </div>
+        `;
+      });
+    }
+
+    function stopOverviewTrailerPlayback() {
+      const iframe = fields.overviewTrailer?.querySelector("iframe");
+      if (iframe) iframe.src = "about:blank";
+      renderOverviewTrailer(activeGame);
     }
 
     function renderCinematicTrailerPoster({ title, provider, url, embed }) {
@@ -3170,6 +3236,23 @@
     }
     bindGalleryThumbClicks(fields.gallerySaved);
     bindGalleryThumbClicks(fields.galleryResults);
+    if (fields.overviewGalleryOpen) {
+      fields.overviewGalleryOpen.addEventListener("click", () => setActiveTab("gallery"));
+    }
+    if (fields.overviewTrailerOpen) {
+      fields.overviewTrailerOpen.addEventListener("click", () => setActiveTab("trailer"));
+    }
+    if (fields.overviewGallery) {
+      fields.overviewGallery.addEventListener("click", (event) => {
+        const button = event.target.closest(".overview-screenshot-card");
+        if (!button) return;
+        const items = fields.overviewGallery.__vaultarrGalleryItems || [];
+        const item = items[Number(button.dataset.index || 0)];
+        if (!item) return;
+        showGalleryPreview(item);
+        setActiveTab("gallery");
+      });
+    }
     document.addEventListener("click", (event) => {
       const coverButton = event.target.closest(".gallery-set-cover-button, .cover-candidate-card");
       if (coverButton) {

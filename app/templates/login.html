@@ -3,56 +3,87 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Vaultarr Login</title>
+  <title>Vaultarr Museum Access</title>
   <meta name="theme-color" content="#3b82f6">
-  <link rel="icon" href="/static/icons/favicon.ico?v=2.0.0-alpha.17" sizes="any">
-  <link rel="icon" type="image/svg+xml" href="/static/icons/vaultarr.svg?v=2.0.0-alpha.17">
-  <link rel="apple-touch-icon" href="/static/icons/apple-touch-icon.png?v=2.0.0-alpha.17">
-  <link rel="manifest" href="/static/site.webmanifest?v=2.0.0-alpha.17">
-  <link rel="stylesheet" href="/static/css/vaultos.css?v=2.0.0-alpha.17">
-  <link rel="stylesheet" href="/static/css/forms.css?v=2.0.0-alpha.17">
-  <link rel="stylesheet" href="/static/css/login.css?v=2.0.0-alpha.17">
+  <link rel="icon" href="/static/icons/favicon.ico?v=2.0.0-alpha.46" sizes="any">
+  <link rel="icon" type="image/svg+xml" href="/static/icons/vaultarr.svg?v=2.0.0-alpha.46">
+  <link rel="apple-touch-icon" href="/static/icons/apple-touch-icon.png?v=2.0.0-alpha.46">
+  <link rel="manifest" href="/static/site.webmanifest?v=2.0.0-alpha.46">
+  <link rel="stylesheet" href="/static/css/vaultos.css?v=2.0.0-alpha.46">
+  <link rel="stylesheet" href="/static/css/forms.css?v=2.0.0-alpha.46">
+  <link rel="stylesheet" href="/static/css/login.css?v=2.0.0-alpha.46-access.2">
   <style id="vaultarr-theme">{{ theme_css|safe }}</style>
 </head>
 <body class="vaultos login-body">
-  <div class="vault-ambient login-ambient" aria-hidden="true"><span></span><i></i></div>
-
   <main class="login-shell">
-    <section class="login-vault alive-panel">
+    <section class="login-vault" aria-labelledby="loginTitle">
       <div class="login-cosmos" aria-hidden="true">
         <div class="login-nebula"></div>
         <div class="login-comet"></div>
         <div class="login-stars"></div>
+
         <div class="login-orbital-field">
-          <div class="login-orbit orbit-one"><span class="login-node">◇</span></div>
-          <div class="login-orbit orbit-two"><span class="login-node">▣</span></div>
-          <div class="login-orbit orbit-three"><span class="login-node">▤</span></div>
-          <div class="login-orbit orbit-four"><span class="login-node">⌁</span></div>
-          <div class="login-orbit orbit-five"><span class="login-node">✦</span></div>
-          <div class="login-core"><span>V</span></div>
+          <div class="login-orbit orbit-one"><span class="login-node">&#9671;</span></div>
+          <div class="login-orbit orbit-two"><span class="login-node">&#9635;</span></div>
+          <div class="login-orbit orbit-three"><span class="login-node">&#9636;</span></div>
+          <div class="login-orbit orbit-four"><span class="login-node">&#8961;</span></div>
+          <div class="login-orbit orbit-five"><span class="login-node">&#10022;</span></div>
+          <div class="login-core">
+            <img src="/static/icons/vaultarr.svg?v=2.0.0-alpha.46" alt="Vaultarr" width="78" height="78">
+          </div>
+        </div>
+
+        <div class="login-access-bridge">
+          <span></span><i></i><b></b>
         </div>
       </div>
 
-      <div class="login-vignette" aria-hidden="true"></div>
+      <header class="login-masthead">
+        <img class="login-masthead-mark" src="/static/icons/vaultarr.svg?v=2.0.0-alpha.46" alt="" width="38" height="38">
+        <div><strong>Vaultarr</strong><small>Digital Museum</small></div>
+      </header>
 
-      <div class="login-card">
+      <div class="login-introduction">
+        <p class="eyebrow">Museum access</p>
+        <h2>Preserve the collection.<br>Protect its story.</h2>
+        <p>Your private museum remains behind this access point.</p>
+      </div>
+
+      <section class="login-access-chamber" aria-label="Vaultarr login">
+        <div class="login-chamber-scan" aria-hidden="true"></div>
+        <div class="login-access-state">
+          <span><i></i> Secure entrance</span>
+          <small>Authorized curators only</small>
+        </div>
+
         <div class="login-brand">
-          <img class="brand-mark login-app-icon" src="/static/icons/vaultarr.svg?v=2.0.0-alpha.17" alt="Vaultarr" width="60" height="60">
-          <p class="eyebrow">Vaultarr Security</p>
-          <h1>Enter the Vault.</h1>
-          <p class="muted">Your games deserve a museum.</p>
+          <p class="eyebrow">Welcome back</p>
+          <h1 id="loginTitle">Enter the museum.</h1>
+          <p>Continue caring for your collection.</p>
         </div>
 
-        {% if error %}<div class="login-alert">{{ error }}</div>{% endif %}
+        {% if error %}<div class="login-alert" role="alert">{{ error }}</div>{% endif %}
 
-        <form method="post" class="login-form">
+        <form method="post" class="login-form" data-login-form>
           <input type="hidden" name="next" value="{{ next_url }}">
-          <label>Username<input name="username" autocomplete="username" value="{{ auth_settings.username or 'admin' }}" autofocus></label>
-          <label>Password<input type="password" name="password" autocomplete="current-password"></label>
-          <button type="submit">Enter the Vault</button>
+          <label>
+            <span>Curator name</span>
+            <input name="username" autocomplete="username" value="{{ auth_settings.username or 'admin' }}" autofocus>
+          </label>
+          <label>
+            <span>Access key</span>
+            <input type="password" name="password" autocomplete="current-password">
+          </label>
+          <button type="submit" data-login-submit><span>Open Museum</span><i aria-hidden="true">&#8594;</i></button>
         </form>
-      </div>
+
+        <footer class="login-chamber-footer">
+          <span>Local museum access</span>
+          <span>Vaultarr 2.0</span>
+        </footer>
+      </section>
     </section>
   </main>
+  <script src="/static/js/login.js?v=2.0.0-alpha.46-access.2"></script>
 </body>
 </html>
