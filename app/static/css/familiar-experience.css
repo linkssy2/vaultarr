@@ -206,12 +206,26 @@ html.vault-login-arrival body > .vaultos-content {
 html.vault-login-arrival body > .sidebar { animation-delay: 45ms; }
 html.vault-login-arrival body > .vaultos-content { animation-delay: 95ms; }
 
+html.vault-login-arrival body {
+  opacity: 1;
+  animation: vaultLoginCanvasArrival 640ms cubic-bezier(.22, 1, .36, 1) both;
+}
+
+@keyframes vaultLoginCanvasArrival {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 @keyframes vaultLoginArrival {
   from { opacity: 0; transform: translateY(7px); filter: blur(3px); }
   to { opacity: 1; transform: none; filter: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  html.vault-login-arrival body {
+    animation-name: vaultLoginArrivalReduced;
+    animation-duration: 380ms;
+  }
   html.vault-login-arrival body > .vault-ambient,
   html.vault-login-arrival body > .sidebar,
   html.vault-login-arrival body > .vaultos-content {

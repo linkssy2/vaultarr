@@ -1,3 +1,10 @@
+## 2.0.0 Alpha 50 — Seamless Login First Paint
+
+- Added an immediate dark first-paint guard during the authenticated login handoff.
+- Kept the destination shell concealed until Vaultarr's full visual styling is ready.
+- Faded the complete styled museum canvas into view before the existing ambient, sidebar, and content arrival motion.
+- Preserved authentication, redirects, the Home layout, the protected Home Orbital, and all unrelated systems.
+
 ## 2.0.0 Alpha 49 — Login Orbital Motion
 
 - Corrected the login reduced-motion fallback so it no longer freezes the Orbital Core completely.

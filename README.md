@@ -1,8 +1,12 @@
-# Vaultarr 2.0.0 Alpha 49
+# Vaultarr 2.0.0 Alpha 50
 
-> Experimental release: **Vaultarr 2.0.0 Alpha 49 — Login Orbital Motion**
+> Experimental release: **Vaultarr 2.0.0 Alpha 50 — Seamless Login First Paint**
 
 The `vaultarr-2.0-alpha` branch publishes its Docker image as `ghcr.io/linkssy2/vaultarr:2.experimental`. The stable `main` branch continues to own the `latest` tag.
+
+## Alpha 50 seamless login first paint
+
+The authenticated handoff now holds a dark museum canvas from the first destination paint, preventing the unstyled base shell from appearing before Vaultarr's visual system is ready. The complete styled interface then fades in with the existing calm ambient, sidebar, and content motion.
 
 ## Alpha 49 login orbital motion
 
