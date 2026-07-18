@@ -7,7 +7,7 @@ from app.services.metadata_service import (
     get_rawg_details, get_igdb_details, get_steamgriddb_details, download_cover
 )
 from app.services.launchbox_service import get_launchbox_details
-from app.services.media_service import provider_media_results, download_media_asset, select_best_cover, media_for_gallery_cache, annotate_media_item
+from app.services.media_service import cached_media, provider_media_results, download_media_asset, select_best_cover, media_for_gallery_cache, annotate_media_item
 from app.services.manual_service import manual_search_results, download_manual_pdf
 
 MERGE_FIELDS = [
@@ -88,6 +88,27 @@ def _norm(value):
 
 def _has_value(value):
     return bool(_norm(value))
+
+
+def _has_cover(game):
+    return any(_has_value(game.get(key)) for key in (
+        "cover_path", "cover_url", "preferred_cover_path", "preferred_cover_url"
+    ))
+
+
+def missing_merge_values(current, merged):
+    """Return provider values that fill blank fields without replacing curated data."""
+    missing = {}
+    for key, _label in MERGE_FIELDS:
+        value = merged.get(key)
+        if not _has_value(value):
+            continue
+        if key == "cover_url":
+            if not _has_cover(current):
+                missing[key] = value
+        elif not _has_value(current.get(key)):
+            missing[key] = value
+    return missing
 
 
 def _provider_quality(details, base_confidence=0):
@@ -255,23 +276,47 @@ def build_merge_plan(current, details_list):
 
 
 
-def enrich_after_merge(game_id, game):
+def enrich_after_merge(game_id, game, only_missing=False, existing_game=None):
     """Cache provider assets related to the merged record without blocking the merge if a provider fails."""
     summary = {
         "cover_cached": False,
         "cached_media": 0,
         "manual_checked": False,
         "manual_downloaded": False,
+        "preserved": [],
         "errors": [],
     }
 
+    existing_gallery = media_for_gallery_cache(cached_media(game_id), limit=100)
+    existing_gallery_urls = {
+        (item.get("remote_url") or item.get("url") or "").split("?")[0].strip().lower()
+        for item in existing_gallery
+        if item.get("remote_url") or item.get("url")
+    }
+    gallery_slots = max(0, 8 - len(existing_gallery)) if only_missing else 8
+    preserved_game = existing_game or game
+    cover_present = _has_cover(preserved_game)
+    manual_present = bool(
+        _has_value(preserved_game.get("manual_file_path"))
+        or _has_value(preserved_game.get("manual_url"))
+        or int(preserved_game.get("manual_count") or 0) > 0
+    )
+
+    if only_missing and cover_present:
+        summary["preserved"].append("cover")
+    if only_missing and gallery_slots == 0:
+        summary["preserved"].append("gallery")
+    if only_missing and manual_present:
+        summary["preserved"].append("manual")
+
     # Alpha 22.2: classify provider media first so screenshots/heroes are never promoted to box cover art.
     media_results = []
-    try:
-        media_data = provider_media_results(game, "all")
-        media_results = [annotate_media_item(item) for item in (media_data.get("results") or [])]
-    except Exception as exc:
-        summary["errors"].append(f"Media intelligence skipped: {exc}")
+    if not only_missing or not cover_present or gallery_slots > 0:
+        try:
+            media_data = provider_media_results(game, "all")
+            media_results = [annotate_media_item(item) for item in (media_data.get("results") or [])]
+        except Exception as exc:
+            summary["errors"].append(f"Media intelligence skipped: {exc}")
 
     metadata_cover_candidates = []
     if (game or {}).get("cover_url"):
@@ -284,7 +329,10 @@ def enrich_after_merge(game_id, game):
 
     best_cover = select_best_cover(media_results, metadata_cover_candidates)
     cover_locked = int((game or {}).get("preferred_cover_locked") or 0) == 1
-    if cover_locked:
+    if only_missing and cover_present:
+        summary["cover_source"] = (game or {}).get("preferred_cover_provider") or "Existing cover"
+        summary["cover_role"] = "preserved"
+    elif cover_locked:
         summary["cover_cached"] = False
         summary["cover_source"] = (game or {}).get("preferred_cover_provider") or "User Preferred"
         summary["cover_role"] = "preferred_locked"
@@ -314,9 +362,10 @@ def enrich_after_merge(game_id, game):
     # Cache gallery images after excluding front covers/logos/disc art so Gallery gets screenshots/artwork.
     try:
         cached = 0
-        for item in media_for_gallery_cache(media_results, limit=8):
+        for item in media_for_gallery_cache(media_results, limit=gallery_slots):
             url = item.get("url") or item.get("remote_url") or ""
-            if not url:
+            normalized_url = url.split("?")[0].strip().lower()
+            if not url or normalized_url in existing_gallery_urls:
                 continue
             try:
                 download_media_asset(
@@ -327,6 +376,7 @@ def enrich_after_merge(game_id, game):
                     item.get("media_role") or item.get("media_type") or "screenshot",
                 )
                 cached += 1
+                existing_gallery_urls.add(normalized_url)
             except Exception:
                 continue
         summary["cached_media"] = cached
@@ -336,6 +386,8 @@ def enrich_after_merge(game_id, game):
     # If the Manual Engine finds a very strong direct PDF match, download it automatically.
     try:
         summary["manual_checked"] = True
+        if only_missing and manual_present:
+            return summary
         manual_data = manual_search_results(game.get("title") or "", game.get("platform") or "", "all")
         candidates = [
             item for item in (manual_data.get("results") or [])
@@ -371,50 +423,72 @@ def enrich_after_merge(game_id, game):
 
     return summary
 
-def apply_merge_best(game_id, query="", enrich=True):
+def apply_merge_best(game_id, query="", enrich=True, only_missing=False):
     data = build_provider_intelligence(game_id, query)
     if not data.get("success"):
         return data
     merged = data.get("merge_plan", {}).get("merged", {})
-    if not merged:
+    current = data.get("current") or {}
+    applied = missing_merge_values(current, merged) if only_missing else merged
+    if not merged and not only_missing:
         return {"success": False, "message": "No provider fields were available to merge."}
 
     # Cover download is handled elsewhere by normal apply flow; for merge-best store remote cover URL.
     conn = get_connection()
-    conn.execute(
-        """
-        UPDATE games
-        SET title = CASE WHEN ? != '' THEN ? ELSE title END,
-            description = CASE WHEN ? != '' THEN ? ELSE description END,
-            developer = CASE WHEN ? != '' THEN ? ELSE developer END,
-            publisher = CASE WHEN ? != '' THEN ? ELSE publisher END,
-            release_year = CASE WHEN ? != '' THEN ? ELSE release_year END,
-            genre = CASE WHEN ? != '' THEN ? ELSE genre END,
-            platform = CASE WHEN ? != '' THEN ? ELSE platform END,
-            cover_url = CASE WHEN ? != '' THEN ? ELSE cover_url END,
-            metadata_source = 'Vault Intelligence',
-            metadata_external_id = 'merge-best',
-            updated_at = CURRENT_TIMESTAMP
-        WHERE id = ?
-        """,
-        (
-            merged.get("title", ""), merged.get("title", ""),
-            merged.get("description", ""), merged.get("description", ""),
-            merged.get("developer", ""), merged.get("developer", ""),
-            merged.get("publisher", ""), merged.get("publisher", ""),
-            merged.get("release_year", ""), merged.get("release_year", ""),
-            merged.get("genre", ""), merged.get("genre", ""),
-            merged.get("platform", ""), merged.get("platform", ""),
-            merged.get("cover_url", ""), merged.get("cover_url", ""),
-            game_id,
-        ),
-    )
+    if only_missing:
+        allowed = {key for key, _label in MERGE_FIELDS}
+        fields = [key for key in applied if key in allowed]
+        if fields:
+            assignments = [f"{key}=?" for key in fields]
+            values = [applied[key] for key in fields]
+            if any(key != "cover_url" for key in fields) and not _has_value(current.get("metadata_source")):
+                assignments.extend(["metadata_source=?", "metadata_external_id=?"])
+                values.extend(["Vault Intelligence", "merge-best"])
+            assignments.append("updated_at=CURRENT_TIMESTAMP")
+            conn.execute(
+                f"UPDATE games SET {', '.join(assignments)} WHERE id=?",
+                (*values, game_id),
+            )
+    else:
+        conn.execute(
+            """
+            UPDATE games
+            SET title = CASE WHEN ? != '' THEN ? ELSE title END,
+                description = CASE WHEN ? != '' THEN ? ELSE description END,
+                developer = CASE WHEN ? != '' THEN ? ELSE developer END,
+                publisher = CASE WHEN ? != '' THEN ? ELSE publisher END,
+                release_year = CASE WHEN ? != '' THEN ? ELSE release_year END,
+                genre = CASE WHEN ? != '' THEN ? ELSE genre END,
+                platform = CASE WHEN ? != '' THEN ? ELSE platform END,
+                cover_url = CASE WHEN ? != '' THEN ? ELSE cover_url END,
+                metadata_source = 'Vault Intelligence',
+                metadata_external_id = 'merge-best',
+                updated_at = CURRENT_TIMESTAMP
+            WHERE id = ?
+            """,
+            (
+                merged.get("title", ""), merged.get("title", ""),
+                merged.get("description", ""), merged.get("description", ""),
+                merged.get("developer", ""), merged.get("developer", ""),
+                merged.get("publisher", ""), merged.get("publisher", ""),
+                merged.get("release_year", ""), merged.get("release_year", ""),
+                merged.get("genre", ""), merged.get("genre", ""),
+                merged.get("platform", ""), merged.get("platform", ""),
+                merged.get("cover_url", ""), merged.get("cover_url", ""),
+                game_id,
+            ),
+        )
     conn.commit()
     row = conn.execute("SELECT * FROM games WHERE id = ?", (game_id,)).fetchone()
     conn.close()
 
     game_data = enrich_basic(row_to_dict(row))
-    enrichment = enrich_after_merge(game_id, game_data) if enrich else {}
+    enrichment = enrich_after_merge(
+        game_id,
+        game_data,
+        only_missing=only_missing,
+        existing_game=current if only_missing else None,
+    ) if enrich else {}
 
     conn = get_connection()
     refreshed_for_score = conn.execute("SELECT * FROM games WHERE id = ?", (game_id,)).fetchone()
@@ -428,7 +502,10 @@ def apply_merge_best(game_id, query="", enrich=True):
     conn.close()
     game_data = enrich_basic(row_to_dict(refreshed))
 
-    message_bits = ["Best provider fields merged"]
+    if only_missing:
+        message_bits = [f"Filled {len(applied)} missing field(s)" if applied else "Existing information preserved"]
+    else:
+        message_bits = ["Best provider fields merged"]
     if enrichment.get("cover_cached"):
         message_bits.append("cover cached")
     if enrichment.get("cached_media"):
@@ -442,4 +519,9 @@ def apply_merge_best(game_id, query="", enrich=True):
         "game": game_data,
         "intelligence": data,
         "enrichment": enrichment,
+        "filled_fields": sorted(applied),
+        "preserved_fields": sorted(
+            key for key, _label in MERGE_FIELDS
+            if key not in applied and (key == "cover_url" and _has_cover(current) or key != "cover_url" and _has_value(current.get(key)))
+        ),
     }

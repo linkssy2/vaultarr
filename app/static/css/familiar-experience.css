@@ -103,15 +103,9 @@
 @media(max-width:1180px){.museum-library-heading-row{grid-template-columns:1fr;align-items:start;gap:22px}.museum-library-primary-tools{width:100%;justify-content:flex-start}.museum-header-search{flex:1;width:auto}.museum-library-filter-row{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:720px){.museum-library-header{gap:16px;padding:20px 16px;border-radius:20px}.museum-library-title h1{font-size:40px}.museum-library-primary-tools{align-items:stretch;flex-wrap:wrap}.museum-header-search{flex-basis:100%}.museum-add-game{justify-content:center}.museum-filter-heading{align-items:flex-start}.museum-filter-status{display:none}.museum-library-filter-row{grid-template-columns:1fr}.museum-library-status{align-items:flex-start;flex-direction:column}.museum-library-tabs{width:100%}.museum-library-tabs a{justify-content:center;flex:1}}
 
-/* Embedded Collections */
-.museum-collections-view{display:grid;gap:22px}
-.museum-collections-actions{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:18px 20px;border-radius:16px}
-.museum-collections-actions h2{margin:3px 0 4px;font-size:20px}
-.museum-collections-actions p{margin:0}
 @media(max-width:760px){
   .museum-library-heading-row{align-items:stretch}
   .museum-library-primary-tools{margin-left:0}
-  .museum-collections-actions{align-items:flex-start;flex-direction:column}
 }
 
 /* Alpha 8 — align lower sidebar utilities with the build card */

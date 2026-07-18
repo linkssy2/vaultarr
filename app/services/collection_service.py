@@ -226,6 +226,21 @@ def build_collections(limit=12):
     return {"smart": smart, "user": user, "milestone": milestone}
 
 
+def collection_game_ids(name, group=""):
+    requested = (name or "").strip().casefold()
+    requested_group = (group or "").strip().casefold()
+    if not requested:
+        return []
+    groups = build_collections(limit=100000)
+    selected_groups = [requested_group] if requested_group in groups else list(groups)
+    for group_key in selected_groups:
+        shelves = groups[group_key]
+        for shelf in shelves:
+            if str(shelf.get("name") or "").strip().casefold() == requested:
+                return [int(game["id"]) for game in shelf.get("games", []) if game.get("id")]
+    return []
+
+
 def create_custom_collection(name, description=""):
     name = (name or "").strip()
     if not name:

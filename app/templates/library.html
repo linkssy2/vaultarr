@@ -33,6 +33,8 @@
       </div>
       <form class="museum-library-filter-row" id="museumFilterForm" method="get" action="/museum" aria-label="Museum filters">
         {% if attention %}<input type="hidden" name="attention" value="1">{% endif %}
+        {% if collection %}<input type="hidden" name="collection" value="{{ collection }}">{% endif %}
+        {% if collection_group %}<input type="hidden" name="collection_group" value="{{ collection_group }}">{% endif %}
         <label class="museum-filter-select-wrap museum-platform-wrap">
           <span>Platform</span>
           <select class="select-input museum-filter-select" name="platform">
@@ -67,7 +69,7 @@
     </div>
     <div class="library-search-status museum-library-status" id="librarySearchStatus">
       <span id="librarySearchCount">{{ games|length }} game{% if games|length != 1 %}s{% endif %}</span>
-      <span class="muted" id="librarySearchHint">Search across titles, creators, genres, collections, paths, notes, and descriptions.</span>
+      <span class="muted" id="librarySearchHint">{% if collection %}Showing the {{ collection }} collection. <a href="/museum?view=collections">Back to Collections</a>{% else %}Search across titles, creators, genres, collections, paths, notes, and descriptions.{% endif %}</span>
     </div>
     {% endif %}
   </header>

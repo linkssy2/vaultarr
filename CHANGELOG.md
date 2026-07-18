@@ -1,3 +1,13 @@
+## 2.0.0 Alpha 54 — Collection Atlas and Additive Scan
+
+- Rebuilt Collections as a compact Collection Atlas with live shelf totals, clear type shortcuts, cover-stack previews, responsive cards, and calmer empty states.
+- Replaced the long repeated game shelves with concise collection cards that open correctly filtered Museum views.
+- Added a smooth personal-shelf creation chamber and simplified Smart Shelf refresh feedback.
+- Changed automatic Museum Scan enrichment to fill only missing metadata and assets while preserving populated or manually curated fields.
+- Prevented rescans from replacing existing titles, covers, manuals, and gallery items or downloading duplicate media.
+- Kept explicit manual Provider Intelligence merges unchanged so users can still deliberately replace information.
+- Preserved scan-button activation rules, scan progress behavior, routes, Museum cards, sidebar, and protected systems.
+
 ## 2.0.0 Alpha 53 — Default Orbital Liquid
 
 - Restored the Home Orbital V liquid to its original white appearance when Vault Blue is the active default theme.

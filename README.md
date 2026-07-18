@@ -1,8 +1,12 @@
-# Vaultarr 2.0.0 Alpha 53
+# Vaultarr 2.0.0 Alpha 54
 
-> Experimental release: **Vaultarr 2.0.0 Alpha 53 — Default Orbital Liquid**
+> Experimental release: **Vaultarr 2.0.0 Alpha 54 — Collection Atlas and Additive Scan**
 
 The `vaultarr-2.0-alpha` branch publishes its Docker image as `ghcr.io/linkssy2/vaultarr:2.experimental`. The stable `main` branch continues to own the `latest` tag.
+
+## Alpha 54 collection atlas and additive scan
+
+Collections is now a concise museum atlas instead of a long stack of repeated game rows. Live totals, collection-type shortcuts, cover previews, responsive shelf cards, and a calm creation chamber make automatic, personal, and milestone shelves easier to understand and open. Museum Scan now treats existing curation as authoritative: it updates local file facts, fills only missing provider information and archive assets, preserves manually supplied or populated fields, and avoids duplicate cover, manual, and gallery downloads. Explicit user-triggered Provider Intelligence merges remain available when replacement is intentional.
 
 ## Alpha 53 default Orbital liquid
 

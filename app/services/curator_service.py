@@ -4,7 +4,7 @@ import json
 from datetime import datetime
 
 from app.database.database import get_connection
-from app.services.provider_intelligence import apply_merge_best
+from app.services.provider_intelligence import apply_merge_best, enrich_after_merge
 from app.services.manual_service import manual_search_results, download_manual_pdf
 
 CORE_FIELDS = ("description", "developer", "publisher", "release_year", "genre", "platform")
@@ -16,14 +16,22 @@ def _now():
 
 def completeness_for_game(game):
     checks = {
-        "identity": bool((game.get("metadata_source") or "").strip()),
+        "identity": bool(
+            (game.get("metadata_source") or "").strip()
+            or int(game.get("manual_entry") or 0) == 1
+            or (game.get("source_type") or "").strip().lower() == "manual"
+        ),
         "description": bool((game.get("description") or "").strip()),
         "credits": bool((game.get("developer") or "").strip() or (game.get("publisher") or "").strip()),
         "release": bool((game.get("release_year") or "").strip()),
         "genre": bool((game.get("genre") or "").strip()),
         "platform": bool((game.get("platform") or "").strip()),
         "cover": bool((game.get("cover_path") or "").strip() or (game.get("cover_url") or "").strip()),
-        "manual": bool((game.get("manual_file_path") or "").strip() or int(game.get("manual_count") or 0) > 0),
+        "manual": bool(
+            (game.get("manual_file_path") or "").strip()
+            or (game.get("manual_url") or "").strip()
+            or int(game.get("manual_count") or 0) > 0
+        ),
         "files": int(game.get("file_count") or 0) > 0 or int(game.get("manual_entry") or 0) == 1,
     }
     score = round(sum(1 for value in checks.values() if value) / len(checks) * 100)
@@ -91,7 +99,11 @@ def queue_incomplete_games(reason="manual"):
 
 
 def _auto_manual(game):
-    if (game.get("manual_file_path") or "").strip() or int(game.get("manual_count") or 0) > 0:
+    if (
+        (game.get("manual_file_path") or "").strip()
+        or (game.get("manual_url") or "").strip()
+        or int(game.get("manual_count") or 0) > 0
+    ):
         return {"skipped": True, "reason": "manual already present"}
     manual_data = manual_search_results(game.get("title") or "", game.get("platform") or "", "all")
     results = manual_data.get("results") or []
@@ -136,15 +148,25 @@ def run_game(game_id, include_manual=True, progress_callback=None):
         if progress_callback:
             progress_callback(int(progress), stage)
     try:
-        report(8, "Identifying game")
+        report(8, "Identifying missing information")
         if int(game.get("metadata_locked") or 0):
             actions.append({"metadata": "skipped", "reason": "metadata locked"})
+            report(30, "Preserving locked information")
+            enrichment = enrich_after_merge(game_id, game, only_missing=True)
+            manual_checked_during_enrichment = bool(enrichment.get("manual_checked"))
+            actions.append({"assets": "filled-missing-only", "enrichment": enrichment})
         else:
-            report(24, "Researching game information")
-            result = apply_merge_best(game_id, game.get("title") or "", enrich=True)
+            report(24, "Filling missing game information")
+            result = apply_merge_best(game_id, game.get("title") or "", enrich=True, only_missing=True)
             manual_checked_during_enrichment = bool(result.get("enrichment", {}).get("manual_checked"))
             if result.get("success"):
-                actions.append({"metadata": "merged", "message": result.get("message")})
+                actions.append({
+                    "metadata": "filled-missing-only",
+                    "message": result.get("message"),
+                    "filled_fields": result.get("filled_fields", []),
+                    "preserved_fields": result.get("preserved_fields", []),
+                    "enrichment": result.get("enrichment", {}),
+                })
             else:
                 actions.append({"metadata": "review", "message": result.get("message")})
 
@@ -165,7 +187,14 @@ def run_game(game_id, include_manual=True, progress_callback=None):
         conn.execute("UPDATE curator_jobs SET status='complete', progress=100, stage='Museum Ready', result_json=?, attempts=attempts+1, last_error='', updated_at=CURRENT_TIMESTAMP WHERE game_id=?", (json.dumps(summary), game_id))
         conn.commit(); conn.close()
         _history(game_id, "curate", "complete", f"Cataloging finished at {summary['score']}%.", {"actions": actions, **summary})
-        return {"success": True, "game_id": game_id, "actions": actions, **summary}
+        change_count = 0
+        for action in actions:
+            change_count += len(action.get("filled_fields") or [])
+            enrichment = action.get("enrichment") or {}
+            change_count += int(bool(enrichment.get("cover_cached")))
+            change_count += int(enrichment.get("cached_media") or 0)
+            change_count += int(bool(enrichment.get("manual_downloaded")))
+        return {"success": True, "game_id": game_id, "actions": actions, "changes": change_count, **summary}
     except Exception as exc:
         conn = get_connection()
         conn.execute("UPDATE games SET curator_status='needs_review', curator_last_error=?, curator_last_run=? WHERE id=?", (str(exc), _now(), game_id))

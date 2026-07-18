@@ -118,7 +118,7 @@ def _upsert_scanned_game(conn, game):
         game.get('soundtrack_count',0), game.get('bonus_count',0), game['last_scanned'], game['path']
     )
     if existing:
-        conn.execute('''UPDATE games SET title=?,size_bytes=?,file_count=?,executable_count=?,executables=?,manual_count=?,readme_count=?,archive_count=?,installer_count=?,disc_image_count=?,patch_count=?,soundtrack_count=?,bonus_count=?,updated_at=CURRENT_TIMESTAMP,last_scanned=? WHERE path=?''', values)
+        conn.execute('''UPDATE games SET title=CASE WHEN TRIM(COALESCE(title,''))='' THEN ? ELSE title END,size_bytes=?,file_count=?,executable_count=?,executables=?,manual_count=?,readme_count=?,archive_count=?,installer_count=?,disc_image_count=?,patch_count=?,soundtrack_count=?,bonus_count=?,updated_at=CURRENT_TIMESTAMP,last_scanned=? WHERE path=?''', values)
         return existing['id'], False
     cur = conn.execute('''INSERT INTO games (library_id,title,path,size_bytes,file_count,executable_count,executables,manual_count,readme_count,archive_count,installer_count,disc_image_count,patch_count,soundtrack_count,bonus_count,last_scanned) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)''', (
         game['library_id'], game['title'], game['path'], game['size_bytes'], game['file_count'], game['executable_count'], game['executables'], game.get('manual_count',0), game.get('readme_count',0), game.get('archive_count',0), game.get('installer_count',0), game.get('disc_image_count',0), game.get('patch_count',0), game.get('soundtrack_count',0), game.get('bonus_count',0), game['last_scanned']))
@@ -127,7 +127,7 @@ def _upsert_scanned_game(conn, game):
 
 def _run_scan(session_id: str):
     global _scan_thread, _scan_session_id, _scan_heartbeat_stop
-    added = updated = skipped = errors = completed = failed = 0
+    added = updated = skipped = errors = completed = failed = filled = unchanged = 0
     heartbeat_stop = threading.Event()
     _scan_heartbeat_stop = heartbeat_stop
     heartbeat_thread = threading.Thread(
@@ -183,12 +183,16 @@ def _run_scan(session_id: str):
             )
             if result.get('success'):
                 completed += 1
+                changes = int(result.get('changes') or 0)
+                filled += changes
+                unchanged += int(changes == 0)
             else:
                 failed += 1
             _update(completed_games=completed, failed_games=failed)
         summary = {
             'added':added,'updated':updated,'skipped':skipped,'errors':errors,
             'prepared':completed,'needs_review':failed,'checked':len(all_rows),
+            'missing_items_added':filled,'records_preserved':unchanged,
         }
         _update(
             status='complete', progress=100, stage='Museum scan complete',

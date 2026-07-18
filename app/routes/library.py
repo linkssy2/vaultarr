@@ -9,7 +9,7 @@ from app.services.provider_intelligence import get_provider_details
 from app.services.curator_service import queue_game
 from app.services.acquisition_assistant_service import get_game_acquisition
 from app.services.preservation_engine import enrich_preservation
-from app.services.collection_service import build_collections
+from app.services.collection_service import build_collections, collection_game_ids
 
 library_bp = Blueprint('library', __name__)
 
@@ -29,6 +29,8 @@ def library():
     category = request.args.get('category','All Games')
     platform = request.args.get('platform','All Platforms').strip() or 'All Platforms'
     genre = request.args.get('genre','All Genres').strip() or 'All Genres'
+    collection = request.args.get('collection','').strip()
+    collection_group = request.args.get('collection_group','').strip().lower()
     attention = request.args.get('attention','').strip().lower() in ('1','true','yes','on')
     museum_view = request.args.get('view','games').strip().lower() or 'games'
     if museum_view not in ('games', 'collections'):
@@ -44,6 +46,13 @@ def library():
         where.append('platform = ?'); params.append(platform)
     if genre and genre != 'All Genres':
         where.append('genre LIKE ?'); params.append(f'%{genre}%')
+    if collection:
+        collection_ids = collection_game_ids(collection, collection_group)
+        if collection_ids:
+            placeholders = ','.join('?' for _ in collection_ids)
+            where.append(f'id IN ({placeholders})'); params.extend(collection_ids)
+        else:
+            where.append('1 = 0')
     if attention:
         where.append("(COALESCE(preservation_score, 0) < 80 OR COALESCE(preservation_badge, '') NOT IN ('Archive Ready', 'Complete'))")
     order = 'title COLLATE NOCASE ASC'
@@ -71,7 +80,7 @@ def library():
     conn.close()
     collection_groups = build_collections(limit=12) if museum_view == 'collections' else None
     total_collections = (sum(len(collection_groups[key]) for key in collection_groups) if collection_groups else 0)
-    return render_template('library.html', games=games, q=q, sort=sort, active_category=category, category=category, platform=platform, genre=genre, categories=categories, platforms=platforms, genres=genres, category_counts=category_counts, total_count=total_count, attention=attention, attention_count=attention_count, museum_view=museum_view, collection_groups=collection_groups, total_collections=total_collections)
+    return render_template('library.html', games=games, q=q, sort=sort, active_category=category, category=category, platform=platform, genre=genre, collection=collection, collection_group=collection_group, categories=categories, platforms=platforms, genres=genres, category_counts=category_counts, total_count=total_count, attention=attention, attention_count=attention_count, museum_view=museum_view, collection_groups=collection_groups, total_collections=total_collections)
 
 
 @library_bp.route('/games/add', methods=['GET','POST'])
