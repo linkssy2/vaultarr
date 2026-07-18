@@ -9,7 +9,7 @@
     museumMode:qs('globalSearchMuseumMode'), discoverMode:qs('globalSearchDiscoverMode'),
     addBackdrop:qs('globalAddBackdrop'), addDialog:qs('globalAddDialog'), addClose:qs('globalAddClose'), addCancel:qs('globalAddCancel'), addConfirm:qs('globalAddConfirm'), addStatus:qs('globalAddStatus')
   });
-  function setStatus(message){ const el=elements(); if(el.status) el.status.textContent=message; }
+  function setStatus(message){ const el=elements(); if(!el.status)return; el.status.textContent=message||''; el.status.hidden=!message; }
   function openSearch(seed='', mode=state.mode){
     const el=elements();
     if(!el.panel||!el.input)return;
@@ -90,7 +90,7 @@
     }
     if(el.heading)el.heading.textContent=discover?'Discover a game':'Search your museum';
     if(el.input)el.input.placeholder=discover?'Search online game information...':'Search games, collections, metadata...';
-    setStatus(discover?'Search enabled information sources and add a game directly.':'Start typing to search across your library.');
+    setStatus(discover?'':'Start typing to search across your library.');
     if(el.results)el.results.innerHTML='';
     requestAnimationFrame(()=>{
       restoreSearchControls(el);
@@ -111,7 +111,7 @@
     const requestToken=++state.requestToken;
     state.searchController?.abort();
     state.searchController=null;
-    if(!query){setStatus(modeAtStart==='discover'?'Search enabled information sources and add a game directly.':'Start typing to search across your library.');if(el.results)el.results.innerHTML='';return;}
+    if(!query){setStatus(modeAtStart==='discover'?'':'Start typing to search across your library.');if(el.results)el.results.innerHTML='';return;}
     const controller=new AbortController();
     state.searchController=controller;
     setStatus(modeAtStart==='discover'?'Searching information sources...':'Searching museum...');

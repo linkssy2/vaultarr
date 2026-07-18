@@ -1,3 +1,10 @@
+## 2.0.0 Alpha 48 — Museum Home Actions
+
+- Redesigned Continue curating, Timeline, and Next milestone as cohesive glass museum-navigation chambers.
+- Added restrained line icons, clearer information hierarchy, individual accent tones, directional affordances, and calm hover and keyboard-focus motion.
+- Removed the redundant Discover & Add instructional sentence from Universal Search while retaining live progress, results, and error messages.
+- Preserved live task and game counts, existing destinations, the Home layout, and the protected Home Orbital.
+
 ## 2.0.0 Alpha 47 — Unified Orbital Login
 
 - Replaced the split login composition with one centered glass enclosure containing the entire access experience.

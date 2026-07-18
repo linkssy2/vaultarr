@@ -1,8 +1,15 @@
-# Vaultarr 2.0.0 Alpha 47
+# Vaultarr 2.0.0 Alpha 48
 
-> Experimental release: **Vaultarr 2.0.0 Alpha 47 — Unified Orbital Login**
+> Experimental release: **Vaultarr 2.0.0 Alpha 48 — Museum Home Actions**
 
 The `vaultarr-2.0-alpha` branch publishes its Docker image as `ghcr.io/linkssy2/vaultarr:2.experimental`. The stable `main` branch continues to own the `latest` tag.
+
+## Alpha 48 museum home actions
+
+- Restyles Continue curating, Timeline, and Next milestone as polished glass navigation chambers.
+- Gives each destination a clear icon, readable hierarchy, subtle accent identity, and calm directional motion.
+- Removes the redundant instructional sentence beneath the empty Discover & Add search controls.
+- Preserves the existing routes, live counts, Home layout, and protected Home Orbital.
 
 ## Alpha 47 unified orbital login
 

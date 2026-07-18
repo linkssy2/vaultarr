@@ -49,9 +49,39 @@
   </section>
 
   <section class="home-lower-grid">
-    <a class="home-story-card" href="/museum?attention=1"><span>Continue curating</span><strong>{{ stats.open_tasks }} item{% if stats.open_tasks != 1 %}s{% endif %} need attention</strong><small>Review everything in one focused view.</small></a>
-    <a class="home-story-card" href="/discovery#timeline"><span>Timeline</span><strong>Look back through your museum</strong><small>Rediscover eras, years, and old favorites.</small></a>
-    <a class="home-story-card" href="/experience"><span>Next milestone</span><strong>{{ stats.game_count }} games in your museum</strong><small>See what achievement is closest.</small></a>
+    <a class="home-story-card home-story-curation" href="/museum?attention=1">
+      <span class="home-story-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M7 5h10M7 12h10M7 19h7"/><circle cx="4" cy="5" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="19" r="1"/></svg>
+      </span>
+      <span class="home-story-copy">
+        <small class="home-story-eyebrow">Continue curating</small>
+        <strong>{{ stats.open_tasks }} item{% if stats.open_tasks != 1 %}s{% endif %} need attention</strong>
+        <span class="home-story-detail">Review everything in one focused view.</span>
+      </span>
+      <span class="home-story-arrow" aria-hidden="true">&#8594;</span>
+    </a>
+    <a class="home-story-card home-story-timeline" href="/discovery#timeline">
+      <span class="home-story-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/><path d="M4 12H2m20 0h-2"/></svg>
+      </span>
+      <span class="home-story-copy">
+        <small class="home-story-eyebrow">Timeline</small>
+        <strong>Look back through your museum</strong>
+        <span class="home-story-detail">Rediscover eras, years, and old favorites.</span>
+      </span>
+      <span class="home-story-arrow" aria-hidden="true">&#8594;</span>
+    </a>
+    <a class="home-story-card home-story-milestone" href="/experience">
+      <span class="home-story-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="m12 3 2.6 5.3 5.9.9-4.3 4.1 1 5.8-5.2-2.7-5.2 2.7 1-5.8-4.3-4.1 5.9-.9Z"/></svg>
+      </span>
+      <span class="home-story-copy">
+        <small class="home-story-eyebrow">Next milestone</small>
+        <strong>{{ stats.game_count }} games in your museum</strong>
+        <span class="home-story-detail">See what achievement is closest.</span>
+      </span>
+      <span class="home-story-arrow" aria-hidden="true">&#8594;</span>
+    </a>
   </section>
 </section>
 {% endblock %}
