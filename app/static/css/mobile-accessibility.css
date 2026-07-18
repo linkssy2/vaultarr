@@ -1,0 +1,160 @@
+/* Vaultarr Alpha 55 — mobile accessibility layer. Desktop remains unchanged. */
+
+@media (max-width: 980px) {
+  html { overflow-x: clip; scroll-padding-top: 116px; }
+  body.vaultos { min-width: 0; overflow-x: clip; }
+
+  body.vaultos > .sidebar.vaultos-sidebar {
+    position: sticky; inset: 0 0 auto; display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas: "brand nav" "tools tools";
+    width: 100%; height: auto; padding: 12px 18px; gap: 10px 18px;
+    border: 0; border-bottom: 1px solid color-mix(in srgb, var(--primary) 20%, var(--border-soft));
+    background: color-mix(in srgb, var(--sidebar) 94%, transparent);
+    box-shadow: 0 14px 34px rgba(0, 0, 0, .24);
+    backdrop-filter: blur(22px) saturate(1.15);
+    -webkit-backdrop-filter: blur(22px) saturate(1.15);
+    z-index: 120;
+  }
+  body.vaultos > .sidebar .brand { grid-area: brand; align-self: center; gap: 9px; margin: 0; font-size: 22px; }
+  body.vaultos > .sidebar .brand-mark { width: 34px; height: 34px; flex-basis: 34px; border-radius: 10px; }
+  body.vaultos > .sidebar .vault-nav {
+    grid-area: nav; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr));
+    align-items: center; gap: 5px; min-width: 0;
+  }
+  body.vaultos > .sidebar .nav-section-label { display: none !important; }
+  body.vaultos > .sidebar .vault-nav a {
+    display: flex; min-width: 0; min-height: 44px; margin: 0; padding: 7px 8px;
+    justify-content: center; gap: 7px; border-radius: 12px; text-align: center;
+  }
+  body.vaultos > .sidebar .vault-nav a:hover { transform: translateY(-1px); }
+  body.vaultos > .sidebar .vault-nav a span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  body.vaultos > .sidebar .sidebar-utility-stack {
+    grid-area: tools; display: grid; grid-template-columns: minmax(210px, 1fr) minmax(190px, .72fr);
+    gap: 10px !important; width: 100% !important; max-width: none !important; margin: 0 !important;
+  }
+  body.vaultos > .sidebar .sidebar-search-shell,
+  body.vaultos > .sidebar .museum-scan-pill { width: 100% !important; max-width: none !important; }
+  body.vaultos > .sidebar .sidebar-footer { display: none; }
+  body.vaultos > main.content.vaultos-content { width: 100%; min-width: 0; margin-left: 0; padding: clamp(20px, 4vw, 32px); }
+
+  .panel, .card, .page-header, .settings-task-hub, .museum-library-header,
+  .museum-collections-shell, .discovery-page, .experience-page { min-width: 0; max-width: 100%; }
+  .page-header, .panel-heading { flex-wrap: wrap; }
+  .table-wrap, .data-table-wrap, .settings-table-wrap {
+    max-width: 100%; overflow-x: auto; overscroll-behavior-inline: contain; -webkit-overflow-scrolling: touch;
+  }
+  input, select, textarea, button, .button-link { max-width: 100%; }
+  a, button, input, select, summary, .button-link { touch-action: manipulation; }
+  button, .button-link, input:not([type="checkbox"]):not([type="radio"]), select { min-height: 44px; }
+  .settings-task-hub, .museum-library-tabs, .category-row, .focus-tabs {
+    max-width: 100%; overflow-x: auto; overscroll-behavior-inline: contain;
+    scrollbar-width: none; -webkit-overflow-scrolling: touch;
+  }
+  .settings-task-hub::-webkit-scrollbar, .museum-library-tabs::-webkit-scrollbar,
+  .category-row::-webkit-scrollbar, .focus-tabs::-webkit-scrollbar { display: none; }
+  .global-search-panel { width: min(680px, calc(100vw - 28px)); max-height: calc(100dvh - 28px); overflow: visible auto; }
+  .global-add-dialog, dialog, .delete-game-dialog { max-width: calc(100vw - 28px); max-height: calc(100dvh - 28px); }
+}
+
+@media (max-width: 720px) {
+  html { scroll-padding-top: 84px; }
+  body.vaultos { padding-bottom: calc(76px + env(safe-area-inset-bottom)); }
+  body.vaultos > .sidebar.vaultos-sidebar {
+    position: relative; display: grid; grid-template-columns: 1fr;
+    grid-template-areas: "brand" "tools";
+    padding: calc(12px + env(safe-area-inset-top)) 14px 14px; gap: 12px;
+    backdrop-filter: none; -webkit-backdrop-filter: none;
+  }
+  body.vaultos > .sidebar .brand { justify-self: start; }
+  body.vaultos > .sidebar .vault-nav {
+    position: fixed; top: auto; left: 8px; right: 8px; bottom: max(8px, env(safe-area-inset-bottom)); z-index: 240;
+    display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 3px; padding: 5px;
+    border: 1px solid color-mix(in srgb, var(--primary) 22%, var(--border-soft)); border-radius: 19px;
+    background: color-mix(in srgb, var(--sidebar) 94%, transparent);
+    box-shadow: 0 18px 48px rgba(0, 0, 0, .48), inset 0 1px rgba(255, 255, 255, .05);
+    backdrop-filter: blur(22px) saturate(1.18); -webkit-backdrop-filter: blur(22px) saturate(1.18);
+  }
+  body.vaultos > .sidebar .vault-nav a {
+    min-height: 54px; padding: 5px 2px; flex-direction: column; gap: 2px; font-size: 10px; line-height: 1.1;
+  }
+  body.vaultos > .sidebar .vault-nav .nav-glyph { font-size: 17px; line-height: 1; }
+  body.vaultos > .sidebar .sidebar-utility-stack { grid-template-columns: 1fr 1fr; }
+  body.vaultos > .sidebar .sidebar-search-shell { min-height: 44px; }
+  body.vaultos > .sidebar .sidebar-search-shell kbd { display: none; }
+  body.vaultos > main.content.vaultos-content { padding: 18px 14px 28px; }
+
+  h1 { overflow-wrap: anywhere; }
+  .panel, .card, .empty-state { padding: 17px; border-radius: 18px; }
+  .cards, .poster-grid, .game-grid { gap: 16px; }
+  .poster-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .poster-card:has(.poster-info.title-only) .poster-art { height: auto; min-height: 0; aspect-ratio: 3 / 4; }
+  .poster-info.title-only {
+    left: 8px; right: 8px; bottom: 8px; padding: 8px 9px; border-radius: 11px; transform: translate3d(0, 0, 18px);
+  }
+  .poster-info.title-only h3 { font-size: 12px; }
+  .museum-library-title h1 { font-size: clamp(34px, 11vw, 44px); }
+  .museum-library-primary-tools, .museum-header-search, .museum-add-game, .search-wrap,
+  .search-input, .select-input, .library-tools { width: 100%; min-width: 0; }
+  .museum-library-primary-tools, .library-tools { display: grid; grid-template-columns: 1fr; }
+  .museum-library-tabs a { min-height: 44px; }
+
+  body.focus-active > .sidebar .vault-nav { visibility: hidden; pointer-events: none; }
+  body.focus-active .focus-backdrop { z-index: 250; }
+  body.focus-active .focus-panel.is-expanded {
+    top: 0 !important; right: auto !important; bottom: auto !important; left: 0 !important;
+    grid-template-columns: minmax(0, 1fr) !important; align-content: start;
+    width: 100vw !important; max-width: none; height: 100dvh !important; max-height: none;
+    gap: 18px; overflow: auto; border: 0; border-radius: 0;
+    padding: calc(68px + env(safe-area-inset-top)) 14px calc(24px + env(safe-area-inset-bottom));
+    z-index: 260;
+  }
+  .focus-close {
+    position: fixed; top: max(12px, env(safe-area-inset-top)); right: 12px; z-index: 20;
+    min-width: 48px; min-height: 48px;
+  }
+  .focus-art-column { width: 100%; min-width: 0; max-height: min(42dvh, 340px); }
+  .focus-art-column.collector-layout .focus-cover {
+    width: 100%; max-height: min(42dvh, 340px) !important; padding: 12px;
+  }
+  .focus-art-column.collector-layout .focus-cover img { width: auto; max-width: 100%; max-height: min(38dvh, 310px) !important; object-fit: contain !important; }
+  .focus-content { width: 100%; min-width: 0; overflow: visible; padding-right: 0; transform: none !important; }
+  .focus-tabs { position: sticky; top: 0; z-index: 10; }
+  .focus-tab-primary, .focus-tab-menu { flex: 0 0 auto; }
+  .focus-tab, .focus-tab-menu-trigger { min-height: 44px; }
+  .focus-tab-menu-popover {
+    position: fixed; left: 12px; right: 12px; top: auto; bottom: calc(12px + env(safe-area-inset-bottom));
+    width: auto; max-height: min(52dvh, 420px); overflow-y: auto;
+  }
+
+  .global-search-panel {
+    top: max(10px, env(safe-area-inset-top)); right: 10px; bottom: auto; left: 10px; width: auto;
+    max-height: calc(100dvh - 20px - env(safe-area-inset-top)); transform: translateY(-10px) scale(.985);
+  }
+  body.global-search-open .global-search-panel { left: 10px; right: 10px; transform: none; }
+  .global-search-modes { overflow-x: auto; }
+  .global-search-mode { min-width: max-content; }
+  .global-add-dialog {
+    top: max(10px, env(safe-area-inset-top)); right: 10px; bottom: auto; left: 10px; width: auto;
+    max-height: calc(100dvh - 20px - env(safe-area-inset-top)); overflow-y: auto;
+  }
+  .global-add-dialog.visible { transform: none; }
+  .settings-task-hub { position: sticky; top: 0; z-index: 8; }
+  .settings-task-hub a { flex: 0 0 auto; min-height: 44px; }
+  .settings-grid, .settings-section-grid, .studio-grid, .discovery-index-grid, .experience-grid { grid-template-columns: 1fr !important; }
+  .vaultarr-live-toast { bottom: calc(80px + env(safe-area-inset-bottom)); }
+}
+
+@media (max-width: 380px) {
+  body.vaultos > .sidebar .sidebar-utility-stack { grid-template-columns: 1fr; }
+  .poster-grid { grid-template-columns: 1fr; }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .poster-card, .poster-card:hover, .poster-card.is-hovering, .game-card-link:hover .poster-card { transform: none !important; }
+  .poster-card::before, .poster-card::after, .card-gloss, .card-shine { pointer-events: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}

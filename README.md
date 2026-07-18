@@ -1,8 +1,12 @@
-# Vaultarr 2.0.0 Alpha 54
+# Vaultarr 2.0.0 Alpha 55
 
-> Experimental release: **Vaultarr 2.0.0 Alpha 54 — Collection Atlas and Additive Scan**
+> Experimental release: **Vaultarr 2.0.0 Alpha 55 — Mobile Accessibility**
 
 The `vaultarr-2.0-alpha` branch publishes its Docker image as `ghcr.io/linkssy2/vaultarr:2.experimental`. The stable `main` branch continues to own the `latest` tag.
+
+## Alpha 55 mobile accessibility
+
+Vaultarr now adds a phone-focused responsive layer while preserving its established desktop museum experience. Mobile visitors get compact scan and search access, persistent thumb-friendly navigation, safe-area spacing, larger touch targets, responsive exhibits, and phone-safe dialogs, dropdowns, settings, discovery, collections, and milestone layouts.
 
 ## Alpha 54 collection atlas and additive scan
 

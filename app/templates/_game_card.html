@@ -1,6 +1,6 @@
 {% set source = game.source_type or ('Manual' if game.manual_entry else 'Scanned') %}
 {% set search_blob = (game.title ~ ' ' ~ game.path ~ ' ' ~ game.developer ~ ' ' ~ game.publisher ~ ' ' ~ game.genre ~ ' ' ~ game.description ~ ' ' ~ game.tags ~ ' ' ~ game.category ~ ' ' ~ game.notes ~ ' ' ~ game.executables ~ ' ' ~ game.platform ~ ' ' ~ game.release_year ~ ' ' ~ source)|lower %}
-<button class="game-card-link focus-card-trigger{% if newly_added %} vaultarr-card-enter{% endif %}" type="button" data-game-id="{{ game.id }}" data-search="{{ search_blob|e }}" data-title="{{ game.title|lower|e }}" data-size="{{ game.size_bytes or 0 }}" data-scanned="{{ game.last_scanned or '' }}" data-added="{{ game.added_at or '' }}">
+<button class="game-card-link focus-card-trigger{% if newly_added %} vaultarr-card-enter{% endif %}" type="button" aria-label="Open {{ game.title|e }}" data-game-id="{{ game.id }}" data-search="{{ search_blob|e }}" data-title="{{ game.title|lower|e }}" data-size="{{ game.size_bytes or 0 }}" data-scanned="{{ game.last_scanned or '' }}" data-added="{{ game.added_at or '' }}">
   <article class="poster-card source-{{ source|lower|replace(' ', '-') }}">
     <div class="poster-art">
       <div class="poster-gloss"></div>

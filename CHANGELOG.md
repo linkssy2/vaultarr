@@ -1,3 +1,12 @@
+## 2.0.0 Alpha 55 — Mobile Accessibility
+
+- Added a dedicated responsive accessibility layer without changing the established desktop presentation.
+- Replaced the oversized mobile sidebar stack with compact header tools and persistent thumb-friendly navigation.
+- Added phone safe-area support, a correct mobile viewport, larger touch targets, responsive museum cards, and contained horizontal scrolling.
+- Made expanded game cards, search dialogs, settings shortcuts, dropdowns, tables, and shared panels fit phone-sized screens.
+- Disabled pointer-only card tilt on coarse touchscreens while preserving the protected desktop card experience.
+- Added explicit assistive labels to museum cards and the expanded-game close control.
+
 ## 2.0.0 Alpha 54 — Collection Atlas and Additive Scan
 
 - Rebuilt Collections as a compact Collection Atlas with live shelf totals, clear type shortcuts, cover-stack previews, responsive cards, and calmer empty states.

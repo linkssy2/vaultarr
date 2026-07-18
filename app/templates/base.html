@@ -2,6 +2,7 @@
 <html>
 <head>
   <title>Vaultarr 2.0 Experimental</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   {% if theme.dark_reader_compat %}<meta name="darkreader-lock">{% endif %}
   <meta name="theme-color" content="#3b82f6">
   <script>
@@ -52,6 +53,7 @@
   <link rel="stylesheet" href="/static/css/museum-scan-pill.css?v=2.0.0-alpha.36-scan-panel.14">
   <link rel="stylesheet" href="/static/css/interface-cohesion.css?v=2.0.0-alpha.36">
   <link rel="stylesheet" href="/static/css/familiar-experience.css?v=2.0.0-alpha.52-museum-chamber.1">
+  <link rel="stylesheet" href="/static/css/mobile-accessibility.css?v=2.0.0-alpha.55-mobile.7">
   <style id="vaultarr-theme">{{ theme_css|safe }}</style>
 </head>
 <body class="vaultos {{ 'advanced-mode' if ui_settings.advanced_mode else 'standard-mode' }} {% if theme.dark_reader_compat %}dark-reader-compat{% endif %}" data-theme-preset="{{ theme.preset }}" data-theme-custom="{{ 'true' if theme.is_custom else 'false' }}">
@@ -87,7 +89,7 @@
     <div class="sidebar-footer">
       <div class="mini-stat vault-build-card">
         <span>Current build</span>
-        <strong>Vaultarr 2.0 Alpha 54</strong>
+        <strong>Vaultarr 2.0 Alpha 55</strong>
         <em></em>
       </div>
       {% if auth_enabled %}
@@ -106,7 +108,7 @@
   <div class="focus-backdrop" id="focusBackdrop" aria-hidden="true"></div>
 
   <section class="focus-panel" id="focusPanel" aria-hidden="true">
-    <button class="focus-close" id="focusClose" type="button">×</button>
+    <button class="focus-close" id="focusClose" type="button" aria-label="Close expanded game">×</button>
 
     <aside class="focus-art-column collector-layout">
       <div class="focus-cover" id="focusCover">
