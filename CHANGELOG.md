@@ -1,3 +1,9 @@
+## 2.0.0 Alpha 53 — Default Orbital Liquid
+
+- Restored the Home Orbital V liquid to its original white appearance when Vault Blue is the active default theme.
+- Kept theme-derived Orbital liquid colors for every alternate preset and custom theme.
+- Preserved Museum Health percentage, V-shaped clipping, spring physics, bubble disturbances, and Orbital animation.
+
 ## 2.0.0 Alpha 52 — Milestone Journey
 
 - Reorganized Milestones into a clear progress dashboard centered on overall status, the closest goal, active milestones, and the achievement archive.

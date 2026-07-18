@@ -1,8 +1,12 @@
-# Vaultarr 2.0.0 Alpha 52
+# Vaultarr 2.0.0 Alpha 53
 
-> Experimental release: **Vaultarr 2.0.0 Alpha 52 — Milestone Journey**
+> Experimental release: **Vaultarr 2.0.0 Alpha 53 — Default Orbital Liquid**
 
 The `vaultarr-2.0-alpha` branch publishes its Docker image as `ghcr.io/linkssy2/vaultarr:2.experimental`. The stable `main` branch continues to own the `latest` tag.
+
+## Alpha 53 default Orbital liquid
+
+The Home Orbital's V-shaped Museum Health liquid is white when Vaultarr uses its default Vault Blue theme, matching the original presentation. Alternate presets and custom themes continue to recolor that liquid from their active primary and accent colors. Fill percentage, clipping, bubble-driven spring motion, and the surrounding Orbital remain unchanged.
 
 ## Alpha 52 milestone journey
 

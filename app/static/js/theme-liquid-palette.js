@@ -52,5 +52,22 @@
     };
   }
 
-  window.VaultarrLiquidTheme = { getPalette };
+  function getOrbitalPalette() {
+    const body = document.body;
+    const usesDefaultTheme = body?.dataset.themePreset === 'vault_blue'
+      && body?.dataset.themeCustom !== 'true';
+    if (!usesDefaultTheme) return getPalette();
+
+    return {
+      top: 'rgba(255, 255, 255, .98)',
+      low: 'rgba(207, 224, 243, .78)',
+      surfaceBright: 'rgba(255, 255, 255, .98)',
+      surface: 'rgba(244, 250, 255, .92)',
+      glow: 'rgba(191, 225, 255, .62)',
+      bubbleDark: 'rgba(20, 36, 58, .28)',
+      glass: 'rgba(244, 249, 255, .055)',
+    };
+  }
+
+  window.VaultarrLiquidTheme = { getPalette, getOrbitalPalette };
 })();

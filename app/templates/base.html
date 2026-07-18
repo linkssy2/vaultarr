@@ -54,7 +54,7 @@
   <link rel="stylesheet" href="/static/css/familiar-experience.css?v=2.0.0-alpha.52-museum-chamber.1">
   <style id="vaultarr-theme">{{ theme_css|safe }}</style>
 </head>
-<body class="vaultos {{ 'advanced-mode' if ui_settings.advanced_mode else 'standard-mode' }} {% if theme.dark_reader_compat %}dark-reader-compat{% endif %}">
+<body class="vaultos {{ 'advanced-mode' if ui_settings.advanced_mode else 'standard-mode' }} {% if theme.dark_reader_compat %}dark-reader-compat{% endif %}" data-theme-preset="{{ theme.preset }}" data-theme-custom="{{ 'true' if theme.is_custom else 'false' }}">
   <div class="vault-ambient" aria-hidden="true"><span></span><i></i></div>
 
   <aside class="sidebar vaultos-sidebar">
@@ -87,7 +87,7 @@
     <div class="sidebar-footer">
       <div class="mini-stat vault-build-card">
         <span>Current build</span>
-        <strong>Vaultarr 2.0 Alpha 52</strong>
+        <strong>Vaultarr 2.0 Alpha 53</strong>
         <em></em>
       </div>
       {% if auth_enabled %}
@@ -873,14 +873,14 @@
   </dialog>
 
   <script src="/static/js/live-events.js?v=1.7.6"></script>
-  <script src="/static/js/theme-liquid-palette.js?v=2.0.0-alpha.52-theme-liquid.1"></script>
+  <script src="/static/js/theme-liquid-palette.js?v=2.0.0-alpha.53-default-orbital.1"></script>
   <script src="/static/js/museum-scan-pill.js?v=2.0.0-alpha.52-theme-liquid.1"></script>
   <script src="/static/js/library.js?v=2.0.0-alpha.41-museum-menus.2"></script>
   <script src="/static/js/focus-mode.js?v=2.0.0-alpha.44-overview-gallery.1"></script>
   <script src="/static/js/performance-foundation.js?v=1.7.6"></script>
   <script src="/static/js/theme-compat.js"></script>
   <script src="/static/js/studio-navigation.js?v=2.0.0-alpha.42-settings.1"></script>
-  <script src="/static/js/orbital-vault.js?v=2.0.0-alpha.52-theme-liquid.1"></script>
+  <script src="/static/js/orbital-vault.js?v=2.0.0-alpha.53-default-orbital.1"></script>
   <script src="/static/js/milestone-liquid-engine.js?v=2.0.0-alpha.52-theme-liquid.1"></script>
 
 

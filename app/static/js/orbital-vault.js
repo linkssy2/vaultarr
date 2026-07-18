@@ -53,7 +53,7 @@
       width = Math.max(1, canvas.clientWidth || 42);
       height = Math.max(1, canvas.clientHeight || 48);
       const ratio = Math.min(2, window.devicePixelRatio || 1);
-      palette = window.VaultarrLiquidTheme?.getPalette?.() || fallbackPalette;
+      palette = window.VaultarrLiquidTheme?.getOrbitalPalette?.() || fallbackPalette;
       canvas.width = Math.round(width * ratio);
       canvas.height = Math.round(height * ratio);
       context.setTransform(ratio, 0, 0, ratio, 0, 0);
