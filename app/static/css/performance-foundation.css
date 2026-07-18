@@ -19,11 +19,9 @@
   image-rendering: auto;
 }
 
-html.vaultarr-page-hidden .vault-ambient,
-html.vaultarr-page-hidden .orbital-vault-core,
-html.vaultarr-page-hidden .timeline-capsule,
-html.vaultarr-page-hidden [class*="shimmer"],
-html.vaultarr-page-hidden [class*="pulse"] {
+html.vaultarr-page-hidden *,
+html.vaultarr-page-hidden *::before,
+html.vaultarr-page-hidden *::after {
   animation-play-state: paused !important;
 }
 

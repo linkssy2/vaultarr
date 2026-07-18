@@ -4,7 +4,7 @@
 
 Vaultarr is a museum-style game cataloging and preservation application.
 
-Current baseline: Vaultarr 2.0.0 Alpha 39.
+Current baseline: Vaultarr 2.0.0 Alpha 40.
 
 ## Protected systems
 

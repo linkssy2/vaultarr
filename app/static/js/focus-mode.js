@@ -14,6 +14,8 @@
     let activeGameId = null;
     let activeGame = null;
     let emulationProfile = null;
+    let emulationIsRunning = false;
+    let emulationPreviousScrollTop = 0;
     let selectedAcquisition = null;
     let acquisitionDownloadPollTimer = null;
 
@@ -930,9 +932,19 @@
     }
 
     function stopEmulationPlayer() {
+      const wasRunning = emulationIsRunning;
+      emulationIsRunning = false;
       if (fields.emulationFrame) fields.emulationFrame.src = "about:blank";
       if (fields.emulationPlayerShell) fields.emulationPlayerShell.hidden = true;
       document.querySelector(".emulation-launch-panel")?.removeAttribute("hidden");
+      body.classList.remove("emulation-active");
+      if (wasRunning) {
+        const content = panel.querySelector(".focus-content");
+        window.requestAnimationFrame(() => {
+          if (content) content.scrollTop = emulationPreviousScrollTop;
+        });
+        document.dispatchEvent(new CustomEvent("vaultarr:emulation-stopped"));
+      }
     }
 
     function resetEmulationPanel() {
@@ -1024,9 +1036,19 @@
     function startEmulationPlayer() {
       if (!emulationProfile?.available || !emulationProfile.player_url || !fields.emulationFrame) return;
       const launchPanel = document.querySelector(".emulation-launch-panel");
+      const content = panel.querySelector(".focus-content");
+      emulationPreviousScrollTop = content?.scrollTop || 0;
+      emulationIsRunning = true;
+      body.classList.add("emulation-active");
       if (launchPanel) launchPanel.hidden = true;
       if (fields.emulationPlayerShell) fields.emulationPlayerShell.hidden = false;
       fields.emulationFrame.src = emulationProfile.player_url;
+      window.requestAnimationFrame(() => {
+        if (content) content.scrollTop = 0;
+      });
+      document.dispatchEvent(new CustomEvent("vaultarr:emulation-started", {
+        detail: { gameId: activeGameId }
+      }));
     }
 
     async function removeEmulationRom() {

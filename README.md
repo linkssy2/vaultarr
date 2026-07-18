@@ -1,8 +1,19 @@
-# Vaultarr 2.0.0 Alpha 39
+# Vaultarr 2.0.0 Alpha 40
 
-> Experimental release: **Vaultarr 2.0.0 Alpha 39 — In-App Preservation Player**
+> Experimental release: **Vaultarr 2.0.0 Alpha 40 — Player Performance Mode**
 
 The `vaultarr-2.0-alpha` branch publishes its Docker image as `ghcr.io/linkssy2/vaultarr:2.experimental`. The stable `main` branch continues to own the `latest` tag.
+
+## Alpha 40 player performance mode
+
+- Switches the expanded card into a lightweight game mode only while the emulator is running.
+- Stops rendering the blurred Museum page, card artwork column, navigation tabs, decorative panel gradients, and large shadows behind the player.
+- Gives the emulator the full expanded-card workspace while retaining the clear **Exit Player** action.
+- Restores the exact Play-tab interface and scroll position when the player exits or the expanded card closes.
+- Selects threaded emulation only when the browser is already safely cross-origin isolated and exposes `SharedArrayBuffer`; current deployments continue to use the compatible single-threaded path.
+- Consolidates repeated Home and Milestones database counts into aggregate reads while preserving every displayed score, badge, and percentage.
+- Cancels superseded global-search requests and pauses all CSS animation work while the Vaultarr tab is hidden.
+- Preserves game-file storage, player controls, fullscreen, controller input, routes, card dimensions, and unrelated Museum systems.
 
 ## Alpha 39 in-app preservation player
 

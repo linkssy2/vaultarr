@@ -1,3 +1,16 @@
+## 2.0.0 Alpha 40 — Player Performance Mode
+
+- Added a reversible game-mode state that isolates the embedded emulator from the Museum's blurred, translucent, and shadowed rendering layers while gameplay is active.
+- Hides non-player card content and gives the emulator the full expanded-card workspace without changing card geometry or the normal expanded-card interface.
+- Restores the Play tab and its previous scroll position on exit, tab change, or card close.
+- Dispatches player start/stop lifecycle events for future performance integrations.
+- Replaced the forced single-thread setting with safe capability detection; threaded cores are selected only when the browser is already cross-origin isolated and provides `SharedArrayBuffer`.
+- Consolidated Home statistics from several repeated full-table scans into one compatibility-aware aggregate query without changing any displayed health result.
+- Consolidated Milestone game and media counters into two aggregate reads while preserving badge values and the protected Milestone percentage calculation exactly.
+- Added cancellation for superseded global-search requests so replaced online searches stop consuming provider and browser work.
+- Paused all CSS animations while the document is hidden and resume them automatically when the user returns.
+- Preserved ROM/BIOS storage, streaming, fullscreen, controllers, player controls, Museum Scan, Orbital Core, sidebar, authentication, Acquisition, Manual, Backup, and Milestone systems.
+
 ## 2.0.0 Alpha 39 — In-App Preservation Player
 
 - Added a simplified Play tab to expanded Museum cards for locally owned or authorized NES, SNES, Genesis / Mega Drive, Game Boy, Game Boy Advance, and PlayStation files.

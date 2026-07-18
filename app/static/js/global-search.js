@@ -1,5 +1,5 @@
 (() => {
-  const state = { isOpen:false, mode:'museum', debounce:null, lastQuery:'', activeIndex:-1, selected:null, requestToken:0 };
+  const state = { isOpen:false, mode:'museum', debounce:null, lastQuery:'', activeIndex:-1, selected:null, requestToken:0, searchController:null };
   const qs = id => document.getElementById(id);
   const esc = value => String(value ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
   const elements = () => ({
@@ -45,6 +45,8 @@
     state.isOpen=false;
     state.activeIndex=-1;
     state.requestToken+=1;
+    state.searchController?.abort();
+    state.searchController=null;
     clearTimeout(state.debounce);
     document.body.classList.remove('global-search-open');
     el.panel?.setAttribute('aria-hidden','true');
@@ -65,6 +67,8 @@
   function setMode(mode, rerun=true){
     state.mode=mode==='discover'?'discover':'museum';
     state.requestToken += 1;
+    state.searchController?.abort();
+    state.searchController=null;
     clearTimeout(state.debounce);
     const el=elements();
     const discover=state.mode==='discover';
@@ -95,7 +99,11 @@
     restoreSearchControls(el);
     const modeAtStart=state.mode;
     const requestToken=++state.requestToken;
+    state.searchController?.abort();
+    state.searchController=null;
     if(!query){setStatus(modeAtStart==='discover'?'Search enabled information sources and add a game directly.':'Start typing to search across your library.');if(el.results)el.results.innerHTML='';return;}
+    const controller=new AbortController();
+    state.searchController=controller;
     setStatus(modeAtStart==='discover'?'Searching information sources...':'Searching museum...');
     try{
       let url;
@@ -103,7 +111,7 @@
         const p=new URLSearchParams({query,provider:el.provider?.value||'all',platform:el.platform?.value.trim()||''});
         url=`/api/games/add/search?${p}`;
       }else url=`/api/search?q=${encodeURIComponent(query)}`;
-      const response=await fetch(url,{headers:{Accept:'application/json'}});
+      const response=await fetch(url,{headers:{Accept:'application/json'},signal:controller.signal});
       const data=await response.json();
       if(!response.ok||data.success===false)throw new Error(data.message||'Search failed.');
       if(requestToken!==state.requestToken||query!==state.lastQuery||modeAtStart!==state.mode)return;
@@ -117,10 +125,14 @@
         renderMuseum(data);
       }
     }catch(error){
+      if(error?.name==='AbortError')return;
       if(requestToken!==state.requestToken||modeAtStart!==state.mode)return;
       setStatus(error.message||'Search failed.');
       if(el.results)el.results.innerHTML=`<div class="global-search-empty warning-text">${esc(error.message)}</div>`;
-    }finally{restoreSearchControls(el);}
+    }finally{
+      if(state.searchController===controller)state.searchController=null;
+      restoreSearchControls(el);
+    }
   }
   function scheduleSearch(){const el=elements();clearTimeout(state.debounce);state.debounce=setTimeout(()=>runSearch(el.input?.value||''),180);}
   function openGame(id){closeSearch();const trigger=document.querySelector(`.focus-card-trigger[data-game-id="${id}"]`);if(trigger){trigger.click();return;}const url=`/library?open=${encodeURIComponent(id)}`;window.VaultarrSmoothNavigate?window.VaultarrSmoothNavigate(url,true):location.assign(url);}

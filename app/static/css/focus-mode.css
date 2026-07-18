@@ -3703,3 +3703,82 @@ body.focus-active .focus-backdrop {
   .emulation-primary-actions > * { width: 100%; }
   .emulation-player-shell iframe { height: 52vh; }
 }
+
+/* Alpha 40: isolate browser emulation from Museum rendering work. */
+body.emulation-active > .sidebar,
+body.emulation-active > .content {
+  visibility: hidden;
+  content-visibility: hidden;
+  pointer-events: none;
+  opacity: 0 !important;
+  filter: none !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+body.emulation-active > .focus-backdrop {
+  background: #020617;
+  transition: none;
+}
+
+body.emulation-active .focus-panel,
+body.emulation-active .focus-panel.is-expanded {
+  grid-template-columns: minmax(0, 1fr) !important;
+  gap: 0;
+  padding: 14px;
+  border-color: rgba(56, 189, 248, .18);
+  background: #020617;
+  box-shadow: none;
+  transition: none;
+  will-change: auto;
+}
+
+body.emulation-active .focus-panel::before,
+body.emulation-active .focus-close,
+body.emulation-active .focus-art-column,
+body.emulation-active .focus-content > .focus-kicker,
+body.emulation-active .focus-content > h1,
+body.emulation-active .focus-content > p.muted,
+body.emulation-active .focus-content > .focus-tabs,
+body.emulation-active .emulation-setup-panel {
+  display: none !important;
+}
+
+body.emulation-active .focus-content {
+  height: 100%;
+  padding: 0;
+  overflow: hidden;
+  background: #020617;
+  transition: none;
+}
+
+body.emulation-active #focusTab-play.active,
+body.emulation-active .emulation-workspace {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  animation: none;
+}
+
+body.emulation-active .emulation-player-shell {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  flex-direction: column;
+  border-radius: 18px;
+  background: #020617;
+  box-shadow: none;
+}
+
+body.emulation-active .emulation-player-shell iframe {
+  flex: 1 1 auto;
+  min-height: 0;
+  height: auto;
+}
+
+body.emulation-active .emulation-player-bar {
+  flex: 0 0 auto;
+  background: #07101f;
+}

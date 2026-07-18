@@ -6,11 +6,6 @@ def _count(conn, query, params=()):
     return conn.execute(query, params).fetchone()[0]
 
 
-def _has_column(conn, table, column):
-    cols = [row[1] for row in conn.execute(f"PRAGMA table_info({table})").fetchall()]
-    return column in cols
-
-
 def _first_issue(game):
     if not game:
         return "Review"
@@ -31,37 +26,39 @@ def _first_issue(game):
 def get_dashboard_stats():
     conn = get_connection()
 
-    game_count = _count(conn, "SELECT COUNT(*) FROM games")
+    game_columns = {row[1] for row in conn.execute("PRAGMA table_info(games)").fetchall()}
+    manual_missing_sql = "0"
+    if "manual_count" in game_columns:
+        manual_missing_sql = "(manual_count = 0 OR manual_count IS NULL)"
+        if "manual_url" in game_columns:
+            manual_missing_sql += " AND (manual_url = '' OR manual_url IS NULL)"
+
+    game_summary = conn.execute(f"""
+        SELECT
+            COUNT(*) AS game_count,
+            COALESCE(SUM(size_bytes), 0) AS storage,
+            COALESCE(SUM(CASE WHEN executable_count = 0 THEN 1 ELSE 0 END), 0) AS missing_executables,
+            COALESCE(SUM(CASE WHEN cover_path = '' OR cover_path IS NULL THEN 1 ELSE 0 END), 0) AS missing_covers,
+            COALESCE(SUM(CASE
+                WHEN description = '' OR description IS NULL
+                  OR metadata_source = '' OR metadata_source IS NULL
+                THEN 1 ELSE 0 END), 0) AS missing_metadata,
+            COALESCE(SUM(CASE
+                WHEN category = '' OR category IS NULL OR category = 'Unsorted'
+                THEN 1 ELSE 0 END), 0) AS unsorted_games,
+            COALESCE(SUM(CASE WHEN {manual_missing_sql} THEN 1 ELSE 0 END), 0) AS missing_manuals
+        FROM games
+    """).fetchone()
+
+    game_count = game_summary["game_count"]
     library_count = _count(conn, "SELECT COUNT(*) FROM libraries")
-    storage = conn.execute("SELECT COALESCE(SUM(size_bytes), 0) AS total FROM games").fetchone()["total"]
-
-    missing_executables = _count(conn, "SELECT COUNT(*) FROM games WHERE executable_count = 0")
-    missing_covers = _count(conn, "SELECT COUNT(*) FROM games WHERE cover_path = '' OR cover_path IS NULL")
-    missing_metadata = _count(conn, """
-        SELECT COUNT(*) FROM games
-        WHERE description = '' OR description IS NULL
-           OR metadata_source = '' OR metadata_source IS NULL
-    """)
-    unsorted_games = _count(conn, """
-        SELECT COUNT(*) FROM games
-        WHERE category = '' OR category IS NULL OR category = 'Unsorted'
-    """)
-
-    missing_manuals = 0
+    storage = game_summary["storage"]
+    missing_executables = game_summary["missing_executables"]
+    missing_covers = game_summary["missing_covers"]
+    missing_metadata = game_summary["missing_metadata"]
+    unsorted_games = game_summary["unsorted_games"]
+    missing_manuals = game_summary["missing_manuals"]
     missing_readmes = 0
-
-    if _has_column(conn, "games", "manual_count"):
-        if _has_column(conn, "games", "manual_url"):
-            missing_manuals = _count(conn, """
-                SELECT COUNT(*) FROM games
-                WHERE (manual_count = 0 OR manual_count IS NULL)
-                  AND (manual_url = '' OR manual_url IS NULL)
-            """)
-        else:
-            missing_manuals = _count(conn, "SELECT COUNT(*) FROM games WHERE manual_count = 0 OR manual_count IS NULL")
-
-    if _has_column(conn, "games", "readme_count"):
-        missing_readmes = 0
 
     missing_documentation = missing_manuals
 

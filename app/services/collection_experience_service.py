@@ -35,30 +35,42 @@ def _badge(key, title, description, icon, value, target, tier='bronze', url='/li
 def get_collection_experience():
     conn = get_connection()
 
-    total_games = _count(conn, 'SELECT COUNT(*) FROM games')
-    complete_games = _count(conn, """
-        SELECT COUNT(*) FROM games
-        WHERE preservation_score >= 90
-           OR LOWER(COALESCE(preservation_badge, '')) IN ('complete', 'archive ready')
-    """)
-    metadata_games = _count(conn, """
-        SELECT COUNT(*) FROM games
-        WHERE COALESCE(metadata_source, '') != ''
-          AND COALESCE(description, '') != ''
-    """)
-    cover_games = _count(conn, """
-        SELECT COUNT(*) FROM games
-        WHERE COALESCE(cover_path, '') != '' OR COALESCE(preferred_cover_path, '') != ''
-    """)
-    manual_games = _count(conn, """
-        SELECT COUNT(*) FROM games
-        WHERE manual_count > 0 OR COALESCE(manual_file_path, '') != '' OR COALESCE(manual_url, '') != ''
-    """)
-    gallery_games = _count(conn, """
-        SELECT COUNT(DISTINCT game_id) FROM media_assets
-        WHERE COALESCE(local_path, '') != '' OR COALESCE(remote_url, '') != ''
-    """)
-    cached_media = _count(conn, "SELECT COUNT(*) FROM media_assets WHERE COALESCE(local_path, '') != ''")
+    game_summary = conn.execute("""
+        SELECT
+            COUNT(*) AS total_games,
+            COALESCE(SUM(CASE
+                WHEN preservation_score >= 90
+                  OR LOWER(COALESCE(preservation_badge, '')) IN ('complete', 'archive ready')
+                THEN 1 ELSE 0 END), 0) AS complete_games,
+            COALESCE(SUM(CASE
+                WHEN COALESCE(metadata_source, '') != '' AND COALESCE(description, '') != ''
+                THEN 1 ELSE 0 END), 0) AS metadata_games,
+            COALESCE(SUM(CASE
+                WHEN COALESCE(cover_path, '') != '' OR COALESCE(preferred_cover_path, '') != ''
+                THEN 1 ELSE 0 END), 0) AS cover_games,
+            COALESCE(SUM(CASE
+                WHEN manual_count > 0
+                  OR COALESCE(manual_file_path, '') != ''
+                  OR COALESCE(manual_url, '') != ''
+                THEN 1 ELSE 0 END), 0) AS manual_games
+        FROM games
+    """).fetchone()
+    media_summary = conn.execute("""
+        SELECT
+            COUNT(DISTINCT CASE
+                WHEN COALESCE(local_path, '') != '' OR COALESCE(remote_url, '') != ''
+                THEN game_id END) AS gallery_games,
+            COALESCE(SUM(CASE WHEN COALESCE(local_path, '') != '' THEN 1 ELSE 0 END), 0) AS cached_media
+        FROM media_assets
+    """).fetchone()
+
+    total_games = game_summary['total_games']
+    complete_games = game_summary['complete_games']
+    metadata_games = game_summary['metadata_games']
+    cover_games = game_summary['cover_games']
+    manual_games = game_summary['manual_games']
+    gallery_games = media_summary['gallery_games']
+    cached_media = media_summary['cached_media']
     libraries = _count(conn, 'SELECT COUNT(*) FROM libraries')
     launchbox_games = _count(conn, "SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='launchbox_games'")
     if launchbox_games:
