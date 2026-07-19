@@ -3068,6 +3068,7 @@
       if (fields.removeStatus) fields.removeStatus.innerHTML = '<span class="metadata-provider-pill"><strong>Vaultarr</strong><span>Removing catalog record...</span></span>';
       try {
         const removedId = String(activeGameId);
+        const removedTitle = activeGame?.title || "Game";
         const response = await fetch(`/api/games/${activeGameId}/remove`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -3079,18 +3080,16 @@
         const data = await response.json();
         if (!response.ok || !data.success) throw new Error(data.message || "Could not remove game.");
         fields.removeGameDialog.close();
-        const removedTrigger = document.querySelector(`.focus-card-trigger[data-game-id="${CSS.escape(removedId)}"]`);
         closeFocus();
         window.setTimeout(() => {
-          if (removedTrigger) {
-            removedTrigger.classList.add("game-card-removing");
-            window.setTimeout(() => {
-              removedTrigger.remove();
-              const grid = document.getElementById("libraryGrid");
-              if (grid && !grid.querySelector(".focus-card-trigger")) window.location.reload();
-            }, 360);
-          }
-        }, 520);
+          document.dispatchEvent(new CustomEvent("vaultarr:game-removed", {
+            detail: { game_id: removedId, title: removedTitle },
+          }));
+          window.VaultarrToast?.({
+            title: "Exhibit removed",
+            message: `${removedTitle} left the catalog. Original game files were untouched.`,
+          });
+        }, 280);
       } catch (error) {
         fields.removeConfirmButton.disabled = false;
         fields.removeConfirmButton.textContent = "Remove Game";

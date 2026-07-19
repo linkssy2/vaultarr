@@ -3821,7 +3821,8 @@ body.focus-active .focus-backdrop {
 .focus-danger-zone { border-color: rgba(255, 102, 122, .34); background: linear-gradient(135deg, rgba(64, 13, 28, .18), rgba(9, 17, 31, .76)); }
 .focus-danger-zone .danger-button { min-width: 190px; }
 .focus-remove-dialog { width: min(680px, calc(100vw - 32px)); }
-.game-card-removing { opacity: 0 !important; transform: scale(.92) translateY(18px) !important; filter: blur(5px); transition: opacity .32s ease, transform .32s ease, filter .32s ease !important; pointer-events: none; }
+.game-card-removing { opacity: 0 !important; transform: scale(.94) translateY(14px) !important; filter: blur(5px); transition: opacity .44s ease, transform .46s cubic-bezier(.22, 1, .36, 1), filter .4s ease !important; pointer-events: none; }
+.museum-section-leaving { opacity: 0 !important; transform: translateY(-8px); transition: opacity .32s ease, transform .36s cubic-bezier(.22, 1, .36, 1) !important; pointer-events: none; }
 @media (max-width: 780px) { .focus-action-section, .focus-danger-zone { align-items: stretch; flex-direction: column; } .focus-action-buttons { justify-content: stretch; } .focus-action-buttons > *, .focus-danger-zone .danger-button { width: 100%; text-align: center; } }
 
 

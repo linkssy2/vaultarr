@@ -453,10 +453,61 @@
     }
   }
 
+  function animateMuseumReflow(elements, positions) {
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+    elements.forEach((element) => {
+      const before = positions.get(element);
+      const after = element.getBoundingClientRect();
+      if (!before || typeof element.animate !== "function" || (before.left === after.left && before.top === after.top)) return;
+      element.animate([
+        { transform: `translate3d(${before.left - after.left}px, ${before.top - after.top}px, 0)` },
+        { transform: "translate3d(0, 0, 0)" },
+      ], { duration: 560, easing: "cubic-bezier(.22, 1, .36, 1)" });
+    });
+  }
+
+  function reconcileRemovedGame(detail) {
+    const grid = document.getElementById("libraryGrid");
+    if (!grid || !detail?.game_id) return;
+    const trigger = grid.querySelector(`.focus-card-trigger[data-game-id="${CSS.escape(String(detail.game_id))}"]`);
+    if (!trigger || trigger.classList.contains("game-card-removing")) return;
+
+    const remaining = Array.from(grid.querySelectorAll(".focus-card-trigger")).filter((card) => card !== trigger);
+    trigger.classList.add("game-card-removing");
+
+    window.setTimeout(() => {
+      const positions = new Map(remaining.map((card) => [card, card.getBoundingClientRect()]));
+      trigger.remove();
+      animateMuseumReflow(remaining, positions);
+
+      const searchInput = document.getElementById("librarySearch");
+      const noResults = document.getElementById("libraryNoResults");
+      if (!remaining.length && noResults && !String(searchInput?.value || "").trim()) {
+        noResults.innerHTML = `
+          <h2>Your museum is ready for its next exhibit.</h2>
+          <p>Add a game folder in Settings, scan it, or add a game manually.</p>
+          <a class="button-link" href="/settings">Go to Settings</a>
+          <a class="button-link secondary" href="/games/add">Add Game Manually</a>`;
+      }
+
+      const attentionBanner = document.querySelector(".museum-attention-banner");
+      if (attentionBanner && !remaining.length) {
+        attentionBanner.classList.add("museum-section-leaving");
+        window.setTimeout(() => attentionBanner.remove(), 360);
+      }
+
+      searchInput?.dispatchEvent(new Event("input", { bubbles: true }));
+      document.dispatchEvent(new CustomEvent("vaultarr:museum-updated", { detail: { reason: "game-removed" } }));
+    }, 460);
+  }
+
   if (!window.__vaultarrLiveLibraryBound) {
     window.__vaultarrLiveLibraryBound = true;
     document.addEventListener("vaultarr:game-added", (event) => {
       insertLiveGame(event.detail || {});
+    });
+    document.addEventListener("vaultarr:game-removed", (event) => {
+      reconcileRemovedGame(event.detail || {});
     });
   }
 
