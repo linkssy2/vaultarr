@@ -1,8 +1,16 @@
-# Vaultarr 2.0.0 Alpha 55
+# Vaultarr 2.0.0 Alpha 57
 
-> Experimental release: **Vaultarr 2.0.0 Alpha 55 — Mobile Accessibility**
+> Experimental release: **Vaultarr 2.0.0 Alpha 57 — Museum Settings Console**
 
 The `vaultarr-2.0-alpha` branch publishes its Docker image as `ghcr.io/linkssy2/vaultarr:2.experimental`. The stable `main` branch continues to own the `latest` tag.
+
+## Alpha 57 museum settings console
+
+Settings is now a calm, task-led museum console instead of a long stack of technical dashboards. Essentials, Appearance, Backup, Information Sources, and Reset are clearly separated; the navigator opens one focused workspace at a time; and all existing settings and protected behaviors remain available without visual clutter.
+
+## Alpha 56 calm deaccession
+
+Removing a game from its expanded Museum card now stays entirely inside the current page. Vaultarr closes the exhibit calmly, fades the card away, glides the remaining cards into place, updates counts and empty states, and confirms that the original files were untouched—without exposing an intermediate HTML reload.
 
 ## Alpha 55 mobile accessibility
 

@@ -52,6 +52,31 @@
     if (toggle) toggle.querySelector("span").textContent = label;
   }
 
+  function collapseSettingsPeers(section) {
+    const group = section?.dataset.settingsGroup;
+    if (!group) return;
+    document.querySelectorAll(`[data-settings-section][data-settings-group="${group}"]`).forEach((peer) => {
+      if (peer !== section) setSettingsSectionExpanded(peer, false);
+    });
+  }
+
+  function markSettingsRoute(section) {
+    const directId = section?.id || "";
+    const groupRoutes = {
+      appearance: "studioArtwork",
+      protection: "museum-backup",
+      sources: "studioMetadata",
+      system: "studioDangerZone",
+    };
+    const routeId = groupRoutes[section?.dataset.settingsGroup] || directId;
+    document.querySelectorAll(".settings-task-card").forEach((card) => {
+      const isActive = card.getAttribute("href") === `#${routeId}`;
+      card.classList.toggle("is-active", isActive);
+      if (isActive) card.setAttribute("aria-current", "location");
+      else card.removeAttribute("aria-current");
+    });
+  }
+
   function enhanceSettingsSections() {
     document.querySelectorAll("[data-settings-section]").forEach((section, sectionIndex) => {
       if (section.dataset.settingsBound === "true") return;
@@ -75,7 +100,10 @@
       toggle.setAttribute("aria-controls", body.id);
       toggle.innerHTML = '<span>Show</span><i aria-hidden="true"></i>';
       toggle.addEventListener("click", () => {
-        setSettingsSectionExpanded(section, section.classList.contains("is-settings-collapsed"));
+        const expanding = section.classList.contains("is-settings-collapsed");
+        if (expanding) collapseSettingsPeers(section);
+        setSettingsSectionExpanded(section, expanding);
+        if (expanding) markSettingsRoute(section);
       });
       head.append(toggle);
       setSettingsSectionExpanded(section, section.dataset.settingsOpen === "true");
@@ -87,7 +115,9 @@
     const target = document.querySelector(hash);
     if (!target) return false;
 
+    collapseSettingsPeers(target);
     setSettingsSectionExpanded(target, true);
+    markSettingsRoute(target);
 
     smoothScrollTo(getScrollTargetTop(target));
     target.classList.add("studio-section-targeted");
@@ -101,6 +131,8 @@
 
   function bindStudioNavigation() {
     enhanceSettingsSections();
+    const initiallyOpen = document.querySelector("[data-settings-section]:not(.is-settings-collapsed)");
+    if (initiallyOpen) markSettingsRoute(initiallyOpen);
     document.querySelectorAll('a[href^="#studio"]:not(.settings-jump)').forEach((link) => {
       if (link.dataset.studioSmoothBound === "true") return;
       link.dataset.studioSmoothBound = "true";

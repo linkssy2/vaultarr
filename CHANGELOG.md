@@ -1,3 +1,18 @@
+## 2.0.0 Alpha 57 — Museum Settings Console
+
+- Rebuilt Settings as an ordered museum console with Essentials, Appearance, Backup, Information Sources, and Reset zones.
+- Replaced the long stack of open dashboards with compact, calm accordion workspaces and one clear starting section.
+- Added a concise settings navigator, live overview signals, active-location feedback, and smoother section-to-section movement.
+- Folded Museum Backup into the same progressive-disclosure system while preserving all backup behavior and controls.
+- Preserved every setting, form action, authentication option, provider, library tool, theme control, and reset safeguard.
+
+## 2.0.0 Alpha 56 — Calm Deaccession
+
+- Removed the full-page reload from expanded-card game removal.
+- Added a calm exhibit fade and animated grid reflow after a game leaves the Museum.
+- Updated Museum counts, search results, attention state, and the final-game empty state in place.
+- Added clear removal feedback while preserving the existing confirmation and file-safety behavior.
+
 ## 2.0.0 Alpha 55 — Mobile Accessibility
 
 - Added a dedicated responsive accessibility layer without changing the established desktop presentation.

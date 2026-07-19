@@ -1,7 +1,7 @@
 {% set latest_backup = status.scheduled_archives[0] if status.scheduled_archives else None %}
 {% set last_run = status.backup_settings.last_run or (latest_backup.created_at if latest_backup else '') %}
 {% set is_enabled = status.backup_settings.enabled %}
-<section id="museum-backup" class="settings-museum-backup">
+<section id="museum-backup" class="settings-museum-backup alive-panel" data-settings-section data-settings-group="protection">
   <div class="studio-section-head museum-backup-settings-head">
     <div>
       <p class="eyebrow">Museum Backup</p>

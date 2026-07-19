@@ -4,31 +4,34 @@
 <section class="studio-workshop">
   <section class="studio-hero alive-panel">
     <div class="studio-hero-copy">
-      <p class="eyebrow">Settings</p>
-      <h1>Keep Vaultarr simple.</h1>
-      <p class="muted hero-copy">Vaultarr handles cataloging automatically. Technical tools stay out of the way unless you choose Advanced Mode.</p>
+      <p class="eyebrow">Museum Controls</p>
+      <h1>Shape your Vaultarr.</h1>
+      <p class="muted hero-copy">Start with the essentials. Open deeper controls only when your museum needs them.</p>
     </div>
-    <div class="studio-status-grid">
-      <div><span>Mode</span><strong>{{ 'Advanced' if ui_settings.advanced_mode else 'Standard' }}</strong></div>
-      <div><span>Theme</span><strong>{{ current_theme.name or 'Custom' }}</strong></div>
-      <div><span>Libraries</span><strong>{{ libraries|length }}</strong></div>
-      <div><span>LaunchBox</span><strong>{% if launchbox_status.synced %}Synced{% else %}Offline{% endif %}</strong></div>
+    <div class="studio-hero-status">
+      <p class="eyebrow">At a glance</p>
+      <div class="studio-status-grid">
+        <div><span>Experience</span><strong>{{ 'Advanced' if ui_settings.advanced_mode else 'Standard' }}</strong></div>
+        <div><span>Appearance</span><strong>{{ current_theme.name or 'Custom' }}</strong></div>
+        <div><span>Game Folders</span><strong>{{ libraries|length }}</strong></div>
+        <div><span>Access</span><strong>{% if auth_settings.enabled and auth_settings.configured %}Protected{% else %}Open{% endif %}</strong></div>
+      </div>
     </div>
   </section>
 
   <nav class="settings-task-hub alive-panel" aria-label="Settings shortcuts">
     <div class="settings-task-hub-copy">
-      <p class="eyebrow">What would you like to change?</p>
-      <h2>Choose a settings area</h2>
-      <p class="muted">Jump directly to a task. Each area opens only when you need it.</p>
+      <p class="eyebrow">Settings Navigator</p>
+      <h2>Where would you like to begin?</h2>
+      <p class="muted">Each destination opens a focused workspace below.</p>
     </div>
     <div class="settings-task-grid">
-      <a class="settings-task-card settings-jump" href="#studioExperience"><span aria-hidden="true">&#10024;</span><strong>Experience</strong><small>Language and automation</small></a>
-      <a class="settings-task-card settings-jump" href="#studioArchiveTools"><span aria-hidden="true">&#128193;</span><strong>Game Folders</strong><small>Add and scan libraries</small></a>
-      <a class="settings-task-card settings-jump" href="#studioArtwork"><span aria-hidden="true">&#9670;</span><strong>Appearance</strong><small>Themes and colors</small></a>
+      <a class="settings-task-card settings-jump" href="#studioExperience"><span aria-hidden="true">&#10024;</span><strong>Essentials</strong><small>Automation and language</small></a>
+      <a class="settings-task-card settings-jump" href="#studioArchiveTools"><span aria-hidden="true">&#128193;</span><strong>Game Folders</strong><small>Add, scan, and maintain</small></a>
+      <a class="settings-task-card settings-jump" href="#studioArtwork"><span aria-hidden="true">&#9670;</span><strong>Appearance</strong><small>Themes and color tuning</small></a>
+      <a class="settings-task-card settings-jump" href="#museum-backup"><span aria-hidden="true">&#8635;</span><strong>Backup</strong><small>Protect and restore</small></a>
       <a class="settings-task-card settings-jump" href="#studioSecurity"><span aria-hidden="true">&#128274;</span><strong>Access</strong><small>Login protection</small></a>
-      <a class="settings-task-card settings-jump" href="#museum-backup"><span aria-hidden="true">&#8635;</span><strong>Museum Backup</strong><small>Protect and restore data</small></a>
-      {% if ui_settings.advanced_mode %}<a class="settings-task-card settings-jump" href="#studioMetadata"><span aria-hidden="true">&#9881;</span><strong>Advanced</strong><small>Providers and caches</small></a>{% endif %}
+      {% if ui_settings.advanced_mode %}<a class="settings-task-card settings-jump" href="#studioMetadata"><span aria-hidden="true">&#9881;</span><strong>Sources</strong><small>Providers and caches</small></a>{% endif %}
     </div>
   </nav>
 
@@ -36,7 +39,7 @@
   <section class="studio-toast success"><strong>Experience Updated</strong><span>Your simplicity and automation preferences were saved.</span></section>
   {% endif %}
 
-  <section class="studio-section alive-panel experience-settings-panel" id="studioExperience" data-settings-section data-settings-open="true">
+  <section class="studio-section alive-panel experience-settings-panel" id="studioExperience" data-settings-section data-settings-group="essentials" data-settings-open="true">
     <div class="studio-section-head">
       <div>
         <p class="eyebrow">Museum Preparation</p>
@@ -129,12 +132,18 @@
   <section class="studio-toast warning"><strong>Reset Failed</strong><span>Vaultarr could not remove one or more active data files. Close other windows and try again.</span></section>
   {% endif %}
 
+  <div class="settings-zone-heading settings-zone-essentials"><span>01</span><div><p class="eyebrow">Everyday Setup</p><h2>Essentials</h2><p>Choose how Vaultarr behaves, where games live, and who can enter.</p></div></div>
+  <div class="settings-zone-heading settings-zone-appearance"><span>02</span><div><p class="eyebrow">Your Museum</p><h2>Appearance</h2><p>Select a theme or tune the atmosphere yourself.</p></div></div>
+  <div class="settings-zone-heading settings-zone-protection"><span>03</span><div><p class="eyebrow">Preservation</p><h2>Backup</h2><p>Protect the catalog, artwork, manuals, and settings.</p></div></div>
+  <div class="settings-zone-heading settings-zone-sources advanced-only"><span>04</span><div><p class="eyebrow">Advanced Workshop</p><h2>Information Sources</h2><p>Manage providers, local indexes, and cached assets.</p></div></div>
+  <div class="settings-zone-heading settings-zone-system"><span>05</span><div><p class="eyebrow">Use with care</p><h2>Reset</h2><p>Start fresh only when the museum truly needs it.</p></div></div>
+
   <section class="studio-intro-strip alive-panel advanced-only">
     <span>Studio is organized as a flowing workshop: providers first, visual tuning second, archive maintenance last.</span>
     <a href="/museum?attention=1">Review Museum Needs →</a>
   </section>
 
-  <section class="studio-section alive-panel security-workshop" id="studioSecurity" data-settings-section>
+  <section class="studio-section alive-panel security-workshop" id="studioSecurity" data-settings-section data-settings-group="essentials">
     <div class="studio-section-head">
       <div>
         <p class="eyebrow">Security</p>
@@ -164,7 +173,7 @@
     </form>
   </section>
 
-  <section id="studioMetadata" class="studio-section alive-panel advanced-only" data-settings-section>
+  <section id="studioMetadata" class="studio-section alive-panel advanced-only" data-settings-section data-settings-group="sources">
     <div class="studio-section-head">
       <div>
         <p class="eyebrow">Metadata Tools</p>
@@ -225,7 +234,7 @@
 
   <section class="studio-two-column">
 
-  <section class="studio-card-panel alive-panel manual-catalog-panel advanced-only" id="studioManualCatalog" data-settings-section>
+  <section class="studio-card-panel alive-panel manual-catalog-panel advanced-only" id="studioManualCatalog" data-settings-section data-settings-group="sources">
     <div class="studio-section-head compact">
       <div>
         <p class="eyebrow">Manual Catalog</p>
@@ -253,7 +262,7 @@
     </div>
   </section>
 
-    <section class="studio-card-panel alive-panel launchbox-sync-panel advanced-only" id="studioLaunchBox" data-settings-section>
+    <section class="studio-card-panel alive-panel launchbox-sync-panel advanced-only" id="studioLaunchBox" data-settings-section data-settings-group="sources">
       <div class="studio-section-head compact">
         <div><p class="eyebrow">LaunchBox Cache</p><h2>Local Index</h2></div>
       </div>
@@ -269,7 +278,7 @@
       </form>
     </section>
 
-    <section id="studioArtwork" class="studio-card-panel alive-panel" data-settings-section>
+    <section id="studioArtwork" class="studio-card-panel alive-panel" data-settings-section data-settings-group="appearance">
       <div class="studio-section-head compact">
         <div><p class="eyebrow">Artwork Tools</p><h2>Theme Packs</h2></div>
       </div>
@@ -288,7 +297,7 @@
   </section>
 
   <section class="studio-two-column">
-    <section class="studio-card-panel alive-panel" id="studioCompatibility" data-settings-section>
+    <section class="studio-card-panel alive-panel" id="studioCompatibility" data-settings-section data-settings-group="appearance">
       <div class="studio-section-head compact">
         <div><p class="eyebrow">Compatibility</p><h2>Dark Reader Guard</h2></div>
         <span class="compat-pill" id="darkReaderStatus">Checking...</span>
@@ -303,7 +312,7 @@
       </form>
     </section>
 
-    <section class="studio-card-panel alive-panel" id="studioCustomTheme" data-settings-section>
+    <section class="studio-card-panel alive-panel" id="studioCustomTheme" data-settings-section data-settings-group="appearance">
       <div class="studio-section-head compact">
         <div><p class="eyebrow">Custom Theme</p><h2>Color Tuning</h2></div>
       </div>
@@ -325,7 +334,7 @@
   </section>
 
 
-  <section class="studio-section alive-panel media-cache-manager advanced-only" id="studioMediaCache" data-settings-section>
+  <section class="studio-section alive-panel media-cache-manager advanced-only" id="studioMediaCache" data-settings-section data-settings-group="sources">
     <div class="studio-section-head">
       <div>
         <p class="eyebrow">Media Cache</p>
@@ -360,7 +369,7 @@
 
 
 
-  <section id="studioArchiveTools" class="studio-section alive-panel" data-settings-section data-settings-open="true">
+  <section id="studioArchiveTools" class="studio-section alive-panel" data-settings-section data-settings-group="essentials">
     <div class="studio-section-head">
       <div>
         <p class="eyebrow">Archive Tools</p>
@@ -397,7 +406,7 @@
 
   {% include "_museum_backup_settings.html" %}
 
-  <section id="studioDangerZone" class="studio-section alive-panel danger-zone-panel" data-settings-section>
+  <section id="studioDangerZone" class="studio-section alive-panel danger-zone-panel" data-settings-section data-settings-group="system">
     <div class="studio-section-head">
       <div>
         <p class="eyebrow danger-eyebrow">Danger Zone</p>
