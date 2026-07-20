@@ -159,8 +159,8 @@
 
     if (inFlightPages.has(key)) return awaitInFlight(inFlightPages.get(key), signal);
 
+    const controller = new AbortController();
     const request = (async () => {
-      const controller = new AbortController();
       const timeout = window.setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
       try {
         const response = await fetch(key, {

@@ -1,8 +1,12 @@
-# Vaultarr 2.0.0 Alpha 58
+# Vaultarr 2.0.0 Alpha 59
 
-> Experimental release: **Vaultarr 2.0.0 Alpha 58 — Settings Control Room**
+> Experimental release: **Vaultarr 2.0.0 Alpha 59 — Seamless Sidebar Navigation**
 
 The `vaultarr-2.0-alpha` branch publishes its Docker image as `ghcr.io/linkssy2/vaultarr:2.experimental`. The stable `main` branch continues to own the `latest` tag.
+
+## Alpha 59 seamless sidebar navigation
+
+Home and Settings now remain inside Vaultarr's smooth sidebar transition on uncached requests. The navigation request controller stays available for cancellation without throwing during setup, preventing the full-document fallback and brief unstyled HTML flash while preserving the existing layouts and animation design.
 
 ## Alpha 58 settings control room
 

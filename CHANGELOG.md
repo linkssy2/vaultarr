@@ -1,3 +1,9 @@
+## 2.0.0 Alpha 59 — Seamless Sidebar Navigation
+
+- Fixed the uncached sidebar request controller so Home and Settings remain inside Vaultarr's smooth navigation lifecycle.
+- Prevented the full-document fallback that briefly exposed an unstyled HTML first paint after a sidebar page finished loading.
+- Preserved the established sidebar, Home Orbital, Settings control room, and page transition presentation.
+
 ## 2.0.0 Alpha 58 — Settings Control Room
 
 - Replaced the stacked Settings dashboards and accordion system with a purpose-built control-room interface.
