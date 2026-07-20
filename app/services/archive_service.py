@@ -4,11 +4,14 @@ import os
 import shutil
 import sqlite3
 import tempfile
+import threading
+import time
 import zipfile
 from datetime import datetime, timedelta
 from pathlib import Path
 
 from app.database.database import APP_DIR, DB_PATH
+from app.services.storage_stats import directory_stats, invalidate_directory_stats
 
 ARCHIVES_DIR = APP_DIR / "archives"
 COVERS_DIR = APP_DIR / "covers"
@@ -21,6 +24,13 @@ BACKUP_SETTINGS_FILE = SETTINGS_DIR / "archive_settings.json"
 BACKUP_LOG_FILE = ARCHIVES_DIR / "backup_history.json"
 
 ARCHIVE_VERSION = 1
+_BACKUP_CHECK_INTERVAL_SECONDS = 60.0
+_ARCHIVE_STATUS_TTL_SECONDS = 10.0
+_backup_run_lock = threading.Lock()
+_backup_check_lock = threading.Lock()
+_backup_check_thread = None
+_last_backup_check = 0.0
+_archive_status_cache = {}
 
 
 def _now_stamp():
@@ -32,31 +42,18 @@ def _ensure_dirs():
         path.mkdir(parents=True, exist_ok=True)
 
 
+def invalidate_archive_status():
+    _archive_status_cache.clear()
+    for path in (ARCHIVES_DIR, COVERS_DIR, MANUALS_DIR, MEDIA_DIR, CACHE_DIR, SETTINGS_DIR):
+        invalidate_directory_stats(path)
+
+
 def _hash_file(path):
     h = hashlib.sha256()
     with open(path, "rb") as f:
         for chunk in iter(lambda: f.read(1024 * 1024), b""):
             h.update(chunk)
     return h.hexdigest()
-
-
-def _dir_size(path):
-    if not path.exists():
-        return 0
-    total = 0
-    for file in path.rglob("*"):
-        if file.is_file():
-            try:
-                total += file.stat().st_size
-            except OSError:
-                pass
-    return total
-
-
-def _count_files(path):
-    if not path.exists():
-        return 0
-    return sum(1 for item in path.rglob("*") if item.is_file())
 
 
 def _safe_arcname(prefix, path):
@@ -143,6 +140,7 @@ def create_archive(name="", include_cache=True, include_provider_cache=True, des
 
             zf.writestr("manifest.json", json.dumps(manifest, indent=2))
 
+    invalidate_archive_status()
     return archive_info(output_path)
 
 
@@ -273,6 +271,7 @@ def import_archive(path, mode="replace"):
         restored["settings"] = _restore_dir(tmp_root, "settings", SETTINGS_DIR)
         restored["cache"] = _restore_dir(tmp_root, "cache", CACHE_DIR)
 
+    invalidate_archive_status()
     return {
         "success": True,
         "mode": mode,
@@ -288,6 +287,7 @@ def save_uploaded_archive(file_storage):
         original = f"{original}.vaultarr"
     target = IMPORTS_DIR / f"import_{_now_stamp()}_{original}"
     file_storage.save(target)
+    invalidate_archive_status()
     return archive_info(target)
 
 
@@ -341,6 +341,7 @@ def save_backup_settings(data):
     SETTINGS_DIR.mkdir(parents=True, exist_ok=True)
     with open(BACKUP_SETTINGS_FILE, "w", encoding="utf-8") as f:
         json.dump(current, f, indent=2)
+    invalidate_archive_status()
     return current
 
 
@@ -423,7 +424,7 @@ def prune_backups(folder=None, retention_count=None, keep_monthly=False):
     return {"deleted": deleted, "kept": len(protected)}
 
 
-def run_scheduled_backup(manual=False):
+def _run_scheduled_backup_unlocked(manual=False):
     settings = load_backup_settings()
     folder = Path(settings.get("backup_folder") or ARCHIVES_DIR).expanduser()
     folder.mkdir(parents=True, exist_ok=True)
@@ -442,12 +443,22 @@ def run_scheduled_backup(manual=False):
         settings["next_run"] = calculate_next_run(settings).isoformat(timespec="seconds") if settings.get("enabled") else ""
         with open(BACKUP_SETTINGS_FILE, "w", encoding="utf-8") as f:
             json.dump(settings, f, indent=2)
+        invalidate_archive_status()
         message = f"Backup verified. Pruned {prune['deleted']} old backup(s)."
         log_backup_event("Manual Backup" if manual else "Automatic Backup", "ok", message, info)
         return {"success": True, "archive": info, "message": message, "prune": prune}
     except Exception as exc:
         log_backup_event("Manual Backup" if manual else "Automatic Backup", "error", str(exc))
         return {"success": False, "message": str(exc), "archive": {}}
+
+
+def run_scheduled_backup(manual=False):
+    if not _backup_run_lock.acquire(blocking=False):
+        return {"success": False, "message": "A Museum Backup is already running.", "archive": {}, "busy": True}
+    try:
+        return _run_scheduled_backup_unlocked(manual=manual)
+    finally:
+        _backup_run_lock.release()
 
 
 def scheduled_backup_due():
@@ -472,24 +483,61 @@ def run_due_backup_if_needed():
     return None
 
 
+def _run_due_backup_check_in_background():
+    global _backup_check_thread
+    try:
+        run_due_backup_if_needed()
+    finally:
+        with _backup_check_lock:
+            _backup_check_thread = None
+
+
+def schedule_due_backup_check(min_interval=_BACKUP_CHECK_INTERVAL_SECONDS):
+    global _backup_check_thread, _last_backup_check
+    now = time.monotonic()
+    with _backup_check_lock:
+        if _backup_check_thread and _backup_check_thread.is_alive():
+            return {"scheduled": False, "reason": "running"}
+        if now - _last_backup_check < max(0.0, float(min_interval)):
+            return {"scheduled": False, "reason": "recent"}
+        _last_backup_check = now
+        _backup_check_thread = threading.Thread(
+            target=_run_due_backup_check_in_background,
+            name="vaultarr-backup-check",
+            daemon=True,
+        )
+        _backup_check_thread.start()
+    return {"scheduled": True, "reason": "queued"}
+
+
 def archive_status(cloud_folder=""):
     _ensure_dirs()
+    cache_key = str(cloud_folder or "")
+    now = time.monotonic()
+    cached = _archive_status_cache.get(cache_key)
+    if cached and now - cached["stored_at"] < _ARCHIVE_STATUS_TTL_SECONDS:
+        return dict(cached["status"])
+
     database_size = DB_PATH.stat().st_size if DB_PATH.exists() else 0
-    covers_size = _dir_size(COVERS_DIR)
-    manuals_size = _dir_size(MANUALS_DIR)
-    media_size = _dir_size(MEDIA_DIR)
-    cache_size = _dir_size(CACHE_DIR)
+    covers = directory_stats(COVERS_DIR)
+    manuals = directory_stats(MANUALS_DIR)
+    media = directory_stats(MEDIA_DIR)
+    cache = directory_stats(CACHE_DIR)
+    covers_size = covers["size"]
+    manuals_size = manuals["size"]
+    media_size = media["size"]
+    cache_size = cache["size"]
     estimated_size = database_size + covers_size + manuals_size + media_size + cache_size
-    return {
+    status = {
         "app_dir": str(APP_DIR),
         "archives_dir": str(ARCHIVES_DIR),
         "database_exists": DB_PATH.exists(),
         "database_size_mb": round(database_size / 1024 / 1024, 2),
-        "covers": _count_files(COVERS_DIR),
+        "covers": covers["files"],
         "covers_size_mb": round(covers_size / 1024 / 1024, 2),
-        "manuals": _count_files(MANUALS_DIR),
+        "manuals": manuals["files"],
         "manuals_size_mb": round(manuals_size / 1024 / 1024, 2),
-        "media": _count_files(MEDIA_DIR),
+        "media": media["files"],
         "media_size_mb": round(media_size / 1024 / 1024, 2),
         "cache_size_mb": round(cache_size / 1024 / 1024, 2),
         "estimated_backup_size_mb": round(estimated_size / 1024 / 1024, 2),
@@ -500,3 +548,5 @@ def archive_status(cloud_folder=""):
         "cloud_folders": common_cloud_folders(),
         "cloud_archives": list_cloud_archives(cloud_folder),
     }
+    _archive_status_cache[cache_key] = {"stored_at": time.monotonic(), "status": status}
+    return dict(status)

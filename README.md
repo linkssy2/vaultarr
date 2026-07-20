@@ -1,8 +1,14 @@
-# Vaultarr 2.0.0 Alpha 57
+# Vaultarr 2.0.0 Alpha 58
 
-> Experimental release: **Vaultarr 2.0.0 Alpha 57 — Museum Settings Console**
+> Experimental release: **Vaultarr 2.0.0 Alpha 58 — Settings Control Room**
 
 The `vaultarr-2.0-alpha` branch publishes its Docker image as `ghcr.io/linkssy2/vaultarr:2.experimental`. The stable `main` branch continues to own the `latest` tag.
+
+## Alpha 58 settings control room
+
+Settings is now a dedicated control room with a persistent purpose-based category rail and one focused workspace. General behavior, game folders, appearance, access, Museum Backup, advanced sources, caches, and reset controls remain complete, but users see only the area they chose instead of navigating a long dashboard stack. Moving between areas uses a slow, gracefully eased directional glide while the workspace smoothly adapts to each room's content.
+
+Sidebar navigation now releases detached Home orbital animations, cancels superseded page requests, and avoids repeated Docker-volume inventory work. Automatic Museum Backups remain scheduled, but due checks run outside the Settings response so opening a page no longer waits for archive creation or verification.
 
 ## Alpha 57 museum settings console
 

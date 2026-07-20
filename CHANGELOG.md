@@ -1,3 +1,17 @@
+## 2.0.0 Alpha 58 — Settings Control Room
+
+- Replaced the stacked Settings dashboards and accordion system with a purpose-built control-room interface.
+- Added calm directional room transitions with a gracefully eased workspace and overlapping fade-and-glide when moving between Settings areas, including reduced-motion environments.
+- Extended the Settings transition boundary so rooms remain fully visible while gliding in from either direction.
+- Stopped detached Home orbital and liquid canvases from retaining animation loops after smooth navigation.
+- Moved automatic due-backup execution out of the Settings response into a single non-blocking background check.
+- Consolidated repeated media and archive filesystem walks behind a short-lived, mutation-aware storage inventory for Docker-mounted collections.
+- Cancelled superseded sidebar fetches at the network layer so rapid navigation cannot leave expensive page renders running in parallel.
+- Added a persistent category rail and a single focused workspace for General, Game Folders, Appearance, Access, Backup, advanced Sources, and Reset.
+- Added calm room-to-room transitions, legacy anchor support, saved-action routing, and responsive horizontal navigation on smaller screens.
+- Preserved every existing settings form, endpoint, option, authentication control, Museum Backup control, provider tool, and reset safeguard.
+- Removed the obsolete Alpha 57 navigator, zone headings, accordion lifecycle, and related styling.
+
 ## 2.0.0 Alpha 57 — Museum Settings Console
 
 - Rebuilt Settings as an ordered museum console with Essentials, Appearance, Backup, Information Sources, and Reset zones.

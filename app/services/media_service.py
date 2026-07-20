@@ -12,6 +12,7 @@ from app.database.database import get_connection
 from app.services.metadata_service import clean_search_title, safe_json_response, RAWG_SEARCH_URL, IGDB_GAMES_URL, igdb_headers
 from app.services.provider_settings import load_provider_settings
 from app.services.launchbox_service import launchbox_media_for_game
+from app.services.storage_stats import directory_stats, invalidate_directory_stats
 
 APP_DIR = Path(os.getenv('LOCALAPPDATA', '.')) / 'Vaultarr'
 MEDIA_DIR = APP_DIR / 'media'
@@ -265,6 +266,7 @@ def download_media_asset(game_id, url, title='Media', provider='Provider', media
     data = dict(row) if row else {}
     data['src'] = f'/media-assets/{rel}'
     data['cached'] = True
+    invalidate_directory_stats(MEDIA_DIR)
     return data
 
 # -----------------------------------------------------------------------------
@@ -467,6 +469,8 @@ def delete_media_asset(asset_id, game_id=None, remove_file=True):
                 removed_file = True
             except Exception:
                 removed_file = False
+    if removed_file:
+        invalidate_directory_stats(MEDIA_DIR)
     return {'deleted': True, 'removed_file': removed_file, 'asset': data}
 
 
@@ -494,6 +498,8 @@ def clear_game_media_cache(game_id, media_type='all', remove_files=True):
         deleted += 1
     conn.commit()
     conn.close()
+    if removed_files:
+        invalidate_directory_stats(MEDIA_DIR)
     return {'deleted': deleted, 'removed_files': removed_files, 'media_type': media_type or 'all'}
 
 
@@ -510,16 +516,9 @@ def media_cache_summary():
     ''').fetchall()
     conn.close()
 
-    size = 0
-    files = 0
-    if MEDIA_DIR.exists():
-        for path in MEDIA_DIR.rglob('*'):
-            if path.is_file():
-                files += 1
-                try:
-                    size += path.stat().st_size
-                except Exception:
-                    pass
+    storage = directory_stats(MEDIA_DIR)
+    size = storage['size']
+    files = storage['files']
     return {
         'total_assets': total_rows,
         'cached_assets': cached_rows,
@@ -557,4 +556,6 @@ def cleanup_orphaned_media_files():
                 removed_bytes += size
             except Exception:
                 pass
+    if removed:
+        invalidate_directory_stats(MEDIA_DIR)
     return {'removed_files': removed, 'removed_bytes': removed_bytes, 'removed_mb': round(removed_bytes / 1024 / 1024, 2)}

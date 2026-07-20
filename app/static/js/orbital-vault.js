@@ -1,5 +1,5 @@
 (() => {
-  const panels = new WeakMap();
+  const panels = new Map();
 
   function parseDuration(value, fallback) {
     const text = String(value || '').trim();
@@ -29,6 +29,7 @@
     let rafId = 0;
     let lastTime = performance.now();
     let palette = fallbackPalette;
+    let disposed = false;
 
     function traceV() {
       context.beginPath();
@@ -169,6 +170,11 @@
     }
 
     function frame(now) {
+      if (disposed || !canvas.isConnected) {
+        observer.disconnect();
+        rafId = 0;
+        return;
+      }
       const delta = Math.min(0.034, Math.max(0.001, (now - lastTime) / 1000)) * motionScale;
       lastTime = now;
       if (!document.hidden) {
@@ -185,10 +191,30 @@
 
     return {
       destroy() {
+        disposed = true;
         observer.disconnect();
         if (rafId) cancelAnimationFrame(rafId);
+        rafId = 0;
       },
     };
+  }
+
+  function destroyOrbitalPanel(panel) {
+    const state = panels.get(panel);
+    if (!state) return;
+    state.disposed = true;
+    if (state.rafId) cancelAnimationFrame(state.rafId);
+    panel.removeEventListener('mouseenter', state.onEnter);
+    panel.removeEventListener('mouseleave', state.onLeave);
+    panel.removeEventListener('mousemove', state.onMove);
+    state.healthLiquid?.destroy?.();
+    panels.delete(panel);
+  }
+
+  function cleanupDetachedPanels() {
+    for (const panel of panels.keys()) {
+      if (!panel.isConnected) destroyOrbitalPanel(panel);
+    }
   }
 
   function initOrbitalPanel(panel) {
@@ -200,7 +226,10 @@
     if (reducedMotion) panel.classList.add('orbital-reduced-motion');
 
     const orbits = Array.from(panel.querySelectorAll('.orbit'));
-    if (!orbits.length) return;
+    if (!orbits.length) {
+      healthLiquid?.destroy?.();
+      return;
+    }
 
     panel.classList.add('orbital-js-active', 'orbital-mounted');
 
@@ -230,9 +259,9 @@
     let parallaxY = 0;
     let targetParallaxX = 0;
     let targetParallaxY = 0;
-    let rafId = 0;
     let last = performance.now();
     let elapsed = 0;
+    const state = { rafId: 0, onEnter, onLeave, onMove, healthLiquid, disposed: false };
 
     function onEnter() { targetHoverBoost = 1.12; }
     function onLeave() {
@@ -252,6 +281,10 @@
     panel.addEventListener('mousemove', onMove);
 
     function frame(now) {
+      if (state.disposed || !panel.isConnected) {
+        destroyOrbitalPanel(panel);
+        return;
+      }
       const delta = Math.min(72, now - last);
       last = now;
       elapsed += (delta / 1000) * orbitMotionScale;
@@ -299,14 +332,15 @@
       panel.style.setProperty('--cosmos-parallax-x', `${parallaxX}px`);
       panel.style.setProperty('--cosmos-parallax-y', `${parallaxY}px`);
 
-      rafId = requestAnimationFrame(frame);
+      state.rafId = requestAnimationFrame(frame);
     }
 
-    rafId = requestAnimationFrame(frame);
-    panels.set(panel, { rafId, onEnter, onLeave, onMove, healthLiquid });
+    panels.set(panel, state);
+    state.rafId = requestAnimationFrame(frame);
   }
 
   function initAllOrbitalPanels() {
+    cleanupDetachedPanels();
     document.querySelectorAll('.vault-cosmos, .orbital-vault').forEach(initOrbitalPanel);
   }
 
@@ -317,6 +351,7 @@
   }
 
   document.addEventListener('vaultarr:page-loaded', () => {
+    cleanupDetachedPanels();
     window.setTimeout(initAllOrbitalPanels, 60);
   });
 })();

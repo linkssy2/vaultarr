@@ -38,7 +38,7 @@
   body.vaultos > .sidebar .sidebar-footer { display: none; }
   body.vaultos > main.content.vaultos-content { width: 100%; min-width: 0; margin-left: 0; padding: clamp(20px, 4vw, 32px); }
 
-  .panel, .card, .page-header, .settings-task-hub, .museum-library-header,
+  .panel, .card, .page-header, .museum-library-header,
   .museum-collections-shell, .discovery-page, .experience-page { min-width: 0; max-width: 100%; }
   .page-header, .panel-heading { flex-wrap: wrap; }
   .table-wrap, .data-table-wrap, .settings-table-wrap {
@@ -47,11 +47,11 @@
   input, select, textarea, button, .button-link { max-width: 100%; }
   a, button, input, select, summary, .button-link { touch-action: manipulation; }
   button, .button-link, input:not([type="checkbox"]):not([type="radio"]), select { min-height: 44px; }
-  .settings-task-hub, .museum-library-tabs, .category-row, .focus-tabs {
+  .museum-library-tabs, .category-row, .focus-tabs {
     max-width: 100%; overflow-x: auto; overscroll-behavior-inline: contain;
     scrollbar-width: none; -webkit-overflow-scrolling: touch;
   }
-  .settings-task-hub::-webkit-scrollbar, .museum-library-tabs::-webkit-scrollbar,
+  .museum-library-tabs::-webkit-scrollbar,
   .category-row::-webkit-scrollbar, .focus-tabs::-webkit-scrollbar { display: none; }
   .global-search-panel { width: min(680px, calc(100vw - 28px)); max-height: calc(100dvh - 28px); overflow: visible auto; }
   .global-add-dialog, dialog, .delete-game-dialog { max-width: calc(100vw - 28px); max-height: calc(100dvh - 28px); }
@@ -139,8 +139,6 @@
     max-height: calc(100dvh - 20px - env(safe-area-inset-top)); overflow-y: auto;
   }
   .global-add-dialog.visible { transform: none; }
-  .settings-task-hub { position: sticky; top: 0; z-index: 8; }
-  .settings-task-hub a { flex: 0 0 auto; min-height: 44px; }
   .settings-grid, .settings-section-grid, .studio-grid, .discovery-index-grid, .experience-grid { grid-template-columns: 1fr !important; }
   .vaultarr-live-toast { bottom: calc(80px + env(safe-area-inset-bottom)); }
 }

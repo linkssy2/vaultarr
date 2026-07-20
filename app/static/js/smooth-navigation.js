@@ -126,6 +126,15 @@
     });
   }
 
+  function awaitInFlight(entry, signal) {
+    if (!signal) return entry.promise;
+    const abortRequest = () => entry.controller.abort();
+    signal.addEventListener("abort", abortRequest, { once: true });
+    return awaitWithSignal(entry.promise, signal).finally(() => {
+      signal.removeEventListener("abort", abortRequest);
+    });
+  }
+
   async function fetchPage(url, signal) {
     const keyUrl = new URL(url, window.location.href);
     const key = keyUrl.href;
@@ -148,7 +157,7 @@
     if (!dirty && cached && (Date.now() - cached.storedAt) < CACHE_TTL_MS) return cached.page;
     if (cached) pageCache.delete(key);
 
-    if (inFlightPages.has(key)) return awaitWithSignal(inFlightPages.get(key), signal);
+    if (inFlightPages.has(key)) return awaitInFlight(inFlightPages.get(key), signal);
 
     const request = (async () => {
       const controller = new AbortController();
@@ -168,6 +177,7 @@
         window.VaultarrStore?.clearDirty(keyUrl.pathname);
         return page;
       } catch (error) {
+        if (error?.name === "AbortError" && signal?.aborted) throw new DOMException("Navigation aborted", "AbortError");
         if (error?.name === "AbortError") throw new Error("Navigation request timed out");
         throw error;
       } finally {
@@ -176,8 +186,9 @@
       }
     })();
 
-    inFlightPages.set(key, request);
-    return awaitWithSignal(request, signal);
+    const entry = { promise: request, controller };
+    inFlightPages.set(key, entry);
+    return awaitInFlight(entry, signal);
   }
 
   function beginDelayedLoadingIndicator(id) {

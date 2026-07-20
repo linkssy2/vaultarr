@@ -10,7 +10,6 @@ from app.services.archive_service import (
     ARCHIVES_DIR,
     save_backup_settings,
     run_scheduled_backup,
-    run_due_backup_if_needed,
 )
 
 archive_bp = Blueprint('archive', __name__)
